@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "30a9ec3f40d57a2d9ee43deb00b34136",
+    "content-hash": "8b80c8ff8b376d744d3e505fa08aa4a3",
     "packages": [
         {
             "name": "drupal/coder",
