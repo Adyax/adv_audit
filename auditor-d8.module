@@ -5,3 +5,8 @@
  * Main module file.
  */
 
+
+function TesT  (){
+  die();
+  exit;
+} 
