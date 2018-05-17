@@ -1,0 +1,11 @@
+drupal_auditor:
+  route_name: drupal_auditor
+  title: 'Drupal Auditor'
+  description: 'Perform a full audit of your site.'
+  parent: system.admin_reports
+
+drupal_auditor.settings:
+  route_name: drupal_auditor.settings
+  title: 'Drupal Auditor'
+  description: 'Choose which roles are untrusted, set logging, skip or enable audit checks and modify check-specific settings.'
+  parent: system.admin_config_system

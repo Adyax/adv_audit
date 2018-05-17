@@ -1,1 +1,29 @@
+drupal_auditor:
+  path: 'admin/reports/drupal-auditor'
+  defaults:
+    _controller: '\Drupal\drupal_auditor\Controller\DrupalAuditorChecklistController::index'
+  requirements:
+    _permission: 'access auditor list'
 
+drupal_auditor.help:
+  path: 'admin/reports/drupal-auditor/help/{namespace}/{title}'
+  defaults:
+    _controller: '\Drupal\drupal_auditor\Controller\DrupalAuditorHelpController::index'
+    namespace: ~
+    title: ~
+  requirements:
+    _permission: 'access auditor list'
+
+drupal_auditor.settings:
+  path: 'admin/config/drupal-auditor'
+  defaults:
+    _form: '\Drupal\drupal_auditor\Form\SettingsForm'
+  requirements:
+    _permission: 'access auditor list'
+
+drupal_auditor.toggle:
+  path: 'admin/reports/drupal-auditor/toggle/{check_id}'
+  defaults:
+    _controller: '\Drupal\drupal_auditor\Controller\DrupalAuditorToggleController::index'
+  requirements:
+    _permission: 'access auditor list'
