@@ -27,9 +27,6 @@
       "post-install-cmd": [
         "sh ./scripts/tools/setup.sh"
       ]
-    },
-    "installer-paths": {
-      "modules/contrib/{$name}": ["type:drupal-module"]
     }
   }
 }
