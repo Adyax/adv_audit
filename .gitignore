@@ -1,0 +1,25 @@
+# Ignore configuration files that may contain sensitive information.
+.idea
+.vagrant
+backup
+index.html
+
+# Ignore binaries.
+/bin
+
+# Ignore Composer-managed dependencies.
+## Other
+drush
+vendor
+
+## OS specific mess.
+Thumbs.db
+.DS_Store
+
+## eclipse
+.project
+.buildpath
+/.settings
+
+## NetBeans
+nbproject

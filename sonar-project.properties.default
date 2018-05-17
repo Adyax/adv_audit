@@ -1,0 +1,28 @@
+# Required metadata
+# Please set values on following 3 lines.
+sonar.projectKey=
+sonar.projectName=
+sonar.projectVersion=0.1.0
+
+# Path to the parent source code directory.
+# Path is relative to the sonar-project.properties file. Replace "\" by "/" on Windows.
+# Since SonarQube 4.2, this property is optional if sonar.modules is set.
+# If not set, SonarQube starts looking for source code from the directory containing
+# the sonar-project.properties file.
+sonar.sources=docroot/modules/custom
+
+# Exclusions.
+#sonar.exclusions=docroot/modules/custom/module_to_exclude/**
+
+# Language
+sonar.language=php
+
+# To deactivate features related to unit tests execution and coverage
+sonar.dynamicAnalysis=false
+
+# Encoding of the source code
+sonar.sourceEncoding=UTF-8
+
+# Not used.
+# Additional parameters
+# sonar.redmine.prj_name=

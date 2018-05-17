@@ -1,0 +1,35 @@
+{
+  "name": "drupal/drupal_auditor",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "keywords": ["Drupal", "audit"],
+  "minimum-stability": "dev",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    }
+  ],
+  "require": {
+    "squizlabs/php_codesniffer": "2.*",
+    "drupal/coder": "8.*"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "sh ./scripts/tools/setup.sh"
+    ]
+  },
+  "config": {
+    "bin-dir": "bin/"
+  },
+  "extra": {
+    "scripts-dev": {
+      "post-install-cmd": [
+        "sh ./scripts/tools/setup.sh"
+      ]
+    },
+    "installer-paths": {
+      "modules/contrib/{$name}": ["type:drupal-module"]
+    }
+  }
+}
