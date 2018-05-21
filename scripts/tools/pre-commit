@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PROJECT=`php -r "echo dirname(dirname(dirname(realpath('$0'))));"`
-STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep "\/custom\/" | grep "\\.install\|\\.module\|\\.inc\|\\.php\|\\.yml\|\\.js"`
+STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep "\\.install\|\\.module\|\\.inc\|\\.php\|\\.yml\|\\.js"`
 
 # Determine if a file list is passed
 if [ "$#" -eq 1 ]
