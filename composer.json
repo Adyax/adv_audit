@@ -1,5 +1,5 @@
 {
-  "name": "drupal/drupal_auditor",
+  "name": "drupal/adv_audit",
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "keywords": ["Drupal", "audit"],

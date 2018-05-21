@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\drupal_auditor\Controller;
+namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
@@ -61,7 +61,7 @@ class DrupalAuditorChecklistController extends ControllerBase {
 //      '#date' => $this->drupalAuditor->getLastRun(),
 //      '#checks' => $checks,
 //      '#attached' => [
-//        'library' => ['drupal_auditor/run_and_review'],
+//        'library' => ['adv_audit/run_and_review'],
 //      ],
 //    ];
     return 'Dammy results';

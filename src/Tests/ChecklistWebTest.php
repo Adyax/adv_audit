@@ -1,14 +1,14 @@
 <?php
 
-namespace Drupal\drupal_auditor\Tests;
+namespace Drupal\adv_audit\Tests;
 
-use Drupal\drupal_auditor\Checklist;
+use Drupal\adv_audit\Checklist;
 use Drupal\simpletest\WebTestBase;
 
 /**
  * Contains tests related to the DrupalAuditor class.
  *
- * @group security_review
+ * @group adv_audit
  */
 class ChecklistWebTest extends WebTestBase {
 
@@ -17,7 +17,7 @@ class ChecklistWebTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['drupal_auditor'];
+  public static $modules = ['adv_audit'];
 
   /**
    * The test user.
@@ -29,14 +29,14 @@ class ChecklistWebTest extends WebTestBase {
   /**
    * The security checks defined by Security Review.
    *
-   * @var \Drupal\drupal_auditor\Check[]
+   * @var \Drupal\adv_audit\Check[]
    */
   protected $checks;
 
   /**
-   * The security_review.checklist service.
+   * The adv_audit.checklist service.
    *
-   * @var \Drupal\drupal_auditor\Checklist
+   * @var \Drupal\adv_audit\Checklist
    */
   protected $checklist;
 
@@ -47,7 +47,7 @@ class ChecklistWebTest extends WebTestBase {
     parent::setUp();
 
     $this->checklist = \Drupal::getContainer()
-      ->get('drupal_auditor.checklist');
+      ->get('adv_audit.checklist');
 
     // Login.
     $this->user = $this->drupalCreateUser(

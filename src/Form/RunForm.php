@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\drupal_auditor\Form;
+namespace Drupal\adv_audit\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -12,17 +12,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RunForm extends FormBase {
 
   /**
-   * The security_review.checklist service.
+   * The adv_audit.checklist service.
    *
-   * @var \Drupal\security_review\Checklist
+   * @var \Drupal\adv_audit\Checklist
    */
   protected $checklist;
 
   /**
    * Constructs a RunForm.
    *
-   * @param \Drupal\security_review\Checklist $checklist
-   *   The security_review.checklist service.
+   * @param \Drupal\adv_audit\Checklist $checklist
+   *   The adv_audit.checklist service.
    */
   public function __construct(Checklist $checklist) {
     $this->checklist = $checklist;

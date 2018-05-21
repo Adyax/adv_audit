@@ -1,5 +1,5 @@
 access auditor list:
-  title: 'Access drupal auditor pages'
+  title: 'Access advanced audit pages'
   description: 'View audit checks and output. Give only to trusted users.'
 
 run audit:
