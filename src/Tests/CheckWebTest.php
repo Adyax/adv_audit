@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\drupal_auditor\Tests;
+namespace Drupal\adv_audit\Tests;
 
 use Drupal\simpletest\WebTestBase;
 
 /**
  * Contains tests for Check that don't suffice with KernelTestBase.
  *
- * @group security_review
+ * @group adv_audit
  */
 class CheckWebTest extends WebTestBase {
 
@@ -16,12 +16,12 @@ class CheckWebTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['drupal_auditor'];
+  public static $modules = ['adv_audit'];
 
   /**
    * The security checks defined by Security Review.
    *
-   * @var \Drupal\security_review\Check[]
+   * @var \Drupal\adv_audit\Check[]
    */
   protected $checks;
 

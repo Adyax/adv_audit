@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\drupal_auditor\Controller;
+namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
@@ -62,7 +62,7 @@ class DrupalAuditorToggleController extends ControllerBase {
 
 
     // Go back to Run & Review if the access was wrong.
-    return $this->redirect('drupal_auditor');
+    return $this->redirect('adv_audit');
   }
 
 }

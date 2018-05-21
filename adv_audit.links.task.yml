@@ -1,0 +1,16 @@
+adv_audit:
+  route_name: adv_audit
+  title: 'Run tests & review'
+  base_route: adv_audit
+
+adv_audit.help:
+  route_name: adv_audit.help
+  title: 'Help'
+  weight: 10
+  base_route: adv_audit
+
+adv_audit.settings:
+  route_name: adv_audit.settings
+  title: 'Settings'
+  weight: 15
+  base_route: adv_audit

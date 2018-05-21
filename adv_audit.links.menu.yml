@@ -1,11 +1,11 @@
-drupal_auditor:
-  route_name: drupal_auditor
-  title: 'Drupal Auditor'
+adv_audit:
+  route_name: adv_audit
+  title: 'Advanced Audit'
   description: 'Perform a full audit of your site.'
   parent: system.admin_reports
 
-drupal_auditor.settings:
-  route_name: drupal_auditor.settings
-  title: 'Drupal Auditor'
+adv_audit.settings:
+  route_name: adv_audit.settings
+  title: 'Advanced Audit'
   description: 'Choose which roles are untrusted, set logging, skip or enable audit checks and modify check-specific settings.'
   parent: system.admin_config_system
