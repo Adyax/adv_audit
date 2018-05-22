@@ -1,5 +1,6 @@
 stages:
   - test
+  - backmerge
 
 sonar:
   stage: test
@@ -10,3 +11,16 @@ sonar:
   only:
     - branches
 
+backmerge-master:
+  stage: backmerge
+  image: php:7.1
+  tags:
+    - docker
+  before_script:
+    - apt-get -qq update
+    - apt-get -qq -y install jq
+  script:
+    # Create backmerge to develop.
+    - sh scripts/tools/back-merge.sh develop
+  only:
+    - master
