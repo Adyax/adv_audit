@@ -13,7 +13,12 @@ class AdvAuditHelpController extends ControllerBase {
    * Creates the Run & Review page.
    */
   public function index() {
-    return 'Dummy page';
+    $output = 'Dummy';
+
+    return [
+      '#type' => 'markup',
+      '#markup' => $output,
+    ];
   }
 
 }
