@@ -1,14 +1,14 @@
 adv_audit:
   path: 'admin/reports/adv-audit'
   defaults:
-    _controller: '\Drupal\adv_audit\Controller\DrupalAuditorChecklistController::index'
+    _controller: '\Drupal\adv_audit\Controller\AdvAuditChecklistController::index'
   requirements:
     _permission: 'access auditor list'
 
 adv_audit.help:
   path: 'admin/reports/adv-audit/help/{namespace}/{title}'
   defaults:
-    _controller: '\Drupal\adv_audit\Controller\DrupalAuditorHelpController::index'
+    _controller: '\Drupal\adv_audit\Controller\AdvAuditHelpController::index'
     namespace: ~
     title: ~
   requirements:
@@ -24,6 +24,6 @@ adv_audit.settings:
 adv_audit.toggle:
   path: 'admin/reports/adv-audit/toggle/{check_id}'
   defaults:
-    _controller: '\Drupal\adv_audit\Controller\DrupalAuditorToggleController::index'
+    _controller: '\Drupal\adv_audit\Controller\AdvAuditToggleController::index'
   requirements:
     _permission: 'access auditor list'
