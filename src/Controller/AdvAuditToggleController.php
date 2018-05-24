@@ -10,19 +10,19 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * Responsible for handling the toggle links on the Run & Review page.
  */
-class DrupalAuditorToggleController extends ControllerBase {
+class AdvAuditToggleController extends ControllerBase {
 
   /**
    * The CSRF Token generator.
    *
-   * @var \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
+   * @var \Drupal\Core\Access\CsrfTokenGenerator
    */
   protected $csrfToken;
 
   /**
    * The request stack.
    *
-   * @var \Symfony\Component\HttpFoundation\Request $request
+   * @var null|\Symfony\Component\HttpFoundation\Request
    */
   protected $request;
 
@@ -59,8 +59,6 @@ class DrupalAuditorToggleController extends ControllerBase {
    *   The response.
    */
   public function index($check_id) {
-
-
     // Go back to Run & Review if the access was wrong.
     return $this->redirect('adv_audit');
   }
