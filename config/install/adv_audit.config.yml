@@ -10,3 +10,5 @@ adv_audit_settings:
       label: Server Configuration
     code_review:
       label: Code review (custom modules and themes)
+    performance:
+      label: Performance

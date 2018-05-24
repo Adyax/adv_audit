@@ -53,6 +53,7 @@ class SettingsForm extends ConfigFormBase {
         '#title' => $category['label'],
       ];
     }
+    $form['#attached']['library'][] = 'adv_audit/adv_audit.admin';
     return $form;
   }
 
