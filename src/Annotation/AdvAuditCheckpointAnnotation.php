@@ -2,35 +2,46 @@
 
 namespace Drupal\adv_audit\Annotation;
 
+/**
+ * Class AdvAuditCheckpointAnnotation.
+ *
+ * @package Drupal\adv_audit\Annotation
+ */
 class AdvAuditCheckpointAnnotation {
 
   /**
-   * @var
-   *   Plugin machine name.
+   * Plugin machine name.
+   *
+   * @var string
    */
   public $id;
 
   /**
-   * @var
-   *   Plugin human readable name.
+   * Plugin human readable name.
+   *
+   * @var string
    */
   public $label;
 
   /**
-   * @var
-   *   Plugin category id @see congig adv_audit.config.
+   * Plugin category id @see congig adv_audit.config.
+   *
+   * @var string
    */
   public $category;
 
   /**
-   * @var
-   *   Plugin default status (bool)
+   * Plugin default status (bool)
+   *
+   * @var bool
    */
   public $status;
 
   /**
-   * @var
-   *   Severity level, possible values: 'low', 'normal', 'high', 'critical'.
+   * Severity level, possible values: 'low', 'normal', 'high', 'critical'.
+   *
+   * @var string
    */
   public $severity;
+
 }

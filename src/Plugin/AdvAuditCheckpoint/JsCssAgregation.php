@@ -2,11 +2,8 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheckpoint;
 
-use Drupal\adv_audit\Annotation\AdvAuditCheckpointAnnotation;
-
 /**
- * Class JsCssAgregation
- *   Check if agregation for js and css is enabled.
+ * Check if agregation for js and css is enabled.
  *
  * @AdvAuditCheckpointAnnotation(
  *   id = 'js_css_agregation',
