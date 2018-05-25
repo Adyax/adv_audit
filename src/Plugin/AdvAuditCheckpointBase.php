@@ -3,6 +3,8 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Component\Plugin\PluginBase;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Drupal\adv_audit\Annotation\AdvAuditCheckpointAnnotation;
 
 /**
  * Base class for Example plugin plugins.
@@ -44,6 +46,16 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   public function process() {
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInformation() {
+    $annotationReader = new AnnotationReader();
+    $annotationObject = new AdvAuditCheckpointAnnotation();
+    $reflectionObject = new \ReflectionObject($annotationObject);
+    return $annotationReader->getClassAnnotations($reflectionObject);
   }
 
 }

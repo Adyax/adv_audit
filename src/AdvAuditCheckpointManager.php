@@ -29,4 +29,15 @@ class AdvAuditCheckpointManager extends DefaultPluginManager {
     $this->setCacheBackend($cache_backend, 'adv_audit_info_plugins');
   }
 
+  /**
+   * Return plugins by category.
+   */
+  public function getAdvAuditPlugins() {
+    $plugins = [];
+    foreach ($this->getDefinitions() as $plugin) {
+      $plugins[$plugin['category']][$plugin['id']] = $plugin;
+    }
+    return $plugins;
+  }
+
 }
