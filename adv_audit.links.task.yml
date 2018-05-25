@@ -1,16 +1,21 @@
-adv_audit:
-  route_name: adv_audit
-  title: 'Run tests & review'
-  base_route: adv_audit
 
-adv_audit.help:
-  route_name: adv_audit.help
-  title: 'Help'
-  weight: 10
-  base_route: adv_audit
-
-adv_audit.settings:
+adv_audit.settings_tab:
   route_name: adv_audit.settings
-  title: 'Settings'
-  weight: 15
-  base_route: adv_audit
+  base_route: adv_audit.settings
+  title: Settings
+
+adv_audit.view:
+  route_name: entity.adv_audit.canonical
+  base_route: entity.adv_audit.canonical
+  title: View
+
+adv_audit.page_edit:
+  route_name: entity.adv_audit.edit_form
+  base_route: entity.adv_audit.canonical
+  title: Edit
+
+adv_audit.delete_confirm:
+  route_name: entity.adv_audit.delete_form
+  base_route: entity.adv_audit.canonical
+  title: Delete
+  weight: 10
