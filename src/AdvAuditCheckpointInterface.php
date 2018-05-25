@@ -20,10 +20,10 @@ interface AdvAuditCheckpointInterface {
   /**
    * Set check status.
    *
-   * @param \Drupal\adv_audit\string $status
+   * @param string $status
    *   Possible values: 'success', 'fail', 'process'.
    */
-  public function setProcessStatus(string $status);
+  public function setProcessStatus($status);
 
   /**
    * Return stored from last checking data.

@@ -2,12 +2,14 @@
 
 namespace Drupal\adv_audit\Annotation;
 
+use Drupal\Component\Annotation\Plugin;
+
 /**
  * Class AdvAuditCheckpointAnnotation.
  *
  * @package Drupal\adv_audit\Annotation
  */
-class AdvAuditCheckpointAnnotation {
+class AdvAuditCheckpointAnnotation extends Plugin {
 
   /**
    * Plugin machine name.
@@ -35,7 +37,7 @@ class AdvAuditCheckpointAnnotation {
    *
    * @var bool
    */
-  public $status;
+  public $status = FALSE;
 
   /**
    * Severity level, possible values: 'low', 'normal', 'high', 'critical'.
