@@ -2,3 +2,6 @@ services:
   plugin.manager.adv_audit_checkpoins:
     class: Drupal\adv_audit\AdvAuditCheckpointManager
     parent: default_plugin_manager
+  plugin.manager.example_plugin:
+    class: Drupal\adv_audit\Plugin\ExamplePluginManager
+    parent: default_plugin_manager
