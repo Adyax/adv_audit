@@ -5,9 +5,12 @@ namespace Drupal\adv_audit\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Class AdvAuditCheckpointAnnotation.
+ * Defines a AdvAuditCheckpoint plugin item annotation object.
  *
- * @package Drupal\adv_audit\Annotation
+ * @see \Drupal\adv_audit\Plugin\AdvAuditCheckpointAnnotation
+ * @see plugin_api
+ *
+ * @Annotation
  */
 class AdvAuditCheckpointAnnotation extends Plugin {
 
@@ -16,21 +19,23 @@ class AdvAuditCheckpointAnnotation extends Plugin {
    *
    * @var string
    */
-  public $id;
+  public $id = '';
 
   /**
    * Plugin human readable name.
    *
-   * @var string
+   * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
    */
-  public $label;
+  public $label = '';
 
   /**
    * Plugin category id @see congig adv_audit.config.
    *
    * @var string
    */
-  public $category;
+  public $category = '';
 
   /**
    * Plugin default status (bool)
@@ -44,6 +49,6 @@ class AdvAuditCheckpointAnnotation extends Plugin {
    *
    * @var string
    */
-  public $severity;
+  public $severity = 'low';
 
 }

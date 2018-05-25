@@ -1,13 +1,15 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Plugin;
+
+use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
  * An interface define basic structure for Advance Audit checkpoints.
  *
  * @package Drupal\adv_audit
  */
-interface AdvAuditCheckpointInterface {
+interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
 
   /**
    * Return string with check status.
