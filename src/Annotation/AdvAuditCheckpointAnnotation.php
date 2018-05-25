@@ -31,6 +31,15 @@ class AdvAuditCheckpointAnnotation extends Plugin {
   public $label = '';
 
   /**
+   * Plugin description.
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
+   */
+  public $description = '';
+
+  /**
    * Plugin category id @see congig adv_audit.config.
    *
    * @var string

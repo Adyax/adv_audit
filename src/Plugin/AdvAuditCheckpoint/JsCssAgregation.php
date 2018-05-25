@@ -10,6 +10,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
  * @AdvAuditCheckpointAnnotation(
  *   id = "js_css_agregation",
  *   label = @Translation("Javascript & CSS aggregation"),
+ *   description = @Translation("Allows you to improve the frontend performance of your site."),
  *   category = "performance",
  *   status = TRUE,
  *   severity = "high"
