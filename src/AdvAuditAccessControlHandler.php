@@ -30,8 +30,10 @@ class AdvAuditAccessControlHandler extends EntityAccessControlHandler {
 
       case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'delete adv_audit entity');
+
+      default:
+        return AccessResult::forbidden();
     }
-    return AccessResult::allowed();
   }
 
   /**

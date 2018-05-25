@@ -35,7 +35,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
  * - list_builder: We derive our own list builder class from the
  *   entityListBuilder to control the presentation.
  *   If there is a view available for this entity from the views module, it
- *   overrides the list builder. @todo: any view? naming convention?
+ *   overrides the list builder.
  *
  * - form: We derive our own forms to add functionality like additional fields,
  *   redirects etc. These forms are called when the routing list an
