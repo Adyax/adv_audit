@@ -1,0 +1,23 @@
+{#
+/**
+ * @file adv-audit.html.twig
+ * Default theme implementation to present Audit Result data.
+ *
+ * This template is used when viewing Audit Result pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_adv_audit()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('adv_audit') }}>
+    <h3> {{ adv_audit.title.value }} </h3>
+    {% if adv_audit.audit_results.value %}
+        {{ elements.audit_results }}
+    {% endif %}
+</div>

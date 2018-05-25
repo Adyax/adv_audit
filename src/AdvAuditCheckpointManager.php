@@ -24,6 +24,7 @@ class AdvAuditCheckpointManager extends DefaultPluginManager {
       'Drupal\adv_audit\AdvAuditCheckpointInterface',
       'Drupal\adv_audit\Annotation\AdvAuditCheckpointAnnotation'
     );
+
     $this->alterInfo('adv_audit_info');
     $this->setCacheBackend($cache_backend, 'adv_audit_info_plugins');
   }
