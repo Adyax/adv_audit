@@ -1,0 +1,11 @@
+adv_audit.status:
+  version: VERSION
+  css:
+    theme:
+      css/severity.css: {}
+
+adv_audit.admin:
+  version: VERSION
+  css:
+    theme:
+      css/admin.css: {}

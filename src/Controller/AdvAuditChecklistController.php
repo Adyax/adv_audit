@@ -2,7 +2,6 @@
 
 namespace Drupal\adv_audit\Controller;
 
-use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -39,9 +38,6 @@ class AdvAuditChecklistController extends ControllerBase {
 
   /**
    * Creates the Run & Review page.
-   *
-   * @return array
-   *   The 'Run & Review' page's render array.
    */
   public function index() {
     return 'Dummy page';

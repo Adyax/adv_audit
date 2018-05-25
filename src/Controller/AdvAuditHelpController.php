@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AdvAuditHelpController extends ControllerBase {
 
-
   /**
    * The date.formatter service.
    *

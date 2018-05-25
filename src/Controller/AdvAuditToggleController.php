@@ -2,10 +2,8 @@
 
 namespace Drupal\adv_audit\Controller;
 
-use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Responsible for handling the toggle links on the Run & Review page.
