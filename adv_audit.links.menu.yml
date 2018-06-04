@@ -3,6 +3,11 @@ adv_audit:
   title: 'Advanced Audit'
   description: 'Perform a full audit of your site.'
   parent: system.admin_reports
+adv_audit.run:
+  route_name: adv_audit.run
+  title: Run audit
+  description: 'Perform a full audit of your site.'
+  parent: adv_audit.settings
 adv_audit.settings:
   route_name: adv_audit.settings
   title: 'Advanced Audit'
