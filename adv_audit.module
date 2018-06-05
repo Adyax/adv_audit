@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Render\Element;
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
 
 define('ADV_AUDIT_ENABLE_STATUS', 1);
 
@@ -90,14 +91,13 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
  * @param array $context
  *   The Batch context.
  */
-function _adv_audit_batch_run_op(array $check, array &$context) {
+function _adv_audit_batch_run_op(AdvAuditCheckpointBase $checkItem, array &$context) {
+  $i = 0;
   // Inform the user about the progress.
-  $context['message'] = $check->getTitle();
-
-  // Run the check.
-  $results = Drupal::service('security_review.checklist')
-    ->runChecks([$check]);
+  $context['message'] = $checkItem['info']['label'];
+  $results[$checkItem['info']['category']][] = 'mimimi';
 
   // Store the results.
   $context['results'] = array_merge($context['results'], $results);
+
 }

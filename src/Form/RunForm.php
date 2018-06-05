@@ -20,7 +20,9 @@ class RunForm extends FormBase {
    * @var \Drupal\adv_audit\Checklist
    */
   protected $checkPlugins = [];
+
   protected $configCategories;
+
   protected $renderer;
 
   /**
@@ -35,7 +37,8 @@ class RunForm extends FormBase {
    */
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager, Renderer $renderer) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    $this->checkPlugins = $advAuditCheckpointManager->getAdvAuditPlugins(ADV_AUDIT_ENABLE_STATUS);
+    $this->pluginFactory = $advAuditCheckpointManager;
+    $this->checkPlugins = $this->pluginFactory->getAdvAuditPlugins(ADV_AUDIT_ENABLE_STATUS);
     $this->render = $renderer;
   }
 
@@ -62,7 +65,7 @@ class RunForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['submit'] = [
-      '#type' => 'button',
+      '#type' => 'submit',
       '#value' => $this->t('Start audit'),
     ];
 
@@ -103,7 +106,6 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $i = 0;
     $batch = [
       'operations' => [],
       'finished' => '_adv_audit_batch_run_finished',
@@ -115,8 +117,9 @@ class RunForm extends FormBase {
 
     foreach ($this->checkPlugins as $key => $category) {
       foreach ($category as $plugin) {
+        $plugin = $this->pluginFactory->createInstance($plugin['id'], []);
         $batch['operations'][] = [
-          '_adv_audit_batch_run_op',
+          'adv_audit_batch_run_op',
           [$plugin],
         ];
       }
