@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\adv_audit\AdvAuditCheckpointManager;
+use Drupal\Core\State\State;
 
 /**
  * Settings page for Advanced Audit.
@@ -14,6 +15,8 @@ use Drupal\adv_audit\AdvAuditCheckpointManager;
 class SettingsForm extends ConfigFormBase {
 
   protected $checkPlugins = [];
+  protected $configCategories;
+  protected $state;
 
   /**
    * SettingsForm constructor.
@@ -22,13 +25,13 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with congig.
    * @param \Drupal\adv_audit\AdvAuditCheckpointManager $advAuditCheckpointManager
    *   Use DI to work with services.
+   * @param \Drupal\Core\State $state
+   *   Use DI to work with state.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager, State $state) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    foreach ($advAuditCheckpointManager->getDefinitions() as $plugin) {
-      $this->checkPlugins[$plugin['category']][] = $plugin;
-    }
+    $this->checkPlugins = $advAuditCheckpointManager->getAdvAuditPlugins();
+    $this->state = $state;
   }
 
   /**
@@ -44,7 +47,8 @@ class SettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_checkpoins')
+      $container->get('plugin.manager.adv_audit_checkpoins'),
+      $container->get('state')
     );
   }
 
@@ -53,16 +57,6 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['administration'] = [
-      '#type' => 'container',
-      'actions' => [
-        'rebuild_check_points' => [
-          '#type' => 'submit',
-          '#value' => $this->t('Rebuild check points'),
-          '#name' => 'rebuild_check_points',
-        ],
-      ],
-    ];
     $categories = $this->getCategories();
     $form['categories'] = [
       '#type' => 'container',
@@ -72,10 +66,12 @@ class SettingsForm extends ConfigFormBase {
         '#type' => 'fieldset',
         '#title' => $category['label'],
       ];
+
       foreach ($this->checkPlugins[$key] as $plugin) {
         $form['categories'][$key][$plugin['id']] = [
           '#type' => 'checkbox',
-          '#title' => $category['label'],
+          '#title' => $plugin['info']['label'],
+          '#default_value' => $plugin['info']['status'],
         ];
       }
     }
@@ -105,6 +101,22 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return ['adv_audit_settings'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    foreach ($this->checkPlugins as $category_items) {
+      foreach ($category_items as $plugin) {
+        if ($plugin['info']['status'] != $values[$plugin['id']]) {
+          $plugin['info']['status'] = $values[$plugin['id']];
+          $key = 'adv_audit.' . $plugin['id'];
+          $this->state->set($key, $plugin['info']);
+        }
+      }
+    }
   }
 
 }

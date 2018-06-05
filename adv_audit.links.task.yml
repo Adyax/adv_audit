@@ -1,3 +1,7 @@
+adv_audit.run_tab:
+  route_name: adv_audit.run
+  base_route: adv_audit.settings
+  title: Run audit
 
 adv_audit.settings_tab:
   route_name: adv_audit.settings

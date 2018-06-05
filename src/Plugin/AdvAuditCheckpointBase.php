@@ -44,18 +44,16 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   /**
    * Process checkpoint review.
    */
-  public function process() {
+  abstract public function process();
 
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getInformation() {
-    $annotationReader = new AnnotationReader();
-    $annotationObject = new AdvAuditCheckpointAnnotation();
-    $reflectionObject = new \ReflectionObject($annotationObject);
-    return $annotationReader->getClassAnnotations($reflectionObject);
-  }
+//  /**
+//   * {@inheritdoc}
+//   */
+//  public static function getInformation() {
+//    $annotationReader = new AnnotationReader();
+//    $annotationObject = new AdvAuditCheckpointAnnotation();
+//    $reflectionObject = new \ReflectionObject($annotationObject);
+//    return $annotationReader->getClassAnnotations($reflectionObject);
+//  }
 
 }
