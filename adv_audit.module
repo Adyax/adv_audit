@@ -95,7 +95,7 @@ function _adv_audit_batch_run_op(AdvAuditCheckpointBase $checkItem, array &$cont
   $i = 0;
   // Inform the user about the progress.
   $context['message'] = $checkItem['info']['label'];
-  $results[$checkItem['info']['category']][] = 'mimimi';
+  $results[$checkItem['info']['category']][] = '';
 
   // Store the results.
   $context['results'] = array_merge($context['results'], $results);
