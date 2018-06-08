@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\AdvAuditCheckpointManager;
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointManager;
 use Drupal\Core\State\State;
 
 /**
@@ -23,7 +23,7 @@ class SettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\AdvAuditCheckpointManager $advAuditCheckpointManager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointManager $advAuditCheckpointManager
    *   Use DI to work with services.
    * @param \Drupal\Core\State $state
    *   Use DI to work with state.

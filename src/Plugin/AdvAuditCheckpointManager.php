@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -21,7 +21,7 @@ class AdvAuditCheckpointManager extends DefaultPluginManager {
       'Plugin/AdvAuditCheckpoint',
       $namespaces,
       $module_handler,
-      'Drupal\adv_audit\AdvAuditCheckpointInterface',
+      'Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface',
       'Drupal\adv_audit\Annotation\AdvAuditCheckpointAnnotation'
     );
     $this->alterInfo('adv_audit_info');

@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Render\Element;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
 
 define('ADV_AUDIT_ENABLE_STATUS', 1);
 
@@ -44,43 +43,9 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   $variables['adv_audit'] = $variables['elements']['#adv_audit'];
 }
 
-/**
- * Callback for finishing the batch job of running the checklist.
- *
- * @param bool $success
- *   Whether the batch job was successful.
- * @param \Drupal\security_review\CheckResult[] $results
- *   The results of the batch job.
- * @param array $operations
- *   The array of batch operations.
- */
+
 function _adv_audit_batch_run_finished($success, array $results, array $operations) {
-  /** @var \Drupal\security_review\SecurityReview $security_review */
-  $security_review = Drupal::service('security_review');
 
-  /** @var \Drupal\security_review\Checklist $checklist */
-  $checklist = Drupal::service('security_review.checklist');
-
-  $security_review->setLastRun(time());
-  if ($success) {
-    if (!empty($results)) {
-      $checklist->storeResults($results);
-    }
-    drupal_set_message(t('Review complete'));
-  }
-  else {
-    // Show error information.
-    $error_operation = reset($operations);
-    $message = t(
-      'An error occurred while processing %error_operation with arguments: @arguments',
-      [
-        '%error_operation' => $error_operation[0],
-        '@arguments' => print_r($error_operation[1], TRUE),
-      ]
-    );
-    $security_review->log(NULL, $message, [], RfcLogLevel::ERROR);
-    drupal_set_message(t('The review did not store all results, please run again or check the logs for details.'));
-  }
 }
 
 /**
@@ -91,7 +56,7 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
  * @param array $context
  *   The Batch context.
  */
-function _adv_audit_batch_run_op(AdvAuditCheckpointBase $checkItem, array &$context) {
+function _adv_audit_batch_run_op($checkItem, array &$context) {
   $i = 0;
   // Inform the user about the progress.
   $context['message'] = $checkItem['info']['label'];

@@ -6,7 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\AdvAuditCheckpointManager;
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointManager;
 use Drupal\Core\Render\Renderer;
 
 /**
@@ -30,15 +30,15 @@ class RunForm extends FormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\AdvAuditCheckpointManager $advAuditCheckpointManager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointManager $advAuditCheckpointManager
    *   Use DI to work with services.
    * @param \Drupal\Core\Render\Renderer $renderer
    *   Use DI to render.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager, Renderer $renderer) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    $this->pluginFactory = $advAuditCheckpointManager;
-    $this->checkPlugins = $this->pluginFactory->getAdvAuditPlugins(ADV_AUDIT_ENABLE_STATUS);
+    $this->pluginManager = $advAuditCheckpointManager;
+    $this->checkPlugins = $this->pluginManager->getAdvAuditPlugins(ADV_AUDIT_ENABLE_STATUS);
     $this->render = $renderer;
   }
 
@@ -117,7 +117,7 @@ class RunForm extends FormBase {
 
     foreach ($this->checkPlugins as $key => $category) {
       foreach ($category as $plugin) {
-        $plugin = $this->pluginFactory->createInstance($plugin['id'], []);
+        $plugin = $this->pluginManager->createInstance($plugin['id']);
         $batch['operations'][] = [
           'adv_audit_batch_run_op',
           [$plugin],

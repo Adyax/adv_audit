@@ -1,4 +1,4 @@
 services:
   plugin.manager.adv_audit_checkpoins:
-    class: Drupal\adv_audit\AdvAuditCheckpointManager
+    class: Drupal\adv_audit\Plugin\AdvAuditCheckpointManager
     parent: default_plugin_manager
