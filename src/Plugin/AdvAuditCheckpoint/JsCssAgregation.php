@@ -21,12 +21,20 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
 class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface {
 
   /**
+   * Verification Status.
+   *
+   * @var status
+   */
+  protected $status;
+
+  /**
    * Return information about plugin according annotation.
    *
    * @return mixed
    *   Associated array.
    */
-  public static function getInformation() {
+  public function getInformation() {
+    return [];
   }
 
   /**
@@ -36,6 +44,7 @@ class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface 
    *   Possible values: 'success', 'fail', 'process'.
    */
   public function getProcessStatus() {
+    return '';
   }
 
   /**
@@ -45,6 +54,7 @@ class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface 
    *   Possible values: 'success', 'fail', 'process'.
    */
   public function setProcessStatus($status) {
+
   }
 
   /**
@@ -62,4 +72,5 @@ class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface 
    */
   public function process() {
   }
+
 }

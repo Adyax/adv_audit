@@ -6,8 +6,7 @@
  */
 
 use Drupal\Core\Render\Element;
-
-define('ADV_AUDIT_ENABLE_STATUS', 1);
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
 
 /**
  * Implements hook_theme().
@@ -43,7 +42,11 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   $variables['adv_audit'] = $variables['elements']['#adv_audit'];
 }
 
-
+/**
+ * Complete a batch process.
+ *
+ * Callback for batch_set().
+ */
 function _adv_audit_batch_run_finished($success, array $results, array $operations) {
 
 }
@@ -51,18 +54,16 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
 /**
  * Batch operation: runs a single check.
  *
- * @param array $check
+ * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface $plugin
  *   The check to run.
  * @param array $context
  *   The Batch context.
  */
-function _adv_audit_batch_run_op($checkItem, array &$context) {
-  $i = 0;
+function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$context) {
   // Inform the user about the progress.
-  $context['message'] = $checkItem['info']['label'];
-  $results[$checkItem['info']['category']][] = '';
+  $context['message'] = $plugin->getTitle();
+  $results[$plugin->getCategory()][] = $plugin->process();
 
   // Store the results.
   $context['results'] = array_merge($context['results'], $results);
-
 }

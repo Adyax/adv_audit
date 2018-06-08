@@ -17,7 +17,7 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
    * @return mixed
    *   Associated array.
    */
-  public static function getInformation();
+  public function getInformation();
 
   /**
    * Return string with check status.

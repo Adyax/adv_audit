@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointManager;
+use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
 use Drupal\Core\State\State;
 
 /**
@@ -23,14 +23,14 @@ class SettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointManager $advAuditCheckpointManager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckListManager $advAuditCheckListManager
    *   Use DI to work with services.
    * @param \Drupal\Core\State $state
    *   Use DI to work with state.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager, State $state) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckListManager $advAuditCheckListManager, State $state) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    $this->checkPlugins = $advAuditCheckpointManager->getAdvAuditPlugins();
+    $this->checkPlugins = $advAuditCheckListManager->getPluginsByStatus();
     $this->state = $state;
   }
 
@@ -47,7 +47,7 @@ class SettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_checkpoins'),
+      $container->get('plugin.manager.adv_audit_checklist'),
       $container->get('state')
     );
   }
