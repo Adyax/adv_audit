@@ -28,6 +28,22 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
   public function getProcessStatus();
 
   /**
+   * Get check title.
+   *
+   * @return string
+   *   Return checking name.
+   */
+  public function getTitle();
+
+  /**
+   * Get check category.
+   *
+   * @return string
+   *   Return category name.
+   */
+  public function getCategory();
+
+  /**
    * Set check status.
    *
    * @param string $status

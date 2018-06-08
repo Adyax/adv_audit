@@ -38,6 +38,26 @@ class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface 
   }
 
   /**
+   * Return information about plugin according annotation.
+   *
+   * @return mixed
+   *   Associated array.
+   */
+  public function getTitle() {
+    return 'test';
+  }
+
+  /**
+   * Return information about plugin according annotation.
+   *
+   * @return mixed
+   *   Associated array.
+   */
+  public function getCategory() {
+    return 'test';
+  }
+
+  /**
    * Return string with check status.
    *
    * @return string
@@ -71,6 +91,7 @@ class JsCssAgregation extends PluginBase implements AdvAuditCheckpointInterface 
    * Process checkpoint review.
    */
   public function process() {
+    return ['test'];
   }
 
 }
