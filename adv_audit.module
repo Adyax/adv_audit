@@ -59,7 +59,7 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
  * @param array $context
  *   The Batch context.
  */
-function _adv_audit_batch_run_op($plugin, array &$context) {
+function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$context) {
   // Inform the user about the progress.
   $context['message'] = $plugin->getTitle();
   $results = $plugin->process();
