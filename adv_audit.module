@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Render\Element;
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
 
 /**
  * Implements hook_theme().
@@ -14,6 +15,10 @@ function adv_audit_theme() {
   return [
     'adv_audit' => [
       'render element' => 'elements',
+    ],
+    'adv_audit_run_process' => [
+      'variables' => ['categories' => NULL],
+      'template' => 'adv-audit-process-item',
     ],
   ];
 }
@@ -35,4 +40,30 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
   $variables['adv_audit'] = $variables['elements']['#adv_audit'];
+}
+
+/**
+ * Complete a batch process.
+ *
+ * Callback for batch_set().
+ */
+function _adv_audit_batch_run_finished($success, array $results, array $operations) {
+
+}
+
+/**
+ * Batch operation: runs a single check.
+ *
+ * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface $plugin
+ *   The check to run.
+ * @param array $context
+ *   The Batch context.
+ */
+function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$context) {
+  // Inform the user about the progress.
+  $context['message'] = $plugin->getTitle();
+  $results = $plugin->process();
+
+  // Store the results.
+  $context['results'] = array_merge($context['results'], $results);
 }
