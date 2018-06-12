@@ -12,10 +12,18 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
 
   /**
+   * Return information about plugin according annotation.
+   *
+   * @return mixed
+   *   Associated array.
+   */
+  public static function getInformation();
+
+  /**
    * Return string with check status.
    *
    * @return string
-   *   possible values: 'success', 'fail', 'process'.
+   *   Possible values: 'success', 'fail', 'process'.
    */
   public function getProcessStatus();
 

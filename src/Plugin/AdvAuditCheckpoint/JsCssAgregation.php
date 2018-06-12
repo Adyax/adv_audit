@@ -20,4 +20,5 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
  */
 class JsCssAgregation extends AdvAuditCheckpointBase {
 
+
 }
