@@ -119,7 +119,7 @@ class RunForm extends FormBase {
       foreach ($category as $plugin) {
         $plugin = $this->check->manager->createInstance($plugin['id']);
         $batch['operations'][] = [
-          'adv_audit_batch_run_op',
+          '_adv_audit_batch_run_op',
           [$plugin],
         ];
       }
