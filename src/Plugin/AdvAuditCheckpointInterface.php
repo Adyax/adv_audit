@@ -17,7 +17,7 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
    * @return mixed
    *   Associated array.
    */
-  public static function getInformation();
+  public function getInformation();
 
   /**
    * Return string with check status.
@@ -26,6 +26,22 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
    *   Possible values: 'success', 'fail', 'process'.
    */
   public function getProcessStatus();
+
+  /**
+   * Get check title.
+   *
+   * @return string
+   *   Return checking name.
+   */
+  public function getTitle();
+
+  /**
+   * Get check category.
+   *
+   * @return string
+   *   Return category name.
+   */
+  public function getCategory();
 
   /**
    * Set check status.

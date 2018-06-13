@@ -6,7 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\AdvAuditCheckpointManager;
+use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
 use Drupal\Core\Render\Renderer;
 
 /**
@@ -30,15 +30,15 @@ class RunForm extends FormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\AdvAuditCheckpointManager $advAuditCheckpointManager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckListManager $manager
    *   Use DI to work with services.
    * @param \Drupal\Core\Render\Renderer $renderer
    *   Use DI to render.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckpointManager $advAuditCheckpointManager, Renderer $renderer) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckListManager $manager, Renderer $renderer) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    $this->pluginFactory = $advAuditCheckpointManager;
-    $this->checkPlugins = $this->pluginFactory->getAdvAuditPlugins(ADV_AUDIT_ENABLE_STATUS);
+    $this->check = $manager;
+    $this->checkPlugins = $this->check->getPluginsByStatus($this->check->enabled);
     $this->render = $renderer;
   }
 
@@ -48,7 +48,7 @@ class RunForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_checkpoins'),
+      $container->get('plugin.manager.adv_audit_checklist'),
       $container->get('renderer')
     );
   }
@@ -115,9 +115,9 @@ class RunForm extends FormBase {
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
     ];
 
-    foreach ($this->checkPlugins as $key => $category) {
+    foreach ($this->checkPlugins as $category) {
       foreach ($category as $plugin) {
-        $plugin = $this->pluginFactory->createInstance($plugin['id'], []);
+        $plugin = $this->check->manager->createInstance($plugin['id']);
         $batch['operations'][] = [
           'adv_audit_batch_run_op',
           [$plugin],

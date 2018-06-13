@@ -6,9 +6,7 @@
  */
 
 use Drupal\Core\Render\Element;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
-
-define('ADV_AUDIT_ENABLE_STATUS', 1);
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
 
 /**
  * Implements hook_theme().
@@ -45,59 +43,27 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
 }
 
 /**
- * Callback for finishing the batch job of running the checklist.
+ * Complete a batch process.
  *
- * @param bool $success
- *   Whether the batch job was successful.
- * @param \Drupal\security_review\CheckResult[] $results
- *   The results of the batch job.
- * @param array $operations
- *   The array of batch operations.
+ * Callback for batch_set().
  */
 function _adv_audit_batch_run_finished($success, array $results, array $operations) {
-  /** @var \Drupal\security_review\SecurityReview $security_review */
-  $security_review = Drupal::service('security_review');
 
-  /** @var \Drupal\security_review\Checklist $checklist */
-  $checklist = Drupal::service('security_review.checklist');
-
-  $security_review->setLastRun(time());
-  if ($success) {
-    if (!empty($results)) {
-      $checklist->storeResults($results);
-    }
-    drupal_set_message(t('Review complete'));
-  }
-  else {
-    // Show error information.
-    $error_operation = reset($operations);
-    $message = t(
-      'An error occurred while processing %error_operation with arguments: @arguments',
-      [
-        '%error_operation' => $error_operation[0],
-        '@arguments' => print_r($error_operation[1], TRUE),
-      ]
-    );
-    $security_review->log(NULL, $message, [], RfcLogLevel::ERROR);
-    drupal_set_message(t('The review did not store all results, please run again or check the logs for details.'));
-  }
 }
 
 /**
  * Batch operation: runs a single check.
  *
- * @param array $check
+ * @param \Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface $plugin
  *   The check to run.
  * @param array $context
  *   The Batch context.
  */
-function _adv_audit_batch_run_op(AdvAuditCheckpointBase $checkItem, array &$context) {
-  $i = 0;
+function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$context) {
   // Inform the user about the progress.
-  $context['message'] = $checkItem['info']['label'];
-  $results[$checkItem['info']['category']][] = '';
+  $context['message'] = $plugin->getTitle();
+  $results = $plugin->process();
 
   // Store the results.
   $context['results'] = array_merge($context['results'], $results);
-
 }

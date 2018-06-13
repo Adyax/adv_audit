@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -21,28 +21,11 @@ class AdvAuditCheckpointManager extends DefaultPluginManager {
       'Plugin/AdvAuditCheckpoint',
       $namespaces,
       $module_handler,
-      'Drupal\adv_audit\AdvAuditCheckpointInterface',
+      'Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface',
       'Drupal\adv_audit\Annotation\AdvAuditCheckpointAnnotation'
     );
     $this->alterInfo('adv_audit_info');
     $this->setCacheBackend($cache_backend, 'adv_audit_info_plugins');
-  }
-
-  /**
-   * Return plugins by category.
-   */
-  public function getAdvAuditPlugins($status = 'all') {
-    $plugins = [];
-    $state = \Drupal::state();
-    $definitions = $this->getDefinitions();
-    foreach ($definitions as $plugin) {
-      $key = 'adv_audit.' . $plugin['id'];
-      $plugin['info'] = ($info = $state->get($key)) ? $info : $plugin;
-      if ($status == 'all' || $plugin['info']['status'] == $status) {
-        $plugins[$plugin['category']][$plugin['id']] = $plugin;
-      }
-    }
-    return $plugins;
   }
 
 }
