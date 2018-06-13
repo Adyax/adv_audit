@@ -67,6 +67,11 @@ class SettingsForm extends ConfigFormBase {
         '#title' => $category['label'],
       ];
 
+      // TODO: Remove when all categories will be ready.
+      if (!isset($this->checkPlugins[$key])) {
+        continue;
+      }
+
       foreach ($this->checkPlugins[$key] as $plugin) {
         $form['categories'][$key][$plugin['id']] = [
           '#type' => 'checkbox',
