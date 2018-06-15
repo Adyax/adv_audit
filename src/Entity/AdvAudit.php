@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -184,6 +185,13 @@ class AdvAudit extends ContentEntityBase {
   public function setOwner(UserInterface $account) {
     $this->set('user_id', $account->id());
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAuditResultsValue() {
+    return Json::decode($this->get('audit_results')->value);
   }
 
   /**
