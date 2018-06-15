@@ -2,7 +2,7 @@ adv_audit.status:
   version: VERSION
   css:
     theme:
-      css/severity.css: {}
+      css/view_results.css: {}
 
 adv_audit.admin:
   version: VERSION

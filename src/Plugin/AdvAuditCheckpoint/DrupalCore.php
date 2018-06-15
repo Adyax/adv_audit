@@ -28,7 +28,6 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
    */
   protected $status;
 
-
   /**
    * Return checkpoint title.
    *
@@ -83,7 +82,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
    */
   public function getImpacts() {
     if ($this->getProcessStatus() == 'fail') {
-      return $this->t('If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they\'re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.');
+      return $this->t("If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.");
     }
     return NULL;
   }
@@ -134,7 +133,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
     $project = [
       'name' => 'drupal',
       'project_type' => 'core',
-      'includes' => []
+      'includes' => [],
     ];
 
     \Drupal::service('update.processor')->processFetchTask($project);
@@ -148,18 +147,19 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
     }
 
     // Collect check results.
-    $results = [
+    $result = [
       'title' => $this->getTitle(),
       'description' => $this->getDescription(),
       'information' => $this->getInformation(),
       'status' => $this->getProcessStatus(),
       'severity' => $this->getPluginDefinition()['severity'],
       'actions' => $this->getActions(),
-      'impacts' => $this->getImpacts()
+      'impacts' => $this->getImpacts(),
     ];
 
-    \Drupal::logger('test results')->notice('<pre>' . print_r($results, 1) . '</pre>');
+    \Drupal::logger('test results')->notice('<pre>' . print_r($result, 1) . '</pre>');
 
+    $results[$this->getCategory()][$this->getPluginId()] = $result;
     return $results;
   }
 
@@ -167,6 +167,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
    * Return current version of Drupal Core.
    *
    * @return mixed
+   *   Returns current version of core.
    */
   protected static function getCurrentVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
@@ -177,6 +178,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
    * Return recommended version of Drupal Core.
    *
    * @return mixed
+   *   Returns recommended version.
    */
   protected static function getRecommendedVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');

@@ -100,7 +100,7 @@ adv_audit.admin_path:
   path: '/admin/sctructure/adv_audit'
   defaults:
     _entity_list: 'adv_audit'
-    _title: 'Audit reaults List'
+    _title: 'Audit results List'
   requirements:
     _permission: 'administer site configuration'
 

@@ -69,6 +69,13 @@ class RunForm extends FormBase {
       '#value' => $this->t('Start audit'),
     ];
 
+    $form['project_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Project name'),
+      '#description' => $this->t('Please enter project name.'),
+      '#required' => TRUE,
+    ];
+
     $form['process_list'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Process list:'),
@@ -115,8 +122,8 @@ class RunForm extends FormBase {
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
     ];
 
-    foreach ($this->checkPlugins as $category) {
-      foreach ($category as $plugin) {
+    foreach ($this->checkPlugins as $plugins) {
+      foreach ($plugins as $plugin) {
         $plugin = $this->check->manager->createInstance($plugin['id']);
         $batch['operations'][] = [
           '_adv_audit_batch_run_op',
@@ -124,6 +131,10 @@ class RunForm extends FormBase {
         ];
       }
     }
+    $batch['operations'][] = [
+      '_adv_audit_batch_run_op_last',
+      [$form_state->getValue('project_name')],
+    ];
     batch_set($batch);
   }
 

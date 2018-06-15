@@ -7,6 +7,10 @@
 
 use Drupal\Core\Render\Element;
 use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
+use Drupal\adv_audit\Renderer\ToJson;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Url;
+use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Implements hook_theme().
@@ -19,6 +23,10 @@ function adv_audit_theme() {
     'adv_audit_run_process' => [
       'variables' => ['categories' => NULL],
       'template' => 'adv-audit-process-item',
+    ],
+    'adv_audit_html_results' => [
+      'variables' => ['category' => NULL, 'reports' => NULL],
+      'template' => 'adv-audit-html-results',
     ],
   ];
 }
@@ -39,7 +47,7 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
-  $variables['adv_audit'] = $variables['elements']['#adv_audit'];
+
 }
 
 /**
@@ -48,7 +56,30 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
  * Callback for batch_set().
  */
 function _adv_audit_batch_run_finished($success, array $results, array $operations) {
+  $out = '';
+  $dt = new DrupalDateTime();
+  $reports_data = [];
 
+  foreach ($results as $category => $reports) {
+    if ($category == 'project_name' && !is_array($reports)) {
+      $project_name = $reports;
+    }
+    else {
+      $reports_data[] = ['category' => $category, 'reports' => $reports];
+    }
+  }
+
+  $renderer = new ToJson($reports_data);
+  $out .= $renderer->render(TRUE);
+  $entity_storage = \Drupal::entityTypeManager()->getStorage('adv_audit');
+  $adv_audit_entity = $entity_storage->create();
+  $adv_audit_entity->title->value = $project_name . ' - ' . $dt->format('Y-m-d H:i:s');
+  $adv_audit_entity->audit_results->value = $out;
+  $adv_audit_entity->save();
+  // Redirect to created audit results.
+  $response = new RedirectResponse(Url::fromRoute('entity.adv_audit.canonical',
+    ['adv_audit' => $adv_audit_entity->id()])->toString());
+  $response->send();
 }
 
 /**
@@ -65,5 +96,18 @@ function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$co
   $results = $plugin->process();
 
   // Store the results.
-  $context['results'] = array_merge($context['results'], $results);
+  $context['results'] = array_merge_recursive($context['results'], $results);
+}
+
+/**
+ * Last batch operation: we need to sent to results the project name.
+ *
+ * @param string $project_name
+ *   The project name.
+ * @param array $context
+ *   The Batch context.
+ */
+function _adv_audit_batch_run_op_last($project_name, array &$context) {
+  // Store the results.
+  $context['results']['project_name'] = $project_name;
 }
