@@ -20,54 +20,54 @@
 <div{{ attributes.addClass('adv_audit') }}>
     <h1> {{ elements['#adv_audit'].title.value }} </h1>
     {% for results in elements['#adv_audit'].getAuditResultsValue() %}
-        <h2 id="{{ results.category }}">{{ results.category }}</h2>
         <div class="category-group">
+            <h2 id="{{ results.category }}">{{ results.category }}</h2>
             {% for report in results['reports'] %}
-                {% for info_key, info in report %}
-                    {{ devel_breakpoint() }}
-                    {% if  info_key == 'title' %}
-                        <h3><strong>{{ info }}</strong></h3>
-                    {% endif %}
+                <div class="{{ report.status }}">
+                    {% for info_key, info in report %}
+                        {% if  info_key == 'title' %}
+                            <h3><strong>{{ info }}</strong></h3>
+                        {% endif %}
 
-                    {% if  info_key == 'description' %}
-                        <div class="panel-heading">
-                            <small>{{ info }}</small>
-                        </div>
-                    {% endif %}
+                        {% if  info_key == 'description' %}
+                            <div class="panel-heading">
+                                <small>{{ info }}</small>
+                            </div>
+                        {% endif %}
 
-                    {% if  info_key == 'information' %}
-                        <div class="panel-heading">
-                            <strong>{{ 'Results: '|t }}</strong>
-                            <small>{{ info }}</small>
-                        </div><br>
-                    {% endif %}
+                        {% if  info_key == 'information' %}
+                            <div class="panel-heading">
+                                <strong>{{ 'Results: '|t }}</strong>
+                                <small>{{ info|raw }}</small>
+                            </div>
+                        {% endif %}
 
-                    {% if  info_key == 'status' %}
-                        <div class="panel-heading">
-                            <strong>{{ 'Status: '|t }}{{ info }}</strong>
-                        </div>
-                    {% endif %}
-                    {% if  info_key == 'severity' %}
-                        <div class="panel-heading">
-                            <strong>{{ 'Importance: '|t }}</strong>
-                            <small>{{ info }}</small>
-                        </div>
-                    {% endif %}
+                        {% if  info_key == 'status' %}
+                            <div class="panel-heading">
+                                <strong>{{ 'Status: '|t }}{{ info }}</strong>
+                            </div>
+                        {% endif %}
+                        {% if  info_key == 'severity' %}
+                            <div class="panel-heading">
+                                <strong>{{ 'Importance: '|t }}{{ info }}</strong>
+                            </div>
+                        {% endif %}
 
-                    {% if  info_key == 'actions' %}
-                        <div class="panel-heading">
-                            <strong>{{ 'Actions to be done: '|t }}</strong>
-                            <small>{{ info }}</small>
-                        </div>
-                    {% endif %}
+                        {% if  info_key == 'actions' %}
+                            <div class="panel-heading">
+                                <strong>{{ 'Actions to be done: '|t }}</strong>
+                                <small>{{ info }}</small>
+                            </div>
+                        {% endif %}
 
-                    {% if  info_key == 'impacts' %}
-                        <div class="panel-heading">
-                            <strong>{{ 'Impacts: '|t }}</strong>
-                            <small>{{ info }}</small>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                        {% if  info_key == 'impacts' %}
+                            <div class="panel-heading">
+                                <strong>{{ 'Impacts: '|t }}</strong>
+                                <small>{{ info }}</small>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endfor %}
         </div></br>
     {% endfor %}

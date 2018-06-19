@@ -76,10 +76,12 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
   $adv_audit_entity->title->value = $project_name . ' - ' . $dt->format('Y-m-d H:i:s');
   $adv_audit_entity->audit_results->value = $out;
   $adv_audit_entity->save();
+
   // Redirect to created audit results.
   $response = new RedirectResponse(Url::fromRoute('entity.adv_audit.canonical',
     ['adv_audit' => $adv_audit_entity->id()])->toString());
   $response->send();
+  exit();
 }
 
 /**

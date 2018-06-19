@@ -52,17 +52,13 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
   public function setProcessStatus($status);
 
   /**
-   * Return stored from last checking data.
-   *
-   * @return mixed
-   *   array results where every item is associated array with keys:
-   *   'point_name', 'severity', 'status', 'description'.
-   */
-  public function getRecentReport();
-
-  /**
    * Process checkpoint review.
    */
   public function process();
+
+  /**
+   * Return description of current checkpoint.
+   */
+  public function getDescription();
 
 }
