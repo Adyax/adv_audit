@@ -120,6 +120,7 @@ class RunForm extends FormBase {
       'init_message' => $this->t('Prepare to process.'),
       'progress_message' => $this->t('Progress @current out of @total.'),
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
+      'batch_redirect' => '/adv_audit/5',
     ];
 
     foreach ($this->checkPlugins as $plugins) {

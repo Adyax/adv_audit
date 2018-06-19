@@ -2,8 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheckpoint;
 
-use Drupal\Core\Plugin\PluginBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
+use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
 
 /**
  * Check the Drupal core version and its actuality.
@@ -19,24 +18,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
  *
  * @package Drupal\adv_audit\Plugin\AdvAuditCheckpoint
  */
-class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
-
-  /**
-   * Verification Status.
-   *
-   * @var status
-   */
-  protected $status;
-
-  /**
-   * Return checkpoint title.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getTitle() {
-    return $this->getPluginDefinition()['label'];
-  }
+class DrupalCore extends AdvAuditCheckpointBase {
 
   /**
    * Return description of current checkpoint.
@@ -58,7 +40,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
     if ($this->getProcessStatus() == 'fail') {
       return $this->t('Current Drupal core version is outdated - @version', ['@version' => $this->getCurrentVersion()]);
     }
-    return $this->t('Current Drupal core version is recommended - @version', ['@version' => $this->getRecommendedVersion()]);
+    return $this->t('Current Drupal core version is up to date - @version', ['@version' => $this->getRecommendedVersion()]);
   }
 
   /**
@@ -71,7 +53,7 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
     if ($this->getProcessStatus() == 'fail') {
       return $this->t('Need to update Drupal core to latest version @version (that includes all latest security updates).', ['@version' => $this->getRecommendedVersion()]);
     }
-    return $this->t('No actions to be done.');
+    return $this->t('No actions needed.');
   }
 
   /**
@@ -85,36 +67,6 @@ class DrupalCore extends PluginBase implements AdvAuditCheckpointInterface {
       return $this->t("If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.");
     }
     return NULL;
-  }
-
-  /**
-   * Return information about plugin according annotation.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getCategory() {
-    return 'core_and_modules';
-  }
-
-  /**
-   * Return string with check status.
-   *
-   * @return string
-   *   Possible values: 'success', 'fail'.
-   */
-  public function getProcessStatus() {
-    return 'fail';
-  }
-
-  /**
-   * Set check status.
-   *
-   * @param string $status
-   *   Possible values: 'success', 'fail'.
-   */
-  public function setProcessStatus($status) {
-
   }
 
   /**
