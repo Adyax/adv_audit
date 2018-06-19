@@ -3,7 +3,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "keywords": ["Drupal", "audit"],
-  "minimum-stability": "dev",
+  "prefer-stable": true,
   "repositories": [
     {
       "type": "composer",
