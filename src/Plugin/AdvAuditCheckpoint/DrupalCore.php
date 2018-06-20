@@ -70,13 +70,6 @@ class DrupalCore extends AdvAuditCheckpointBase {
   }
 
   /**
-   * Return stored from last checking data.
-   */
-  public function getRecentReport() {
-    return [];
-  }
-
-  /**
    * Process checkpoint review.
    */
   public function process() {
