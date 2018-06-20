@@ -66,7 +66,6 @@ class CheckPointSettings extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     if (!$this->defaultValues) {
       throw new NotFoundHttpException();
-      return $form;
     }
 
     $form['status'] = [
