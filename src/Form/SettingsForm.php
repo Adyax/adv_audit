@@ -8,6 +8,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
 use Drupal\Core\State\State;
+use Drupal\Core\Url;
+use Drupal\Core\Routing\RedirectDestinationInterface;
 
 /**
  * Settings page for Advanced Audit.
@@ -15,7 +17,9 @@ use Drupal\Core\State\State;
 class SettingsForm extends ConfigFormBase {
 
   protected $checkPlugins = [];
+
   protected $configCategories;
+
   protected $state;
 
   /**
@@ -27,11 +31,15 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with services.
    * @param \Drupal\Core\State $state
    *   Use DI to work with state.
+   * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
+   *   Use DI to work with redirect destination.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckListManager $advAuditCheckListManager, State $state) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckListManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination) {
     $this->configCategories = $config_factory->get('adv_audit.config');
     $this->checkPlugins = $advAuditCheckListManager->getPluginsByStatus();
     $this->state = $state;
+    $this->config = $config_factory;
+    $this->redirectDestination = $redirect_destination;
   }
 
   /**
@@ -48,7 +56,8 @@ class SettingsForm extends ConfigFormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('plugin.manager.adv_audit_checklist'),
-      $container->get('state')
+      $container->get('state'),
+      $container->get('redirect.destination')
     );
   }
 
@@ -65,6 +74,16 @@ class SettingsForm extends ConfigFormBase {
       $form['categories'][$key] = [
         '#type' => 'fieldset',
         '#title' => $category['label'],
+        $key . '_status' => [
+          '#type' => 'checkbox',
+          '#default_value' => $category['status'],
+          '#attributes' => [
+            'class' => ['category-status'],
+          ],
+        ],
+        '#attributes' => [
+          'class' => ['category-wrapper'],
+        ],
       ];
 
       // TODO: Remove when all categories will be ready.
@@ -72,11 +91,27 @@ class SettingsForm extends ConfigFormBase {
         continue;
       }
 
+      $current_url = $this->redirectDestination->get();
       foreach ($this->checkPlugins[$key] as $plugin) {
         $form['categories'][$key][$plugin['id']] = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => ['plugin-wrapper'],
+          ],
+        ];
+
+        $form['categories'][$key][$plugin['id']][$plugin['id']] = [
           '#type' => 'checkbox',
           '#title' => $plugin['info']['label'],
           '#default_value' => $plugin['info']['status'],
+        ];
+        $form['categories'][$key][$plugin['id']][$plugin['id'] . '_edit'] = [
+          '#type' => 'link',
+          '#title' => $this->t('Edit'),
+          '#url' => Url::fromRoute('adv_audit.edit_checkpoint', ['plugin_id' => $plugin['id']], ['query' => ['destination' => $current_url]]),
+          '#attributes' => [
+            'class' => ['edit', 'edit-checkpoint'],
+          ],
         ];
       }
     }
@@ -113,6 +148,17 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+
+    // Save categories status.
+    $config = $this->config->getEditable('adv_audit.config');
+    $config_categories = $config->get('adv_audit_settings');
+    foreach ($config_categories['categories'] as $key => &$category) {
+      $category['status'] = $values[$key . '_status'];
+    }
+    $config->set('adv_audit_settings', $config_categories);
+    $config->save();
+
+    // Save plugin status.
     foreach ($this->checkPlugins as $category_items) {
       foreach ($category_items as $plugin) {
         if ($plugin['info']['status'] != $values[$plugin['id']]) {

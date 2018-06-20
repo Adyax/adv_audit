@@ -6,6 +6,10 @@ run audit:
   title: 'Run audit'
   description: 'Run the audit checks.'
 
+edit adv_audit plugin:
+  title: 'Edit audit plugin.'
+  description: 'Check permission to change plugin basic information.'
+
 view adv_audit entity:
   title: 'View audit results'
   description: 'View audit results entity'

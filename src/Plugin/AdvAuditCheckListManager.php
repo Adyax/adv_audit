@@ -27,11 +27,13 @@ class AdvAuditCheckListManager {
   public function getPluginsByStatus($status = 'all') {
     $plugins = [];
     $state = $this->container->get('state');
+    $categories = $this->container->get('config.factory')
+      ->get('adv_audit.config')->get('adv_audit_settings')['categories'];
     $definitions = $this->manager->getDefinitions();
     foreach ($definitions as $plugin) {
       $key = 'adv_audit.' . $plugin['id'];
       $plugin['info'] = ($info = $state->get($key)) ? $info : $plugin;
-      if ($status == 'all' || $plugin['info']['status'] == $status) {
+      if ($status == 'all' || ($plugin['info']['status'] == $status && $categories[$plugin['category']]['status'])) {
         $plugins[$plugin['category']][$plugin['id']] = $plugin;
       }
     }

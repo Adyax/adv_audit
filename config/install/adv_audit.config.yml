@@ -4,13 +4,19 @@ adv_audit_settings:
   categories:
     core_and_modules:
       label: Drupal core and contributed modules
+      status: 1
     security:
       label: Security
+      status: 1
     architecture_analysis:
       label: Architecture analysis
+      status: 1
     server_configuration:
       label: Server Configuration
+      status: 1
     code_review:
       label: Code review (custom modules and themes)
+      status: 1
     performance:
       label: Performance
+      status: 1
