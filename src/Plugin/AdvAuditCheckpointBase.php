@@ -157,4 +157,15 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
     $this->status = $status;
   }
 
+  /**
+   * Return severity list, according to audit template.
+   */
+  public function getSeverityOptions() {
+    return [
+      'low' => $this->t('Low'),
+      'high' => $this->t('High'),
+      'critical' => $this->t('Critical'),
+    ];
+  }
+
 }
