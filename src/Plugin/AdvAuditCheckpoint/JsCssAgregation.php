@@ -52,7 +52,7 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
   public function getActions() {
     if ($this->getProcessStatus() == 'fail') {
       $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
-      return $this->t('Enable core aggregation or use @link (that includes all latest security updates).', ['@link' => $link]);
+      return $this->t('Enable core aggregation or use @link (that includes all latest security updates).', ['@link' => $link->toString()]);
     }
     return $this->t('No actions needed.');
   }
@@ -74,7 +74,7 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
    *   Associated array.
    */
   public function getInformation() {
-    $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromRoute('system.performance_settings'));
+    $link = Link::fromTextAndUrl('CSS/JS Aggregation', Url::fromRoute('system.performance_settings'));
     if ($this->getProcessStatus() == 'fail') {
       return $this->t('Your %link settings are disabled, they should be enabled on a production environment! This should not cause trouble if you steer clear of @import statements.', ['%link' => $link->toString()]);
     }
