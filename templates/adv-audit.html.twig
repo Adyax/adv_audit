@@ -56,7 +56,7 @@
                         {% if  info_key == 'actions' %}
                             <div class="panel-heading">
                                 <strong>{{ 'Actions to be done: '|t }}</strong>
-                                <small>{{ info }}</small>
+                                <small>{{ info|raw }}</small>
                             </div>
                         {% endif %}
 
