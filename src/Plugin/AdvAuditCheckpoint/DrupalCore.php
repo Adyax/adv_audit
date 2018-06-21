@@ -20,6 +20,14 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
  */
 class DrupalCore extends AdvAuditCheckpointBase {
 
+  public $actionMessage = 'Enable core aggregation or use @link (that includes all latest security updates).';
+
+  public $impactMessage = 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they\'re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.';
+
+  public $failMessage = 'Current Drupal core version is outdated - @version';
+
+  public $successMessage = 'Current Drupal core version is up to date - @version';
+
   /**
    * Return description of current checkpoint.
    *
@@ -31,16 +39,16 @@ class DrupalCore extends AdvAuditCheckpointBase {
   }
 
   /**
-   * Return information about plugin according annotation.
+   * Return information about process result.
    *
    * @return mixed
-   *   Associated array.
+   *   Provide result of process.
    */
-  public function getInformation() {
+  public function getProcessResult() {
     if ($this->getProcessStatus() == 'fail') {
-      return $this->t('Current Drupal core version is outdated - @version', ['@version' => $this->getCurrentVersion()]);
+      return $this->t($this->fail_message, ['@version' => $this->getCurrentVersion()]);
     }
-    return $this->t('Current Drupal core version is up to date - @version', ['@version' => $this->getRecommendedVersion()]);
+    return $this->t($this->success_message, ['@version' => $this->getRecommendedVersion()]);
   }
 
   /**
@@ -50,23 +58,8 @@ class DrupalCore extends AdvAuditCheckpointBase {
    *   Associated array.
    */
   public function getActions() {
-    if ($this->getProcessStatus() == 'fail') {
-      return $this->t('Need to update Drupal core to latest version @version (that includes all latest security updates).', ['@version' => $this->getRecommendedVersion()]);
-    }
-    return $this->t('No actions needed.');
-  }
-
-  /**
-   * Return information about impacts.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getImpacts() {
-    if ($this->getProcessStatus() == 'fail') {
-      return $this->t("If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.");
-    }
-    return NULL;
+    $params = ['@version' => $this->getRecommendedVersion()];
+    return parent::getActions($params);
   }
 
   /**
@@ -94,17 +87,18 @@ class DrupalCore extends AdvAuditCheckpointBase {
     // Collect check results.
     $result = [
       'title' => $this->getTitle(),
-      'description' => $this->getDescription(),
-      'information' => $this->getInformation(),
+      'description' => $this->get('description'),
+      'information' => $this->getProcessResult(),
       'status' => $this->getProcessStatus(),
-      'severity' => $this->getPluginDefinition()['severity'],
+      'severity' => $this->get('severity'),
       'actions' => $this->getActions(),
       'impacts' => $this->getImpacts(),
     ];
 
-    \Drupal::logger('test results')->notice('<pre>' . print_r($result, 1) . '</pre>');
+    \Drupal::logger('test results')
+      ->notice('<pre>' . print_r($result, 1) . '</pre>');
 
-    $results[$this->getCategory()][$this->getPluginId()] = $result;
+    $results[$this->get('category')][$this->getPluginId()] = $result;
     return $results;
   }
 
@@ -115,7 +109,8 @@ class DrupalCore extends AdvAuditCheckpointBase {
    *   Returns current version of core.
    */
   protected static function getCurrentVersion() {
-    $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
+    $projects_data = \Drupal::service('update.manager')
+      ->projectStorage('update_project_data');
     return $projects_data['drupal']['existing_version'];
   }
 
@@ -126,7 +121,8 @@ class DrupalCore extends AdvAuditCheckpointBase {
    *   Returns recommended version.
    */
   protected static function getRecommendedVersion() {
-    $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
+    $projects_data = \Drupal::service('update.manager')
+      ->projectStorage('update_project_data');
     return $projects_data['drupal']['recommended'];
   }
 

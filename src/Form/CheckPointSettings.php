@@ -6,8 +6,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
-Use Drupal\Core\Routing\CurrentRouteMatch;
-Use Drupal\Core\State\State;
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\State\State;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -15,9 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class CheckPointSettings extends FormBase {
 
-  /**
-   * Settings for plugin.
-   */
   protected $defaultValues;
 
   /**
@@ -39,7 +36,6 @@ class CheckPointSettings extends FormBase {
     $this->storage_key = 'adv_audit.' . $plugin_id;
     $this->defaultValues = ($info = $state->get($this->storage_key)) ? $info : $plugins[$plugin_id];
     $this->plugin = $manager->manager->createInstance($plugin_id);
-
   }
 
   /**
