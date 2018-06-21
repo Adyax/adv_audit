@@ -10,6 +10,7 @@ use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\State\State;
 
 /**
  * Base class for all the adv_audit check plugins.
@@ -73,6 +74,23 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   protected $queryService;
 
   /**
+   * The state Service.
+   *
+   * @var \Drupal\Core\State\State
+   */
+  protected $state;
+
+  public $noActionMessage = 'No actions needed.';
+
+  public $actionMessage = '';
+
+  public $impactMessage = '';
+
+  public $failMessage = '';
+
+  public $successMessage = '';
+
+  /**
    * AdvAuditCheckpointBase constructor.
    *
    * @param array $configuration
@@ -91,15 +109,17 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   The module handler.
    * @param \Drupal\Core\Entity\Query\QueryFactory $query_service
    *   The query service.
+   * @param \Drupal\Core\State\State $state
+   *   The state service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service, State $state) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-
     $this->destination = $destination;
     $this->linkGenerator = $generator;
     $this->configFactory = $factory;
     $this->moduleHandler = $handler;
     $this->queryService = $query_service;
+    $this->state = $state;
   }
 
   /**
@@ -114,8 +134,22 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       $container->get('link_generator'),
       $container->get('config.factory'),
       $container->get('module_handler'),
-      $container->get('entity.query')
+      $container->get('entity.query'),
+      $container->get('state')
     );
+  }
+
+  /**
+   * Return message how can this option impact on website.
+   *
+   * @param mixed $params
+   *   Params for string replacement.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Return message about risks.
+   */
+  public function getImpacts($params = []) {
+    return $this->t($this->impactMessage, $params);
   }
 
   /**
@@ -127,14 +161,92 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   }
 
   /**
-   * Return information about plugin according annotation.
+   * Return information about next actions.
+   *
+   * @return mixed
+   *   Return solution to fix problem.
+   */
+  public function getActions($params) {
+    if ($this->getProcessStatus() == 'fail') {
+      return $this->t($this->actionMessage, $params);
+    }
+    return $this->t($this->noActionMessage);
+  }
+
+  /**
+   * Get plugin config by key.
+   *
+   * @param mixed $key
+   *   Config key.
+   *
+   * @return mixed
+   *   Return plugin property, or false if property doesn't exist.
+   */
+  public function get($key) {
+    $values = $this->getInformation();
+    return isset($values[$key]) ? $values[$key] : FALSE;
+    /**
+     * RunForm constructor.
+     */
+
+  }
+
+  /**
+   * Provide plugin process result.
+   *
+   * @param mixed $params
+   *   Params for string replacements.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Return fail or success mesage.
+   */
+  public function getProcessResult($params = []) {
+    if ($this->getProcessStatus() == 'fail') {
+      return $this->t($this->failMessage, $params);
+    }
+    return $this->t($this->successMessage, $params);
+  }
+
+  /**
+   * Get plugin information.
+   */
+  public function getInformation() {
+    $key = 'adv_audit.' . $this->getPluginId();
+    return $this->state->get($key) ? $this->state->get($key) : $this->getPluginDefinition();
+  }
+
+  /**
+   * Return information about plugin category.
    *
    * @return mixed
    *   Associated array.
    */
   public function getCategory() {
-    $definition = $this->getPluginDefinition();
-    return $definition['category'];
+    $categories = $this->configFactory->get('adv_audit.config')
+      ->get('adv_audit_settings')['categories'];
+    return isset($categories[$this->get('category')]) ? $categories[$this->get('category')] : FALSE;
+  }
+
+  /**
+   * Return category title.
+   *
+   * @return mixed
+   *   Associated array.
+   */
+  public function getCategoryTitle() {
+    $category = $this->getCategory();
+    return $category ? $category['label'] : FALSE;
+  }
+
+  /**
+   * Return category status.
+   *
+   * @return mixed
+   *   Associated array.
+   */
+  public function getCategoryStatus() {
+    $category = $this->getCategory();
+    return $category ? $category['status'] : FALSE;
   }
 
   /**
@@ -158,7 +270,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   }
 
   /**
-   * Return severity list, according to audit template.
+   * Return severity list, according to the audit template.
    */
   public function getSeverityOptions() {
     return [
