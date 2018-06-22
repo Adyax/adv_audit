@@ -1,0 +1,14 @@
+{{ attach_library('adv_audit/adv_audit.help') }}
+{% for category in data %}
+    <div class="category-group clear">
+        <h3>{{ category.title }}</h3>
+        <ul class="plugins-list row clear">
+            {% for item in category.plugins %}
+                <li class="plugin-item layout-column layout-column--half">
+                    <h5 class="item-title"> {{ item.label }} </h5>
+                    <div class="description"> {{ item.help|raw }} </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}

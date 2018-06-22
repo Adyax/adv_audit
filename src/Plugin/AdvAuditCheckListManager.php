@@ -26,18 +26,42 @@ class AdvAuditCheckListManager {
    */
   public function getPluginsByStatus($status = 'all') {
     $plugins = [];
-    $state = $this->container->get('state');
     $categories = $this->container->get('config.factory')
       ->get('adv_audit.config')->get('adv_audit_settings')['categories'];
-    $definitions = $this->manager->getDefinitions();
+    $definitions = $this->getDefinitions();
     foreach ($definitions as $plugin) {
-      $key = 'adv_audit.' . $plugin['id'];
-      $plugin['info'] = ($info = $state->get($key)) ? $info : $plugin;
-      if ($status == 'all' || ($plugin['info']['status'] == $status && $categories[$plugin['category']]['status'])) {
-        $plugins[$plugin['category']][$plugin['id']] = $plugin;
+      $plugin = $this->manager->createInstance($plugin['id']);
+      $plugin_settings = $plugin->getInformation();
+      if ($status == 'all' || ($plugin_settings['status'] == $status && $categories[$plugin_settings['category']]['status'])) {
+        $plugins[$plugin_settings['category']][$plugin_settings['id']] = $plugin_settings;
       }
     }
     return $plugins;
+  }
+
+  /**
+   * Return plugins by category.
+   */
+  public function getHelpPlugins() {
+    $plugins = [];
+    $definitions = $this->getDefinitions();
+    foreach ($definitions as $plugin) {
+      $plugin = $this->manager->createInstance($plugin['id']);
+      $category = $plugin->get('category');
+      $plugins[$category]['title'] = $plugin->getCategoryTitle();
+      $plugins[$category]['plugins'][$plugin->get('id')] = [
+        'label' => $plugin->get('label'),
+        'help' => $plugin->help(),
+      ];
+    }
+    return $plugins;
+  }
+
+  /**
+   * Return definitions.
+   */
+  public function getDefinitions() {
+    return $this->manager->getDefinitions();
   }
 
 }

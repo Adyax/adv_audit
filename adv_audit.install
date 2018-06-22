@@ -15,4 +15,5 @@ function adv_audit_uninstall() {
     $plugin = 'adv_audit.' . $plugin['id'];
   }
   \Drupal::state()->deleteMultiple($plugins);
+  \Drupal::configFactory()->getEditable('adv_audit.config')->delete();
 }

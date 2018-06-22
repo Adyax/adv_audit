@@ -31,11 +31,8 @@ class CheckPointSettings extends FormBase {
       $this->defaultValues = FALSE;
       return;
     }
-
-    // Build Storage key.
-    $this->storage_key = 'adv_audit.' . $plugin_id;
-    $this->defaultValues = ($info = $state->get($this->storage_key)) ? $info : $plugins[$plugin_id];
     $this->plugin = $manager->manager->createInstance($plugin_id);
+    $this->defaultValues = $this->plugin->getInformation();
   }
 
   /**
@@ -60,6 +57,7 @@ class CheckPointSettings extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     if (!$this->defaultValues) {
       throw new NotFoundHttpException();
     }
@@ -85,9 +83,52 @@ class CheckPointSettings extends FormBase {
 
     $form['description'] = [
       '#type' => 'text_format',
-      '#title' => t('Description'),
+      '#title' => $this->t('Description'),
       '#default_value' => $this->defaultValues['description'],
     ];
+
+    $form['result_description'] = [
+      '#type' => 'text_format',
+      '#title' => t('Description for result output'),
+      '#default_value' => $this->defaultValues['result_description'],
+    ];
+
+    $form['action_message'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Action'),
+      '#description' => $this->t('What actions should be provided to fix plugin issue.'),
+      '#default_value' => $this->defaultValues['action_message'],
+    ];
+
+    $form['impact_message'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Impact'),
+      '#description' => $this->t('Why this issue should be fixed.'),
+      '#default_value' => $this->defaultValues['impact_message'],
+    ];
+
+    $form['fail_message'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Fail message'),
+      '#description' => $this->t('This text is used in case when verification was failed.'),
+      '#default_value' => $this->defaultValues['fail_message'],
+    ];
+
+    $form['success_message'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Success message'),
+      '#description' => $this->t('This text is used in case when verification was failed.'),
+      '#default_value' => $this->defaultValues['success_message'],
+    ];
+
+    if ($additional_form = $this->plugin->settingsForm()) {
+      $form['additional_settings'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Specific plugin settings'),
+        '#tree' => TRUE,
+        'custom_settings' => $additional_form,
+      ];
+    }
 
     $form['submit'] = [
       '#type' => 'submit',
@@ -104,8 +145,16 @@ class CheckPointSettings extends FormBase {
     $this->defaultValues['label'] = $values['label'];
     $this->defaultValues['status'] = $values['status'];
     $this->defaultValues['description'] = $values['description']['value'];
+    $this->defaultValues['result_description'] = $values['result_description']['value'];
+    $this->defaultValues['action_message'] = $values['action_message']['value'];
+    $this->defaultValues['impact_message'] = $values['impact_message']['value'];
+    $this->defaultValues['fail_message'] = $values['fail_message']['value'];
+    $this->defaultValues['success_message'] = $values['success_message']['value'];
     $this->defaultValues['severity'] = $values['severity'];
-    $this->state->set($this->storage_key, $this->defaultValues);
+    if (isset($values['additional_settings'])) {
+      $this->defaultValues['custom_settings'] = $values['additional_settings']['custom_settings'];
+    }
+    $this->plugin->setInformation($this->defaultValues);
   }
 
 }
