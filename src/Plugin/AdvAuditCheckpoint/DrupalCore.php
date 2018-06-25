@@ -36,7 +36,7 @@ class DrupalCore extends AdvAuditCheckpointBase {
    * @return mixed
    *   Provide result of process.
    */
-  public function getProcessResult() {
+  public function getProcessResult($params = []) {
     if ($this->getProcessStatus() == 'fail') {
       return $this->get('fail_message') ? $this->t($this->get('fail_message'), ['@version' => $this->getCurrentVersion()]) : '';
     }
