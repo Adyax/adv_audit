@@ -74,7 +74,7 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
         ->get('adv_audit.config')
         ->get('adv_audit_settings')['categories'][$category_id]['label'];
       $reports_data[] = [
-        'category' => t($category),
+        'category' => $category,
         'category_id' => $category_id,
         'reports' => $reports,
       ];
@@ -130,6 +130,7 @@ function _adv_audit_batch_run_op_last($project_name, array &$context) {
  * Implements hook_help().
  */
 function adv_audit_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
   switch ($route_name) {
     case 'help.page.adv_audit':
       $renderer = \Drupal::service('renderer');
@@ -137,6 +138,9 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
       $manager_list = \Drupal::service('plugin.manager.adv_audit_checklist');
       $render_array['#data'] = $manager_list->getHelpPlugins();
       $output = $renderer->render($render_array);
+      return $output;
+
+    default:
       return $output;
   }
 }
