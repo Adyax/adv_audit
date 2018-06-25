@@ -11,6 +11,7 @@ use Drupal\adv_audit\Renderer\ToJson;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Url;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Implements hook_theme().
@@ -27,6 +28,10 @@ function adv_audit_theme() {
     'adv_audit_html_results' => [
       'variables' => ['category' => NULL, 'reports' => NULL],
       'template' => 'adv-audit-html-results',
+    ],
+    'adv_audit_help' => [
+      'variables' => ['data' => [], 'categories' => []],
+      'template' => 'adv-audit-help',
     ],
   ];
 }
@@ -60,12 +65,19 @@ function _adv_audit_batch_run_finished($success, array $results, array $operatio
   $dt = new DrupalDateTime();
   $reports_data = [];
 
-  foreach ($results as $category => $reports) {
-    if ($category == 'project_name' && !is_array($reports)) {
+  foreach ($results as $category_id => $reports) {
+    if ($category_id == 'project_name' && !is_array($reports)) {
       $project_name = $reports;
     }
     else {
-      $reports_data[] = ['category' => $category, 'reports' => $reports];
+      $category = \Drupal::configFactory()
+        ->get('adv_audit.config')
+        ->get('adv_audit_settings')['categories'][$category_id]['label'];
+      $reports_data[] = [
+        'category' => $category,
+        'category_id' => $category_id,
+        'reports' => $reports,
+      ];
     }
   }
 
@@ -112,4 +124,23 @@ function _adv_audit_batch_run_op(AdvAuditCheckpointInterface $plugin, array &$co
 function _adv_audit_batch_run_op_last($project_name, array &$context) {
   // Store the results.
   $context['results']['project_name'] = $project_name;
+}
+
+/**
+ * Implements hook_help().
+ */
+function adv_audit_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+  switch ($route_name) {
+    case 'help.page.adv_audit':
+      $renderer = \Drupal::service('renderer');
+      $render_array = ['#theme' => 'adv_audit_help'];
+      $manager_list = \Drupal::service('plugin.manager.adv_audit_checklist');
+      $render_array['#data'] = $manager_list->getHelpPlugins();
+      $output = $renderer->render($render_array);
+      return $output;
+
+    default:
+      return $output;
+  }
 }

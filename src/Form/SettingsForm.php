@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
 use Drupal\Core\State\State;
 use Drupal\Core\Url;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 
 /**
@@ -62,15 +63,81 @@ class SettingsForm extends ConfigFormBase {
   }
 
   /**
+   * Get untrasted roles.
+   */
+  protected function untrustedRoles() {
+    return $this->config->getEditable('adv_audit.config')
+      ->get('untrusted_roles');
+  }
+
+  /**
+   * Returns the default untrusted roles.
+   *
+   * The default untrusted roles are:
+   *   Anonymous      : always
+   *   Authenticated  : if visitors are allowed to create accounts.
+   *
+   * @return string[]
+   *   Default untrusted roles' IDs.
+   */
+  public function defaultUntrustedRoles() {
+    // Add the Anonymous role to the output array.
+    $roles = [AccountInterface::ANONYMOUS_ROLE];
+
+    // Check whether visitors can create accounts.
+    $user_register = $this->config->get('user.settings')
+      ->get('register');
+    if ($user_register !== USER_REGISTER_ADMINISTRATORS_ONLY) {
+      // If visitors are allowed to create accounts they are considered
+      // untrusted.
+      $roles[] = AccountInterface::AUTHENTICATED_ROLE;
+    }
+
+    // Return the untrusted roles.
+    return $roles;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
     $categories = $this->getCategories();
+
+    // Get the user roles.
+    $roles = user_roles();
+    $options = [];
+    foreach ($roles as $rid => $role) {
+      $options[$rid] = $role->label();
+    }
+
+    // Notify the user if anonymous users can create accounts.
+    $message = '';
+    if (in_array(AccountInterface::AUTHENTICATED_ROLE, $this->defaultUntrustedRoles())) {
+      $message = $this->t('You have allowed anonymous users to create accounts without approval so the authenticated role defaults to untrusted.');
+    }
+
+    // Show the untrusted roles form element.
+    $form['untrusted_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Untrusted roles'),
+      '#description' => $this->t(
+        'Define which roles are for less trusted users. The anonymous role defaults to untrusted. @message Most Security Review checks look for resources usable by untrusted roles.',
+        ['@message' => $message]
+      ),
+      '#options' => $options,
+      '#default_value' => $this->untrustedRoles(),
+    ];
+
     $form['categories'] = [
       '#type' => 'container',
     ];
     foreach ($categories as $key => $category) {
+      // TODO: Remove when all categories will be ready.
+      if (!isset($this->checkPlugins[$key])) {
+        continue;
+      }
+
       $form['categories'][$key] = [
         '#type' => 'fieldset',
         '#title' => $category['label'],
@@ -86,11 +153,6 @@ class SettingsForm extends ConfigFormBase {
         ],
       ];
 
-      // TODO: Remove when all categories will be ready.
-      if (!isset($this->checkPlugins[$key])) {
-        continue;
-      }
-
       $current_url = $this->redirectDestination->get();
       foreach ($this->checkPlugins[$key] as $plugin) {
         $form['categories'][$key][$plugin['id']] = [
@@ -102,8 +164,8 @@ class SettingsForm extends ConfigFormBase {
 
         $form['categories'][$key][$plugin['id']][$plugin['id']] = [
           '#type' => 'checkbox',
-          '#title' => $plugin['info']['label'],
-          '#default_value' => $plugin['info']['status'],
+          '#title' => $plugin['label'],
+          '#default_value' => $plugin['status'],
         ];
         $form['categories'][$key][$plugin['id']][$plugin['id'] . '_edit'] = [
           '#type' => 'link',
@@ -156,15 +218,16 @@ class SettingsForm extends ConfigFormBase {
       $category['status'] = $values[$key . '_status'];
     }
     $config->set('adv_audit_settings', $config_categories);
+    $config->set('untrusted_roles', $values['untrusted_roles']);
     $config->save();
 
     // Save plugin status.
     foreach ($this->checkPlugins as $category_items) {
       foreach ($category_items as $plugin) {
-        if ($plugin['info']['status'] != $values[$plugin['id']]) {
-          $plugin['info']['status'] = $values[$plugin['id']];
+        if ($plugin['status'] != $values[$plugin['id']]) {
+          $plugin['status'] = $values[$plugin['id']];
           $key = 'adv_audit.' . $plugin['id'];
-          $this->state->set($key, $plugin['info']);
+          $this->state->set($key, $plugin);
         }
       }
     }

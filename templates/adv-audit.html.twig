@@ -32,7 +32,7 @@
 
                             {% if  info_key == 'description' %}
                                 <div class="panel-heading">
-                                    <small>{{ info }}</small>
+                                    <small>{{ info|raw }}</small>
                                 </div>
                             {% endif %}
 
@@ -64,7 +64,7 @@
                             {% if  info_key == 'impacts' %}
                                 <div class="panel-heading">
                                     <strong>{{ 'Impacts: '|t }}</strong>
-                                    <small>{{ info }}</small>
+                                    <small>{{ info|raw }}</small>
                                 </div>
                             {% endif %}
                         {% endfor %}

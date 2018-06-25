@@ -61,4 +61,17 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
    */
   public function getDescription();
 
+  /**
+   * Return additional settings form.
+   */
+  public function settingsForm();
+
+  /**
+   * Provide plugin description for help page.
+   *
+   * @return mixed
+   *   Return text for help.
+   */
+  public function help();
+
 }

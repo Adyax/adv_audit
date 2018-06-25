@@ -80,15 +80,17 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   protected $state;
 
-  public $noActionMessage = 'No actions needed.';
+  protected $noActionMessage = 'No actions needed.';
 
-  public $actionMessage = '';
+  protected $actionMessage = '';
 
-  public $impactMessage = '';
+  protected $impactMessage = '';
 
-  public $failMessage = '';
+  protected $failMessage = '';
 
-  public $successMessage = '';
+  protected $successMessage = '';
+
+  protected $resultDescription = '';
 
   /**
    * AdvAuditCheckpointBase constructor.
@@ -168,9 +170,9 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   public function getActions($params) {
     if ($this->getProcessStatus() == 'fail') {
-      return $this->t($this->actionMessage, $params);
+      return $this->get('action_message') ? $this->t($this->get('action_message'), $params) : '';
     }
-    return $this->t($this->noActionMessage);
+    return $this->get('no_action_message') ? $this->t($this->get('no_action_message'), $params) : '';
   }
 
   /**
@@ -185,10 +187,6 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   public function get($key) {
     $values = $this->getInformation();
     return isset($values[$key]) ? $values[$key] : FALSE;
-    /**
-     * RunForm constructor.
-     */
-
   }
 
   /**
@@ -202,17 +200,42 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   public function getProcessResult($params = []) {
     if ($this->getProcessStatus() == 'fail') {
-      return $this->t($this->failMessage, $params);
+      return $this->get('fail_message') ? $this->t($this->get('fail_message'), $params) : '';
     }
-    return $this->t($this->successMessage, $params);
+    return $this->get('success_message') ? $this->t($this->get('success_message'), $params) : '';
   }
 
   /**
    * Get plugin information.
+   *
+   * @return array|mixed|null
+   *   Return plugin information.
    */
   public function getInformation() {
     $key = 'adv_audit.' . $this->getPluginId();
-    return $this->state->get($key) ? $this->state->get($key) : $this->getPluginDefinition();
+    $values = $this->state->get($key);
+    if (!$values) {
+      $values = $this->getPluginDefinition();
+      $values['result_description'] = $this->resultDescription;
+      $values['no_action_message'] = $this->noActionMessage;
+      $values['action_message'] = $this->actionMessage;
+      $values['impact_message'] = $this->impactMessage;
+      $values['fail_message'] = $this->failMessage;
+      $values['success_message'] = $this->successMessage;
+      $this->state->set($key, $values);
+    }
+    return $values;
+  }
+
+  /**
+   * Allow change plugin information.
+   *
+   * @param mixed $data
+   *   Array with new property values for plugin.
+   */
+  public function setInformation($data) {
+    $key = 'adv_audit.' . $this->getPluginId();
+    $this->state->set($key, $data);
   }
 
   /**
@@ -270,6 +293,19 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   }
 
   /**
+   * Return description for plugin result.
+   *
+   * @param mixed $params
+   *   Placeholders for message.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Return plugin description.
+   */
+  public function getDescription($params = []) {
+    return $this->get('result_description') ? $this->t($this->get('result_description'), $params) : '';
+  }
+
+  /**
    * Return severity list, according to the audit template.
    */
   public function getSeverityOptions() {
@@ -278,6 +314,16 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       'high' => $this->t('High'),
       'critical' => $this->t('Critical'),
     ];
+  }
+
+  /**
+   * Allow to expand default plugin settings form with specific fields.
+   *
+   * @return array
+   *   Return form elements, ready to render.
+   */
+  public function settingsForm() {
+    return [];
   }
 
 }

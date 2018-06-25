@@ -20,3 +20,4 @@ adv_audit_settings:
     performance:
       label: Performance
       status: 1
+untrusted_roles: ['anonymous']
