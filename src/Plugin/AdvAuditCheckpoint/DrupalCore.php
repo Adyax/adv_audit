@@ -56,7 +56,7 @@ class DrupalCore extends AdvAuditCheckpointBase {
    * @return mixed
    *   Associated array.
    */
-  public function getActions() {
+  public function getActions($params = []) {
     $params = ['@version' => $this->getRecommendedVersion()];
     return parent::getActions($params);
   }

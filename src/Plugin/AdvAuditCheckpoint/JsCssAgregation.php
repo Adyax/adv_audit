@@ -35,7 +35,7 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
    * @return mixed
    *   Associated array.
    */
-  public function getActions() {
+  public function getActions($params = []) {
     $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
     $params = ['@link' => $link->toString()];
     return parent::getActions($params);
