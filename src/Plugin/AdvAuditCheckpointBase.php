@@ -168,7 +168,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    * @return mixed
    *   Return solution to fix problem.
    */
-  public function getActions($params) {
+  public function getActions($params = []) {
     if ($this->getProcessStatus() == 'fail') {
       return $this->get('action_message') ? $this->t($this->get('action_message'), $params) : '';
     }
