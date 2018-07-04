@@ -202,10 +202,6 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   public function get($key) {
     $values = $this->getInformation();
     return isset($values[$key]) ? $values[$key] : FALSE;
-    /**
-     * RunForm constructor.
-     */
-
   }
 
   /**

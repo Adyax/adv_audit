@@ -16,7 +16,7 @@ use Drupal\Core\State\State;
 use Drupal\update\UpdateManagerInterface;
 
 /**
- * Check if agregation for js and css is enabled.
+ * Check security updates for contrib modules.
  *
  * @AdvAuditCheckpointAnnotation(
  *   id = "modules_security_check",
@@ -135,12 +135,14 @@ class ModulesSecurityCheck extends AdvAuditCheckpointBase {
   /**
    * Return information about next actions.
    *
-   * @param array $params
+   * @param mixed $params
    *   Placeholders for message.
    *
    * @return mixed
    *   Action messages.
+   *
    * @throws \Exception
+   *   Exception.
    */
   public function getActions($params = []) {
 
