@@ -96,8 +96,7 @@ class RunForm extends FormBase {
       $items[$key]['items'] = [];
       foreach ($category as $plugin) {
         $items[$key]['items'][$plugin['id']] = [
-          'label' => $plugin['info']['label'],
-          'status' => 'waiting',
+          'label' => $plugin['label'],
           'id' => $plugin['id'],
         ];
       }

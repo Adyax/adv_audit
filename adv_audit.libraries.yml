@@ -9,3 +9,9 @@ adv_audit.admin:
   css:
     theme:
       css/admin.css: {}
+
+adv_audit.help:
+  version: VERSION
+  css:
+    theme:
+      css/help.css: {}

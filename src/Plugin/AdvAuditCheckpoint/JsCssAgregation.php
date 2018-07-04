@@ -23,18 +23,11 @@ use Drupal\Core\Url;
  */
 class JsCssAgregation extends AdvAuditCheckpointBase {
 
-  public $actionMessage = 'Enable core aggregation or use @link (that includes all latest security updates).';
-  public $impactMessage = 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they\'re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.';
+  protected $actionMessage = 'Enable core aggregation or use @link (that includes all latest security updates).';
 
-  /**
-   * Return description of current checkpoint.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getDescription() {
-    return $this->t("Maintaining a Drupal site is not just about managing the content on the site and administering users and the configuration. An important part of maintaining a Drupal site is in keeping the site updated with the latest security updates released for Drupal core. Drupal is a very secure platform however this does not mean that a snapshot of the platform from a given point in time is free from all imaginable security loopholes. When a security vulnerability is identified by the community or the Drupal Security Team it will be taken care of promptly with the involvement of the Drupal Security Team and patches and a new security release of Drupal core is released within a very short period of time from the time the vulnerability is identified. Once the new security update for the module or Drupal core is released it would be the responsibility of each Drupal site owner (development team) to keep their site updated. A general recommendation is to update the site with all the security updates as soon as the security updates are released.");
-  }
+  protected $impactMessage = 'Without aggregation pages are loaded slowly as it’s a lot of css/js files are requires more time for loading..';
+
+  protected $resultDescription = 'When your CSS and JavaScript files are aggregated, there will be a lot less requests to be process down the wire, resulting in a faster page load.';
 
   /**
    * Return information about next actions.
@@ -42,10 +35,17 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
    * @return mixed
    *   Associated array.
    */
-  public function getActions() {
+  public function getActions($params = []) {
     $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
     $params = ['@link' => $link->toString()];
     return parent::getActions($params);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function help() {
+    return $this->t('Check if agregation for js and css is enabled');
   }
 
   /**
@@ -67,10 +67,10 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
     // Collect check results.
     $result = [
       'title' => $this->getTitle(),
-      'description' => $this->getDescription(),
+      'description' => $this->get('result_description'),
       'information' => $this->getProcessResult(),
       'status' => $this->getProcessStatus(),
-      'severity' => $this->getPluginDefinition()['severity'],
+      'severity' => $this->get('severity'),
       'actions' => $this->getActions(),
       'impacts' => $this->getImpacts(),
     ];
@@ -80,6 +80,22 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
 
     $results[$this->get('category')][$this->getPluginId()] = $result;
     return $results;
+  }
+
+  /**
+   * Allow to extend settings form.
+   *
+   * @return array|mixed
+   *   Return part of settings form for plugin.
+   */
+  public function settingsForm() {
+    $values = $this->getInformation();
+    $form['test'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Custon settings field'),
+      '#default_value' => isset($values['custom_settings']['test']) ? $values['custom_settings']['test'] : 'Some test value',
+    ];
+    return $form;
   }
 
 }

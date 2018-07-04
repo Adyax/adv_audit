@@ -20,23 +20,15 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
  */
 class DrupalCore extends AdvAuditCheckpointBase {
 
-  public $actionMessage = 'Enable core aggregation or use @link (that includes all latest security updates).';
+  protected $actionMessage = 'Enable core aggregation or use @link (that includes all latest security updates).';
 
-  public $impactMessage = 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they\'re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.';
+  protected $impactMessage = 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they\'re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.';
 
-  public $failMessage = 'Current Drupal core version is outdated - @version';
+  protected $failMessage = 'Current Drupal core version is outdated - @version';
 
-  public $successMessage = 'Current Drupal core version is up to date - @version';
+  protected $successMessage = 'Current Drupal core version is up to date - @version';
 
-  /**
-   * Return description of current checkpoint.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getDescription() {
-    return $this->t("Maintaining a Drupal site is not just about managing the content on the site and administering users and the configuration. An important part of maintaining a Drupal site is in keeping the site updated with the latest security updates released for Drupal core. Drupal is a very secure platform however this does not mean that a snapshot of the platform from a given point in time is free from all imaginable security loopholes. When a security vulnerability is identified by the community or the Drupal Security Team it will be taken care of promptly with the involvement of the Drupal Security Team and patches and a new security release of Drupal core is released within a very short period of time from the time the vulnerability is identified. Once the new security update for the module or Drupal core is released it would be the responsibility of each Drupal site owner (development team) to keep their site updated. A general recommendation is to update the site with all the security updates as soon as the security updates are released.");
-  }
+  protected $resultDescription = 'Maintaining a Drupal site is not just about managing the content on the site and administering users and the configuration. An important part of maintaining a Drupal site is in keeping the site updated with the latest security updates released for Drupal core. Drupal is a very secure platform however this does not mean that a snapshot of the platform from a given point in time is free from all imaginable security loopholes. When a security vulnerability is identified by the community or the Drupal Security Team it will be taken care of promptly with the involvement of the Drupal Security Team and patches and a new security release of Drupal core is released within a very short period of time from the time the vulnerability is identified. Once the new security update for the module or Drupal core is released it would be the responsibility of each Drupal site owner (development team) to keep their site updated. A general recommendation is to update the site with all the security updates as soon as the security updates are released.';
 
   /**
    * Return information about process result.
@@ -44,11 +36,18 @@ class DrupalCore extends AdvAuditCheckpointBase {
    * @return mixed
    *   Provide result of process.
    */
-  public function getProcessResult() {
+  public function getProcessResult($params = []) {
     if ($this->getProcessStatus() == 'fail') {
-      return $this->t($this->fail_message, ['@version' => $this->getCurrentVersion()]);
+      return $this->get('fail_message') ? $this->t($this->get('fail_message'), ['@version' => $this->getCurrentVersion()]) : '';
     }
-    return $this->t($this->success_message, ['@version' => $this->getRecommendedVersion()]);
+    return $this->get('success_message') ? $this->t($this->get('success_message'), ['@version' => $this->getRecommendedVersion()]) : '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function help() {
+    return $this->t('Check the Drupal core version and its actuality');
   }
 
   /**
@@ -57,7 +56,7 @@ class DrupalCore extends AdvAuditCheckpointBase {
    * @return mixed
    *   Associated array.
    */
-  public function getActions() {
+  public function getActions($params = []) {
     $params = ['@version' => $this->getRecommendedVersion()];
     return parent::getActions($params);
   }
@@ -87,7 +86,7 @@ class DrupalCore extends AdvAuditCheckpointBase {
     // Collect check results.
     $result = [
       'title' => $this->getTitle(),
-      'description' => $this->get('description'),
+      'description' => $this->get('result_description'),
       'information' => $this->getProcessResult(),
       'status' => $this->getProcessStatus(),
       'severity' => $this->get('severity'),
