@@ -3,17 +3,8 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheckpoint;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Routing\RedirectDestinationInterface;
-use Drupal\Core\Utility\LinkGeneratorInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\State;
-use Drupal\update\UpdateManagerInterface;
 
 /**
  * Check security updates for contrib modules.
@@ -72,55 +63,7 @@ class ModulesSecurityCheck extends AdvAuditCheckpointBase {
    */
   protected $count;
 
-  /**
-   * AdvAuditCheckpointBase constructor.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Routing\RedirectDestinationInterface $destination
-   *   The redirect destination service.
-   * @param \Drupal\Core\Utility\LinkGeneratorInterface $generator
-   *   The link generator service.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $factory
-   *   The config factory service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $handler
-   *   The module handler.
-   * @param \Drupal\Core\Entity\Query\QueryFactory $query_service
-   *   The query service.
-   * @param \Drupal\Core\State\State $state
-   *   The state service.
-   * @param \Drupal\Core\Render\Renderer $renderer
-   *   The render service.
-   * @param \Drupal\update\UpdateManagerInterface $update_manager
-   *   Update manager service.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service, State $state, Renderer $renderer, UpdateManagerInterface $update_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $destination, $generator, $factory, $handler, $query_service, $state, $renderer);
-    $this->updateManager = $update_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('redirect.destination'),
-      $container->get('link_generator'),
-      $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('entity.query'),
-      $container->get('state'),
-      $container->get('renderer'),
-      $container->get('update.manager')
-    );
-  }
+  protected $additionalServices = ['updateManager' => 'update.manager'];
 
   /**
    * Return description of current checkpoint.
@@ -128,7 +71,7 @@ class ModulesSecurityCheck extends AdvAuditCheckpointBase {
    * @return mixed
    *   Associated array.
    */
-  public function getDescription() {
+  public function getDescription($params = []) {
     return $this->t("Drupal core and contrib modules code are constantly improving. Every release includes  fixed bugs (including security vulnerabilities), improve performance and provide new functionality. It is recommended to update core and contrib modules. (be aware that some contributed modules could be patched). Once the new security update for the module or Drupal core is released it would be the responsibility of each Drupal site owner to keep their site updated.");
   }
 
@@ -205,6 +148,13 @@ class ModulesSecurityCheck extends AdvAuditCheckpointBase {
 
     $results[$this->get('category')][$this->getPluginId()] = $result;
     return $results;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function help() {
+    return $this->t('Check security updates for modules.');
   }
 
 }

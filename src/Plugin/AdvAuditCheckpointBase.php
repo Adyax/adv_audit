@@ -2,16 +2,9 @@
 
 namespace Drupal\adv_audit\Plugin;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Routing\RedirectDestinationInterface;
-use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\State;
-use Drupal\Core\Render\Renderer;
 
 /**
  * Base class for all the adv_audit check plugins.
@@ -87,6 +80,27 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   protected $state;
 
   /**
+   * Provide possibility add additional services to plugin.
+   *
+   * @var array
+   *   Additional services.
+   */
+  protected $additionalServices = [];
+
+  /**
+   * Provide a list of default services.
+   */
+  const GENERAL_SERVICES = [
+    'destination' => 'redirect.destination',
+    'linkGenerator' => 'link_generator',
+    'configFactory' => 'config.factory',
+    'moduleHandler' => 'module_handler',
+    'queryService' => 'entity.query',
+    'state' => 'state',
+    'renderer' => 'renderer',
+  ];
+
+  /**
    * The render service.
    *
    * @var \Drupal\Core\Render\Renderer
@@ -114,30 +128,22 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Routing\RedirectDestinationInterface $destination
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    *   The redirect destination service.
-   * @param \Drupal\Core\Utility\LinkGeneratorInterface $generator
-   *   The link generator service.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $factory
-   *   The config factory service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $handler
-   *   The module handler.
-   * @param \Drupal\Core\Entity\Query\QueryFactory $query_service
-   *   The query service.
-   * @param \Drupal\Core\State\State $state
-   *   The state service.
-   * @param \Drupal\Core\Render\Renderer $renderer
-   *   The render service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service, State $state, Renderer $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ContainerInterface $container) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->destination = $destination;
-    $this->linkGenerator = $generator;
-    $this->configFactory = $factory;
-    $this->moduleHandler = $handler;
-    $this->queryService = $query_service;
-    $this->state = $state;
-    $this->renderer = $renderer;
+
+    // Add general services.
+    foreach ($this::GENERAL_SERVICES as $varname => $service) {
+      $this->{$varname} = $container->get($service);
+    }
+
+    // Add additional services.
+    foreach ($this->additionalServices as $varname => $service) {
+      $this->{$varname} = $container->get($service);
+    }
+
   }
 
   /**
@@ -148,13 +154,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('redirect.destination'),
-      $container->get('link_generator'),
-      $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('entity.query'),
-      $container->get('state'),
-      $container->get('renderer')
+      $container
     );
   }
 
