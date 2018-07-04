@@ -93,7 +93,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   protected $renderer;
 
-  public $noActionMessage = 'No actions needed.';
+  protected $noActionMessage = 'No actions needed.';
 
   protected $actionMessage = '';
 
