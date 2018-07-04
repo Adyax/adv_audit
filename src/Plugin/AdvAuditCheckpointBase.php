@@ -11,11 +11,17 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\State;
+use Drupal\Core\Render\Renderer;
 
 /**
  * Base class for all the adv_audit check plugins.
  */
 abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditCheckpointInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * Failed verification status.
+   */
+  const FAIL = 'fail';
 
   /**
    * Verification Status.
@@ -80,6 +86,13 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   protected $state;
 
+  /**
+   * The render service.
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
   public $noActionMessage = 'No actions needed.';
 
   public $actionMessage = '';
@@ -111,8 +124,10 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   The query service.
    * @param \Drupal\Core\State\State $state
    *   The state service.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   The render service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service, State $state) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, RedirectDestinationInterface $destination, LinkGeneratorInterface $generator, ConfigFactoryInterface $factory, ModuleHandlerInterface $handler, QueryFactory $query_service, State $state, Renderer $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->destination = $destination;
     $this->linkGenerator = $generator;
@@ -120,6 +135,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
     $this->moduleHandler = $handler;
     $this->queryService = $query_service;
     $this->state = $state;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -135,7 +151,8 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       $container->get('config.factory'),
       $container->get('module_handler'),
       $container->get('entity.query'),
-      $container->get('state')
+      $container->get('state'),
+      $container->get('renderer')
     );
   }
 
@@ -167,7 +184,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   Return solution to fix problem.
    */
   public function getActions($params) {
-    if ($this->getProcessStatus() == 'fail') {
+    if ($this->getProcessStatus() == $this::FAIL) {
       return $this->t($this->actionMessage, $params);
     }
     return $this->t($this->noActionMessage);
