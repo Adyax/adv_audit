@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * An interface define basic structure for Advance Audit checkpoints.
@@ -62,9 +63,17 @@ interface AdvAuditCheckpointInterface extends PluginInspectionInterface {
   public function getDescription();
 
   /**
-   * Return additional settings form.
+   * Allow to expand default plugin settings form with specific fields.
+   *
+   * @param array $form
+   *   Settings form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return mixed
+   *   Additional elements.
    */
-  public function settingsForm();
+  public function settingsForm(array &$form, FormStateInterface &$form_state);
 
   /**
    * Provide plugin description for help page.
