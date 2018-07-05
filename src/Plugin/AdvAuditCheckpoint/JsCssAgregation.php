@@ -82,20 +82,4 @@ class JsCssAgregation extends AdvAuditCheckpointBase {
     return $results;
   }
 
-  /**
-   * Allow to extend settings form.
-   *
-   * @return array|mixed
-   *   Return part of settings form for plugin.
-   */
-  public function settingsForm() {
-    $values = $this->getInformation();
-    $form['test'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Custon settings field'),
-      '#default_value' => isset($values['custom_settings']['test']) ? $values['custom_settings']['test'] : 'Some test value',
-    ];
-    return $form;
-  }
-
 }

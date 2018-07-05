@@ -121,7 +121,7 @@ class CheckPointSettings extends FormBase {
       '#default_value' => $this->defaultValues['success_message'],
     ];
 
-    if ($additional_form = $this->plugin->settingsForm()) {
+    if ($additional_form = $this->plugin->settingsForm($form, $form_state)) {
       $form['additional_settings'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Specific plugin settings'),

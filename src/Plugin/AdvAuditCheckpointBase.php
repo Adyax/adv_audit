@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin;
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -98,6 +99,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
     'queryService' => 'entity.query',
     'state' => 'state',
     'renderer' => 'renderer',
+    'messenger' => 'messenger',
   ];
 
   /**
@@ -241,6 +243,9 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       $values['success_message'] = $this->successMessage;
       $this->state->set($key, $values);
     }
+    if ($values['status']) {
+      $this->validation();
+    }
     return $values;
   }
 
@@ -251,8 +256,10 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   Array with new property values for plugin.
    */
   public function setInformation($data) {
-    $key = 'adv_audit.' . $this->getPluginId();
-    $this->state->set($key, $data);
+    if ($this->validation()) {
+      $key = 'adv_audit.' . $this->getPluginId();
+      $this->state->set($key, $data);
+    }
   }
 
   /**
@@ -334,12 +341,61 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   }
 
   /**
-   * Allow to expand default plugin settings form with specific fields.
-   *
-   * @return array
-   *   Return form elements, ready to render.
+   * {@inheritdoc}
    */
-  public function settingsForm() {
+  public function settingsForm(array &$form, FormStateInterface &$form_state) {
+    $form['#validate'][] = [$this, 'settingsFormValidation'];
+    return [];
+  }
+
+  /**
+   * Provide custom validation for plugin.
+   *
+   * @return mixed
+   *   Validation result.
+   */
+  protected function validation() {
+    $is_validated = TRUE;
+    if (!empty($requires = $this->getRequirements())) {
+      if (isset($requires['modules'])) {
+        foreach ($requires['modules'] as $dependency) {
+          if (!$this->moduleHandler->moduleExists($dependency)) {
+            $is_validated = FALSE;
+            $this->messenger->addMessage($this->t('You should install @modulename to use this feature.', ['@modulename' => $dependency]), 'error');
+          }
+        }
+      }
+    }
+    if (!$is_validated) {
+      $data = $this->getInformation();
+      $data['status'] = FALSE;
+      $key = 'adv_audit.' . $this->getPluginId();
+      $this->state->set($key, $data);
+    }
+    return $is_validated;
+  }
+
+  /**
+   * Check plugin requires.
+   *
+   * @param array $form
+   *   Altered form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   */
+  public function settingsFormValidation(array $form, FormStateInterface &$form_state) {
+    if (!$this->validation()) {
+      $form_state->setError($form, $this->t('Impossible to save changes.'));
+    }
+  }
+
+  /**
+   * Allow add requires for plugin.
+   *
+   * @return mixed
+   *   Plugin requires.
+   */
+  protected function getRequirements() {
     return [];
   }
 
