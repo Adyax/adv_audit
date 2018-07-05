@@ -356,13 +356,12 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   protected function validation() {
     $is_validated = TRUE;
-    if (!empty($requires = $this->getRequirements())) {
-      if (isset($requires['modules'])) {
-        foreach ($requires['modules'] as $dependency) {
-          if (!$this->moduleHandler->moduleExists($dependency)) {
-            $is_validated = FALSE;
-            $this->messenger->addMessage($this->t('You should install @modulename to use this feature.', ['@modulename' => $dependency]), 'error');
-          }
+    $requires = $this->getRequirements();
+    if (!empty($requires) && isset($requires['modules'])) {
+      foreach ($requires['modules'] as $dependency) {
+        if (!$this->moduleHandler->moduleExists($dependency)) {
+          $is_validated = FALSE;
+          $this->messenger->addMessage($this->t('You should install @modulename to use this feature.', ['@modulename' => $dependency]), 'error');
         }
       }
     }
