@@ -11,7 +11,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
  *   id = "database_tables_engine",
  *   label = @Translation("Database tables engine check"),
  *   description = @Translation("Check does the database contain MyISAM tables"),
- *   category = "core_and_modules",
+ *   category = "other",
  *   status = TRUE,
  *   severity = "low"
  * )
