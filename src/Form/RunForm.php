@@ -72,7 +72,7 @@ class RunForm extends FormBase {
     $form['project_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Project name'),
-      '#description' => $this->t('Please enter project name.'),
+      '#description' => $this->t('Please enter project name that you are going to audit.'),
       '#required' => TRUE,
     ];
 
@@ -96,8 +96,7 @@ class RunForm extends FormBase {
       $items[$key]['items'] = [];
       foreach ($category as $plugin) {
         $items[$key]['items'][$plugin['id']] = [
-          'label' => $plugin['info']['label'],
-          'status' => 'waiting',
+          'label' => $plugin['label'],
           'id' => $plugin['id'],
         ];
       }

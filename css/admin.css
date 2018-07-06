@@ -1,0 +1,14 @@
+.category-wrapper, .plugin-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-wrapper .category-status{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.plugin-wrapper > *{
+    display: inline-block;
+}
