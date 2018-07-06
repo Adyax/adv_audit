@@ -29,7 +29,7 @@ class DatabaseUpdateRequired extends AdvAuditCheckpointBase {
   protected $failMessage = 'Database need to be updated.';
 
   protected $additionalServices = [
-    'systemManager' => 'system.manager'
+    'systemManager' => 'system.manager',
   ];
 
   /**
@@ -39,13 +39,12 @@ class DatabaseUpdateRequired extends AdvAuditCheckpointBase {
     return $this->t('Check database state.');
   }
 
-
   /**
    * Process checkpoint review.
    */
   public function process() {
     $requirements = $this->systemManager->listRequirements();
-    if(isset($requirements['update']['severity'])){
+    if (isset($requirements['update']['severity'])) {
       $this->setProcessStatus($this::FAIL);
     }
 
