@@ -110,7 +110,7 @@ class PatchedModulesCheck extends AdvAuditCheckpointBase {
     $hacked = $hacked->hackedStatus();
     $is_hacked = FALSE;
     foreach ($hacked['#data'] as $project) {
-      if ($project['counts']['different'] != 0) {
+      if ($project['counts']['different'] != 0 && $project['project_type'] == 'module') {
         $is_hacked = TRUE;
       }
     }
