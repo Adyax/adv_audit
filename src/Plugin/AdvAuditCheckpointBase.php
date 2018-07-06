@@ -99,7 +99,6 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
     'queryService' => 'entity.query',
     'state' => 'state',
     'renderer' => 'renderer',
-    'messenger' => 'messenger',
   ];
 
   /**
@@ -243,8 +242,9 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       $values['success_message'] = $this->successMessage;
       $this->state->set($key, $values);
     }
-    if ($values['status']) {
-      $this->validation();
+    if ($values['status'] && !$this->validation()) {
+      $values['status'] = FALSE;
+      $this->state->set($key, $values);
     }
     return $values;
   }
@@ -361,15 +361,9 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
       foreach ($requires['modules'] as $dependency) {
         if (!$this->moduleHandler->moduleExists($dependency)) {
           $is_validated = FALSE;
-          $this->messenger->addMessage($this->t('You should install @modulename to use this feature.', ['@modulename' => $dependency]), 'error');
+          drupal_set_message($this->t('You should install @modulename to use this feature.', ['@modulename' => $dependency]), 'error');
         }
       }
-    }
-    if (!$is_validated) {
-      $data = $this->getInformation();
-      $data['status'] = FALSE;
-      $key = 'adv_audit.' . $this->getPluginId();
-      $this->state->set($key, $data);
     }
     return $is_validated;
   }

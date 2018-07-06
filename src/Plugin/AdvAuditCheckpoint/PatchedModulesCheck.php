@@ -81,7 +81,7 @@ class PatchedModulesCheck extends AdvAuditCheckpointBase {
         ]);
         break;
     }
-    $this->messenger->addMessage($message, 'warning');
+    drupal_set_message($message, 'warning');
   }
 
   /**
