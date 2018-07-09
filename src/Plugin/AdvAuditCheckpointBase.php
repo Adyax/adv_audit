@@ -22,7 +22,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *
    * @var status
    */
-  protected $status;
+  protected $status = 'success';
 
   /**
    * The prod check processor plugin manager.
@@ -114,9 +114,9 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
 
   protected $impactMessage = '';
 
-  protected $failMessage = '';
+  protected $failMessage = 'Error';
 
-  protected $successMessage = '';
+  protected $successMessage = 'Ok';
 
   protected $resultDescription = '';
 
@@ -169,6 +169,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   Return message about risks.
    */
   public function getImpacts($params = []) {
+    // @codingStandardsIgnoreLine
     return $this->t($this->impactMessage, $params);
   }
 
@@ -188,8 +189,10 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    */
   public function getActions($params = []) {
     if ($this->getProcessStatus() == $this::FAIL) {
+      // @codingStandardsIgnoreLine
       return $this->t($this->actionMessage, $params);
     }
+    // @codingStandardsIgnoreLine
     return $this->get('no_action_message') ? $this->t($this->get('no_action_message'), $params) : '';
   }
 
@@ -217,9 +220,11 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   Return fail or success mesage.
    */
   public function getProcessResult($params = []) {
-    if ($this->getProcessStatus() == 'fail') {
+    if ($this->getProcessStatus() == $this::FAIL) {
+      // @codingStandardsIgnoreLine
       return $this->get('fail_message') ? $this->t($this->get('fail_message'), $params) : '';
     }
+    // @codingStandardsIgnoreLine
     return $this->get('success_message') ? $this->t($this->get('success_message'), $params) : '';
   }
 
@@ -271,6 +276,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
   public function getCategory() {
     $categories = $this->configFactory->get('adv_audit.config')
       ->get('adv_audit_settings')['categories'];
+    // @codingStandardsIgnoreLine
     return isset($categories[$this->get('category')]) ? $categories[$this->get('category')] : FALSE;
   }
 
@@ -326,6 +332,7 @@ abstract class AdvAuditCheckpointBase extends PluginBase implements AdvAuditChec
    *   Return plugin description.
    */
   public function getDescription($params = []) {
+    // @codingStandardsIgnoreLine
     return $this->get('result_description') ? $this->t($this->get('result_description'), $params) : '';
   }
 
