@@ -29,8 +29,7 @@ Drupal will not provide system-wide defaults to running jobs at particular times
 Drupal will not periodically clean up log files
 application will not have a possibility automatically update feeds
 update manager will not have a possibility to check automatically pending updates
-search indexes that also uses cron will not index new/updated content 
-and many other points.';
+search indexes that also uses cron will not index new/updated content and many other points.';
 
   protected $additionalServices = [
     'systemManager' => 'system.manager',
