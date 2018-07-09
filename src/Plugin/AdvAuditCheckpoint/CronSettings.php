@@ -24,13 +24,13 @@ class CronSettings extends AdvAuditCheckpointBase {
 
   protected $failMessage = '@process_result';
 
-  protected $impactMessage = ' If system cron doesn’t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: 
+  protected $impactMessage = 'If system cron doesn’t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: 
 Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.
 Drupal will not periodically clean up log files
 application will not have a possibility automatically update feeds
 update manager will not have a possibility to check automatically pending updates
 search indexes that also uses cron will not index new/updated content 
-and many other points';
+and many other points.';
 
   protected $additionalServices = [
     'systemManager' => 'system.manager',
