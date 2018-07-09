@@ -9,7 +9,7 @@ use Drupal\features\FeaturesManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Check non-security updates for contrib modules.
+ * Check features status.
  *
  * @AdvAuditCheckpointAnnotation(
  *   id = "features_status_check",
