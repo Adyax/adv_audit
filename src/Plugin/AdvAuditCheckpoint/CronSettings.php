@@ -3,112 +3,116 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheckpoint;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
- * Check if agregation for js and css is enabled.
+ * Check if some modules were patched.
  *
  * @AdvAuditCheckpointAnnotation(
  *   id = "cron_settings",
- *   label = @Translation("Cron settings"),
- *   description = @Translation("Check if some module for advanced management for cron is used."),
+ *   label = @Translation("Cron settings."),
+ *   description = @Translation("Provide tool to control codebase state."),
  *   category = "performance",
- *   status = TRUE,
- *   severity = "high"
+ *   status = FALSE,
+ *   severity = "critical"
  * )
  *
  * @package Drupal\adv_audit\Plugin\AdvAuditCheckpoint
  */
 class CronSettings extends AdvAuditCheckpointBase {
 
+  protected $actionMessage = 'Install and configure some advanced cron module.';
+
+  protected $failMessage = '@process_result';
+
+  protected $impactMessage = ' If system cron doesn’t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: 
+Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.
+Drupal will not periodically clean up log files
+application will not have a possibility automatically update feeds
+update manager will not have a possibility to check automatically pending updates
+search indexes that also uses cron will not index new/updated content 
+and many other points';
+
+  protected $additionalServices = [
+    'systemManager' => 'system.manager',
+    'stringTranslation' => 'string_translation',
+  ];
+
+  protected $advincedModules = [
+    'ultimate_cron',
+  ];
+
   /**
-   * Return description of current checkpoint.
-   *
-   * @return mixed
-   *   Associated array.
+   * Length of the day in seconds.
    */
-  public function getDescription() {
-    return $this->t(".");
+  const DAYTIMESTAMP = 86400;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function help() {
+    $this->process();
+    return $this->t('Check cron settings.');
   }
 
   /**
-   * Return information about plugin according annotation.
-   *
-   * @return mixed
-   *   Associated array.
+   * {@inheritdoc}
    */
-  public function getTitle() {
-    return 'Javascript/CSS aggregation and compression';
-  }
+  public function getProcessResult($params = []) {
 
-  /**
-   * Return information about next actions.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getActions() {
-    if ($this->getProcessStatus() == 'fail') {
-      $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
-      return $this->t('Enable core aggregation or use @link (that includes all latest security updates).', ['@link' => $link->toString()]);
+    $list_actions = [];
+
+    $list_actions[] = $params['last_run']['value'];
+
+    if (!isset($params['adv_module'])) {
+      $list_actions[] = $this->stringTranslation->translate('Any of suggested modules isn\'t installed: @list', ['@list' => implode(', ', $this->advincedModules)]);
     }
-    return $this->t('No actions needed.');
-  }
 
-  /**
-   * Return information about impacts.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getImpacts() {
-    return $this->t("If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.");
-  }
+    $placeholder = [
+      '#theme' => 'item_list',
+      '#items' => $list_actions,
+    ];
 
-  /**
-   * Return information about plugin according annotation.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getInformation() {
-    $link = Link::fromTextAndUrl('CSS/JS Aggregation', Url::fromRoute('system.performance_settings'));
-    if ($this->getProcessStatus() == 'fail') {
-      return $this->t('Your %link settings are disabled, they should be enabled on a production environment! This should not cause trouble if you steer clear of @import statements.', ['%link' => $link->toString()]);
-    }
-    return $this->t('Your %link settings are OK for production use.', ['%link' => $link->toString()]);
+    $params['@process_result'] = $this->renderer->render($placeholder);
+
+    return parent::getProcessResult($params);
   }
 
   /**
    * Process checkpoint review.
    */
   public function process() {
-    $css_preprocess = $this->configFactory->get('system.performance')->get('css.preprocess');
-    $js_preprocess = $this->configFactory->get('system.performance')->get('js.preprocess');
 
-    if (!$css_preprocess || !$js_preprocess) {
-      $this->setProcessStatus('fail');
+    $requirements = $this->systemManager->listRequirements();
+
+    $params = [
+      'last_run' => $requirements['cron'],
+    ];
+
+    $adv_cron = FALSE;
+    foreach ($this->advincedModules as $module) {
+      if ($this->moduleHandler->moduleExists($module)) {
+        $adv_cron = TRUE;
+        $params['adv_module'] = $module;
+        break;
+      }
     }
-    else {
-      $this->setProcessStatus('success');
+
+    if (!$adv_cron || isset($requirements['cron']['severity'])) {
+      $this->setProcessStatus($this::FAIL);
     }
 
     // Collect check results.
     $result = [
       'title' => $this->getTitle(),
-      'description' => $this->getDescription(),
-      'information' => $this->getInformation(),
+      'description' => $this->get('result_description'),
+      'information' => $this->getProcessResult($params),
       'status' => $this->getProcessStatus(),
-      'severity' => $this->getPluginDefinition()['severity'],
+      'severity' => $this->get('severity'),
       'actions' => $this->getActions(),
       'impacts' => $this->getImpacts(),
     ];
 
-    \Drupal::logger('test results')
-      ->notice('<pre>' . print_r($result, 1) . '</pre>');
-
-    $results[$this->getCategory()][$this->getPluginId()] = $result;
+    $results[$this->get('category')][$this->getPluginId()] = $result;
     return $results;
   }
 
