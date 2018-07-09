@@ -6,7 +6,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckpointBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\features\Package;
 use Drupal\features\FeaturesManagerInterface;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Check non-security updates for contrib modules.
