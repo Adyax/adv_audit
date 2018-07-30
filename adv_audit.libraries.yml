@@ -1,0 +1,17 @@
+adv_audit.status:
+  version: VERSION
+  css:
+    theme:
+      css/view_results.css: {}
+
+adv_audit.admin:
+  version: VERSION
+  css:
+    theme:
+      css/admin.css: {}
+
+adv_audit.help:
+  version: VERSION
+  css:
+    theme:
+      css/help.css: {}

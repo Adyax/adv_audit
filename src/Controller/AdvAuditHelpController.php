@@ -4,20 +4,12 @@ namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
-use Drupal\Core\Link;
-
-//use Drupal\adv_audit\Checklist;
-//use Drupal\adv_audit\CheckResult;
-//use Drupal\adv_audit\SecurityReview;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The class of the Help pages' controller.
  */
-class DrupalAuditorHelpController extends ControllerBase {
-
+class AdvAuditHelpController extends ControllerBase {
 
   /**
    * The date.formatter service.
@@ -49,7 +41,7 @@ class DrupalAuditorHelpController extends ControllerBase {
   /**
    * Serves as an entry point for the help pages.
    *
-   * @param string|NULL $namespace
+   * @param string|null $namespace
    *   The namespace of the check (null if general page).
    * @param string $title
    *   The name of the check.
@@ -86,19 +78,6 @@ class DrupalAuditorHelpController extends ControllerBase {
       '#paragraphs' => $paragraphs,
       '#checks' => $checks,
     ];
-  }
-
-  /**
-   * Returns a check-specific help page.
-   *
-   * @param $namespace
-   * @param $title
-   * @return array
-   */
-  private function checkHelp($namespace, $title) {
-    $output = [];
-
-    return $output;
   }
 
 }

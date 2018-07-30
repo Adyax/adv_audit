@@ -1,0 +1,11 @@
+{% for category in categories %}
+    <div class="category-group">
+        <h3>{{ category.title }}</h3>
+        {% for item in category.items %}
+            <div class="process-item" data-key="{{ item.id }}">
+                <span class="item-title"> {{ item.label }} </span>
+                <div class="description"> {{ item.description }} </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}

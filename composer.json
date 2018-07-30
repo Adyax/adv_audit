@@ -3,7 +3,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "keywords": ["Drupal", "audit"],
-  "minimum-stability": "dev",
+  "prefer-stable": true,
   "repositories": [
     {
       "type": "composer",
@@ -11,7 +11,8 @@
     }
   ],
   "require": {
-    "drupal/coder": "8.2.12"
+    "drupal/coder": "8.2.12",
+    "mikehaertl/phpwkhtmltopdf": "2.3.1"
   },
   "scripts": {
     "post-install-cmd": [

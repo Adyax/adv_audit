@@ -1,0 +1,7 @@
+services:
+  plugin.manager.adv_audit_checkpoints:
+    class: Drupal\adv_audit\Plugin\AdvAuditCheckpointManager
+    parent: default_plugin_manager
+  plugin.manager.adv_audit_checklist:
+    class: Drupal\adv_audit\Plugin\AdvAuditCheckListManager
+    arguments: ['@plugin.manager.adv_audit_checkpoints', '@service_container']

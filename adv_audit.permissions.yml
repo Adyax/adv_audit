@@ -5,3 +5,27 @@ access auditor list:
 run audit:
   title: 'Run audit'
   description: 'Run the audit checks.'
+
+edit adv_audit plugin:
+  title: 'Edit audit plugin.'
+  description: 'Check permission to change plugin basic information.'
+
+view adv_audit entity:
+  title: 'View audit results'
+  description: 'View audit results entity'
+
+administer adv_audit entity:
+  title: 'Administer settings'
+  description: 'Administer audit results entity settings. Give only to trusted users.'
+
+delete adv_audit entity:
+  title: 'Delete audit results'
+  description: 'Delete audit result entities. Give only to trusted users.'
+
+add adv_audit entity:
+  title: 'Add audit results'
+  description: 'Add audit result entities. Give only to trusted users.'
+
+edit adv_audit entity:
+  title: 'Edit audit results'
+  description: 'Edit audit result entities settings. Give only to trusted users.'

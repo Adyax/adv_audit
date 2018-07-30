@@ -1,0 +1,29 @@
+<h2 id="{{ category }}">{{ category }}</h2>
+{% for report in reports %}
+    <div class="category-group">
+        <h3><strong>{{ report.title }}</strong></h3>
+        <div class="panel-heading">
+            <small>{{ report.description|raw }}</small>
+        </div>
+        </br>
+        <div class="panel-heading">
+            <strong>{{ 'Results: '|t }}</strong>
+            <small>{{ report.information }}</small>
+        </div>
+        </br>
+        <div class="panel-heading">
+            <strong>{{ 'Importance: '|t }}</strong>
+            <small>{{ report.severity }}</small>
+        </div>
+        </br>
+        <div class="panel-heading">
+            <strong>{{ 'Actions to be done: '|t }}</strong>
+            <small>{{ report.actions }}</small>
+        </div>
+        </br>
+        <div class="panel-heading">
+            <strong>{{ 'Impacts: '|t }}</strong>
+            <small>{{ report.impacts }}</small>
+        </div>
+    </div></br>
+{% endfor %}
