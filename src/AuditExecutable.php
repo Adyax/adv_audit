@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Exception\AuditSkipTestException;
+use Drupal\adv_audit\Exception\AuditTestException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
@@ -43,8 +44,8 @@ class AuditExecutable {
   /**
    * Constructs a MigrateExecutable and verifies and sets the memory limit.
    *
-   * @param \Doctrine\Common\Collections\ArrayCollection $test_list
-   *   List of test for performs.
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
+   *   The test plugin instance.
    * @param \Drupal\adv_audit\Message\AuditMessageInterface $message
    *   (optional) The audit message service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
@@ -90,16 +91,13 @@ class AuditExecutable {
         ),
         'error'
       );
-      return AuditResultResponseInterface::RESULT_FAIL;
+      return AuditResultResponseInterface::RESULT_WARN;
     }
 
     $return = AuditResultResponseInterface::RESULT_INFO;
 
     try {
       $return = $this->test->perform();
-    } catch (\Exception $e) {
-      $return = AuditResultResponseInterface::RESULT_FAIL;
-      $this->handleException($e);
     } catch (AuditSkipTestException $e) {
       if ($message = trim($e->getMessage())) {
         // Skip test and save log record.
@@ -115,6 +113,11 @@ class AuditExecutable {
           'status');
       }
     }
+    catch (AuditTestException $e) {
+      $return = AuditResultResponseInterface::RESULT_FAIL;
+      $this->handleException($e);
+    }
+
     // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));
     return $return;
   }

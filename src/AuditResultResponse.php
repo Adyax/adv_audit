@@ -2,12 +2,12 @@
 
 namespace Drupal\adv_audit;
 
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use JsonSerializable;
+use Serializable;
 
-class AuditResultResponse implements AuditResultResponseInterface, JsonSerializable {
+class AuditResultResponse implements AuditResultResponseInterface, JsonSerializable, Serializable {
 
   /**
    * List of audit results.
@@ -55,6 +55,33 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   public function jsonSerialize() {
     return $this->results->toArray();
+  }
+
+  /**
+   * String representation of object
+   *
+   * @link http://php.net/manual/en/serializable.serialize.php
+   * @return string the string representation of the object or null
+   * @since 5.1.0
+   */
+  public function serialize() {
+    return serialize($this->results->toArray());
+  }
+
+  /**
+   * Constructs the object
+   *
+   * @link http://php.net/manual/en/serializable.unserialize.php
+   *
+   * @param string $serialized <p>
+   * The string representation of the object.
+   * </p>
+   *
+   * @return void
+   * @since 5.1.0
+   */
+  public function unserialize($serialized) {
+    $this->results = new ArrayCollection(unserialize($serialized));
   }
 
 }

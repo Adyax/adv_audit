@@ -2,12 +2,10 @@
 
 namespace Drupal\adv_audit\Message;
 
-use Drupal\migrate\MigrateMessageInterface;
-
 /**
  * Allows capturing messages rather than displaying them directly.
  */
-class MigrateMessageCapture implements MigrateMessageInterface {
+class AuditMessageCapture implements AuditMessageInterface {
 
   /**
    * Array of recorded messages.

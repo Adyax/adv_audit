@@ -21,6 +21,7 @@ interface AuditResultResponseInterface {
    *
    * The test is failed.
    * Or passed with the error.
+   * Or Skipped.
    */
   const RESULT_WARN = 2;
 
