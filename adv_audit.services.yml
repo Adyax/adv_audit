@@ -1,7 +1,10 @@
 services:
-  plugin.manager.adv_audit_checkpoints:
-    class: Drupal\adv_audit\Plugin\AdvAuditCheckpointManager
+  plugin.manager.adv_audit_check:
+    class: Drupal\adv_audit\Plugin\AdvAuditCheckManager
     parent: default_plugin_manager
-  plugin.manager.adv_audit_checklist:
-    class: Drupal\adv_audit\Plugin\AdvAuditCheckListManager
-    arguments: ['@plugin.manager.adv_audit_checkpoints', '@service_container']
+  adv_audit.message.storage:
+    class: Drupal\Core\Config\FileStorage
+    factory: Drupal\adv_audit\MessageStorageFactory::getSync
+  adv_audit.messages:
+    class: Drupal\adv_audit\AuditTextService
+    arguments: ['@adv_audit.message.storage']

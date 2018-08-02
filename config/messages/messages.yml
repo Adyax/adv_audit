@@ -1,0 +1,8 @@
+plugins:
+    configuration_manager_status:
+      description: ''
+      actions: ''
+      impatcts: ''
+      fail: ''
+      success: ''
+      help: ''

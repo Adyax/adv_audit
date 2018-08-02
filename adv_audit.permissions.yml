@@ -1,31 +1,30 @@
-access auditor list:
-  title: 'Access advanced audit pages'
-  description: 'View audit checks and output. Give only to trusted users.'
+add audit result entity entities:
+  title: 'Create new Audit Result entity entities'
 
-run audit:
-  title: 'Run audit'
-  description: 'Run the audit checks.'
+administer audit result entity entities:
+  title: 'Administer Audit Result entity entities'
+  description: 'Allow to access the administration form to configure Audit Result entity entities.'
+  restrict access: true
 
-edit adv_audit plugin:
-  title: 'Edit audit plugin.'
-  description: 'Check permission to change plugin basic information.'
+delete audit result entity entities:
+  title: 'Delete Audit Result entity entities'
 
-view adv_audit entity:
-  title: 'View audit results'
-  description: 'View audit results entity'
+edit audit result entity entities:
+  title: 'Edit Audit Result entity entities'
 
-administer adv_audit entity:
-  title: 'Administer settings'
-  description: 'Administer audit results entity settings. Give only to trusted users.'
+view published audit result entity entities:
+  title: 'View published Audit Result entity entities'
 
-delete adv_audit entity:
-  title: 'Delete audit results'
-  description: 'Delete audit result entities. Give only to trusted users.'
+view unpublished audit result entity entities:
+  title: 'View unpublished Audit Result entity entities'
 
-add adv_audit entity:
-  title: 'Add audit results'
-  description: 'Add audit result entities. Give only to trusted users.'
+view all audit result entity revisions:
+  title: 'View all Audit Result entity revisions'
 
-edit adv_audit entity:
-  title: 'Edit audit results'
-  description: 'Edit audit result entities settings. Give only to trusted users.'
+revert all audit result entity revisions:
+  title: 'Revert all Audit Result entity revisions'
+  description: 'Role requires permission <em>view Audit Result entity revisions</em> and <em>edit rights</em> for audit result entity entities in question or <em>administer audit result entity entities</em>.'
+
+delete all audit result entity revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Audit Result entity revisions</em> and <em>delete rights</em> for audit result entity entities in question or <em>administer audit result entity entities</em>.'

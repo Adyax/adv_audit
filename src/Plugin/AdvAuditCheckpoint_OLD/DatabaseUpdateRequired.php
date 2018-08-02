@@ -51,7 +51,7 @@ class DatabaseUpdateRequired extends AdvAuditCheckpointBase {
     // Collect check results.
     $result = [
       'title' => $this->getTitle(),
-      'description' => $this->get('result_description'),
+      'description' => $this->get('result_desTitlecription'),
       'information' => $this->getProcessResult(),
       'status' => $this->getProcessStatus(),
       'severity' => $this->get('severity'),
