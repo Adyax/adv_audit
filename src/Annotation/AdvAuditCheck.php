@@ -32,7 +32,7 @@ class AdvAuditCheck extends Plugin {
   public $label;
 
   /**
-   * The plugin category.
+   * The test category if from defined config.
    *
    * @var string
    */
@@ -44,6 +44,13 @@ class AdvAuditCheck extends Plugin {
    * @var string
    */
   public $severity;
+
+  /**
+   * Determine plugin requirements.
+   *
+   * @var array
+   */
+  public $requirements = [];
 
 
 }

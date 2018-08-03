@@ -27,22 +27,6 @@ class AuditRunTestBatch {
   protected static $numProcessed = 0;
 
   /**
-   * Ensure we only add the listeners once per request.
-   *
-   * @var bool
-   */
-  protected static $listenersAdded = FALSE;
-
-  /**
-   * The maximum length in seconds to allow processing in a request.
-   *
-   * @see self::run()
-   *
-   * @var int
-   */
-  protected static $maxExecTime;
-
-  /**
    * MigrateMessage instance to capture messages during the migration process.
    *
    * @var \Drupal\migrate_drupal_ui\Batch\MigrateMessageCapture
@@ -92,16 +76,16 @@ class AuditRunTestBatch {
       $test_name = $test->label() ? $test->label() : $test_id;
 
       try {
-        $test_status = $executable->performTest();
+        $test_reason = $executable->performTest();
       }
       catch (\Exception $e) {
         \Drupal::logger('adv_audit_batch')->error($e->getMessage());
         $test_status = AuditResultResponseInterface::RESULT_FAIL;
       }
 
-      $context['sandbox']['result_response']->addResultReport($test, $test_status);
+      $context['sandbox']['result_response']->addReason($test_reason);
 
-      switch ($test_status) {
+      switch ($test_reason->getStatus()) {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
           $context['sandbox']['num_processed'] += static::$numProcessed;

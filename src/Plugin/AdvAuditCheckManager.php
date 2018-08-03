@@ -26,8 +26,8 @@ class AdvAuditCheckManager extends DefaultPluginManager {
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/AdvAuditCheck', $namespaces, $module_handler, 'Drupal\adv_audit\Plugin\AdvAuditCheckInterface', 'Drupal\adv_audit\Annotation\AdvAuditCheck');
 
-    $this->alterInfo('adv_audit_adv_audit_check_info');
-    $this->setCacheBackend($cache_backend, 'adv_audit_adv_audit_check_plugins');
+    $this->alterInfo('adv_audit_check_info');
+    $this->setCacheBackend($cache_backend, 'adv_audit_check_plugins');
   }
 
 }

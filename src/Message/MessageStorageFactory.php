@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Message;
 
 use Drupal\Core\Config\FileStorage;
 
@@ -14,8 +14,8 @@ class MessageStorageFactory {
      *
      * @return \Drupal\Core\Config\FileStorage FileStorage
      */
-    public static function getSync() {
-        return new FileStorage(__DIR__ . '/configs/messages');
+    public static function getMsgDir() {
+        return new FileStorage(drupal_get_path('module', 'adv_audit') . '/config/messages');
     }
 
 }

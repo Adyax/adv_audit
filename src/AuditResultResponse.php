@@ -35,14 +35,25 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @param $status
    *   Execution status.
    *
+   * @deprecated Use ::addReason method.
    * @return void
    */
   public function addResultReport(AdvAuditCheckInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
     $this->results->add([
       'test_id' => $test->id(),
       'status' => $status,
-      'category' => $test->getCategoryDefinitionPlugin()->id()
+      'category' => $test->getTestCategory()
     ]);
+  }
+
+  /**
+   * Reason response from audit test plugin.
+   *
+   * @param \Drupal\adv_audit\AuditReason $reason
+   *   The reason object from test plugin.
+   */
+  public function addReason(AuditReason $reason) {
+    $this->results->add($reason);
   }
 
   /**

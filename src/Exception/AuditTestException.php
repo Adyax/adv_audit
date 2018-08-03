@@ -4,8 +4,6 @@ namespace Drupal\adv_audit\Exception;
 
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
-use Drupal\migrate\Plugin\MigrateIdMapInterface;
-use Drupal\migrate\Plugin\MigrationInterface;
 
 /**
  * Defines the migrate exception class.
@@ -15,7 +13,7 @@ class AuditTestException extends \Exception {
   /**
    * The level of the error being reported.
    *
-   * The value is a Migration::MESSAGE_* constant.
+   * The value is a AdvAuditCheckInterface::MESSAGE_* constant.
    *
    * @var int
    */

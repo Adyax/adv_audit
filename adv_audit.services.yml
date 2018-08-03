@@ -4,7 +4,7 @@ services:
     parent: default_plugin_manager
   adv_audit.message.storage:
     class: Drupal\Core\Config\FileStorage
-    factory: Drupal\adv_audit\MessageStorageFactory::getSync
+    factory: Drupal\adv_audit\Message\MessageStorageFactory::getMsgDir
   adv_audit.messages:
-    class: Drupal\adv_audit\AuditTextService
+    class: Drupal\adv_audit\Message\AuditMessagesStorage
     arguments: ['@adv_audit.message.storage']

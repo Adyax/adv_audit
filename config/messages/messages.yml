@@ -1,8 +1,8 @@
 plugins:
-    configuration_manager_status:
-      description: ''
-      actions: ''
-      impatcts: ''
-      fail: ''
-      success: ''
-      help: ''
+  configuration_manager_status:
+    description: ''
+    actions: ''
+    impatcts: ''
+    fail: 'Its fail message49'
+    success: 'Success message!!'
+    help: ''

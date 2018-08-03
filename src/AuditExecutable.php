@@ -6,6 +6,7 @@ use Drupal\adv_audit\Exception\AuditSkipTestException;
 use Drupal\adv_audit\Exception\AuditTestException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -116,6 +117,11 @@ class AuditExecutable {
     catch (AuditTestException $e) {
       $return = AuditResultResponseInterface::RESULT_FAIL;
       $this->handleException($e);
+    }
+
+    // Wrap to valid response object.
+    if (!($return instanceof AuditReason)) {
+      $return = AuditReason::create($this->test->id(), $return, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
     }
 
     // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));

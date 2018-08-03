@@ -56,25 +56,4 @@ interface AdvAuditCheckInterface extends PluginInspectionInterface {
    */
   public function perform();
 
-  /**
-   * Additional configuration form for plugin instance.
-   * Value will be store in state storage and can be uses bu next key:
-   *   - adv_audit.plugin.PLUGIN_ID.config.KEY
-   *
-   * @param $form
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *
-   * @return mixed
-   */
-  public function configForm($form, FormStateInterface $form_state);
-
-  public function checkRequirements();
-
-  /**
-   * Return plugin instance category.
-   *
-   * @return mixed
-   */
-  public function getCategoryDefinitionPlugin();
-
 }
