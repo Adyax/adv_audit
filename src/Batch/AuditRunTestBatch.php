@@ -63,7 +63,7 @@ class AuditRunTestBatch {
     static::$numProcessed = 0;
 
     $test_id = reset($context['sandbox']['test_ids']);
-    // $definition = \Drupal::service('plugin.manager.adv_audit_check')->getDefinition($test_id);
+
     $configuration = [];
 
     /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
