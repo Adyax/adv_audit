@@ -31,6 +31,10 @@ interface AdvAuditCheckInterface extends PluginInspectionInterface {
    */
   const MESSAGE_INFORMATIONAL = 4;
 
+  const SEVERITY_CRITICAL = 'critical';
+  const SEVERITY_HIGH = 'high';
+  const SEVERITY_LOW = 'low';
+
 
   /**
    * An alias for getPluginId() for backwards compatibility reasons.

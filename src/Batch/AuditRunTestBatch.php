@@ -66,10 +66,10 @@ class AuditRunTestBatch {
     $definition = \Drupal::service('plugin.manager.adv_audit_check')->getDefinition($test_id);
     $configuration = [];
 
-    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $migration */
+    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
     $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($migration) {
+    if ($test) {
       static::$messages = new AuditMessageCapture();
       $executable = new AuditExecutable($test, static::$messages);
 

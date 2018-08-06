@@ -41,8 +41,8 @@ adv_audit.toggle:
 adv_audit.edit_checkpoint:
   path: 'admin/config/adv-audit/plugin/{plugin_id}/edit'
   defaults:
-    _form: '\Drupal\adv_audit\Form\CheckPointSettings'
-    _title: 'Edit CheckPoint information'
+    _form: '\Drupal\adv_audit\Form\AdvAuditPluginSettings'
+    _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
   requirements:
     _permission: 'edit adv_audit plugin'
 #---------------------------------------- End of CheckPoint functionality--------------------------#

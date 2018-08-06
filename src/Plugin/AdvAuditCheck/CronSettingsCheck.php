@@ -2,6 +2,9 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
@@ -13,10 +16,11 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * @AdvAuditCheck(
  *  id = "cron_settings",
- *  label = @Translation("Cron settings."),
+ *  label = @Translation("Cron settings"),
  *  category = "performance",
  *  severity = "critical",
- *  requirements = [],
+ *  requirements = {},
+ *  enabled = true,
  * )
  */
 class CronSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
@@ -73,7 +77,24 @@ class CronSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInter
    * {@inheritdoc}
    */
   public function perform() {
-    // The actual procedure of carrying out the check.
+    $requirements = $this->systemManager->listRequirements();
+    $params = [
+      'last_run' => $requirements['cron'],
+    ];
+
+    $adv_cron = FALSE;
+    foreach (['ultimate_cron'] as $module) {
+      if ($this->moduleHandler->moduleExists($module)) {
+        $adv_cron = TRUE;
+        $params['adv_module'] = $module;
+        break;
+      }
+    }
+
+    if (!$adv_cron || isset($requirements['cron']['severity'])) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+    }
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS);
   }
 
 
