@@ -27,9 +27,9 @@ class AuditRunTestBatch {
   protected static $numProcessed = 0;
 
   /**
-   * MigrateMessage instance to capture messages during the migration process.
+   * AuditMessage instance to capture messages during the perform test process.
    *
-   * @var \Drupal\migrate_drupal_ui\Batch\MigrateMessageCapture
+   * @var \Drupal\adv_audit\Message\AuditMessageCapture
    */
   protected static $messages;
 
@@ -66,7 +66,7 @@ class AuditRunTestBatch {
     $definition = \Drupal::service('plugin.manager.adv_audit_check')->getDefinition($test_id);
     $configuration = [];
 
-    /** @var \Drupal\migrate\Plugin\Migration $migration */
+    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $migration */
     $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
     if ($migration) {
@@ -101,12 +101,12 @@ class AuditRunTestBatch {
         case AuditResultResponseInterface::RESULT_FAIL:
           $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test failed', ['@test' => $test_name]);
           $context['results']['failures']++;
-          \Drupal::logger('migrate_drupal_ui')->error('Operation on @test failed', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Operation on @test failed', ['@test' => $test_name]);
           break;
 
         case AuditResultResponseInterface::RESULT_WARN:
           $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          \Drupal::logger('migrate_drupal_ui')->error('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
           break;
 
         case AuditResultResponseInterface::RESULT_INFO:

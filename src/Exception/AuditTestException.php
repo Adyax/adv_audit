@@ -29,7 +29,7 @@ class AuditTestException extends \Exception {
   protected $status;
 
   /**
-   * Constructs a MigrateException object.
+   * Constructs a AuditTestException object.
    *
    * @param string $message
    *   The message for the exception.
