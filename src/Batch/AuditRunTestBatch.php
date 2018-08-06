@@ -33,7 +33,6 @@ class AuditRunTestBatch {
    */
   protected static $messages;
 
-
   /**
    * Runs a single test batch.
    *
@@ -44,7 +43,7 @@ class AuditRunTestBatch {
    * @param array $context
    *   The batch context.
    */
-  public static function run($initial_ids, $config, &$context) {
+  public static function run(array $initial_ids, array $config, array &$context) {
     if (!isset($context['sandbox']['test_ids'])) {
       $context['sandbox']['max'] = count($initial_ids);
       $context['sandbox']['current'] = 1;
@@ -53,7 +52,8 @@ class AuditRunTestBatch {
       // test_ids will be the list of IDs remaining to run.
       $context['sandbox']['test_ids'] = $initial_ids;
       $context['sandbox']['messages'] = [];
-      /** @var \Drupal\adv_audit\AuditResultResponseInterface */
+
+      /* @var \Drupal\adv_audit\AuditResultResponseInterface */
       $context['sandbox']['result_response'] = new AuditResultResponse();
       $context['results']['failures'] = 0;
       $context['results']['successes'] = 0;
@@ -63,13 +63,13 @@ class AuditRunTestBatch {
     static::$numProcessed = 0;
 
     $test_id = reset($context['sandbox']['test_ids']);
-    $definition = \Drupal::service('plugin.manager.adv_audit_check')->getDefinition($test_id);
+    // $definition = \Drupal::service('plugin.manager.adv_audit_check')->getDefinition($test_id);
     $configuration = [];
 
-    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $migration */
+    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
     $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($migration) {
+    if ($test) {
       static::$messages = new AuditMessageCapture();
       $executable = new AuditExecutable($test, static::$messages);
 
@@ -112,6 +112,9 @@ class AuditRunTestBatch {
         case AuditResultResponseInterface::RESULT_INFO:
           // Skip silently if disabled.
           break;
+
+        default:
+          break;
       }
 
       // Unless we're continuing on with this test, take it off the list.
@@ -143,10 +146,10 @@ class AuditRunTestBatch {
         $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id);
         $test_name = $test->label() ? $test->label() : $test_id;
         $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max total tasks)', [
-            '@test' => $test_name,
-            '@current' => $context['sandbox']['current'],
-            '@max' => $context['sandbox']['max'],
-          ]) . "<br />\n" . $context['message'];
+          '@test' => $test_name,
+          '@current' => $context['sandbox']['current'],
+          '@max' => $context['sandbox']['max'],
+        ]) . "<br />\n" . $context['message'];
       }
     }
     else {
@@ -169,7 +172,7 @@ class AuditRunTestBatch {
    * @param string $elapsed
    *   The time to run the batch.
    */
-  public static function finished($success, $results, $operations, $elapsed) {
+  public static function finished($success, array $results, array $operations, $elapsed) {
     $successes = $results['successes'];
     $failures = $results['failures'];
 

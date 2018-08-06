@@ -13,4 +13,9 @@ interface AuditMessagesStorageInterface {
 
 
   const COLLECTION_NAME = 'messages';
+
+  public function set($plugin_id, $type, $string);
+  public function get($plugin_id, $type);
+
+
 }

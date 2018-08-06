@@ -30,4 +30,18 @@ class AdvAuditCheckManager extends DefaultPluginManager {
     $this->setCacheBackend($cache_backend, 'adv_audit_check_plugins');
   }
 
+  /**
+   * Build plugins list by category.
+   *
+   * @return array
+   *   list of available plugin by category.
+   */
+  public function getPluginsByCategory() {
+    $list = [];
+    foreach($this->getDefinitions() as $plugin) {
+      $list[$plugin['category']][$plugin['id']] = $plugin;
+    }
+    return $list;
+  }
+
 }

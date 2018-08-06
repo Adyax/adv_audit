@@ -44,7 +44,7 @@ class RunForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.plugin.manager.adv_audit_check')
+      $container->get('plugin.manager.adv_audit_check')
     );
   }
 
@@ -59,22 +59,16 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Start audit'),
-    ];
-
-    $form['project_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Project name'),
-      '#description' => $this->t('Please enter project name that you are going to audit.'),
-      '#required' => TRUE,
-    ];
 
     $form['process_list'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Process list:'),
+      '#title' => $this->t('Available test list:'),
       'list' => ['#markup' => $this->buildProcessItems()],
+    ];
+
+    $form['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Start audit'),
     ];
 
     return $form;
@@ -85,22 +79,21 @@ class RunForm extends FormBase {
    */
   protected function buildProcessItems() {
     $items = [];
+    // Get all available tests.
     $categories = $this->configCategories->get('adv_audit_settings')['categories'];
-    foreach ($this->checkPlugins as $key => $category) {
-      $items[$key]['title'] = $categories[$key]['label'];
-      $items[$key]['items'] = [];
-      foreach ($category as $plugin) {
-        $items[$key]['items'][$plugin['id']] = [
-          'label' => $plugin['label'],
-          'id' => $plugin['id'],
-        ];
+    foreach ($this->auditTestManager->getPluginsByCategory() as $category_id => $plugins) {
+      $items[$category_id]['title'] = $categories[$category_id]['label'];
+      $items[$category_id]['items'];
+      foreach ($plugins as $plugin_id => $plugin_definition) {
+        $items[$category_id]['items'][$plugin_id]['label'] = $plugin_definition['label']->__toString();
+        $items[$category_id]['items'][$plugin_id]['id'] = $plugin_definition['id'];
       }
     }
     $render_array = [
       '#theme' => 'adv_audit_run_process',
       '#categories' => $items,
     ];
-    return $this->render->render($render_array);
+    return render($render_array);
   }
 
   /**

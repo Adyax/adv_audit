@@ -7,6 +7,9 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
 use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Render\Renderer;
 
 /**
  * Class AdvAuditEntityController.
@@ -16,6 +19,38 @@ use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
 class AdvAuditEntityController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
+   * The date formatter.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatter
+   */
+  protected $formatDate;
+
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
+  /**
+   * Constructs an AdvAuditEntityController object for use DI.
+   */
+  public function __construct(DateFormatter $formatDate, Renderer $renderer) {
+    $this->formatDate = $formatDate;
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+    $container->get('date.formatter'),
+    $container->get('renderer')
+    );
+  }
+
+  /**
    * Displays a Audit Result entity  revision.
    *
    * @param int $adv_audit_revision
@@ -23,6 +58,9 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
    *
    * @return array
    *   An array suitable for drupal_render().
+   *
+   * @throws \InvalidArgumentException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public function revisionShow($adv_audit_revision) {
     $adv_audit = $this->entityManager()->getStorage('adv_audit')->loadRevision($adv_audit_revision);
@@ -39,10 +77,18 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
    *
    * @return string
    *   The page title.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public function revisionPageTitle($adv_audit_revision) {
     $adv_audit = $this->entityManager()->getStorage('adv_audit')->loadRevision($adv_audit_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $adv_audit->label(), '%date' => format_date($adv_audit->getRevisionCreationTime())]);
+    return $this->t(
+      'Revision of %title from %date',
+      [
+        '%title' => $adv_audit->label(),
+        '%date' => $this->formatDate->format($adv_audit->getRevisionCreationTime()),
+      ]
+    );
   }
 
   /**
@@ -53,6 +99,8 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
    *
    * @return array
    *   An array as expected by drupal_render().
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public function revisionOverview(AdvAuditEntityInterface $adv_audit) {
     $account = $this->currentUser();
@@ -65,8 +113,8 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $adv_audit->label()]) : $this->t('Revisions for %title', ['%title' => $adv_audit->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
 
-    $revert_permission = (($account->hasPermission("revert all audit result entity revisions") || $account->hasPermission('administer audit result entity entities')));
-    $delete_permission = (($account->hasPermission("delete all audit result entity revisions") || $account->hasPermission('administer audit result entity entities')));
+    $revert_permission = ($account->hasPermission("revert all audit result entity revisions") || $account->hasPermission('administer audit result entity entities'));
+    $delete_permission = ($account->hasPermission("delete all audit result entity revisions") || $account->hasPermission('administer audit result entity entities'));
 
     $rows = [];
 
@@ -86,7 +134,7 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
         ];
 
         // Use revision link to link to revisions that are not active.
-        $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+        $date = $this->formatDate->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $adv_audit->getRevisionId()) {
           $link = $this->l($date, new Url('entity.adv_audit.revision', ['adv_audit' => $adv_audit->id(), 'adv_audit_revision' => $vid]));
         }
@@ -101,7 +149,7 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
             '#template' => '{% trans %}{{ date }} by {{ username }}{% endtrans %}{% if message %}<p class="revision-log">{{ message }}</p>{% endif %}',
             '#context' => [
               'date' => $link,
-              'username' => \Drupal::service('renderer')->renderPlain($username),
+              'username' => $this->renderer->renderPlain($username),
               'message' => ['#markup' => $revision->getRevisionLogMessage(), '#allowed_tags' => Xss::getHtmlTagList()],
             ],
           ],
