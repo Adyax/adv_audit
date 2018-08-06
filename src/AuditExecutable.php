@@ -22,7 +22,7 @@ class AuditExecutable {
   /**
    * List of test for performs.
    *
-   * @var AdvAuditCheckInterface
+   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
    */
   protected $test;
 
@@ -35,8 +35,6 @@ class AuditExecutable {
 
   /**
    * Migration audit service.
-   *
-   * @todo Make this protected.
    *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
@@ -62,6 +60,7 @@ class AuditExecutable {
    * Gets the event dispatcher.
    *
    * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   *   Return Event dispatcher service instance.
    */
   protected function getEventDispatcher() {
     if (!$this->eventDispatcher) {
@@ -75,12 +74,14 @@ class AuditExecutable {
    */
   public function performTest() {
     // Send event before perform the test.
-    // $this->getEventDispatcher()->dispatch(AdvAuditEvents::PRE_PERFORM, new AuditEvent($this->test, $this->message));
-
+    // $this->getEventDispatcher()->
+    // dispatch(AdvAuditEvents::PRE_PERFORM,
+    // new AuditEvent($this->test, $this->message));
     // Knock off test if the requirements haven't been met.
     try {
       $this->test->checkRequirements();
-    } catch (RequirementsException $e) {
+    }
+    catch (RequirementsException $e) {
       $this->message->display(
         $this->t(
           'Test @id did not meet the requirements. @message @requirements',
@@ -99,8 +100,9 @@ class AuditExecutable {
 
     try {
       $return = $this->test->perform();
-    } catch (AuditSkipTestException $e) {
-      if ($message = trim($e->getMessage())) {
+    }
+    catch (AuditSkipTestException $e) {
+      if ($this->message = trim($e->getMessage())) {
         // Skip test and save log record.
         $return = AuditResultResponseInterface::RESULT_WARN;
         $this->message->display(
@@ -124,7 +126,9 @@ class AuditExecutable {
       $return = AuditReason::create($this->test->id(), $return, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
     }
 
-    // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));
+    // this->getEventDispatcher()
+    // ->dispatch(AdvAuditEvents::POST_PERFORM,
+    // new AuditEvent($this->test, $this->message));.
     return $return;
   }
 
