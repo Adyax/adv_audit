@@ -142,8 +142,8 @@ class AuditExecutable {
    */
   protected function handleException(\Exception $exception) {
     $result = Error::decodeException($exception);
-    $message = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
-    $this->message->display($message, 'error');
+    $handleMessage = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
+    $this->message->display($handleMessage, 'error');
   }
 
 }
