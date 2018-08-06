@@ -2,11 +2,11 @@
 
 namespace Drupal\adv_audit\Form;
 
+use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckListManager;
 use Drupal\Core\Render\Renderer;
 
 /**
@@ -16,10 +16,8 @@ class RunForm extends FormBase {
 
   /**
    * The adv_audit.checklist service.
-   *
-   * @var \Drupal\adv_audit\Checklist
    */
-  protected $checkPlugins = [];
+  protected $auditTestManager = [];
 
   protected $configCategories;
 
@@ -35,11 +33,9 @@ class RunForm extends FormBase {
    * @param \Drupal\Core\Render\Renderer $renderer
    *   Use DI to render.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckListManager $manager, Renderer $renderer) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $manager) {
     $this->configCategories = $config_factory->get('adv_audit.config');
-    $this->check = $manager;
-    $this->checkPlugins = $this->check->getPluginsByStatus($this->check->enabled);
-    $this->render = $renderer;
+    $this->auditTestManager = $manager;
   }
 
   /**
@@ -48,8 +44,7 @@ class RunForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_checklist'),
-      $container->get('renderer')
+      $container->get('plugin.manager.plugin.manager.adv_audit_check')
     );
   }
 
