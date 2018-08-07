@@ -62,6 +62,7 @@ class AuditExecutable {
    * Gets the event dispatcher.
    *
    * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   *   Return Event dispatcher service instance.
    */
   protected function getEventDispatcher() {
     if (!$this->eventDispatcher) {
@@ -80,7 +81,8 @@ class AuditExecutable {
     // Knock off test if the requirements haven't been met.
     try {
       $this->test->checkRequirements();
-    } catch (RequirementsException $e) {
+    }
+    catch (RequirementsException $e) {
       $this->message->display(
         $this->t(
           'Test @id did not meet the requirements. @message @requirements',

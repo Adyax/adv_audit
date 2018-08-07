@@ -35,7 +35,6 @@ class AuditRunTestBatch {
    */
   protected static $messages;
 
-
   /**
    * Runs a single test batch.
    *
@@ -115,6 +114,9 @@ class AuditRunTestBatch {
         case AuditResultResponseInterface::RESULT_INFO:
           // Skip silently if disabled.
           break;
+
+        default:
+          break;
       }
 
       // Unless we're continuing on with this test, take it off the list.
@@ -144,10 +146,10 @@ class AuditRunTestBatch {
         $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id);
         $test_name = $test->label() ? $test->label() : $test_id;
         $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max total tasks)', [
-            '@test' => $test_name,
-            '@current' => $context['sandbox']['current'],
-            '@max' => $context['sandbox']['max'],
-          ]) . "<br />\n" . $context['message'];
+          '@test' => $test_name,
+          '@current' => $context['sandbox']['current'],
+          '@max' => $context['sandbox']['max'],
+        ]) . "<br />\n" . $context['message'];
       }
     }
     else {
