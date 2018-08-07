@@ -2,10 +2,13 @@
 
 namespace Drupal\adv_audit\Message;
 
+/**
+ * Interface for audit's messages.
+ */
 interface AuditMessageInterface {
 
   /**
-   * Displays a audit message.
+   * Displays an audit message.
    *
    * @param string $message
    *   The message to display.
