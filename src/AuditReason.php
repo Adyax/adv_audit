@@ -6,6 +6,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Class AuditReason.
+ *
  * Use in audit test plugin for save perform result.
  *
  * @package Drupal\adv_audit
@@ -24,7 +25,7 @@ class AuditReason {
    *
    * @var string
    */
-  protected $test_id;
+  protected $testId;
 
   /**
    * The main reason data.
@@ -63,6 +64,9 @@ class AuditReason {
     $this->reason = is_array($reason) ? implode('|', $reason) : $reason;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create($plugin_id, $status, $reason = NULL) {
     return new static($plugin_id, $status, $reason);
   }
@@ -76,6 +80,5 @@ class AuditReason {
   public function getStatus() {
     return $this->status;
   }
-
 
 }

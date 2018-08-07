@@ -2,7 +2,6 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -28,10 +27,10 @@ class SettingsForm extends ConfigFormBase {
    * SettingsForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckListManager $advAuditCheckListManager
+   *   Use DI to work with config.
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $advAuditCheckListManager
    *   Use DI to work with services.
-   * @param \Drupal\Core\State $state
+   * @param \Drupal\Core\State\State $state
    *   Use DI to work with state.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Use DI to work with redirect destination.
@@ -64,7 +63,7 @@ class SettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Get untrasted roles.
+   * Get untrusted roles.
    */
   protected function untrustedRoles() {
     return $this->config->getEditable('adv_audit.config')
@@ -103,10 +102,6 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-
-
-
-
     $form = parent::buildForm($form, $form_state);
     $categories = $this->getCategories();
 
@@ -139,7 +134,6 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'container',
     ];
     foreach ($categories as $key => $category) {
-      // TODO: Remove when all categories will be ready.
       if (!isset($this->checkPlugins[$key])) {
         continue;
       }

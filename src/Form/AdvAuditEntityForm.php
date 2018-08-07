@@ -4,6 +4,8 @@ namespace Drupal\adv_audit\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountProxy;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form controller for Audit Result entity edit forms.
@@ -11,6 +13,29 @@ use Drupal\Core\Form\FormStateInterface;
  * @ingroup adv_audit
  */
 class AdvAuditEntityForm extends ContentEntityForm {
+
+  /**
+   * The current user service.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
+   * Constructs an AdvAuditEntityForm object for use DI.
+   */
+  public function __construct(AccountProxy $current_user) {
+    $this->currentUser = $current_user;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('current_user')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -28,8 +53,6 @@ class AdvAuditEntityForm extends ContentEntityForm {
       ];
     }
 
-    $entity = $this->entity;
-
     return $form;
   }
 
@@ -45,7 +68,7 @@ class AdvAuditEntityForm extends ContentEntityForm {
 
       // If a new revision is created, save the current user as revision author.
       $entity->setRevisionCreationTime(REQUEST_TIME);
-      $entity->setRevisionUserId(\Drupal::currentUser()->id());
+      $entity->setRevisionUserId($this->currentUser->id());
     }
     else {
       $entity->setNewRevision(FALSE);
