@@ -37,15 +37,13 @@ adv_audit.toggle:
   requirements:
     _permission: 'access auditor list'
 
-#---------------------------------------- CheckPoint functionality---------------------------------#
-adv_audit.edit_checkpoint:
+adv_audit.plugin.settings:
   path: 'admin/config/adv-audit/plugin/{plugin_id}/edit'
   defaults:
     _form: '\Drupal\adv_audit\Form\AdvAuditPluginSettings'
     _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
   requirements:
     _permission: 'edit adv_audit plugin'
-#---------------------------------------- End of CheckPoint functionality--------------------------#
 
 #---------------------------------------- Audit entity --------------------------------------------#
 entity.adv_audit.canonical:

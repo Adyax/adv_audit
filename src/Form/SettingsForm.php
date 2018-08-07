@@ -29,7 +29,7 @@ class SettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckListManager $advAuditCheckListManager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $advAuditCheckListManager
    *   Use DI to work with services.
    * @param \Drupal\Core\State $state
    *   Use DI to work with state.
@@ -103,12 +103,10 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-
-
-
-
     $form = parent::buildForm($form, $form_state);
+    $form['#tree'] = TRUE;
     $categories = $this->getCategories();
+    $plugin_list = $this->auditPluginManager->getPluginsByCategory();
 
     // Get the user roles.
     $roles = user_roles();
@@ -139,10 +137,6 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'container',
     ];
     foreach ($categories as $key => $category) {
-      // TODO: Remove when all categories will be ready.
-      if (!isset($this->checkPlugins[$key])) {
-        continue;
-      }
 
       $form['categories'][$key] = [
         '#type' => 'fieldset',
@@ -160,7 +154,9 @@ class SettingsForm extends ConfigFormBase {
       ];
 
       $current_url = $this->redirectDestination->get();
-      foreach ($this->checkPlugins[$key] as $plugin) {
+      foreach ($plugin_list[$key] as $plugin) {
+        /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
+        $plugin_instance = $this->auditPluginManager->createInstance($plugin['id']);
         $form['categories'][$key][$plugin['id']] = [
           '#type' => 'container',
           '#attributes' => [
@@ -171,12 +167,12 @@ class SettingsForm extends ConfigFormBase {
         $form['categories'][$key][$plugin['id']][$plugin['id']] = [
           '#type' => 'checkbox',
           '#title' => $plugin['label'],
-          '#default_value' => $plugin['status'],
+          '#default_value' => $plugin_instance->getStatus(),
         ];
         $form['categories'][$key][$plugin['id']][$plugin['id'] . '_edit'] = [
           '#type' => 'link',
           '#title' => $this->t('Edit'),
-          '#url' => Url::fromRoute('adv_audit.edit_checkpoint', ['plugin_id' => $plugin['id']], ['query' => ['destination' => $current_url]]),
+          '#url' => Url::fromRoute('adv_audit.plugin.settings', ['plugin_id' => $plugin['id']], ['query' => ['destination' => $current_url]]),
           '#attributes' => [
             'class' => ['edit', 'edit-checkpoint'],
           ],
@@ -215,28 +211,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $values = $form_state->getValues();
-
-    // Save categories status.
-    $config = $this->config->getEditable('adv_audit.config');
-    $config_categories = $config->get('adv_audit_settings');
-    foreach ($config_categories['categories'] as $key => &$category) {
-      $category['status'] = $values[$key . '_status'];
-    }
-    $config->set('adv_audit_settings', $config_categories);
-    $config->set('untrusted_roles', $values['untrusted_roles']);
-    $config->save();
-
-    // Save plugin status.
-    foreach ($this->checkPlugins as $category_items) {
-      foreach ($category_items as $plugin) {
-        if ($plugin['status'] != $values[$plugin['id']]) {
-          $plugin['status'] = $values[$plugin['id']];
-          $key = 'adv_audit.' . $plugin['id'];
-          $this->state->set($key, $plugin);
-        }
-      }
-    }
+    // Need to implement this part as separate service for have better management of plugin category.
   }
 
 }

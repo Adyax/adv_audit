@@ -44,4 +44,18 @@ class AdvAuditCheckManager extends DefaultPluginManager {
     return $list;
   }
 
+  /**
+   * Get list of plugin by selected category.
+   *
+   * @param $category_id
+   *   The category ID.
+   *
+   * @return array|mixed
+   *   Return list if plugin in selected category.
+   */
+  public function getLPluginsByCategoryFilter($category_id) {
+    $list = $this->getPluginsByCategory();
+    return isset($list[$category_id]) ? $list[$category_id] : [];
+  }
+
 }
