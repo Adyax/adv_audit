@@ -184,6 +184,10 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
     return $this;
   }
 
+  public static function generateEntityName() {
+    return 'Audit Report from ' . date(DATE_RFC3339, time()) . ' by ' . \Drupal::currentUser()->getAccountName();
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -195,7 +199,7 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setDescription(t('The name of the Audit Result entity entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'max_length' => 50,
+        'max_length' => 100,
         'text_processing' => 0,
       ])
       ->setDefaultValue('')

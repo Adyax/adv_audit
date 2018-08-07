@@ -86,15 +86,15 @@ class CronSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInter
     foreach (['ultimate_cron'] as $module) {
       if ($this->moduleHandler->moduleExists($module)) {
         $adv_cron = TRUE;
-        $params['adv_module'] = $module;
+        $params['module'][] = $module;
         break;
       }
     }
 
     if (!$adv_cron || isset($requirements['cron']['severity'])) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('Module @module_name not exist', ['@module_name' => implode(', ', $params['module'])]));
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
   }
 
 

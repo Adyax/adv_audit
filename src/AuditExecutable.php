@@ -22,7 +22,7 @@ class AuditExecutable {
   /**
    * List of test for performs.
    *
-   * @var AdvAuditCheckInterface
+   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
    */
   protected $test;
 
@@ -95,14 +95,12 @@ class AuditExecutable {
       return AuditResultResponseInterface::RESULT_WARN;
     }
 
-    $return = AuditResultResponseInterface::RESULT_INFO;
-
     try {
       $return = $this->test->perform();
     } catch (AuditSkipTestException $e) {
       if ($message = trim($e->getMessage())) {
         // Skip test and save log record.
-        $return = AuditResultResponseInterface::RESULT_WARN;
+        $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $this->message->display(
           $this->t(
             'Test @id was skipped. @message',
@@ -115,13 +113,8 @@ class AuditExecutable {
       }
     }
     catch (AuditTestException $e) {
-      $return = AuditResultResponseInterface::RESULT_FAIL;
+      $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
       $this->handleException($e);
-    }
-
-    // Wrap to valid response object.
-    if (!($return instanceof AuditReason)) {
-      $return = AuditReason::create($this->test->id(), $return, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
     }
 
     // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));

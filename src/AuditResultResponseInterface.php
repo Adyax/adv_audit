@@ -25,6 +25,8 @@ interface AuditResultResponseInterface {
    */
   const RESULT_WARN = 2;
 
+  const RESULT_SKIP = 2;
+
   /**
    * Additional states of result.
    *

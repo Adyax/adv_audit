@@ -6,11 +6,14 @@ use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Base class for Advances audit check plugins.
  */
-abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInterface, RequirementsInterface {
+abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The state service object.
