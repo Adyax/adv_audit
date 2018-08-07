@@ -2,24 +2,30 @@ adv_audit.run_tab:
   route_name: adv_audit.run
   base_route: adv_audit.settings
   title: Run audit
-
+# Audit Result entity routing definition
 adv_audit.settings_tab:
   route_name: adv_audit.settings
+  title: 'Settings'
   base_route: adv_audit.settings
-  title: Settings
 
-adv_audit.view:
+entity.adv_audit.canonical:
   route_name: entity.adv_audit.canonical
   base_route: entity.adv_audit.canonical
-  title: View
+  title: 'View'
 
-adv_audit.page_edit:
+entity.adv_audit.edit_form:
   route_name: entity.adv_audit.edit_form
   base_route: entity.adv_audit.canonical
-  title: Edit
+  title: 'Edit'
 
-adv_audit.delete_confirm:
-  route_name: entity.adv_audit.delete_form
+entity.adv_audit.version_history:
+  route_name: entity.adv_audit.version_history
   base_route: entity.adv_audit.canonical
+  title: 'Revisions'
+
+entity.adv_audit.delete_form:
+  route_name:  entity.adv_audit.delete_form
+  base_route:  entity.adv_audit.canonical
   title: Delete
   weight: 10
+
