@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Defines an interface for Advances audit check plugins.
  */
-interface AdvAuditCheckInterface extends PluginInspectionInterface {
+interface AdvAuditCheckInterface extends PluginInspectionInterface, RequirementsInterface {
 
 
   /**

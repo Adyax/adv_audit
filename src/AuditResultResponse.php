@@ -39,11 +39,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @return void
    */
   public function addResultReport(AdvAuditCheckInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
-    $this->results->add([
-      'test_id' => $test->id(),
-      'status' => $status,
-      'category' => $test->getTestCategory()
-    ]);
+    $this->results->add(new AuditReason($test->id(), $status));
   }
 
   /**
@@ -76,7 +72,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function serialize() {
-    return serialize($this->results->toArray());
+    return serialize($this->results);
   }
 
   /**
@@ -92,7 +88,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function unserialize($serialized) {
-    $this->results = new ArrayCollection(unserialize($serialized));
+    $this->results = unserialize($serialized);
   }
 
 }

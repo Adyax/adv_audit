@@ -36,6 +36,8 @@ class AuditExecutable {
   /**
    * Migration audit service.
    *
+   * @todo Make this protected.
+   *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
   public $message;
@@ -74,9 +76,8 @@ class AuditExecutable {
    */
   public function performTest() {
     // Send event before perform the test.
-    // $this->getEventDispatcher()->
-    // dispatch(AdvAuditEvents::PRE_PERFORM,
-    // new AuditEvent($this->test, $this->message));
+    // $this->getEventDispatcher()->dispatch(AdvAuditEvents::PRE_PERFORM, new AuditEvent($this->test, $this->message));
+
     // Knock off test if the requirements haven't been met.
     try {
       $this->test->checkRequirements();
@@ -96,15 +97,12 @@ class AuditExecutable {
       return AuditResultResponseInterface::RESULT_WARN;
     }
 
-    $return = AuditResultResponseInterface::RESULT_INFO;
-
     try {
       $return = $this->test->perform();
-    }
-    catch (AuditSkipTestException $e) {
-      if ($this->message = trim($e->getMessage())) {
+    } catch (AuditSkipTestException $e) {
+      if ($message = trim($e->getMessage())) {
         // Skip test and save log record.
-        $return = AuditResultResponseInterface::RESULT_WARN;
+        $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $this->message->display(
           $this->t(
             'Test @id was skipped. @message',
@@ -117,18 +115,11 @@ class AuditExecutable {
       }
     }
     catch (AuditTestException $e) {
-      $return = AuditResultResponseInterface::RESULT_FAIL;
+      $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
       $this->handleException($e);
     }
 
-    // Wrap to valid response object.
-    if (!($return instanceof AuditReason)) {
-      $return = AuditReason::create($this->test->id(), $return, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
-    }
-
-    // this->getEventDispatcher()
-    // ->dispatch(AdvAuditEvents::POST_PERFORM,
-    // new AuditEvent($this->test, $this->message));.
+    // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));
     return $return;
   }
 
@@ -142,8 +133,8 @@ class AuditExecutable {
    */
   protected function handleException(\Exception $exception) {
     $result = Error::decodeException($exception);
-    $handleMessage = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
-    $this->message->display($handleMessage, 'error');
+    $message = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
+    $this->message->display($message, 'error');
   }
 
 }

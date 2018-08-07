@@ -2,6 +2,9 @@
 
 namespace Drupal\adv_audit\Form;
 
+use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\AuditResultResponse;
+use Drupal\adv_audit\Batch\AuditRunTestBatch;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -59,7 +62,6 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
     $form['process_list'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Available test list:'),
@@ -83,7 +85,7 @@ class RunForm extends FormBase {
     $categories = $this->configCategories->get('adv_audit_settings')['categories'];
     foreach ($this->auditTestManager->getPluginsByCategory() as $category_id => $plugins) {
       $items[$category_id]['title'] = $categories[$category_id]['label'];
-      $items[$category_id]['items'];
+      $items[$category_id]['items'] = [];
       foreach ($plugins as $plugin_id => $plugin_definition) {
         $items[$category_id]['items'][$plugin_id]['label'] = $plugin_definition['label']->__toString();
         $items[$category_id]['items'][$plugin_id]['id'] = $plugin_definition['id'];
@@ -100,28 +102,21 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $tests = $this->auditTestManager->getDefinitions();
     $batch = [
-      'operations' => [],
-      'finished' => '_adv_audit_batch_run_finished',
-      'title' => $this->t('Process audit.'),
+      'title' => $this->t('Running process audit'),
       'init_message' => $this->t('Prepare to process.'),
       'progress_message' => $this->t('Progress @current out of @total.'),
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
-      'batch_redirect' => '/adv_audit/5',
-    ];
-
-    foreach ($this->checkPlugins as $plugins) {
-      foreach ($plugins as $plugin) {
-        $plugin = $this->check->manager->createInstance($plugin['id']);
-        $batch['operations'][] = [
-          '_adv_audit_batch_run_op',
-          [$plugin],
-        ];
-      }
-    }
-    $batch['operations'][] = [
-      '_adv_audit_batch_run_op_last',
-      [$form_state->getValue('project_name')],
+      'operations' => [
+        [
+          [AuditRunTestBatch::class, 'run'],
+          [array_keys($tests), []],
+        ],
+      ],
+      'finished' => [
+        AuditRunTestBatch::class, 'finished',
+      ],
     ];
     batch_set($batch);
   }
