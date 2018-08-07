@@ -1,11 +1,4 @@
 plugins:
-  configuration_manager_status:
-    description: ''
-    actions: ''
-    impatcts: ''
-    fail: 'Its fail message49'
-    success: 'Success message!!'
-    help: ''
   cron_settings:
     description: "<p>Provide tool to control codebase state.</p>\r\n"
     actions: "<p>Install and configure some advanced cron module.</p>\r\n"
@@ -14,6 +7,13 @@ plugins:
     success: "<p>Success message!!</p>\r\n"
     help: 'Check cron settings.'
     impacts: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duo Reges: constructio interrete. Satis est ad hoc responsum. Quid vero? Primum quid tu dicis breve?</p>\r\n\r\n<p>&nbsp;</p>\r\n"
+  configuration_manager_status_check:
+    description: '<p>Check current status of config files via configuration manager and provide the status.</p>\r\n'
+    actions: '<p>Review and update configurations</p>\r\n'
+    impacts: '<p>There are should not be any changes in config files because next deployment may revert all that changes. All the configuration changes on the site should be immediately imported into the configuration files through the config manager and must be updated in the project code.</p>\r\n'
+    fail: '<p>There are differences between configurations stored in database and files.</p>\r\n'
+    success: '<p>All config files are actual.</p>\r\n'
+    help: '<p>Check non-security updates for modules.</p>\r\n'
   drupal_core:
     description: "Check the Drupal core version and its actuality."
     actions: "Enable core aggregation or use @link (that includes all latest security updates)."
