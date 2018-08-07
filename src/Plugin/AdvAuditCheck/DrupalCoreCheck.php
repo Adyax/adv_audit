@@ -9,8 +9,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\system\SystemManager;
-use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\update\UpdateProcessor;
 
 /**
  * @AdvAuditCheck(
@@ -25,18 +24,11 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Drupal\system\SystemManager definition.
+   * Drupal\update\UpdateProcessor definition.
    *
-   * @var \Drupal\system\SystemManager
+   * @var \Drupal\update\UpdateProcessor
    */
-  protected $systemManager;
-
-  /**
-   * Drupal\Core\Extension\ModuleHandlerInterface definition.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
+  protected $updateProcessor;
 
   /**
    * Constructs a new CronSettingsCheck object.
@@ -48,10 +40,9 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, SystemManager $system_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateProcessor $update_processor) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->systemManager = $system_manager;
-    $this->moduleHandler = $module_handler;
+    $this->updateProcessor = $update_processor;
   }
 
   /**
@@ -62,8 +53,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('system.manager'),
-      $container->get('module_handler')
+      $container->get('update.processor')
     );
   }
 
@@ -78,7 +68,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
       'includes' => [],
     ];
 
-    \Drupal::service('update.processor')->processFetchTask($project);
+    $this->updateProcessor->processFetchTask($project);
 
     // Set process status 'fail' if current version is not recommended.
     $current_version = $this->getCurrentVersion();
@@ -100,7 +90,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    * @return mixed
    *   Returns current version of core.
    */
-  protected static function getCurrentVersion() {
+  protected function getCurrentVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
     return $projects_data['drupal']['existing_version'];
   }
@@ -111,7 +101,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    * @return mixed
    *   Returns recommended version.
    */
-  protected static function getRecommendedVersion() {
+  protected function getRecommendedVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
     return $projects_data['drupal']['recommended'];
   }
