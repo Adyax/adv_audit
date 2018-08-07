@@ -79,12 +79,10 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-
-    if ($rel === 'revision_revert' && $this instanceof RevisionableInterface) {
-      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
-    }
-    elseif ($rel === 'revision_delete' && $this instanceof RevisionableInterface) {
-      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+    if ($this instanceof RevisionableInterface) {
+      if ($rel === 'revision_revert' || $rel === 'revision_revert') {
+        $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+      }
     }
 
     return $uri_route_parameters;
@@ -105,8 +103,8 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       }
     }
 
-    // If no revision author has been set explicitly, make the adv_audit owner the
-    // revision author.
+    // If no revision author has been set explicitly, make the adv_audit owner
+    // the revision author.
     if (!$this->getRevisionUser()) {
       $this->setRevisionUserId($this->getOwnerId());
     }
@@ -212,25 +210,25 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setDisplayConfigurable('view', TRUE)
       ->setRequired(TRUE);
 
-      // Field for storing of Audit Results.
-      $fields['audit_results'] = BaseFieldDefinition::create('string_long')
-          ->setLabel(t('Audit Results'))
-          ->setDescription(t('Ready HTML of audit results.'))
-          ->setDefaultValue(NULL)
-          ->setDisplayOptions('view', [
-              'label' => 'above',
-              'type' => 'string',
-              'weight' => -6,
-          ])
-          ->setDisplayOptions('form', [
-              'type' => 'string_textarea',
-              'settings' => [
-                  'rows' => 10,
-              ],
-              'weight' => 25,
-          ])
-          ->setDisplayConfigurable('form', TRUE)
-          ->setDisplayConfigurable('view', TRUE);
+    // Field for storing of Audit Results.
+    $fields['audit_results'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Audit Results'))
+      ->setDescription(t('Ready HTML of audit results.'))
+      ->setDefaultValue(NULL)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -6,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'settings' => [
+          'rows' => 10,
+        ],
+        'weight' => 25,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
