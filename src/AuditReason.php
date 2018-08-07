@@ -6,6 +6,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Class AuditReason.
+ *
  * Use in audit test plugin for save perform result.
  *
  * @package Drupal\adv_audit
@@ -24,7 +25,7 @@ class AuditReason {
    *
    * @var string
    */
-  protected $test_id;
+  protected $testId;
 
   /**
    * The main reason data.
@@ -36,18 +37,28 @@ class AuditReason {
   protected $reason;
 
   /**
+   * An associative array of replacements.
+   *
+   * @var array
+   */
+  protected $arguments;
+
+  /**
    * AuditReason constructor.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *   The plugin id.
-   * @param $status
+   * @param int $status
    *   The status of the perform test.
-   * @param null $reason
+   * @param null|mixed $reason
    *   Reason why test is failed. (optional)
+   * @param array|mixed $arguments
+   *   (optional) An associative array of replacements to make after
+   *   translation of status message.
    */
-  public function __construct($plugin_id, $status, $reason = NULL) {
+  public function __construct($plugin_id, $status, $reason = NULL, $arguments = []) {
     $this->status = $status;
-    $this->test_id = $plugin_id;
+    $this->testId = $plugin_id;
     $this->reason = '';
     if (is_array($reason)) {
       foreach ($reason as $key => $string) {
@@ -63,8 +74,23 @@ class AuditReason {
     $this->reason = is_array($reason) ? implode('|', $reason) : $reason;
   }
 
-  public static function create($plugin_id, $status, $reason = NULL) {
-    return new static($plugin_id, $status, $reason);
+  /**
+   * Static method for create class instance.
+   *
+   * @param string $plugin_id
+   *   The plugin id.
+   * @param int $status
+   *   The status of the perform test.
+   * @param null|mixed $reason
+   *   Reason why test is failed. (optional)
+   * @param array|mixed $arguments
+   *   (optional) An associative array of replacements to make after
+   *   translation of status message.
+   *
+   * @return static
+   */
+  public static function create($plugin_id, $status, $reason = NULL, $arguments = []) {
+    return new static($plugin_id, $status, $reason, $arguments);
   }
 
   /**
@@ -76,6 +102,5 @@ class AuditReason {
   public function getStatus() {
     return $this->status;
   }
-
 
 }
