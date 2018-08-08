@@ -10,6 +10,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\update\UpdateProcessor;
+use Drupal\update\UpdateManagerInterface;
 
 /**
  * @AdvAuditCheck(
@@ -35,6 +36,13 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
   protected $updateProcessor;
 
   /**
+   * Drupal\update\UpdateProcessor definition.
+   *
+   * @var \Drupal\update\UpdateProcessor
+   */
+  protected $updateManager;
+
+  /**
    * Constructs a new CronSettingsCheck object.
    *
    * @param array $configuration
@@ -44,9 +52,10 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateProcessor $update_processor) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateProcessor $update_processor, UpdateManagerInterface $update_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->updateProcessor = $update_processor;
+    $this->updateManager = $update_manager;
   }
 
   /**
@@ -57,7 +66,8 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('update.processor')
+      $container->get('update.processor'),
+      $container->get('update.manager')
     );
   }
 
@@ -75,8 +85,9 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
     $this->updateProcessor->processFetchTask($project);
 
     // Set process status 'fail' if current version is not recommended.
-    $current_version = $this->getCurrentVersion();
-    $recommended_version = $this->getRecommendedVersion();
+    $projects_data = $this->updateManager->projectStorage('update_project_data');
+    $current_version = $projects_data[self::PROJECT_NAME]['existing_version'];
+    $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
     if ($current_version != $recommended_version) {
       return new AuditReason(
@@ -87,28 +98,6 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
     else {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@version' => $current_version]);
     }
-  }
-
-  /**
-   * Return current version of Drupal Core.
-   *
-   * @return mixed
-   *   Returns current version of core.
-   */
-  protected function getCurrentVersion() {
-    $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
-    return $projects_data[self::PROJECT_NAME]['existing_version'];
-  }
-
-  /**
-   * Return recommended version of Drupal Core.
-   *
-   * @return mixed
-   *   Returns recommended version.
-   */
-  protected function getRecommendedVersion() {
-    $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
-    return $projects_data[self::PROJECT_NAME]['recommended'];
   }
 
 
