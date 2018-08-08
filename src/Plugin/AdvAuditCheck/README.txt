@@ -51,5 +51,25 @@ This method should return object \Drupal\adv_audit\AuditReason
 With needed information about current result of testing like:
  - Test ID (current plugin ID)
  - Status of the test result passed/failled
- - (optional) Short reason about why this test is failed.
+ - (optional) Short reason about why this test is failed. If you have much what one reason, you can use array.
+ - Arguments: Use for store dynamic values for placeholder replacement.
+ 
+ For Example (Plugin: drupal_core)
+ When tes is failed!
+ We should return next object like:
+ $drupal_current_version = '8.2.3'
+ \Drupal\adv_audit\AuditReason($plugin_id, AuditResultResponseInterface::RESULT_FAIL, $this->t('Version of core are outdated'), ['@version' => $drupal_current_version]);
+ 
+ If in message.yml file you have this string
+ 
+ plugins:
+  drupal_core:
+   // ......
+   fail: "Current Drupal core version is outdated - @version"
+   // ......
+   
+You can see what message have dynamic variable.
+In the time when we will build result output, we should replace this placeholder from reason object.
 
+For user we should ouput next string:
+"Current Drupal core version is outdated - 8.2.3"
