@@ -1,0 +1,76 @@
+{#
+/**
+ * @file adv-audit.html.twig
+ * Default theme implementation to present Audit Result data.
+ *
+ * This template is used when viewing Audit Result pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_adv_audit()
+ *
+ * @ingroup themeable
+ */
+#}
+{#{{ devel_breakpoint() }}#}
+{{ attach_library('adv_audit/adv_audit.status') }}
+<div{{ attributes.addClass('adv_audit') }}>
+    <h1> {{ elements['#adv_audit'].title.value }} </h1>
+    {% for results in elements['#adv_audit'].getAuditResultsValue() %}
+        <div class="category-group">
+            <h2 id="{{ results.category }}">{{ results.category }}</h2>
+            {% for report in results['reports'] %}
+                <div class="{{ report.status }}">
+                    <div class="results">
+                        {% for info_key, info in report %}
+                            {% if  info_key == 'title' %}
+                                <h3><strong>{{ info }}</strong></h3>
+                            {% endif %}
+
+                            {% if  info_key == 'description' %}
+                                <div class="panel-heading">
+                                    <small>{{ info|raw }}</small>
+                                </div>
+                            {% endif %}
+
+                            {% if  info_key == 'information' %}
+                                <div class="panel-heading">
+                                    <strong>{{ 'Results: '|t }}</strong>
+                                    <small>{{ info|raw }}</small>
+                                </div>
+                            {% endif %}
+
+                            {% if  info_key == 'status' %}
+                                <div class="panel-heading">
+                                    <strong>{{ 'Status: '|t }}{{ info }}</strong>
+                                </div>
+                            {% endif %}
+                            {% if  info_key == 'severity' %}
+                                <div class="panel-heading">
+                                    <strong>{{ 'Importance: '|t }}{{ info }}</strong>
+                                </div>
+                            {% endif %}
+
+                            {% if  info_key == 'actions' %}
+                                <div class="panel-heading">
+                                    <strong>{{ 'Actions to be done: '|t }}</strong>
+                                    <small>{{ info|raw }}</small>
+                                </div>
+                            {% endif %}
+
+                            {% if  info_key == 'impacts' %}
+                                <div class="panel-heading">
+                                    <strong>{{ 'Impacts: '|t }}</strong>
+                                    <small>{{ info|raw }}</small>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div></br>
+    {% endfor %}
+</div>

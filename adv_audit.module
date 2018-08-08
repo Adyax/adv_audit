@@ -26,7 +26,7 @@ function adv_audit_theme() {
       'template' => 'adv-audit-process-item',
     ],
     'adv_audit_html_results' => [
-      'variables' => ['category' => NULL, 'reports' => NULL],
+      'variables' => ['audit_result' => NULL],
       'template' => 'adv-audit-html-results',
     ],
     'adv_audit_help' => [
@@ -52,7 +52,10 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
+}
 
+function adv_audit_preprocess_adv_audit_html_results(&$variables) {
+  kint($variables);
 }
 
 /**
