@@ -56,22 +56,19 @@ class AuditReason {
    *   (optional) An associative array of replacements to make after
    *   translation of status message.
    */
-  public function __construct($plugin_id, $status, $reason = NULL, $arguments = []) {
+  public function __construct($plugin_id, $status, $reason = [], $arguments = []) {
     $this->status = $status;
     $this->testId = $plugin_id;
     $this->reason = '';
-    if (is_array($reason)) {
-      foreach ($reason as $key => $string) {
-        if ($string instanceof TranslatableMarkup) {
-          $reason[$key] = $string->__toString();
-        }
+    if (!is_array($reason)) {
+      $reason = [$reason];
+    }
+    foreach ($reason as $key => $string) {
+      if ($string instanceof TranslatableMarkup) {
+        $reason[$key] = $string->__toString();
       }
     }
-    elseif ($reason instanceof TranslatableMarkup) {
-      $reason = $reason->__toString();
-    }
-
-    $this->reason = is_array($reason) ? implode('|', $reason) : $reason;
+    $this->reason = $reason;
   }
 
   /**
@@ -101,6 +98,46 @@ class AuditReason {
    */
   public function getStatus() {
     return $this->status;
+  }
+
+  /**
+   * Get arguments value.
+   *
+   * @return array
+   *   List of saved arguments.
+   */
+  public function getArguments() {
+    return $this->arguments;
+  }
+
+  /**
+   * Get list of available reasons from saved object.
+   *
+   * @return array
+   *   Return array of reasons.
+   */
+  public function getReason() {
+    return $this->reason;
+  }
+
+  /**
+   * Check what current audit is pass all checks.
+   *
+   * @return bool
+   *   Return TRUE if current audit is pass, otherwise FALSE.
+   */
+  public function isPass() {
+    return $this->getStatus() == AuditResultResponseInterface::RESULT_PASS;
+  }
+
+  /**
+   * Get current audit plugin id.
+   *
+   * @return string
+   *   The plugin id value.
+   */
+  public function getPluginId() {
+    return $this->testId;
   }
 
 }
