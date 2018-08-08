@@ -45,57 +45,6 @@ adv_audit.plugin.settings:
   requirements:
     _permission: 'edit adv_audit plugin'
 
-#---------------------------------------- Audit entity --------------------------------------------#
-entity.adv_audit.canonical:
-  path: '/adv_audit/{adv_audit}'
-  defaults:
-    _entity_view: 'adv_audit'
-    _title: 'Audit results'
-  requirements:
-    _entity_access: 'adv_audit.view'
-  options:
-    _admin_route: TRUE
-
-entity.adv_audit.collection:
-  path: '/adv_audit/list'
-  defaults:
-    _entity_list: 'adv_audit'
-    _title: 'Audit results List'
-  requirements:
-    _permission: 'view adv_audit entity'
-  options:
-    _admin_route: TRUE
-
-adv_audit.entity_add:
-  path: '/adv_audit/add'
-  defaults:
-    _entity_form: adv_audit.add
-    _title: 'Audit results'
-  requirements:
-    _entity_create_access: 'adv_audit'
-  options:
-    _admin_route: TRUE
-
-entity.adv_audit.edit_form:
-  path: '/adv_audit/{adv_audit}/edit'
-  defaults:
-    _entity_form: adv_audit.edit
-    _title: 'Edit Audit results'
-  requirements:
-    _entity_access: 'adv_audit.edit'
-  options:
-    _admin_route: TRUE
-
-entity.adv_audit.delete_form:
-  path: '/adv_audit/{adv_audit}/delete'
-  defaults:
-    _entity_form: adv_audit.delete
-    _title: 'Delete Audit results'
-  requirements:
-    _entity_access: 'adv_audit.delete'
-  options:
-    _admin_route: TRUE
-
 #adv_audit.settings:
 #  path: '/admin/structure/adv_audit'
 #  defaults:

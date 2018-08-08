@@ -218,17 +218,17 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setRequired(TRUE);
 
     // Field for storing of Audit Results.
-    $fields['audit_results'] = BaseFieldDefinition::create('string_long')
+    $fields['audit_results'] = BaseFieldDefinition::create('audit_result')
       ->setLabel(t('Audit Results'))
-      ->setDescription(t('Ready HTML of audit results.'))
+      ->setDescription(t('Output results of audit.'))
       ->setDefaultValue(NULL)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'type' => 'string',
+        'type' => 'audit_report_formatter',
         'weight' => -6,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textarea',
+        'type' => 'audit_report_widget',
         'settings' => [
           'rows' => 10,
         ],
