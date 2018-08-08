@@ -44,8 +44,9 @@ class ModulesSecurityCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
   protected $count;
 
   /**
+   * Drupal\update\UpdateManagerInterface definition.
+   *
    * @var \Drupal\update\UpdateManagerInterface
-   *   Update manager object.
    */
   protected $updateManager;
 
