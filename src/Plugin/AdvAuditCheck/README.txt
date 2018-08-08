@@ -58,7 +58,7 @@ With needed information about current result of testing like:
  When tes is failed!
  We should return next object like:
  $drupal_current_version = '8.2.3'
- \Drupal\adv_audit\AuditReason($plugin_id, AuditResultResponseInterface::RESULT_PASS, $this->t('Version of core are outdated'), ['@version' => $drupal_current_version]);
+ \Drupal\adv_audit\AuditReason($plugin_id, AuditResultResponseInterface::RESULT_FAIL, $this->t('Version of core are outdated'), ['@version' => $drupal_current_version]);
  
  If in message.yml file you have this string
  
