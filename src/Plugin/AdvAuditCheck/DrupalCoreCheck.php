@@ -22,6 +22,10 @@ use Drupal\update\UpdateProcessor;
  * )
  */
 class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+  /**
+   * Project name.
+   */
+  const PROJECT_NAME = 'drupal';
 
   /**
    * Drupal\update\UpdateProcessor definition.
@@ -63,7 +67,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
   public function perform() {
     // Check updates for Drupal core.
     $project = [
-      'name' => 'drupal',
+      'name' => self::PROJECT_NAME,
       'project_type' => 'core',
       'includes' => [],
     ];
@@ -77,10 +81,11 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
     if ($current_version != $recommended_version) {
       return new AuditReason(
         $this->id(), AuditResultResponseInterface::RESULT_FAIL,
-        $this->t('Current core version @c_ver differs from recommended version @r_ver', ['@c_ver' => $current_version, '@r_ver' => $recommended_version]));
+        $this->t('Current core version @c_ver differs from recommended version @r_ver', ['@c_ver' => $current_version, '@r_ver' => $recommended_version]),
+        ['@version' => $current_version]);
     }
     else {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@version' => $current_version]);
     }
   }
 
@@ -92,7 +97,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    */
   protected function getCurrentVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
-    return $projects_data['drupal']['existing_version'];
+    return $projects_data[self::PROJECT_NAME]['existing_version'];
   }
 
   /**
@@ -103,7 +108,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
    */
   protected function getRecommendedVersion() {
     $projects_data = \Drupal::service('update.manager')->projectStorage('update_project_data');
-    return $projects_data['drupal']['recommended'];
+    return $projects_data[self::PROJECT_NAME]['recommended'];
   }
 
 

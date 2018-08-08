@@ -17,7 +17,7 @@ plugins:
   drupal_core:
     description: "Check the Drupal core version and its actuality."
     actions: "Enable core aggregation or use @link (that includes all latest security updates)."
-    impatcts: 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
+    impatcts: "If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform."
     fail: "Current Drupal core version is outdated - @version"
     success: "Current Drupal core version is up to date - @version"
     help: 'Check the Drupal core version and its actuality.'
