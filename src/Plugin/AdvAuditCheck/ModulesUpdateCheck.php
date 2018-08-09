@@ -16,18 +16,18 @@ use Drupal\Core\Url;
 
 /**
  * @AdvAuditCheck(
- *   id = "modules_security_check",
- *   label = @Translation("Modules security updates"),
+ *   id = "modules_update_check",
+ *   label = @Translation("Modules non-security updates"),
  *   category = "core_and_modules",
  *   requirements = {},
  *   enabled = TRUE,
- *   severity = "critical"
+ *   severity = "high"
  * )
  */
-class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Constructs a new ModulesSecurityCheck object.
+   * Constructs a new ModulesUpdateCheck object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -54,11 +54,10 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
       $container->get('module_handler')
     );
   }
-
   /**
    * {@inheritdoc}
    */
-  public function perform($condition = NULL) {
+  public function perform() {
     $this->count = 0;
     $projects = update_get_available(TRUE);
     $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
@@ -73,9 +72,9 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
         continue;
       }
 
-      if (isset($project['security updates']) && $project['security updates']) {
+      if (!isset($project['security updates'])) {
         $status = AuditResultResponseInterface::RESULT_FAIL;
-        $reason = $this->t('There are outdated modules with security updates.');
+        $reason = $this->t('There are outdated modules with non-security updates.');
         $this->count += 1;
         $this->updates[] = [
           'label' => Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])),
