@@ -14,7 +14,7 @@ use Drupal\Core\Site\Settings;
 
 /**
  * @AdvAuditCheck(
- *  id = "memcache_settings",
+ *  id = "backend_cache_settings",
  *  label = @Translation("Memcache/Redis settings"),
  *  category = "performance",
  *  severity = "critical",
@@ -22,7 +22,7 @@ use Drupal\Core\Site\Settings;
  *  enabled = true,
  * )
  */
-class MemcacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * The settings object.
