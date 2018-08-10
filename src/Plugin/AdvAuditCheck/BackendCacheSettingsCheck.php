@@ -76,8 +76,7 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCh
 
       default:
         return new AuditReason($this->id(),
-          AuditResultResponseInterface::RESULT_FAIL,
-          $this->t('No memcached or redis cache used on the site'));
+          AuditResultResponseInterface::RESULT_FAIL);
     }
 
   }
@@ -135,7 +134,7 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCh
     }
 
     return new AuditReason($this->id(),
-      AuditResultResponseInterface::RESULT_FAIL,
+      AuditResultResponseInterface::RESULT_PASS,
       $this->t('Memcached configured properly')
     );
 
