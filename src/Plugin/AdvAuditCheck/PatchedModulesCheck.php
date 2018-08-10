@@ -94,7 +94,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
 
     if (!$is_validated) {
       $link = Link::fromTextAndUrl('here', Url::fromRoute('hacked.report'));
-      throw new RequirementsException($this->t('Hacked report is not generated. You can generate it @link', array('@link' => $link)), $reqs[$key_to_check]);
+      throw new RequirementsException($this->t('Hacked report is not generated. You can generate it @link', array('@link' => $link)), $this->pluginDefinition['requirements']['module']);
     }
   }
 
