@@ -31,20 +31,6 @@ use Drupal\hacked\Controller\HackedController;
 class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Constructs a new ModulesUpdateCheck object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
-   *   The plugin implementation definition.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -86,27 +72,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
    * {@inheritdoc}
    */
   public function checkRequirements() {
-    // Check whether the current test plugin
-    // requirements are met or not.
-    if (!($this instanceof RequirementsInterface)) {
-      return;
-    }
-
-    $reqs = $this->pluginDefinition['requirements'];
-    $key_to_check = 'module';
-
-    if (empty($reqs)) {
-      // There are no requirements to check.
-      return;
-    }
-
-    if (isset($reqs[$key_to_check])) {
-      foreach ($reqs[$key_to_check] as $module_name) {
-        if (!$this->moduleHandler->moduleExists($module_name)) {
-          throw new RequirementsException('Module ' . $module_name . ' are not enabled.', $reqs[$key_to_check]);
-        }
-      }
-    }
+    parent::checkRequirements();
 
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
@@ -114,7 +80,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
 
     if (!$is_validated) {
       $link = Link::fromTextAndUrl('here', Url::fromRoute('hacked.report'));
-      throw new RequirementsException($this->t('Hacked report is not generated. You can generate it @link', array('@link' => $link)), $reqs[$key_to_check]);
+      throw new RequirementsException($this->t('Hacked report is not generated. You can generate it @link', array('@link' => $link)), $this->pluginDefinition['requirements']['module']);
     }
   }
 
