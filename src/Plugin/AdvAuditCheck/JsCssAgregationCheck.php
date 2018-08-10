@@ -6,6 +6,8 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 /**
  * @AdvAuditCheck(
  *   id = "js_css_agregation",
@@ -17,18 +19,6 @@ use Drupal\adv_audit\AuditResultResponseInterface;
  * )
  */
 class JsCssAgregationCheck extends AdvAuditCheckBase {
-
-  /**
-   * Return information about next actions.
-   *
-   * @return mixed
-   *   Associated array.
-   */
-  public function getActions($params = []) {
-    $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
-    $params = ['@link' => $link->toString()];
-    return parent::getActions($params);
-  }
 
   /**
    * Process checkpoint review.
@@ -43,7 +33,10 @@ class JsCssAgregationCheck extends AdvAuditCheckBase {
       $status = AuditResultResponseInterface::RESULT_FAIL;
     }
 
-    return new AuditReason($this->id(), $status);
+    $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
+    $params = ['@link' => $link->toString()];
+
+    return new AuditReason($this->id(), $status, $params);
   }
 
 }
