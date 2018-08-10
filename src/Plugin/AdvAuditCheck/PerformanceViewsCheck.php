@@ -117,9 +117,6 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     if (count($this->withoutCache)) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->withoutCache);
     }
-    elseif (count($this->warnings)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_WARN, $this->warnings);
-    }
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
   }
 
@@ -194,11 +191,6 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
         ]);
       }
     }
-    elseif (!in_array($cache['type'], ['tag', 'search_api_tag'])) {
-      $this->warnings[] = $this->t("View @view_id has unknown cache type: @cache_type.", [
-        '@view_id' => $view->id(),
-        '@cache_type' => $cache['type']
-      ]);
-    }
   }
+
 }
