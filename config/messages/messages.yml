@@ -35,3 +35,10 @@ plugins:
     fail: 'There are outdated modules with non-security updates.'
     success: 'All modules are up-to-date.'
     help: 'Check non-security updates for modules.'
+  patched_modules_check:
+    description: 'Check if core and contribution modules were hacked.'
+    actions: 'Review patched modules and make sure, that every change could be restored from patch has been stored in file.@list'
+    impacts: 'Without storing patches in files, web-site could be broken during updates.'
+    fail: 'There are hacked modules.'
+    success: 'All modules are original.'
+    help: 'Check if core and contribution modules were hacked.'

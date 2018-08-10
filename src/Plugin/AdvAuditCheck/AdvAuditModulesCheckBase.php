@@ -74,9 +74,8 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase {
         'list' => $render_list
       ];
     }
-    else {
-      return [];
-    }
+
+    return [];
   }
 
 }
