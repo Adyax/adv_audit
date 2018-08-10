@@ -6,7 +6,6 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
-use Drupal\adv_audit\Plugin\RequirementsInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
@@ -22,13 +21,20 @@ use Drupal\hacked\Controller\HackedController;
  *   label = @Translation("Patched modules."),
  *   category = "core_and_modules",
  *   requirements = {
- *     "module" = "hacked",
+ *     "module" = {
+ *      "hacked"
+ *     },
  *   },
- *   enabled = TRUE,
+ *   enabled = true,
  *   severity = "high"
  * )
  */
 class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * Length of the day in seconds.
+   */
+  const DATA_KEY = '#data';
 
   /**
    * {@inheritdoc}
@@ -51,18 +57,17 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
 
     $status = AuditResultResponseInterface::RESULT_PASS;
     $reason = NULL;
-    $build = ['#theme' => 'hacked_report'];
-    $key = '#data';
+    $hacked_modules = [];
 
-    foreach ($hacked[$key] as $project) {
+    foreach ($hacked[self::DATA_KEY] as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'module') {
         $status = AuditResultResponseInterface::RESULT_FAIL;
-        $build[$key][] = $project;
+        $hacked_modules[] = $project;
       }
     }
 
     if ($status == AuditResultResponseInterface::RESULT_FAIL) {
-      $params['hacked_modules'] = $build;
+      $params['hacked_modules'] = $hacked_modules;
     }
 
     return new AuditReason($this->id(), $status, $reason, $params);
@@ -76,7 +81,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
 
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
-    $is_validated = is_array($hacked) && isset($hacked['#data']);
+    $is_validated = is_array($hacked) && isset($hacked[self::DATA_KEY]);
 
     if (!$is_validated) {
       $link = Link::fromTextAndUrl('here', Url::fromRoute('hacked.report'));
@@ -97,6 +102,8 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
       $key = 'hacked_modules';
 
       if (!empty($arguments[$key])) {
+        $build = ['#theme' => 'hacked_report'];
+        $build[self::DATA_KEY] = $arguments[$key];
         return $arguments[$key];
       }
     }
