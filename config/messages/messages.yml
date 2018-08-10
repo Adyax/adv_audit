@@ -68,7 +68,7 @@ plugins:
     actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
     impacts: 'Without aggregation pages are loaded slowly as it’s a lot of css/js files are requires more time for loading..'
     fail: 'Core aggregation disabled.'
-    success: 'Core aggregation disabled.'
+    success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   preformance_views:
     description: "Query results and  should be cached for at least 1 minute or use tag caching."
