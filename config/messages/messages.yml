@@ -15,11 +15,11 @@ plugins:
     success: '<p>All config files are actual.</p>\r\n'
     help: '<p>Check non-security updates for modules.</p>\r\n'
   drupal_core:
-    description: 'Check the Drupal core version and its actuality.'
-    actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
-    impacts: 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they`re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
-    fail: 'Current Drupal core version is outdated - @version'
-    success: 'Current Drupal core version is up to date - @version'
+    description: "<p>Check the Drupal core version and its actuality.</p>\r\n"
+    actions: "<p>Enable core aggregation or use @link (that includes all latest security updates).</p>\r\n"
+    impacts: "<p>If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they`re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.</p>\r\n"
+    fail: "<p>Current Drupal core version is outdated - @version</p>\r\n"
+    success: "<p>Current Drupal core version is up to date - @version</p>\r\n"
     help: 'Check the Drupal core version and its actuality.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
@@ -29,12 +29,19 @@ plugins:
     success: 'All modules are up-to-date.'
     help: 'Check security updates for contrib modules.'
   modules_update_check:
-    description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. It''s important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it’s important to update modules to stable releases (if exists).'
-    actions: '@link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
-    impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Let''s imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
-    fail: 'There are outdated modules with non-security updates.'
-    success: 'All modules are up-to-date.'
+    description: "<p>The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. It's important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it’s important to update modules to stable releases (if exists).</p>\r\n"
+    actions: "<p>@link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list</p>\r\n"
+    impacts: "<p>Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Let's imagine you had to update a single module because of the critical security flaw in it. However, as you haven't updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.</p>\r\n"
+    fail: "<p>There are outdated modules with non-security updates.</p>\r\n"
+    success: "<p>All modules are up-to-date.</p>\r\n"
     help: 'Check non-security updates for modules.'
+  adv_audit_check_example:
+    description: "<p>Fake audit check plugin. Describe all features on Plugin sub-system.</p>\r\n"
+    actions: ''
+    impacts: ''
+    fail: "<p>Failed message test with dynamic value @hash</p>\r\n"
+    success: "<p>Success messages with dynamic random value @random</p>\r\n"
+    help: ''
   page_caching_performance:
     description: '<p>Varnish Cache is an open source, front end accelerator also known as a caching HTTP reverse proxy. Varnish can be used to cache both dynamic and static content and has shown to dramatically increase website speed and server performance.</p>\r\n'
     actions: '<p>Install and configure Varnish or CDN. Update Drupal cache settings.</p>\r\n'

@@ -20,7 +20,7 @@ use Drupal\Core\Url;
  *   label = @Translation("Modules security updates"),
  *   category = "core_and_modules",
  *   requirements = {},
- *   enabled = TRUE,
+ *   enabled = true,
  *   severity = "critical"
  * )
  */

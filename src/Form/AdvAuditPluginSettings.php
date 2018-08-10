@@ -97,7 +97,7 @@ class AdvAuditPluginSettings extends FormBase {
     $form['status'] = [
       '#type' => 'checkbox',
       '#title' => t('Enabled'),
-      '#default_value' => $this->pluginInstance->getStatus(),
+      '#default_value' => $this->pluginInstance->isEnabled(),
     ];
 
     $form['severity'] = [
@@ -145,12 +145,12 @@ class AdvAuditPluginSettings extends FormBase {
       '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS),
     ];
 
-    if ($additional_form = $this->pluginInstance->configForm($form, $form_state)) {
+    if ($additional_form = $this->pluginInstance->configForm()) {
       $form['additional_settings'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Specific plugin settings'),
         '#tree' => TRUE,
-        'custom_settings' => $additional_form,
+        'plugin_config' => $additional_form,
       ];
     }
 
@@ -170,6 +170,9 @@ class AdvAuditPluginSettings extends FormBase {
     foreach ($form_state->getValue('messages', []) as $type => $text) {
       $this->messageStorage->set($this->plugin_id, $type, $text['value']);
     }
+
+    // Handle plugin config form submit.
+    $this->pluginInstance->configFormSubmit($form, $form_state);
   }
 
 }

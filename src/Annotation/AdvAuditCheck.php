@@ -52,5 +52,11 @@ class AdvAuditCheck extends Plugin {
    */
   public $requirements = [];
 
+  /**
+   * Default status of plugin.
+   *
+   * @var boolean
+   */
+  public $enabled;
 
 }
