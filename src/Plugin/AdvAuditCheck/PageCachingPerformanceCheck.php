@@ -11,7 +11,6 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Url;
 
 /**
@@ -25,11 +24,6 @@ use Drupal\Core\Url;
  * )
  */
 class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
-
-  /**
-   * Cache modules list.
-   */
-  const MODULES_LIST = ['varnish'];
 
   /**
    * Returns the default http client.
@@ -63,10 +57,9 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAudit
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, Client $http_cient) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, Client $http_cient) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
-    $this->moduleHandler = $module_handler;
     $this->httpClient = $http_cient;
   }
 
@@ -79,7 +72,6 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAudit
       $plugin_id,
       $plugin_definition,
       $container->get('config.factory'),
-      $container->get('module_handler'),
       $container->get('http_client')
     );
   }
@@ -92,15 +84,7 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAudit
     $cache_config = $this->configFactory->get('system.performance');
     $cache_lifetime = $cache_config->get('cache.page');
 
-    // Get modules status.
-    foreach (self::MODULES_LIST as $module) {
-      if ($this->moduleHandler->moduleExists($module)
-        && $cache_lifetime['max_age'] > 0) {
-        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
-      }
-    }
-
-    // Check varnish response headers in case drupal module not used.
+    // Check varnish response headers.
     $host = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(TRUE)->getGeneratedUrl();
     $response = $this->httpClient->get($host);
     $response_header = $response->getHeader('X-Cache');
