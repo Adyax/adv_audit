@@ -86,27 +86,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
    * {@inheritdoc}
    */
   public function checkRequirements() {
-    // Check whether the current test plugin
-    // requirements are met or not.
-    if (!($this instanceof RequirementsInterface)) {
-      return;
-    }
-
-    $reqs = $this->pluginDefinition['requirements'];
-    $key_to_check = 'module';
-
-    if (empty($reqs)) {
-      // There are no requirements to check.
-      return;
-    }
-
-    if (isset($reqs[$key_to_check])) {
-      foreach ($reqs[$key_to_check] as $module_name) {
-        if (!$this->moduleHandler->moduleExists($module_name)) {
-          throw new RequirementsException('Module ' . $module_name . ' are not enabled.', $reqs[$key_to_check]);
-        }
-      }
-    }
+    parent::checkRequirements();
 
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
