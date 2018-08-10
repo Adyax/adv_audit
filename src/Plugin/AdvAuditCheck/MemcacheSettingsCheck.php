@@ -65,104 +65,128 @@ class MemcacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckI
     $cache_settings = $this->settings->get('cache');
     $cache_default = isset($cache_settings['default']) ? $cache_settings['default'] : 'cache.backend.database';
 
-    // Testing memcached.
-    $memcache = $this->settings->get('memcache');
-    if ($cache_default == 'cache.backend.memcache' && isset($memcache)) {
+    switch ($cache_default) {
+      case 'cache.backend.memcache':
+        $this->memcached_check();
+        break;
 
-      // Select PECL memcache/memcached library to use.
-      $preferred_memcache_extension = $this->settings->get('memcache_extension', NULL);
+      case 'cache.backend.redis':
+        $this->redis_check();
+        break;
 
-      if (isset($preferred_memcache_extension) && class_exists($preferred_memcache_extension)) {
-        $extension = $preferred_memcache_extension;
-      }
-      // If no extension is set, default to Memcache.
-      elseif (class_exists('Memcache')) {
-        $extension = 'Memcache';
-      }
-      elseif (class_exists('Memcached')) {
-        $extension = 'Memcached';
-      }
-      else {
+      default:
         return new AuditReason($this->id(),
           AuditResultResponseInterface::RESULT_FAIL,
-          $this->t('No memcached extension found'));
-      }
-
-      // Test server connections.
-      if ($extension) {
-        foreach ($memcache['servers'] as $address => $bin) {
-          list($ip, $port) = explode(':', $address);
-          if ($extension == 'Memcache') {
-            if (!memcache_connect($ip, $port)) {
-              return new AuditReason($this->id(),
-                AuditResultResponseInterface::RESULT_FAIL,
-                $this->t('Cannot connect to Memcache'));
-            }
-          }
-          elseif ($extension == 'Memcached') {
-            $m = new Memcached();
-            $m->addServer($ip, $port);
-            if ($m->getVersion() == FALSE) {
-              return new AuditReason($this->id(),
-                AuditResultResponseInterface::RESULT_FAIL,
-                $this->t('Cannot connect to Memcached'));
-            }
-          }
-        }
-      }
-
-      return new AuditReason($this->id(),
-        AuditResultResponseInterface::RESULT_PASS);
+          $this->t('No memcached or redis cache used on the site'));
     }
 
-    // Testing redis.
-    $redis_connection = $this->settings->get('redis.connection');
-    if ($cache_default == 'cache.backend.redis' && isset($redis_connection)) {
-      $redis_connection_interface = !empty($redis_connection['interface']) ?: NULL;
-      switch ($redis_connection_interface) {
-        case 'Predis':
-          $extension = 'Predis\Client';
-          break;
+  }
 
-        default:
-          $extension = 'Redis';
-          break;
+  /**
+   * Check memcached connection.
+   */
+  private function memcached_check() {
+    if (!$memcache = $this->settings->get('memcache')) {
+      return new AuditReason($this->id(),
+        AuditResultResponseInterface::RESULT_FAIL,
+        $this->t('No memcached setting found')
+      );
+    }
+
+    // Select PECL memcache/memcached library to use.
+    $preferred_memcache_extension = $this->settings->get('memcache_extension', NULL);
+
+    if (isset($preferred_memcache_extension) && class_exists($preferred_memcache_extension)) {
+      $extension = $preferred_memcache_extension;
+    }
+    // If no extension is set, default to Memcache.
+    elseif (class_exists('Memcache')) {
+      $extension = 'Memcache';
+    }
+    elseif (class_exists('Memcached')) {
+      $extension = 'Memcached';
+    }
+    else {
+      return new AuditReason($this->id(),
+        AuditResultResponseInterface::RESULT_FAIL,
+        $this->t('No memcached extension found')
+      );
+    }
+
+    // Test server connections.
+    foreach ($memcache['servers'] as $address => $bin) {
+      list($ip, $port) = explode(':', $address);
+      if ($extension == 'Memcache' && !memcache_connect($ip, $port)) {
+        return new AuditReason($this->id(),
+          AuditResultResponseInterface::RESULT_FAIL,
+          $this->t('Cannot connect to Memcache')
+        );
       }
-
-      if (class_exists($extension)) {
-        if ($extension == 'Predis\Client') {
-          $redis = new \Predis\Client([
-            'host' => $redis_connection['host'],
-            'port' => $redis_connection['port'],
-            'timeout' => 0.8,
-          ]);
-        }
-        else {
-          $redis = new Redis();
-          $redis->connect($redis_connection["host"], $redis_connection["port"]);
-        }
-
-        try {
-          $redis->ping();
-        }
-        catch (Exception $e) {
+      elseif ($extension == 'Memcached') {
+        $memcached = new Memcached();
+        $memcached->addServer($ip, $port);
+        if ($memcached->getVersion() == FALSE) {
           return new AuditReason($this->id(),
             AuditResultResponseInterface::RESULT_FAIL,
-            $this->t('Cannot connect to Redis'));
+            $this->t('Cannot connect to Memcached')
+          );
         }
       }
-      else {
-        return new AuditReason($this->id(),
-          AuditResultResponseInterface::RESULT_FAIL,
-          $this->t('No redis extension found'));
-      }
-
-      return new AuditReason($this->id(),
-        AuditResultResponseInterface::RESULT_PASS);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL,
-      $this->t('No memcached or redis extension found'));
+    return new AuditReason($this->id(),
+      AuditResultResponseInterface::RESULT_FAIL,
+      $this->t('Memcached configured properly')
+    );
+
+  }
+
+  /**
+   * Check redis connection.
+   */
+  private function redis_check() {
+    if (!$redis_connection = $this->settings->get('redis.connection')) {
+      return new AuditReason($this->id(),
+        AuditResultResponseInterface::RESULT_FAIL,
+        $this->t('No redis setting found')
+      );
+    }
+
+    $redis_connection_interface = !empty($redis_connection['interface']) ?: NULL;
+    $extension = $redis_connection_interface == 'Predis' ? 'Predis\Client' : 'Redis';
+
+    if (class_exists($extension)) {
+      if ($extension == 'Predis\Client') {
+        $redis = new \Predis\Client([
+          'host' => $redis_connection['host'],
+          'port' => $redis_connection['port'],
+          'timeout' => 0.8,
+        ]);
+      }
+      else {
+        $redis = new Redis();
+        $redis->connect($redis_connection["host"], $redis_connection["port"]);
+      }
+
+      try {
+        $redis->ping();
+      }
+      catch (Exception $e) {
+        return new AuditReason($this->id(),
+          AuditResultResponseInterface::RESULT_FAIL,
+          $this->t('Cannot connect to Redis'));
+      }
+    }
+    else {
+      return new AuditReason($this->id(),
+        AuditResultResponseInterface::RESULT_FAIL,
+        $this->t('No redis extension found'));
+    }
+
+    return new AuditReason($this->id(),
+      AuditResultResponseInterface::RESULT_PASS,
+      $this->t('Redis configured properly'));
+
   }
 
 }
