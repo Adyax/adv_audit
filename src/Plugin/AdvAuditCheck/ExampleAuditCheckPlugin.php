@@ -139,7 +139,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
       // Override messages fail output.
       // In this case, we will not use messages from messages.yml file and directly will render what you return.
       case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
-        return [
+        $build = [
           '#type' => 'container',
           '#attributes' => [
             'class' => ['custom-fail-color'],
@@ -152,7 +152,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
       // Override messages success output.
       // At this moment you have fully control what how will build success messages.
       case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
-        return [
+        $build = [
           '#type' => 'container',
           '#attributes' => [
             'class' => ['custom-pass-color'],
@@ -164,11 +164,13 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
         break;
 
       default:
+        // Return empty array.
+        // In this case will display messages from messages.yml file for you plugin.
+        $build = [];
         break;
     }
-    // Return empty array.
-    // In this case will display messages from messages.yml file for you plugin.
-    return [];
+
+    return $build;
   }
 
 }
