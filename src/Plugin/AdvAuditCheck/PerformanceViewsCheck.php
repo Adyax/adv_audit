@@ -5,7 +5,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -24,7 +23,7 @@ use Drupal\Core\State\StateInterface;
  *  enabled = true,
  * )
  */
-class PerformanceViewsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * The config factory.
