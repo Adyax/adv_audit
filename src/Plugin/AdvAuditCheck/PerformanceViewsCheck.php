@@ -49,6 +49,20 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements  AdvAuditCheckI
   protected $entityTypeManager;
 
   /**
+   * Array of reasons with views without cache settings.
+   *
+   * @var array
+   */
+  protected $withoutCache;
+
+  /**
+   * Array of reasons with views with unknown cache type.
+   *
+   * @var array
+   */
+  protected $warnings;
+
+  /**
    * Constructs a new PerformanceViewsCheck object.
    *
    * @param array $configuration
@@ -63,6 +77,8 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements  AdvAuditCheckI
     $this->configFactory = $config_factory;
     $this->state = $state;
     $this->entityTypeManager = $entity_type_manager;
+    $this->withoutCache = [];
+    $this->warnings = [];
   }
 
   /**
@@ -85,37 +101,12 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements  AdvAuditCheckI
   public function perform() {
     $views = $this->entityTypeManager->getListBuilder('view')->load();
 
-    $this->withoutCache = [];
-    $this->warnings = [];
-
     foreach ($views['enabled'] as $view) {
       $executable = $view->getExecutable();
       $executable->initDisplay();
       foreach ($executable->displayHandlers as $display_name => $display) {
         if ($display->isEnabled()) {
-          $cache = $display->getOption('cache');
-          if (empty($cache) || $cache['type'] == 'none') {
-            $this->withoutCache[] = $this->t('Display @display_name of view @view_id has wrong cache settings.', [
-              '@display_name' => $display_name,
-              '@view_id' => $view->id(),
-            ]);
-          }
-          elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
-            $minimum = $this->getMinimumCacheTime($cache);
-            if ($minimum < $this->state->get($this->buildStateConfigKey())) {
-              $this->withoutCache[] = $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
-                '@display_name' => $display_name,
-                '@view_id' => $view->id(),
-                '@allowed' => $this->state->get($this->buildStateConfigKey()),
-              ]);
-            }
-          }
-          elseif (!in_array($cache['type'], ['tag', 'search_api_tag'])) {
-            $this->warnings[] = $this->t("View @view_id has unknown cache type: @cache_type.", [
-              '@view_id' => $view->id(),
-              '@cache_type' => $cache['type']
-            ]);
-          }
+          $this->auditDisplayCache($display, $view);
         }
       }
     }
@@ -177,4 +168,34 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements  AdvAuditCheckI
     return -1;
   }
 
+  /**
+   * Audit view display cache.
+   */
+  protected function auditDisplayCache($display, $view) {
+    $cache = $display->getOption('cache');
+
+    $this->auditDisplayCache($display);
+    if (empty($cache) || $cache['type'] == 'none') {
+      $this->withoutCache[] = $this->t('Display @display_name of view @view_id has wrong cache settings.', [
+        '@display_name' => $display_name,
+        '@view_id' => $view->id(),
+      ]);
+    }
+    elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
+      $minimum = $this->getMinimumCacheTime($cache);
+      if ($minimum < $this->state->get($this->buildStateConfigKey(), 60)) {
+        $this->withoutCache[] = $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
+          '@display_name' => $display_name,
+          '@view_id' => $view->id(),
+          '@allowed' => $this->state->get($this->buildStateConfigKey(), 60),
+        ]);
+      }
+    }
+    elseif (!in_array($cache['type'], ['tag', 'search_api_tag'])) {
+      $this->warnings[] = $this->t("View @view_id has unknown cache type: @cache_type.", [
+        '@view_id' => $view->id(),
+        '@cache_type' => $cache['type']
+      ]);
+    }
+  }
 }
