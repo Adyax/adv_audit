@@ -45,14 +45,6 @@ adv_audit.plugin.settings:
   requirements:
     _permission: 'edit adv_audit plugin'
 
-#adv_audit.settings:
-#  path: '/admin/structure/adv_audit'
-#  defaults:
-#    _form: '\Drupal\adv_audit\Form\AdvAuditEntitySettingsForm'
-#    _title: 'Audit entity Settings'
-#  requirements:
-#    _permission: 'administer adv_audit entity'
-
 adv_audit.admin_path:
   path: '/admin/sctructure/adv_audit'
   defaults:
@@ -61,11 +53,4 @@ adv_audit.admin_path:
   requirements:
     _permission: 'administer site configuration'
 
-adv_audit.file_download:
-  path: '/adv_audit/download/{fid}/download'
-  defaults:
-    _controller: '\Drupal\adv_audit\Controller\AdvAuditDownloadController::download'
-    _title: 'download'
-  requirements:
-    _permission: 'view adv_audit entity'
 #------------------------------------- End of Audit entity ----------------------------------------#

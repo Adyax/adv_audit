@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\Field\FieldFormatter;
 
 use Drupal\adv_audit\AuditResultResponse;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -56,10 +55,8 @@ class AuditReportFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
-      $elements[$delta] = [
-        '#theme' => 'adv_audit_html_results',
-        '#audit_result' => $this->getResultObject($item)
-      ];
+      $elements[$delta]['#theme'] = 'adv_audit_report';
+      $elements[$delta]['#report'] = $this->getResultObject($item);
     }
 
     return $elements;
@@ -75,13 +72,11 @@ class AuditReportFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function getResultObject(FieldItemInterface $item) {
-    // The text value has no text format assigned to it, so the user input
-    // should equal the output, including newlines.
     $value = $item->getValue();
     $value = isset($value['value']) ? $value['value'] : NULL;
 
     if (!($value instanceof AuditResultResponse)) {
-      return NULL;
+      return new AuditResultResponse();
     }
 
     return $value;

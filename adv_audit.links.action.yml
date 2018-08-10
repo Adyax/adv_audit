@@ -1,6 +1,0 @@
-entity.adv_audit.add_form:
-  route_name: entity.adv_audit.add_form
-  title: 'Add Audit Result'
-  appears_on:
-    - entity.adv_audit.collection
-    - entity.adv_audit.canonical

@@ -6,11 +6,6 @@
  */
 
 use Drupal\Core\Render\Element;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
-use Drupal\adv_audit\Renderer\ToJson;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\Core\Url;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -24,6 +19,10 @@ function adv_audit_theme() {
     'adv_audit_run_process' => [
       'variables' => ['categories' => NULL],
       'template' => 'adv-audit-process-item',
+    ],
+    'adv_audit_report' => [
+      'variables' => ['report' => NULL],
+      'template' => 'adv-audit-report',
     ],
     'adv_audit_html_results' => [
       'variables' => ['audit_result' => NULL],
@@ -54,8 +53,11 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   }
 }
 
-function adv_audit_preprocess_adv_audit_html_results(&$variables) {
-  kint($variables);
+function adv_audit_preprocess_adv_audit_report(&$variables) {
+  /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
+  $render = \Drupal::service('adv_audit.renderer');
+  // Wrap to renderer object.
+  $variables['report'] = $render->setAuditResult($variables['report']);
 }
 
 /**
