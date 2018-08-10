@@ -24,6 +24,11 @@ use Drupal\Core\State\StateInterface;
  * )
  */
 class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+  
+  /**
+   * Length of the day in seconds.
+   */
+  const ALLOWED_LIFETIME = 60;
 
   /**
    * The config factory.
@@ -38,7 +43,6 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * @var \Drupal\Core\State\StateInterface
    */
   protected $state;
-
 
   /**
    * The entity type manager service.
@@ -105,7 +109,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
       $executable->initDisplay();
       foreach ($executable->displayHandlers as $display_name => $display) {
         if ($display->isEnabled()) {
-          $this->auditDisplayCache($display, $view);
+          $this->auditDisplayCache($display, $display_name, $view);
         }
       }
     }
@@ -146,7 +150,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * {@inheritdoc}
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
-    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'minimum_cache_lifetime'], 60);
+    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'minimum_cache_lifetime'], self::ALLOWED_LIFETIME);
     $this->state->set($this->buildStateConfigKey(), $value);
   }
 
@@ -170,7 +174,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
   /**
    * Audit view display cache.
    */
-  protected function auditDisplayCache($display, $view) {
+  protected function auditDisplayCache($display, $display_name, $view) {
     $cache = $display->getOption('cache');
 
     $this->auditDisplayCache($display);
@@ -182,11 +186,11 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     }
     elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
       $minimum = $this->getMinimumCacheTime($cache);
-      if ($minimum < $this->state->get($this->buildStateConfigKey(), 60)) {
+      if ($minimum < $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME)) {
         $this->withoutCache[] = $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
           '@display_name' => $display_name,
           '@view_id' => $view->id(),
-          '@allowed' => $this->state->get($this->buildStateConfigKey(), 60),
+          '@allowed' => $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME),
         ]);
       }
     }
