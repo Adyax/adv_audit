@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Plugin\AdvAuditModulesCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
