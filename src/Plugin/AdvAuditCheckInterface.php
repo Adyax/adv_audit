@@ -55,8 +55,8 @@ interface AdvAuditCheckInterface extends PluginInspectionInterface, Requirements
   /**
    * The actual procedure of carrying out the check.
    *
-   * @return int
-   *   Return one of value from AuditResultResponseInterface.
+   * @return \Drupal\adv_audit\AuditReason
+   *   Return AuditReason object instance.
    */
   public function perform();
 

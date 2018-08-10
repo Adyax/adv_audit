@@ -156,18 +156,22 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * Value will be store in state storage and can be uses bu next key:
    *   - adv_audit.plugin.PLUGIN_ID.config.KEY
    *
-   * @param $form
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *
-   * @return mixed
+   * @return array
+   *    The form structure.
    */
-  public function configForm($form, FormStateInterface $form_state) {
-    // Define base form config.
+  public function configForm() {
+    return [];
+  }
 
-    $form['severity'] = [
-      '#type' => 'select',
-      '#title' => ''
-    ];
+  /**
+   * Config form submission handler.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function configFormSubmit($form, FormStateInterface $form_state) {
   }
 
   /**
@@ -218,12 +222,12 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function getStatus() {
     // Status can be overridden by plugin settings.
     $state = $this->getStateService();
-    if ($state->has('adv_audit.plugin.status.' . $this->getPluginId())) {
+    if ($status = $state->get('adv_audit.plugin.enabled.' . $this->getPluginId())) {
       // Return overridden status for plugin.
-      return $state->get('adv_audit.plugin.status.' . $this->getPluginId());
+      return $status;
     }
     // Return default status from plugin definition.
-    return $this->pluginDefinition['status'];
+    return $this->pluginDefinition['enabled'];
   }
 
   /**
