@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Plugin\AdvAuditModulesCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -20,7 +19,7 @@ use Drupal\Core\Url;
  *   label = @Translation("Modules non-security updates"),
  *   category = "core_and_modules",
  *   requirements = {},
- *   enabled = TRUE,
+ *   enabled = true,
  *   severity = "high"
  * )
  */

@@ -14,7 +14,7 @@ use Drupal\adv_audit\Exception\RequirementsException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Defines a migrate executable class.
+ * Defines a audit executable class.
  */
 class AuditExecutable {
   use StringTranslationTrait;
@@ -43,7 +43,7 @@ class AuditExecutable {
   public $message;
 
   /**
-   * Constructs a MigrateExecutable and verifies and sets the memory limit.
+   * Constructs a AuditExecutable and verifies.
    *
    * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
    *   The test plugin instance.
@@ -94,7 +94,7 @@ class AuditExecutable {
         ),
         'error'
       );
-      return AuditResultResponseInterface::RESULT_WARN;
+      return AuditResultResponseInterface::RESULT_SKIP;
     }
 
     try {

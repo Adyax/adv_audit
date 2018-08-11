@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   category = "core_and_modules",
  *   severity = "high",
  *   requirements = {},
- *   enabled = TRUE,
+ *   enabled = true,
  * )
  */
 class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {

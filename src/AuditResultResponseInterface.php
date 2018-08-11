@@ -22,19 +22,19 @@ interface AuditResultResponseInterface {
   /**
    * Additional states of result.
    *
-   * The test is failed.
-   * Or passed with the error.
-   * Or Skipped.
+   * @deprecated Please use one of FAIL or PASS status.
    */
   const RESULT_WARN = 2;
 
+  /**
+   * The test was skipped.
+   */
   const RESULT_SKIP = 2;
 
   /**
    * Additional states of result.
    *
-   * The test is passed.
-   * Or passed with the error.
+   * @deprecated will be removed.
    */
   const RESULT_INFO = 3;
 
