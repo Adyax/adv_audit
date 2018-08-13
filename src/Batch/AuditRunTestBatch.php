@@ -3,13 +3,12 @@
 namespace Drupal\adv_audit\Batch;
 
 use Drupal\adv_audit\AuditExecutable;
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
 use Drupal\adv_audit\Message\AuditMessageCapture;
+use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Entity\EntityStorageException;
-use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use InvalidArgumentException;
 
@@ -75,7 +74,7 @@ class AuditRunTestBatch {
     /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
     $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($test) {
+    if ($test instanceof AdvAuditCheckInterface) {
       static::$messages = new AuditMessageCapture();
       $executable = new AuditExecutable($test, static::$messages);
 
