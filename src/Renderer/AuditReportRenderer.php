@@ -15,7 +15,7 @@ use Drupal\Core\Template\Attribute;
 use Drupla\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 /**
- * Class Renderer.
+ * Class Renderer to build audit response object.
  */
 class AuditReportRenderer implements RenderableInterface {
 
@@ -27,18 +27,21 @@ class AuditReportRenderer implements RenderableInterface {
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
+
   /**
    * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
    *
    * @var \Drupal\adv_audit\Plugin\AdvAuditCheckManager
    */
   protected $pluginManagerAdvAuditCheck;
+
   /**
    * Drupal\adv_audit\Message\AuditMessagesStorageInterface definition.
    *
    * @var \Drupal\adv_audit\Message\AuditMessagesStorageInterface
    */
   protected $advAuditMessages;
+
   /**
    * Drupal\Core\Config\ConfigFactoryInterface definition.
    *
@@ -51,6 +54,11 @@ class AuditReportRenderer implements RenderableInterface {
    */
   protected $auditResultResponse;
 
+  /**
+   * Store additional information about current context.
+   *
+   * @var array
+   */
   protected $metaInformation = [];
 
   /**
@@ -63,6 +71,15 @@ class AuditReportRenderer implements RenderableInterface {
     $this->configFactory = $config_factory;
   }
 
+  /**
+   * Set result object to process.
+   *
+   * @param \Drupal\adv_audit\AuditResultResponseInterface $audit_result
+   *   The result audit object.
+   *
+   * @return $this
+   *   Return itself for chaining.
+   */
   public function setAuditResult(AuditResultResponseInterface $audit_result) {
     $this->auditResultResponse = $audit_result;
     return $this;
@@ -97,6 +114,12 @@ class AuditReportRenderer implements RenderableInterface {
     return $build;
   }
 
+  /**
+   * Get list of available categories.
+   *
+   * @return array
+   *   List of categories.
+   */
   protected function getCategoriesList() {
     $audit_config = $this->configFactory->get('adv_audit.config');
     $categories = $audit_config->get('adv_audit_settings.categories');
@@ -109,6 +132,12 @@ class AuditReportRenderer implements RenderableInterface {
     return $list;
   }
 
+  /**
+   * Build categories list.
+   *
+   * @return array
+   *   List of properties to render.
+   */
   protected function doBuildCategory() {
     $build = [];
 
@@ -123,7 +152,9 @@ class AuditReportRenderer implements RenderableInterface {
         $build[$category_id]['total'] = $stat['total'];
         $build[$category_id]['passed'] = $stat['passed'];
       }
-      if (!isset($this->metaInformation['category'][$category_id]['plugin_list'])) {
+      if (empty($this->metaInformation['category'][$category_id]['plugin_list'])) {
+        // Remove already created category.
+        unset($build[$category_id]);
         continue;
       }
       foreach ($this->metaInformation['category'][$category_id]['plugin_list'] as $plugin_id) {
@@ -135,6 +166,15 @@ class AuditReportRenderer implements RenderableInterface {
     return $build;
   }
 
+  /**
+   * Get Audit Reason object by plugin id.
+   *
+   * @param string $plugin_id
+   *    The plugin id.
+   *
+   * @return \Drupal\adv_audit\AuditReason
+   *   The audit reason object.
+   */
   protected function getReasonByPluginId($plugin_id) {
     /** @var \Drupal\adv_audit\AuditReason $reason */
     foreach ($this->auditResultResponse->getAuditResults() as $reason) {
@@ -148,7 +188,12 @@ class AuditReportRenderer implements RenderableInterface {
    * Calculate score value for selected category.
    *
    * TODO: Meybe we should move this to Response object.
-   * @param $category_id
+   *
+   * @param string $category_id
+   *   The category id.
+   *
+   * @return int
+   *   The score value.
    */
   protected function calculateScoreByCategory($category_id) {
     // Init default value for passed audit checks.
@@ -189,6 +234,10 @@ class AuditReportRenderer implements RenderableInterface {
    * Build audit reason.
    *
    * @param \Drupal\adv_audit\AuditReason $audit_reason
+   *   The adit reson object.
+   *
+   * @return array
+   *   The list or rendereable properties.
    */
   protected function doBuildAuditReason(AuditReason $audit_reason) {
     $build = [];
@@ -227,13 +276,20 @@ class AuditReportRenderer implements RenderableInterface {
 
 
   /**
+   * Render output messages.
+   *
    * @param \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance
    *   The audit plugin instance.
    * @param \Drupal\adv_audit\AuditReason $audit_reason
+   *   The Audit reason object.
+   * @param string $msg_type
+   *   The type of builded message.
    *
-   * @param $msg_type
    *
    * @return array
+   *   The builded message.
+   *
+   * @throws \Exception
    */
   protected function doRenderMessages(AdvAuditCheckBase $plugin_instance, AuditReason $audit_reason, $msg_type) {
     // Check what we can delivery build message to plugin instance.
