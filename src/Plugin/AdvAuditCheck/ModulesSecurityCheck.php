@@ -65,7 +65,6 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
 
     $manager = $this->updateManager;
     $status = AuditResultResponseInterface::RESULT_PASS;
-    $reason = NULL;
 
     foreach ($projects as $project) {
       if ($project['status'] == $manager::CURRENT || $project['project_type'] != 'module') {
@@ -74,7 +73,6 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
 
       if (isset($project['security updates']) && $project['security updates']) {
         $status = AuditResultResponseInterface::RESULT_FAIL;
-        $reason = $this->t('There are outdated modules with security updates.');
         $this->count += 1;
         $this->updates[] = [
           'label' => Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])),
@@ -84,15 +82,15 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
       }
     }
 
-    $link = Link::fromTextAndUrl('There', Url::fromRoute('update.module_update'));
+    $link = Link::fromTextAndUrl($this->t('There'), Url::fromRoute('update.module_update'));
 
     $params = [
-      '@link' => $link,
+      '@link' => $link->toString()->getGeneratedLink(),
       '@count' => $this->count,
       '@list' => $this->updates,
     ];
 
-    return new AuditReason($this->id(), $status, $reason, $params);
+    return new AuditReason($this->id(), $status, NULL, $params);
   }
 
 

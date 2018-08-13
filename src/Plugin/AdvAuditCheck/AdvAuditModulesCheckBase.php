@@ -5,11 +5,12 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 /**
  * Base class for Advances audit modules updates check plugins.
  */
-abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase {
+abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   /**
    * Store modules list.
@@ -69,7 +70,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase {
       }
 
       return [
-        'link' => ['#markup' => $arguments['@link']->toString()],
+        'link' => ['#markup' => $arguments['@link']],
         'count' => ['#markup' => $this->stringTranslation->formatPlural($arguments['@count'], '1 module', '@count modules')],
         'list' => $render_list
       ];

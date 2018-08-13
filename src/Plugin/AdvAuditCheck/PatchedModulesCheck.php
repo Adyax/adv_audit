@@ -8,10 +8,11 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\hacked\Controller\HackedController;
 
@@ -29,10 +30,10 @@ use Drupal\hacked\Controller\HackedController;
  *   severity = "high"
  * )
  */
-class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Length of the day in seconds.
+   * Data key.
    */
   const DATA_KEY = '#data';
 
@@ -56,7 +57,6 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
     $hacked = $hacked->hackedStatus();
 
     $status = AuditResultResponseInterface::RESULT_PASS;
-    $reason = NULL;
     $hacked_modules = [];
 
     foreach ($hacked[self::DATA_KEY] as $project) {
@@ -70,7 +70,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
       $params['hacked_modules'] = $hacked_modules;
     }
 
-    return new AuditReason($this->id(), $status, $reason, $params);
+    return new AuditReason($this->id(), $status, NULL, $params);
   }
 
   /**
@@ -84,8 +84,11 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditCheckInt
     $is_validated = is_array($hacked) && isset($hacked[self::DATA_KEY]);
 
     if (!$is_validated) {
-      $link = Link::fromTextAndUrl('here', Url::fromRoute('hacked.report'));
-      throw new RequirementsException($this->t('Hacked report is not generated. You can generate it @link', array('@link' => $link)), $this->pluginDefinition['requirements']['module']);
+      $link = new FormattableMarkup('<a href=":url">here</a>', [':url' => Url::fromRoute('hacked.report')->toString()]);
+      throw new RequirementsException(
+        $this->t('Hacked report is not generated. You can generate it @link', ['@link' => $link]),
+        $this->pluginDefinition['requirements']['module']
+      );
     }
   }
 
