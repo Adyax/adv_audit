@@ -13,6 +13,7 @@ use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 
@@ -28,7 +29,7 @@ use Drupal\Core\State\StateInterface;
  *   },
  * )
  */
-class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface{
+class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
    * Drupal\Core\State\StateInterface definition.

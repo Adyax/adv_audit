@@ -9,7 +9,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupla\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 

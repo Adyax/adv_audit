@@ -12,7 +12,6 @@ use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
-use Drupla\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 /**
  * Class Renderer to build audit response object.
@@ -296,7 +295,8 @@ class AuditReportRenderer implements RenderableInterface {
     if ($plugin_instance instanceof AdvAuditReasonRenderableInterface) {
       $render = $plugin_instance->auditReportRender($audit_reason, $msg_type);
       if (!empty($render)) {
-        return $this->renderer->render($render);
+        $this->renderer->render($render);
+        return $render;
       }
     }
     // Get needed message from yml config file.
