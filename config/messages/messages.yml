@@ -70,3 +70,11 @@ plugins:
     fail: 'Core aggregation disabled.'
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
+  preformance_views:
+    description: "Query results and  should be cached for at least 1 minute or use tag caching."
+    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
+    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
+    fail: "Views caching is configured wrongly."
+    warning: "Some views has unknown cache type. Please check it manually."
+    success: "All cache configurations for views setted up correctly."
+    help: 'Check views cache configuration.'
