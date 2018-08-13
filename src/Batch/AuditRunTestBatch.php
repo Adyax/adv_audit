@@ -79,33 +79,16 @@ class AuditRunTestBatch {
 
       $test_name = $test->label() ? $test->label() : $test_id;
 
-      try {
-        $test_reason = $executable->performTest();
-      }
-      catch (\Exception $e) {
-        \Drupal::logger('adv_audit_batch')->error($e->getMessage());
-        // Mark result as FAIL.
-        $test_reason = new AuditReason($test_id, AuditResultResponseInterface::RESULT_SKIP);
-      }
+      $test_reason = $executable->performTest();
 
-
-      if ($test_reason instanceof AuditReason) {
-        $result_response->addReason($test_reason);
-      }
-      else {
-        static::$messages->display('RETURN REASON HAVE A WRONG TYPE');
-        array_shift($context['sandbox']['test_ids']);
-        $context['sandbox']['current']++;
-        return;
-      }
+      // Save audit checkpoint result.
+      $result_response->addReason($test_reason);
 
       switch ($test_reason->getStatus()) {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
           $context['sandbox']['num_processed'] += static::$numProcessed;
-          $message = new PluralTranslatableMarkup(
-            $context['sandbox']['num_processed'], 'Upgraded @test (processed 1 item total)', 'Upgraded @test (processed @count items total)',
-            ['@test' => $test_name]);
+          $message = new TranslatableMarkup('Audit @test is PASSED', ['@test' => $test_name]);
           $context['sandbox']['messages'][] = (string) $message;
           \Drupal::logger('adv_audit_batch')->notice($message);
           $context['sandbox']['num_processed'] = 0;
@@ -113,14 +96,14 @@ class AuditRunTestBatch {
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test failed', ['@test' => $test_name]);
+          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit @test is FAILED', ['@test' => $test_name]);
           $context['results']['failures']++;
-          \Drupal::logger('adv_audit_batch')->error('Operation on @test failed', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Audit @test is failed', ['@test' => $test_name]);
           break;
 
         case AuditResultResponseInterface::RESULT_SKIP:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          \Drupal::logger('adv_audit_batch')->error('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
+          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit test @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Audit on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
           break;
 
         default:
@@ -153,7 +136,7 @@ class AuditRunTestBatch {
         $test_id = reset($context['sandbox']['test_ids']);
         $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id);
         $test_name = $test->label() ? $test->label() : $test_id;
-        $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max total tasks)', [
+        $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
           '@test' => $test_name,
           '@current' => $context['sandbox']['current'],
           '@max' => $context['sandbox']['max'],
