@@ -8,8 +8,10 @@ use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
 use Drupal\adv_audit\Message\AuditMessageCapture;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use InvalidArgumentException;
 
 /**
  * Runs a single test batch.
@@ -170,38 +172,80 @@ class AuditRunTestBatch {
     // If we had any successes log that for the user.
     if ($successes > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($successes, 'Completed 1 perform task successfully', 'Completed @count perform tasks successfully'));
+        ->formatPlural($successes, 'Process 1 audit successfully', 'Processed @count audits successfully'));
     }
     // If we had failures, log them and show the test failed.
     if ($failures > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($failures, '1 test failed', '@count tests failed'));
-      drupal_set_message(t('Audit process not completed'), 'error');
+        ->formatPlural($failures, '1 checkpoint failed', '@count checkpoints failed'));
+      drupal_set_message(t('Audit process not fully completed'), 'error');
     }
     else {
       // Everything went off without a hitch. We may not have had successes
       // but we didn't have failures so this is fine.
-      drupal_set_message(t('Congratulations, you perform all audit tests on your Drupal site!'));
+      drupal_set_message(t('Congratulations, you process all audit checkpoints on your Drupal site!'));
     }
 
-    // Try to save audit report to entity.
-    if (is_null($results['report_entity'])) {
-      // Create new entity if user not specify other.
+    if (!$success) {
+      drupal_set_message('The batch process is not fully completed.', 'error');
+      return;
+    }
+
+    // If all are OK then try to save audit report result to the entity.
+    $audit_result_response = $results['result_response'];
+    // In case when we already have result entity.
+    // Occurred when we save new revision.
+    $entity = $results['report_entity'];
+
+    // Check what we have valid result object.
+    if (!($audit_result_response instanceof AuditResultResponse)) {
+      drupal_set_message('Can\'t save audit result to the entity. Have problem with result object.', 'error');
+      return;
+    }
+    // Check the destination entity.
+    if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),
-        'audit_results' => serialize($results['result_response']),
       ]);
+    }
+
+    $message = 'The @is_new entity was saved. View audit report by this %link';
+    $args = [
+      '@is_new' => '',
+    ];
+    try {
+      $entity->set('audit_results', serialize($audit_result_response));
+      if ($entity->isNew()) {
+        $args['@is_new'] = 'new';
+      }
       $entity->save();
+      $args['%link'] = $entity->link('link');
+      drupal_set_message(t($message, $args));
     }
-    elseif ($results['report_entity'] instanceof AdvAuditEntity) {
-      /** @var \Drupal\adv_audit\Entity\AdvAuditEntity $entity */
-      $entity = $results['sandbox']['report_entity'];
-      $entity->set('audit_results', serialize($results['result_response']));
-      $entity->save();
+    catch (EntityStorageException $e) {
+      drupal_set_message('Can\'t save audit result to the entity. Save operations is failed.', 'error');
     }
-    else {
-      drupal_set_message('Can\'t save audit result to the entity', 'error');
+    catch (InvalidArgumentException $e) {
+      drupal_set_message('The specified audit_results field does not exist.', 'error');
     }
+  }
+
+  /**
+   * Save audit response result to the entity.
+   *
+   * @param \Drupal\adv_audit\AuditResultResponse $auditResultResponse
+   *   The response result object.
+   * @param mixed $entity
+   *   The Entity object for save.
+   */
+  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL ) {
+    if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
+      $entity = AdvAuditEntity::create([
+        'name' => AdvAuditEntity::generateEntityName(),
+      ]);
+    }
+    $entity->set('audit_results', serialize($auditResultResponse));
+    $entity->save();
   }
 
 }
