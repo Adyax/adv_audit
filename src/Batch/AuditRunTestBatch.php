@@ -209,18 +209,18 @@ class AuditRunTestBatch {
       ]);
     }
 
-    $message = 'The @is_new entity was saved. View audit report by this %link';
-    $args = [
-      '@is_new' => '',
-    ];
     try {
+      $args = [];
       $entity->set('audit_results', serialize($audit_result_response));
       if ($entity->isNew()) {
         $args['@is_new'] = 'new';
       }
+      else {
+        $args['@is_new'] = '';
+      }
       $entity->save();
       $args['%link'] = $entity->link('link');
-      drupal_set_message(t($message, $args));
+      drupal_set_message(t('The @is_new entity was saved. View audit report by this %link', $args));
     }
     catch (EntityStorageException $e) {
       drupal_set_message('Can\'t save audit result to the entity. Save operations is failed.', 'error');
