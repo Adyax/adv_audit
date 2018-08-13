@@ -2,7 +2,7 @@ plugins:
   cron_settings:
     description: 'Provide tool to control codebase state.'
     actions: 'Install and configure some advanced cron module.'
-    impatcts: 'If system cron doesn’t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: <br><ul><li>Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.</li> <li>Drupal will not periodically clean up log files</li> <li>application will not have a possibility automatically update feeds</li> <li>update manager will not have a possibility to check automatically pending updates</li> <li>search indexes that also uses cron will not index new/updated content and many other points</li></ul>'
+    impatcts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: <br><ul><li>Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.</li> <li>Drupal will not periodically clean up log files</li> <li>application will not have a possibility automatically update feeds</li> <li>update manager will not have a possibility to check automatically pending updates</li> <li>search indexes that also uses cron will not index new/updated content and many other points</li></ul>'
     fail: 'Its fail message49'
     success: 'Success message!!'
     help: 'Check cron settings.'
@@ -17,19 +17,19 @@ plugins:
   drupal_core:
     description: 'Check the Drupal core version and its actuality.'
     actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
-    impacts: 'If you don’t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
+    impacts: 'If you don''t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
     fail: 'Current Drupal core version is outdated - @version'
     success: 'Current Drupal core version is up to date - @version'
     help: 'Check the Drupal core version and its actuality.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
     actions: '@link are @count modules with security updates. These modules must be updated as soon as possible. @list'
-    impacts: 'If you don’t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
+    impacts: 'If you don''t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
     fail: 'There are outdated modules with security updates.'
     success: 'All modules are up-to-date.'
     help: 'Check security updates for contrib modules.'
   modules_update_check:
-    description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it’s important to update modules to stable releases (if exists).'
+    description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it''s important to update modules to stable releases (if exists).'
     actions: '@link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
     impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
     fail: 'There are outdated modules with non-security updates.'
@@ -66,7 +66,7 @@ plugins:
   js_css_agregation:
     description: 'Allows you to improve the frontend performanceof your site.'
     actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
-    impacts: 'Without aggregation pages are loaded slowly as it’s a lot of css/js files are requires more time for loading..'
+    impacts: 'Without aggregation pages are loaded slowly as it''s a lot of css/js files are requires more time for loading..'
     fail: 'Core aggregation disabled.'
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
