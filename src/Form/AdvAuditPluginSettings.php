@@ -2,11 +2,14 @@
 
 namespace Drupal\adv_audit\Form;
 
+use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupla\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -158,7 +161,47 @@ class AdvAuditPluginSettings extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Save plugin configuration'),
     ];
+
+    $form['run'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Run'),
+      '#submit' => ['::runTest'],
+      '#attributes' => [
+        'class' => ['button--primary'],
+      ],
+    ];
+
     return $form;
+  }
+
+
+  /**
+   * Temporary submit handler for run audit and display result.
+   */
+  public function runTest(array &$form, FormStateInterface $form_state) {
+    // Check what plugin requirements are met.
+    try {
+      $this->pluginInstance->checkRequirements();
+    }
+    catch (RequirementsException $e) {
+      drupal_set_message($e->getMessage(), 'error');
+      return;
+    }
+
+    // Try run the test and grab the result.
+    $result = $this->pluginInstance->perform();
+    if ($result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
+      drupal_set_message($this->t('Audit check is PASSED'), 'status');
+    }
+    else {
+      drupal_set_message($this->t('Audit check is FAILED<br/>Reason:<p>@reason</p>', ['@reason' => implode('<br/>', $result->getReason())]), 'error');
+    }
+
+    // Try to build output from plugin instance.
+    if ($this->pluginInstance instanceof AdvAuditReasonRenderableInterface) {
+      // If needed you can add call to ::auditReportRender for test.
+    }
+
   }
 
   /**

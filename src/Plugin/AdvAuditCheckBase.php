@@ -231,25 +231,6 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   }
 
   /**
-   * Build personalized theming from audit response object.
-   *
-   * Needed to customize messages for audit report UI.
-   *
-   * @param \Drupal\adv_audit\AuditReason $reason
-   *   The saved AuditReason object.
-   * @param string $type
-   *   Type of current build process.
-   *    See in AuditMessagesStorageInterface::MSG_TYPE_*
-   *
-   * @return array
-   *    Return the Render array with data to output
-   *      or an empty array if no action needed.
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    return [];
-  }
-
-  /**
    * Override plugin status from settings.
    *
    * @param bool $status

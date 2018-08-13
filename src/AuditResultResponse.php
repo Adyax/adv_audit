@@ -23,8 +23,22 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
     $this->results = new ArrayCollection();
   }
 
+  /**
+   * Calculate main scope of paddes audit.
+   *
+   * @return int
+   *   Return scope value.
+   */
   public function calculateScore() {
-    // TODO: Implement calculateScore() method.
+    $passed = 0;
+    $total_count = $this->results->count();
+    foreach ($this->results->getIterator() as $check_result) {
+      if ($check_result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
+        $passed++;
+      }
+    }
+    $scope = ($passed * 100) / $total_count;
+    return intval($scope);
   }
 
   /**

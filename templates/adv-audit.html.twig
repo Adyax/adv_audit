@@ -16,7 +16,6 @@
  */
 #}
 <div{{ attributes.addClass('adv_audit') }}>
-  {% if content %}
-    {{- content -}}
-  {% endif %}
+  Insight score is a rating given to your site by Acquia's Insight tool. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.
+  {{ content.audit_results }}
 </div>
