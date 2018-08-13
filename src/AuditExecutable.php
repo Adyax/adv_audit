@@ -94,29 +94,27 @@ class AuditExecutable {
         ),
         'error'
       );
-      return AuditResultResponseInterface::RESULT_SKIP;
+      return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP);
     }
 
     try {
       $return = $this->test->perform();
     } catch (AuditSkipTestException $e) {
-      if ($e->getMessage()) {
-        // Skip test and save log record.
-        $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
-        $this->message->display(
-          $this->t(
-            'Test @id was skipped. @message',
-            [
-              '@id' => $this->test->id(),
-              '@message' => $e->getMessage(),
-            ]
-          ),
-          'status');
-      }
+      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP);
+      // Skip test and save log record.
+      $this->message->display(
+        $this->t(
+          'Test @id was skipped. @message',
+          [
+            '@id' => $this->test->id(),
+            '@message' => $e->getMessage(),
+          ]
+        ),
+        'status');
     }
-    catch (AuditTestException $e) {
-      $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+    catch (\Exception $e) {
       $this->handleException($e);
+      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP);
     }
 
     return $return;

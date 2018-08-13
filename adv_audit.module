@@ -24,9 +24,13 @@ function adv_audit_theme() {
       'variables' => ['report' => NULL],
       'template' => 'adv-audit-report',
     ],
-    'adv_audit_html_results' => [
-      'variables' => ['audit_result' => NULL],
-      'template' => 'adv-audit-html-results',
+    'adv_audit_report_object' => [
+      'variables' => [
+        'title' => NULL,
+        'score_point' => NULL,
+        'categories' => NULL,
+      ],
+      'template' => 'adv-audit-report-object',
     ],
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
