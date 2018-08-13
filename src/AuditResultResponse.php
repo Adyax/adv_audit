@@ -37,8 +37,8 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
         $passed++;
       }
     }
-    $scope = ($passed * 100) / $total_count;
-    return intval($scope);
+    $score = ($passed * 100) / $total_count;
+    return intval($score);
   }
 
   /**
@@ -64,6 +64,16 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   public function addReason(AuditReason $reason) {
     $this->results->add($reason);
+  }
+
+  /**
+   * Get stored audit results list.
+   *
+   * @return array
+   *   The audit result list.
+   */
+  public function getAuditResults() {
+    return $this->results->getValues();
   }
 
   /**

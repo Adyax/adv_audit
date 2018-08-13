@@ -61,6 +61,9 @@ class AuditRunTestBatch {
       $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
+    /** @var AuditResultResponse $result_response */
+    $result_response = &$context['results']['result_response'];
+
     // Number processed in this batch.
     static::$numProcessed = 0;
 
@@ -82,10 +85,19 @@ class AuditRunTestBatch {
       catch (\Exception $e) {
         \Drupal::logger('adv_audit_batch')->error($e->getMessage());
         // Mark result as FAIL.
-        $test_reason = new AuditReason($test_id, AuditResultResponseInterface::RESULT_WARN, '');
+        $test_reason = new AuditReason($test_id, AuditResultResponseInterface::RESULT_SKIP);
       }
 
-      $context['results']['result_response']->addReason($test_reason);
+
+      if ($test_reason instanceof AuditReason) {
+        $result_response->addReason($test_reason);
+      }
+      else {
+        static::$messages->display('RETURN REASON HAVE A WRONG TYPE');
+        array_shift($context['sandbox']['test_ids']);
+        $context['sandbox']['current']++;
+        return;
+      }
 
       switch ($test_reason->getStatus()) {
         case AuditResultResponseInterface::RESULT_PASS:
@@ -106,13 +118,9 @@ class AuditRunTestBatch {
           \Drupal::logger('adv_audit_batch')->error('Operation on @test failed', ['@test' => $test_name]);
           break;
 
-        case AuditResultResponseInterface::RESULT_WARN:
+        case AuditResultResponseInterface::RESULT_SKIP:
           $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
           \Drupal::logger('adv_audit_batch')->error('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          break;
-
-        case AuditResultResponseInterface::RESULT_INFO:
-          // Skip silently if disabled.
           break;
 
         default:

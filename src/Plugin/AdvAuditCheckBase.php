@@ -138,9 +138,9 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function getSeverityLevel() {
     // Severity level can be overridden by plugin settings.
     $state = $this->getStateService();
-    if ($state->has('adv_audit.plugin.severity.' . $this->getPluginId())) {
+    if ($level = $state->get('adv_audit.plugin.severity.' . $this->getPluginId())) {
       // Return overridden severity for plugin.
-      return $state->get('adv_audit.plugin.severity.' . $this->getPluginId());
+      return $level;
     }
     // Return default severity from plugin definition.
     return $this->pluginDefinition['severity'];
