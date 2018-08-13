@@ -68,12 +68,28 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
-    $build = [];
+    $build = [
+      '#type' => 'container',
+      '#attrbutes' => [
+        'class' => ['audit-report-container'],
+      ],
+    ];
+    $build['header'] = [
+      '#type' => 'container',
+      '#attrbiutes' => [
+        'class' => ['header']
+      ],
+      'title' => [
+        '#theme' => 'html_tag',
+        '#tag' => 'h3',
+        '#value' => $this->t('Audit Report result')
+      ],
+    ];
     $build['scope']['#markup'] = 'Score: ' . $this->auditResultResponse->calculateScore();
     $build['categories'] = [
       '#type' => 'container',
       '#attributes' => [
-        'class' => ['audit-category-wrap']
+        'class' => ['']
       ],
     ];
 
@@ -94,6 +110,10 @@ class AuditReportRenderer implements RenderableInterface {
       }
     }
     return $list;
+  }
+
+  protected function doBuildCategory($category_id, $category_label) {
+
   }
 
   /**

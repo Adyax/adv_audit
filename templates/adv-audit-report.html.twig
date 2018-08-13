@@ -16,9 +16,59 @@
                 <div class="cat-title">Performance</div>
                 <div class="cat-summary">9 of 9 issues resolved</div>
                 <div class="cat-view">View</div>
-                <div class="detailed-view" style="display:none;">
+                <div class="detailed-view" style="">
                     <div class="report-items">
-                        <div class="audit-reason">
+                        <div class="audit-reason status-passed">
+                            <div class="panel-heading">
+                                <small>{{ report.description|raw }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Results: '|t }}</strong>
+                                <small>{{ report.information }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Importance: '|t }}</strong>
+                                <small>{{ report.severity }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Actions to be done: '|t }}</strong>
+                                <small>{{ report.actions }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Impacts: '|t }}</strong>
+                                <small>{{ report.impacts }}</small>
+                            </div>
+                        </div>
+                        <div class="audit-reason status-failed">
+                            <div class="panel-heading">
+                                <small>{{ report.description|raw }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Results: '|t }}</strong>
+                                <small>{{ report.information }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Importance: '|t }}</strong>
+                                <small>{{ report.severity }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Actions to be done: '|t }}</strong>
+                                <small>{{ report.actions }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Impacts: '|t }}</strong>
+                                <small>{{ report.impacts }}</small>
+                            </div>
+                        </div>
+                        <div class="audit-reason status-skip">
                             <div class="panel-heading">
                                 <small>{{ report.description|raw }}</small>
                             </div>
