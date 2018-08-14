@@ -65,7 +65,7 @@ plugins:
     help: 'Check cache settings.'
   js_css_agregation:
     description: 'Allows you to improve the frontend performanceof your site.'
-    actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
+    actions: 'Enable core aggregation or use %link (that includes all latest security updates).'
     impacts: 'Without aggregation pages are loaded slowly as it''s a lot of css/js files are requires more time for loading..'
     fail: 'Core aggregation disabled.'
     success: 'Core aggregation enabled.'
