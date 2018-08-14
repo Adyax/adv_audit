@@ -7,6 +7,7 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\user\Entity\Role;
@@ -39,12 +40,23 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
   protected $connection;
 
   /**
+   * The Drupal kernel.
+   *
+   * @var \Drupal\Core\DrupalKernelInterface
+   */
+  protected $kernel;
+
+  protected $root;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager, Connection $connection) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
+    $this->kernel = $kernel;
+    $this->root = $root;
   }
 
   /**
@@ -56,7 +68,9 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('kernel'),
+      $container->get('app.root')
     );
   }
 
@@ -91,7 +105,7 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
    */
   protected function getDatabaseSize() {
     $query = $this->connection->query(
-      "SELECT table_schema \"db_name\", Round(Sum(data_length + index_length) / 1024 / 1024, 2) \"db_size\" 
+      "SELECT table_schema \"db_name\", Round(Sum(data_length + index_length) / 1024 / 1024, 2) \"db_size\"
       FROM   information_schema.tables
       GROUP  BY table_schema;"
     );
@@ -149,16 +163,17 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
    */
   protected function getFilesystemInfo() {
 
-    $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator('./'), \RecursiveIteratorIterator::SELF_FIRST);
+    $path = $this->root . '/' . $this->kernel->getSitePath() . '/files';
+
+    $iterator = new \RecursiveDirectoryIterator($path);
+    $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
+    $objects = new \RecursiveIteratorIterator($iterator);
 
     // Counters.
     $countFiles = 0;
     $filesTotalSize = 0;
 
     foreach ($objects as $name => $object) {
-      if (strpos($name, 'vendor')) {
-        continue;
-      }
       $filesTotalSize += filesize($name);
       $countFiles++;
     }
@@ -166,7 +181,7 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
     $renderData['count_files'] = $countFiles;
 
     // Total size in MBytes.
-    $renderData['files_total_size'] = $filesTotalSize / 1048576;
+    $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
 
     return $renderData;
   }
