@@ -10,10 +10,9 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\hacked\Controller\HackedController;
 
 /**
@@ -84,9 +83,9 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditReasonRe
     $is_validated = is_array($hacked) && isset($hacked[self::DATA_KEY]);
 
     if (!$is_validated) {
-      $link = new FormattableMarkup('<a href=":url">here</a>', [':url' => Url::fromRoute('hacked.report')->toString()]);
+      $link = Link::createFromRoute('here', 'hacked.report')->toString();
       throw new RequirementsException(
-        $this->t('Hacked report is not generated. You can generate it @link', ['@link' => $link]),
+        $this->t('Hacked report is not generated. You can generate it %link', ['%link' => $link]),
         $this->pluginDefinition['requirements']['module']
       );
     }
