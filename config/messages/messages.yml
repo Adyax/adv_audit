@@ -99,3 +99,10 @@ plugins:
      fail: 'max_execution_time is greater than 300'
      success: 'max_execution_time is less or equal than 300'
      help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+  performance_modules_status:
+     description: ''
+     actions: 'Disable listed modules.'
+     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+     fail: ''
+     success: ''
+     help: 'Check statuses of development and UI modules.'
