@@ -174,7 +174,6 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
   protected function auditDisplayCache($display, $display_name, $view) {
     $cache = $display->getOption('cache');
 
-    $this->auditDisplayCache($display);
     if (empty($cache) || $cache['type'] == 'none') {
       $this->withoutCache[] = $this->t('Display @display_name of view @view_id has wrong cache settings.', [
         '@display_name' => $display_name,
