@@ -24,6 +24,7 @@ class RegisterGlobalsCheck extends AdvAuditCheckBase {
    * {@inheritdoc}
    */
   public function perform() {
+    $status = AuditResultResponseInterface::RESULT_PASS;
     $register_globals = trim(ini_get('register_globals'));
     if (!empty($register_globals) && strtolower($register_globals) != 'off') {
       $status = AuditResultResponseInterface::RESULT_FAIL;
