@@ -23,14 +23,14 @@ plugins:
     help: 'Check the Drupal core version and its actuality.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
-    actions: '@link are @count modules with security updates. These modules must be updated as soon as possible. @list'
+    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible. @list'
     impacts: 'If you don''t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
     fail: 'There are outdated modules with security updates.'
     success: 'All modules are up-to-date.'
     help: 'Check security updates for contrib modules.'
   modules_update_check:
     description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it''s important to update modules to stable releases (if exists).'
-    actions: '@link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
+    actions: '%link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
     impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
     fail: 'There are outdated modules with non-security updates.'
     success: 'All modules are up-to-date.'
