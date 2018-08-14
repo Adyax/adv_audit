@@ -99,3 +99,11 @@ plugins:
      fail: 'max_execution_time is greater than 300'
      success: 'max_execution_time is less or equal than 300'
      help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+  trusted_host_check:
+    description: "Check Trusted Host Settings."
+    actions: "Please configure trusted_host_patterns setting in settings.php."
+    impacts: "The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities."
+    fail: "The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this."
+    warning: "The trusted_host_patterns setting is not configured in settings.php."
+    success: "The trusted_host_patterns setting is set to allow %trusted_host_patterns."
+    help: 'Check Trusted Host Settings.'
