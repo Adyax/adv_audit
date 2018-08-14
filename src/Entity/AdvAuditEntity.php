@@ -222,6 +222,7 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setLabel(t('Audit Results'))
       ->setDescription(t('Output results of audit.'))
       ->setDefaultValue(NULL)
+      ->setRevisionable(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'audit_report_formatter',

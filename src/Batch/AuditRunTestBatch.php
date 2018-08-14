@@ -3,13 +3,14 @@
 namespace Drupal\adv_audit\Batch;
 
 use Drupal\adv_audit\AuditExecutable;
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
 use Drupal\adv_audit\Message\AuditMessageCapture;
-use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
+use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use InvalidArgumentException;
 
 /**
  * Runs a single test batch.
@@ -61,6 +62,9 @@ class AuditRunTestBatch {
       $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
+    /** @var AuditResultResponse $result_response */
+    $result_response = &$context['results']['result_response'];
+
     // Number processed in this batch.
     static::$numProcessed = 0;
 
@@ -70,30 +74,22 @@ class AuditRunTestBatch {
     /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
     $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($test) {
+    if ($test instanceof AdvAuditCheckInterface) {
       static::$messages = new AuditMessageCapture();
       $executable = new AuditExecutable($test, static::$messages);
 
       $test_name = $test->label() ? $test->label() : $test_id;
 
-      try {
-        $test_reason = $executable->performTest();
-      }
-      catch (\Exception $e) {
-        \Drupal::logger('adv_audit_batch')->error($e->getMessage());
-        // Mark result as FAIL.
-        $test_reason = new AuditReason($test_id, AuditResultResponseInterface::RESULT_WARN, '');
-      }
+      $test_reason = $executable->performTest();
 
-      $context['results']['result_response']->addReason($test_reason);
+      // Save audit checkpoint result.
+      $result_response->addReason($test_reason);
 
       switch ($test_reason->getStatus()) {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
           $context['sandbox']['num_processed'] += static::$numProcessed;
-          $message = new PluralTranslatableMarkup(
-            $context['sandbox']['num_processed'], 'Upgraded @test (processed 1 item total)', 'Upgraded @test (processed @count items total)',
-            ['@test' => $test_name]);
+          $message = new TranslatableMarkup('Audit @test is PASSED', ['@test' => $test_name]);
           $context['sandbox']['messages'][] = (string) $message;
           \Drupal::logger('adv_audit_batch')->notice($message);
           $context['sandbox']['num_processed'] = 0;
@@ -101,18 +97,14 @@ class AuditRunTestBatch {
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test failed', ['@test' => $test_name]);
+          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit @test is FAILED', ['@test' => $test_name]);
           $context['results']['failures']++;
-          \Drupal::logger('adv_audit_batch')->error('Operation on @test failed', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Audit @test is failed', ['@test' => $test_name]);
           break;
 
-        case AuditResultResponseInterface::RESULT_WARN:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          \Drupal::logger('adv_audit_batch')->error('Operation on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          break;
-
-        case AuditResultResponseInterface::RESULT_INFO:
-          // Skip silently if disabled.
+        case AuditResultResponseInterface::RESULT_SKIP:
+          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit test @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
+          \Drupal::logger('adv_audit_batch')->error('Audit on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
           break;
 
         default:
@@ -145,7 +137,7 @@ class AuditRunTestBatch {
         $test_id = reset($context['sandbox']['test_ids']);
         $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id);
         $test_name = $test->label() ? $test->label() : $test_id;
-        $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max total tasks)', [
+        $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
           '@test' => $test_name,
           '@current' => $context['sandbox']['current'],
           '@max' => $context['sandbox']['max'],
@@ -179,38 +171,80 @@ class AuditRunTestBatch {
     // If we had any successes log that for the user.
     if ($successes > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($successes, 'Completed 1 perform task successfully', 'Completed @count perform tasks successfully'));
+        ->formatPlural($successes, 'Process 1 audit successfully', 'Processed @count audits successfully'));
     }
     // If we had failures, log them and show the test failed.
     if ($failures > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($failures, '1 test failed', '@count tests failed'));
-      drupal_set_message(t('Audit process not completed'), 'error');
+        ->formatPlural($failures, '1 checkpoint failed', '@count checkpoints failed'));
+      drupal_set_message(t('Audit process not fully completed'), 'error');
     }
     else {
       // Everything went off without a hitch. We may not have had successes
       // but we didn't have failures so this is fine.
-      drupal_set_message(t('Congratulations, you perform all audit tests on your Drupal site!'));
+      drupal_set_message(t('Congratulations, you process all audit checkpoints on your Drupal site!'));
     }
 
-    // Try to save audit report to entity.
-    if (is_null($results['report_entity'])) {
-      // Create new entity if user not specify other.
+    if (!$success) {
+      drupal_set_message('The batch process is not fully completed.', 'error');
+      return;
+    }
+
+    // If all are OK then try to save audit report result to the entity.
+    $audit_result_response = $results['result_response'];
+    // In case when we already have result entity.
+    // Occurred when we save new revision.
+    $entity = $results['report_entity'];
+
+    // Check what we have valid result object.
+    if (!($audit_result_response instanceof AuditResultResponse)) {
+      drupal_set_message('Can\'t save audit result to the entity. Have problem with result object.', 'error');
+      return;
+    }
+    // Check the destination entity.
+    if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),
-        'audit_results' => serialize($results['result_response']),
       ]);
+    }
+
+    try {
+      $args = [];
+      $entity->set('audit_results', serialize($audit_result_response));
+      if ($entity->isNew()) {
+        $args['@is_new'] = 'new';
+      }
+      else {
+        $args['@is_new'] = '';
+      }
       $entity->save();
+      $args['%link'] = $entity->link('link');
+      drupal_set_message(t('The @is_new entity was saved. View audit report by this %link', $args));
     }
-    elseif ($results['report_entity'] instanceof AdvAuditEntity) {
-      /** @var \Drupal\adv_audit\Entity\AdvAuditEntity $entity */
-      $entity = $results['sandbox']['report_entity'];
-      $entity->set('audit_results', serialize($results['result_response']));
-      $entity->save();
+    catch (EntityStorageException $e) {
+      drupal_set_message('Can\'t save audit result to the entity. Save operations is failed.', 'error');
     }
-    else {
-      drupal_set_message('Can\'t save audit result to the entity', 'error');
+    catch (InvalidArgumentException $e) {
+      drupal_set_message('The specified audit_results field does not exist.', 'error');
     }
+  }
+
+  /**
+   * Save audit response result to the entity.
+   *
+   * @param \Drupal\adv_audit\AuditResultResponse $auditResultResponse
+   *   The response result object.
+   * @param mixed $entity
+   *   The Entity object for save.
+   */
+  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL ) {
+    if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
+      $entity = AdvAuditEntity::create([
+        'name' => AdvAuditEntity::generateEntityName(),
+      ]);
+    }
+    $entity->set('audit_results', serialize($auditResultResponse));
+    $entity->save();
   }
 
 }

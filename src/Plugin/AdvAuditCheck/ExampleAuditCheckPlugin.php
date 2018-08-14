@@ -12,7 +12,9 @@ use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 
@@ -28,7 +30,7 @@ use Drupal\Core\State\StateInterface;
  *   },
  * )
  */
-class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface{
+class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
    * Drupal\Core\State\StateInterface definition.
@@ -89,11 +91,13 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    *   Return AuditReason object instance.
    */
   public function perform() {
+    // Created link object and put in both result because this link used on other messages like actions
+    $example_link = Link::createFromRoute('LINK', '<front>');
     if ($this->state->get($this->buildStateConfigKey()) == 1) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => rand(1, 100)]);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => rand(1, 100), '%link' => $example_link->toString()]);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['@hash' => md5('this is simple string')]);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['@hash' => md5('this is simple string'), '%link' => $example_link->toString()]);
   }
 
   /**

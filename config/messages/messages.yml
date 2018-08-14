@@ -51,10 +51,10 @@ plugins:
     help: 'Check if core and contribution modules were hacked.'
   adv_audit_check_example:
     description: 'Fake audit check plugin. Describe all features on Plugin sub-system.'
-    actions: ''
+    actions: 'This url %link should be correct formatted'
     impacts: ''
-    fail: 'Failed message test with dynamic value @hash'
-    success: 'Success messages with dynamic random value @random'
+    fail: 'Failed message test with dynamic value @hash - %link'
+    success: 'Success messages with dynamic random value @random - %link'
     help: ''
   page_caching_performance:
     description: 'Varnish Cache is an open source, front end accelerator also known as a caching HTTP reverse proxy. Varnish can be used to cache both dynamic and static content and has shown to dramatically increase website speed and server performance.'

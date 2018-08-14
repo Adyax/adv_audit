@@ -1,0 +1,60 @@
+<div class="audit-report-container">
+    <header>
+        <h3 class="title">{{ title }}</h3>
+    </header>
+    <div class="content">
+        <div class="score-container">
+            <div class="score-point">
+                <div class="flex-none">
+                    <div class="aq-circle aq-circle--large render-score-status" data-score-point="{{ score_point }}">{{ score_point }}</div>
+                </div>
+            </div>
+            <div class="description">Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.</div>
+        </div>
+        <div class="category-list">
+            <h4>Alert categories</h4>
+            {% for category in categories %}
+            <div class="adv-category-item row layout-row">
+                <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>
+                <div class="cat-title aq-dataset__data flex-50">{{ category.label }}</div>
+                <div class="cat-summary  aq-dataset__data flex-30">{{ category.passed }} of {{ category.total }} issues resolved</div>
+                <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed" data-category-id="{{ category.id }}" href="#">View</a></div>
+                <div class="detailed-view" category-id="{{ category.id }}" style="display: none">
+                    <div class="report-items">
+                        {% for report in category.reports %}
+                        <div {{ report.result_attributes }}>
+                            <div class="panel-heading">
+                                <strong>{{ report.name }}</strong>
+                            </div>
+                            <div class="panel-heading">
+                                <small>{{ report.description }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Results: '|t }}</strong>
+                                {{ report.result|raw }}
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Importance: '|t }}</strong>
+                                <small>{{ report.severity }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Actions to be done: '|t }}</strong>
+                                <small>{{ report.actions }}</small>
+                            </div>
+                            </br>
+                            <div class="panel-heading">
+                                <strong>{{ 'Impacts: '|t }}</strong>
+                                <small>{{ report.impacts }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

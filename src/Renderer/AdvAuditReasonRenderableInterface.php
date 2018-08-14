@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupla\adv_audit\Renderer;
+namespace Drupal\adv_audit\Renderer;
 
 use Drupal\adv_audit\AuditReason;
 
