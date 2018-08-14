@@ -21,8 +21,8 @@ use Drupal\hacked\Controller\HackedController;
  *   label = @Translation("Patched modules."),
  *   category = "core_and_modules",
  *   requirements = {
- *     "module" = {
- *      "hacked"
+ *     "module": {
+ *      "hacked:2.0-beta",
  *     },
  *   },
  *   enabled = true,
