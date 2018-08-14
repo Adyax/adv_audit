@@ -7,9 +7,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Tests\Mockbuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides the Advances audit check plugin manager.
@@ -42,7 +40,7 @@ class AdvAuditCheckManager extends DefaultPluginManager {
    */
   public function getPluginsByCategory() {
     $list = [];
-    foreach($this->getDefinitions() as $plugin) {
+    foreach ($this->getDefinitions() as $plugin) {
       $list[$plugin['category']][$plugin['id']] = $plugin;
     }
     return $list;
@@ -51,7 +49,7 @@ class AdvAuditCheckManager extends DefaultPluginManager {
   /**
    * Get list of plugin by selected category.
    *
-   * @param $category_id
+   * @param string $category_id
    *   The category ID.
    *
    * @return array|mixed
