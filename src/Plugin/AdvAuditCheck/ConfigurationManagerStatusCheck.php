@@ -88,10 +88,9 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
         $this->t('There are differences between configurations stored in database and files.')
       );
     }
-    else {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
-    }
+
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+
   }
 
 }
-
