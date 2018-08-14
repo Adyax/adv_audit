@@ -1,8 +1,13 @@
-adv_audit.status:
+adv_audit.report:
   version: VERSION
   css:
     theme:
       css/view_results.css: {}
+  js:
+    js/view_results.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
 
 adv_audit.admin:
   version: VERSION

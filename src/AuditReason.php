@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit;
 
+use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
@@ -69,6 +70,7 @@ class AuditReason {
       }
     }
     $this->reason = $reason;
+    $this->arguments = $arguments;
   }
 
   /**

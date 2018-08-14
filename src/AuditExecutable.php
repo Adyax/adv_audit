@@ -3,10 +3,9 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Exception\AuditSkipTestException;
-use Drupal\adv_audit\Exception\AuditTestException;
+use Drupal\adv_audit\Exception\AuditException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -75,48 +74,54 @@ class AuditExecutable {
    * {@inheritdoc}
    */
   public function performTest() {
-    // Send event before perform the test.
-    // $this->getEventDispatcher()->dispatch(AdvAuditEvents::PRE_PERFORM, new AuditEvent($this->test, $this->message));
-
-    // Knock off test if the requirements haven't been met.
-    try {
-      $this->test->checkRequirements();
-    }
-    catch (RequirementsException $e) {
-      $this->message->display(
-        $this->t(
-          'Test @id did not meet the requirements. @message @requirements',
-          [
-            '@id' => $this->test->id(),
-            '@message' => $e->getMessage(),
-            '@requirements' => $e->getRequirementsString(),
-          ]
-        ),
-        'error'
-      );
-      return AuditResultResponseInterface::RESULT_SKIP;
-    }
 
     try {
-      $return = $this->test->perform();
-    } catch (AuditSkipTestException $e) {
-      if ($e->getMessage()) {
-        // Skip test and save log record.
-        $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+      try {
+        // Knock off test if the requirements haven't been met.
+        $this->test->checkRequirements();
+        // Run audit checkpoint perform.
+        $return = $this->test->perform();
+        // Check what plugin return correct response.
+        if (!($return instanceof AuditReason)) {
+          throw new AuditException('Response from ' . $this->test->id() . ' have a not correct type.');
+        }
+      }
+      catch (RequirementsException $e) {
         $this->message->display(
           $this->t(
-            'Test @id was skipped. @message',
+            'Audit checkpoint @id did not meet the requirements. @message @requirements',
             [
               '@id' => $this->test->id(),
               '@message' => $e->getMessage(),
+              '@requirements' => $e->getRequirementsString(),
             ]
           ),
-          'status');
+          'error'
+        );
+        throw new AuditSkipTestException('Audit checkpoint plugin not meet the requirements');
+      }
+      catch (AuditException $e) {
+        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0 , $e);
       }
     }
-    catch (AuditTestException $e) {
-      $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+    catch (AuditSkipTestException $e) {
+      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, 'Audit plugin was skip this audit point.');
+      // Skip test and save log record.
+      $this->message->display(
+        $this->t(
+          'Test @id was skipped. @message',
+          [
+            '@id' => $this->test->id(),
+            '@message' => $e->getMessage(),
+          ]
+        ),
+        'status');
+    }
+    catch (\Exception $e) {
+      // We should handle all exception what can occur in audit plugins.
       $this->handleException($e);
+      // In any case we should store this result in Result response collections and mark it as Failed.
+      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, $e->getMessage());
     }
 
     return $return;
