@@ -78,3 +78,10 @@ plugins:
     warning: "Some views has unknown cache type. Please check it manually."
     success: "All cache configurations for views setted up correctly."
     help: 'Check views cache configuration.'
+  intro_global_info_check:
+    description: ''
+    actions: ''
+    impacts: ''
+    fail: ''
+    success: ''
+    help: ''
