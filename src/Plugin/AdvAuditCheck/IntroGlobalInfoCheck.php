@@ -5,9 +5,9 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,14 +22,29 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  enabled = true,
  * )
  */
-class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Entity Type Manager container.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Connection container.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $connection;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager, Connection $connection) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->configFactory = $config_factory;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->connection = $connection;
   }
 
   /**
@@ -40,7 +55,8 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('config.factory')
+      $container->get('entity_type.manager'),
+      $container->get('database')
     );
   }
 
@@ -48,11 +64,60 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
    * {@inheritdoc}
    */
   public function perform() {
+    $errors = [];
 
-    // Info data for render in own template.
-    $renderData = array();
+    $renderData = $this->getUsersInfo();
 
-    $user_storage = \Drupal::entityTypeManager()->getStorage('user');
+    $rolesList = Role::loadMultiple();
+    foreach ($rolesList as $role => $value) {
+      $renderData['roles_list'][] = $role;
+    }
+
+    $renderData['filesystem_info'] = $this->getFilesystemInfo();
+
+    $renderData['db_size'] = $this->getDatabaseSize();
+
+    if (!empty($errors)) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
+    }
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+  }
+
+  /**
+   * Get size of current Database.
+   *
+   * @return mixed
+   *   Returns DB's size or false.
+   */
+  protected function getDatabaseSize() {
+    $query = $this->connection->query(
+      "SELECT table_schema \"db_name\", Round(Sum(data_length + index_length) / 1024 / 1024, 2) \"db_size\" 
+      FROM   information_schema.tables
+      GROUP  BY table_schema;"
+    );
+    $result = $query->fetchAll();
+    $currentDBName = $this->connection->getConnectionOptions()['database'];
+    foreach ($result as $db) {
+      if ($db->db_name == $currentDBName) {
+        return $db->db_size;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Get users info like total, blocked, admin data.
+   *
+   * @return array
+   *   Users data.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  protected function getUsersInfo() {
+    $renderData = [];
+
+    $user_storage = $this->entityTypeManager->getStorage('user');
 
     $totalUsers = $user_storage->getQuery()
       ->count()
@@ -63,8 +128,9 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
       ->condition('status', 0)
       ->count()
       ->execute();
-    $renderData['blocker_users'] = $blockedUsers;
+    $renderData['blocked_users'] = $blockedUsers;
 
+    // Check if admin is not blocked.
     $uid1 = $user_storage->loadMultiple([1]);
     $renderData['uid1'] = [
       'name' => $uid1[1]->name->value,
@@ -72,15 +138,23 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
       'status' => $uid1[1]->isBlocked() ? 'blocked' : 'not blocked',
     ];
 
-    $rolesList = Role::loadMultiple();
-    foreach ($rolesList as $role => $value) {
-      $renderData['roles_list'][] = $role;
-    }
+    return $renderData;
+  }
 
+  /**
+   * Get info about filesystem Drupal managed.
+   *
+   * @return array
+   *   Returns info about filesystem.
+   */
+  protected function getFilesystemInfo() {
 
     $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator('./'), \RecursiveIteratorIterator::SELF_FIRST);
+
+    // Counters.
     $countFiles = 0;
     $filesTotalSize = 0;
+
     foreach ($objects as $name => $object) {
       if (strpos($name, 'vendor')) {
         continue;
@@ -88,41 +162,13 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements  AdvAuditCheckIn
       $filesTotalSize += filesize($name);
       $countFiles++;
     }
+
     $renderData['count_files'] = $countFiles;
+
+    // Total size in MBytes.
     $renderData['files_total_size'] = $filesTotalSize / 1048576;
 
-    $connection = \Drupal::database();
-    $query = $connection->query(
-      "SELECT table_schema \"db_name\", Round(Sum(data_length + index_length) / 1024 / 1024, 1) \"db_size\" 
-      FROM   information_schema.tables
-      GROUP  BY table_schema;"
-    );
-    $result = $query->fetchAll();
-
-    $resultDB = $connection->query(
-      "SELECT table_schema FROM information_schema.tables WHERE table_name = 'sessions'"
-    )
-      ->fetchAll();
-    $currentDB = $resultDB[0]->table_schema;
-
-    $dbSize = 0;
-    foreach ($result as $db) {
-      if ($db->db_name == $currentDB) {
-        $dbSize = $db->db_size;
-      }
-    }
-
-
-
-    //$settingDB = $databases['default']['default']
-
-
-
-    if (FALSE) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
-    }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $renderData;
   }
-
 
 }
