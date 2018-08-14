@@ -26,8 +26,18 @@ use Drupal\Core\State\StateInterface;
  *  severity = "low",
  *  enabled = true,
  *  requirements = {
-      "module": {"node"}
+ *   "module": {
+ *    "adminimal_admin_toolbar:1.0-dev",
  *   },
+ *   "config": {
+ *    "devel.settings",
+ *   },
+ *   "library": {
+ *    "html2canvas",
+ *   },
+ *   "core": "8.3.5",
+ *   "php": "7.1"
+ *  },
  * )
  */
 class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {

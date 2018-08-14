@@ -175,7 +175,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   }
 
   /**
-   * {@inheritdoc}
+   * Check requirements for audit plugins.
    */
   public function checkRequirements() {
     // Check whether the current test plugin
@@ -184,22 +184,152 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
       return;
     }
 
-    // TODO: Need to check the status of the plugin?
+    foreach ($this->pluginDefinition['requirements'] as $requirement => $value) {
+      switch ($requirement) {
+        case 'module':
+          $this->checkRequiredModules($value);
+          break;
 
-    if (empty($this->pluginDefinition['requirements'])) {
-      // There are no requirements to check.
-      return;
+        case 'config':
+          $this->checkRequiredConfigs($value);
+          break;
+
+        case 'library':
+          $this->checkRequiredLibraries($value);
+          break;
+
+        default:
+          $this->checkRequiredVersion($requirement, $value);
+          break;
+      }
     }
+  }
 
-    if (isset($this->pluginDefinition['requirements']['module'])) {
-      /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
-      $module_handler = $this->container()->get('module_handler');
-      // Check what needed module are enabled.
-      foreach ($this->pluginDefinition['requirements']['module'] as $module_name) {
-        if (!$module_handler->moduleExists($module_name)) {
-          throw new RequirementsException('Module ' . $module_name . ' are not enabled.', $this->pluginDefinition['requirements']['module']);
+  /**
+   * Check required modules.
+   *
+   * @param array $module_list
+   *   An array containing the list of modules to check.
+   */
+  private function checkRequiredModules($module_list) {
+    $module_handler = $this->container()->get('module_handler');
+
+    foreach ($module_list as $module) {
+      list($module_name, $module_version) = explode(':', $module);
+
+      if (!$module_handler->moduleExists($module_name)) {
+        throw new RequirementsException(
+          $this->t('Module @module_name are not enabled.', ['@module_name' => $module_name]),
+          $this->pluginDefinition['requirements']['module']
+        );
+      }
+
+      if ($module_version) {
+        // Check if can get current module version.
+        $module_info = system_get_info('module', $module_name);
+        if (empty($module_info['version'])) {
+          throw new RequirementsException(
+            $this->t('Version for module @module_name is not defined.', ['@module_name' => $module_name]),
+            $this->pluginDefinition['requirements']['module']
+          );
+        }
+        else {
+          $this->checkRequiredVersion('module', $module_version, $module_info);
         }
       }
+    }
+  }
+
+  /**
+   * Check required configs.
+   *
+   * @param array $config_list
+   *   An array containing the list of configss to check.
+   */
+  private function checkRequiredConfigs($config_list) {
+    $config_factory = $this->container()->get('config.factory');
+
+    foreach ($config_list as $config) {
+      if (empty($config_factory->loadMultiple([$config]))) {
+        throw new RequirementsException(
+          $this->t('Config @config_name does not exist.', ['@config_name' => $config]),
+          $this->pluginDefinition['requirements']['config']
+        );
+      }
+    }
+  }
+
+
+  /**
+   * Check required libraries.
+   *
+   * @param array $libraries_list
+   *   An array containing the list of libraries to check.
+   */
+  private function checkRequiredLibraries($libraries_list) {
+    $module_handler = $this->container()->get('module_handler');
+
+    // Check if module Library API is enabled.
+    if (!$module_handler->moduleExists('libraries')) {
+      throw new RequirementsException(
+        $this->t('Module Libraries API is not enabled.'),
+        $this->pluginDefinition['requirements']['module']
+      );
+    }
+
+    foreach ($libraries_list as $library) {
+      if (empty(libraries_get_path($library))) {
+        throw new RequirementsException(
+          $this->t('Library @library_name does not exist.', ['@library_name' => $library]),
+          $this->pluginDefinition['requirements']['library']
+        );
+      }
+    }
+  }
+
+  /**
+   * Check required version of module, php or Drupal core.
+   *
+   * @param string $type
+   *   The type of requirements.
+   * @param string $version
+   *   Required version.
+   * @param array $info
+   *   Additional information.
+   */
+  private function checkRequiredVersion($type, $version, array $info = []) {
+
+    // Build an array with requirements.
+    $requirements = [$type => $this->pluginDefinition['requirements'][$type]];
+
+    switch ($type) {
+      case 'core':
+        $current_version = \Drupal::VERSION;
+        $name = 'Drupal core';
+        break;
+
+      case 'php':
+        $current_version = phpversion();
+        $name = 'PHP';
+        break;
+
+      default:
+        $current_version = $info['version'];
+        $version = "{$info['core']} - {$version}";
+        $name = isset($info['name']) ? $info['name'] : NULL;
+        $requirements = $this->pluginDefinition['requirements'][$type];
+        break;
+    }
+
+    if (!version_compare($current_version, $version, '>=')) {
+      throw new RequirementsException(
+        $this->t('Current version of @name v@version is lower than required v@required_version.', [
+          '@name' => $name,
+          '@version' => $current_version,
+          '@required_version' => $version,
+        ]),
+        $requirements
+      );
     }
   }
 
