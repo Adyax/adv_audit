@@ -19,11 +19,25 @@ class AuditExecutable {
   use StringTranslationTrait;
 
   /**
-   * List of test for performs.
+   * The test instance to perform.
    *
    * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
    */
   protected $test;
+
+  /**
+   * The test ID.
+   *
+   * @var string
+   */
+  protected $test_id;
+
+  /**
+   * The configuration for initialize instance.
+   *
+   * @var array
+   */
+  protected $configuration;
 
   /**
    * The event dispatcher.
@@ -44,15 +58,18 @@ class AuditExecutable {
   /**
    * Constructs a AuditExecutable and verifies.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
-   *   The test plugin instance.
+   * @param string $test_id
+   *   The test plugin id.
+   * @param array $configuration
+   *   The plugin configuration,
    * @param \Drupal\adv_audit\Message\AuditMessageInterface $message
    *   (optional) The audit message service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   (optional) The event dispatcher.
    */
-  public function __construct(AdvAuditCheckInterface $test, AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
-    $this->test = $test;
+  public function __construct($test_id, array $configuration = [], AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
+    $this->test_id = $test_id;
+    $this->configuration = $configuration;
     $this->message = $message ?: new AuditMessage();
     $this->eventDispatcher = $event_dispatcher;
   }
@@ -74,9 +91,12 @@ class AuditExecutable {
    * {@inheritdoc}
    */
   public function performTest() {
-
+    // Set where we try to create plugin instance.
+    $this->configuration['audit_execute'] = TRUE;
     try {
       try {
+        // Init the audit plugin instance.
+        $this->test = $this->container()->get('plugin.manager.adv_audit_check')->createInstance($this->test_id, $this->configuration);
         // Knock off test if the requirements haven't been met.
         $this->test->checkRequirements();
         // Run audit checkpoint perform.
@@ -139,6 +159,19 @@ class AuditExecutable {
     $result = Error::decodeException($exception);
     $handle_message = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
     $this->message->display($handle_message, 'error');
+  }
+
+  /**
+   * Returns the service container.
+   *
+   * This method is marked private to prevent sub-classes from retrieving
+   * services from the container through it.
+   *
+   * @return \Symfony\Component\DependencyInjection\ContainerInterface
+   *   The service container.
+   */
+  private function container() {
+    return \Drupal::getContainer();
   }
 
 }

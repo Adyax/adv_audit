@@ -71,17 +71,14 @@ class AuditRunTestBatch {
     $test_id = reset($context['sandbox']['test_ids']);
     $configuration = [];
 
-    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
-    $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($test instanceof AdvAuditCheckInterface) {
+    if ($test_id) {
       static::$messages = new AuditMessageCapture();
-      $executable = new AuditExecutable($test, static::$messages);
-
-      $test_name = $test->label() ? $test->label() : $test_id;
+      $executable = new AuditExecutable($test_id, $configuration, static::$messages);
 
       $test_reason = $executable->performTest();
 
+      $test_name = $test_id;
       // Save audit checkpoint result.
       $result_response->addReason($test_reason);
 

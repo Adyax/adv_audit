@@ -2,15 +2,19 @@
 
 namespace Drupal\adv_audit\Plugin;
 
+use Drupal\adv_audit\Exception\AuditException;
+use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Tests\Mockbuilder;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides the Advances audit check plugin manager.
  */
 class AdvAuditCheckManager extends DefaultPluginManager {
-
 
   /**
    * Constructs a new AdvAuditCheckManager object.
@@ -53,9 +57,30 @@ class AdvAuditCheckManager extends DefaultPluginManager {
    * @return array|mixed
    *   Return list if plugin in selected category.
    */
-  public function getLPluginsByCategoryFilter($category_id) {
+  public function getPluginsByCategoryFilter($category_id) {
     $list = $this->getPluginsByCategory();
     return isset($list[$category_id]) ? $list[$category_id] : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createInstance($plugin_id, array $configuration = []) {
+    // In some cases audit plugins can have dependency to non-existent service.
+    // So we should catch this exception and try to resolving problem.
+    try {
+      return parent::createInstance($plugin_id, $configuration);
+    }
+    catch (ServiceNotFoundException $e) {
+      if (isset($configuration['audit_execute'])) {
+        // Throw our Exception for correct reaction on error.
+        throw new AuditException($e->getMessage(), $plugin_id);
+      }
+      // Override original class to mock object.
+      $this->definitions[$plugin_id]['class'] = MockPluginCheck::class;
+      // Try again create needed plugin instance.
+      return parent::createInstance($plugin_id, $configuration);
+    }
   }
 
 }
