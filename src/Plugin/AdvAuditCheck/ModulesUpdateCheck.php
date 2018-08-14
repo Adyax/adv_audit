@@ -84,7 +84,7 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements  AdvAuditCh
     $link = Link::fromTextAndUrl($this->t('There'), Url::fromRoute('update.module_update'));
 
     $params = [
-      ':link' => $link->toString(),
+      '%link' => $link->toString(),
       '@count' => $this->count,
       '@list' => $this->updates,
     ];
