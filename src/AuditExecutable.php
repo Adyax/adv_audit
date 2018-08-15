@@ -6,7 +6,6 @@ use Drupal\adv_audit\Exception\AuditSkipTestException;
 use Drupal\adv_audit\Exception\AuditException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\adv_audit\Exception\RequirementsException;
@@ -17,6 +16,16 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class AuditExecutable {
   use StringTranslationTrait;
+
+  /**
+   * Defines a value for designating the usage context.
+   *
+   * Use this flag when you try to create instance plugin for determining
+   * the action to run audit scenarios.
+   *
+   * @see \Drupal\adv_audit\AuditExecutable::performTest().
+   */
+  const AUDIT_EXECUTE_RUN = 'audit_execute';
 
   /**
    * The test instance to perform.
@@ -30,7 +39,7 @@ class AuditExecutable {
    *
    * @var string
    */
-  protected $test_id;
+  protected $testId;
 
   /**
    * The configuration for initialize instance.
@@ -49,8 +58,6 @@ class AuditExecutable {
   /**
    * Migration audit service.
    *
-   * @todo Make this protected.
-   *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
   public $message;
@@ -61,14 +68,14 @@ class AuditExecutable {
    * @param string $test_id
    *   The test plugin id.
    * @param array $configuration
-   *   The plugin configuration,
+   *   The plugin configuration.
    * @param \Drupal\adv_audit\Message\AuditMessageInterface $message
    *   (optional) The audit message service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   (optional) The event dispatcher.
    */
   public function __construct($test_id, array $configuration = [], AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
-    $this->test_id = $test_id;
+    $this->testId = $test_id;
     $this->configuration = $configuration;
     $this->message = $message ?: new AuditMessage();
     $this->eventDispatcher = $event_dispatcher;
@@ -92,11 +99,11 @@ class AuditExecutable {
    */
   public function performTest() {
     // Set where we try to create plugin instance.
-    $this->configuration['audit_execute'] = TRUE;
+    $this->configuration[self::AUDIT_EXECUTE_RUN] = TRUE;
     try {
       try {
         // Init the audit plugin instance.
-        $this->test = $this->container()->get('plugin.manager.adv_audit_check')->createInstance($this->test_id, $this->configuration);
+        $this->test = $this->container()->get('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
         // Knock off test if the requirements haven't been met.
         $this->test->checkRequirements();
         // Run audit checkpoint perform.
@@ -121,7 +128,7 @@ class AuditExecutable {
         throw new AuditSkipTestException('Audit checkpoint plugin not meet the requirements');
       }
       catch (AuditException $e) {
-        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0 , $e);
+        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0, $e);
       }
     }
     catch (AuditSkipTestException $e) {
@@ -140,7 +147,8 @@ class AuditExecutable {
     catch (\Exception $e) {
       // We should handle all exception what can occur in audit plugins.
       $this->handleException($e);
-      // In any case we should store this result in Result response collections and mark it as Failed.
+      // In any case we should store this result in Result response collections
+      // and mark it as Failed.
       $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, $e->getMessage());
     }
 

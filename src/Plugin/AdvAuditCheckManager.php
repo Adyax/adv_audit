@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin;
 
+use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\Exception\AuditException;
 use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
 use Drupal\Core\Plugin\DefaultPluginManager;
@@ -73,7 +74,9 @@ class AdvAuditCheckManager extends DefaultPluginManager {
       return parent::createInstance($plugin_id, $configuration);
     }
     catch (ServiceNotFoundException $e) {
-      if (isset($configuration['audit_execute'])) {
+      // If current action context is run test scenarios we should
+      // throw the error.
+      if (isset($configuration[AuditExecutable::AUDIT_EXECUTE_RUN])) {
         // Throw our Exception for correct reaction on error.
         throw new AuditException($e->getMessage(), $plugin_id);
       }

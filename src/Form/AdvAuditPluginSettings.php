@@ -181,7 +181,7 @@ class AdvAuditPluginSettings extends FormBase {
    */
   public function runTest(array &$form, FormStateInterface $form_state) {
     // Set context action for instance initialize plugin.
-    $configuration['audit_execute'] = TRUE;
+    $configuration[AuditExecutable::AUDIT_EXECUTE_RUN] = TRUE;
     $messages = new AuditMessageCapture();
     $executable = new AuditExecutable($this->pluginInstance->id(), $configuration, $messages);
 
