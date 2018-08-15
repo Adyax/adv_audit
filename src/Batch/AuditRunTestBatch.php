@@ -62,7 +62,7 @@ class AuditRunTestBatch {
       $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
-    /** @var AuditResultResponse $result_response */
+    /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
     $result_response = &$context['results']['result_response'];
 
     // Number processed in this batch.
@@ -71,17 +71,14 @@ class AuditRunTestBatch {
     $test_id = reset($context['sandbox']['test_ids']);
     $configuration = [];
 
-    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $test */
-    $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id, $configuration);
 
-    if ($test instanceof AdvAuditCheckInterface) {
+    if ($test_id) {
       static::$messages = new AuditMessageCapture();
-      $executable = new AuditExecutable($test, static::$messages);
-
-      $test_name = $test->label() ? $test->label() : $test_id;
+      $executable = new AuditExecutable($test_id, $configuration, static::$messages);
 
       $test_reason = $executable->performTest();
 
+      $test_name = $test_id;
       // Save audit checkpoint result.
       $result_response->addReason($test_reason);
 
@@ -237,7 +234,7 @@ class AuditRunTestBatch {
    * @param mixed $entity
    *   The Entity object for save.
    */
-  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL ) {
+  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL) {
     if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),

@@ -22,7 +22,7 @@ use Drupal\update\UpdateManagerInterface;
  *  enabled = true,
  * )
  */
-class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
   /**
    * Project name.
    */
@@ -98,6 +98,5 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
 
     return new AuditReason($this->id(), $status, NULL, $params);
   }
-
 
 }

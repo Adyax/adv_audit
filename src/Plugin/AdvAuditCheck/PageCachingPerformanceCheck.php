@@ -23,7 +23,7 @@ use Drupal\Core\Url;
  *  enabled = true,
  * )
  */
-class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class PageCachingPerformanceCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * Returns the default http client.
@@ -101,4 +101,5 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements  AdvAudit
 
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
   }
+
 }
