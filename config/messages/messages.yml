@@ -99,6 +99,20 @@ plugins:
      fail: 'max_execution_time is greater than 300'
      success: 'max_execution_time is less or equal than 300'
      help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+  performance_modules_status:
+     description: ''
+     actions: 'Disable listed modules.'
+     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+     fail: ''
+     success: ''
+     help: 'Check statuses of development and UI modules.'
+  register_globals_check:
+    description: 'Checks if the register_globals is disabled.'
+    actions: 'Drupal requires register_globals to be disabled.'
+    impacts: 'register_globals is enabled. Drupal requires this configuration directive to be disabled. Your site may not be secure when register_globals is enabled.'
+    fail: 'register_globals is enabled.'
+    success: 'register_globals is disabled.'
+    help: 'Checks if the register_globals is disabled.'
   trusted_host_check:
     description: 'Check Trusted Host Settings.'
     actions: 'Please configure trusted_host_patterns setting in settings.php.'
