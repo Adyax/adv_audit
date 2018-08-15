@@ -65,7 +65,10 @@ class AdvAuditCheckManager extends DefaultPluginManager {
    */
   public function createInstance($plugin_id, array $configuration = []) {
     // In some cases audit plugins can have dependency to non-existent service.
-    // So we should catch this exception and try to resolving problem.
+    // This is a normal situation when some service is not available on site for
+    // audit plugin.
+    // We should catch this exception and try to resolve the problem,
+    // for having the opportunity to display plugin in listings.
     try {
       return parent::createInstance($plugin_id, $configuration);
     }
@@ -74,7 +77,9 @@ class AdvAuditCheckManager extends DefaultPluginManager {
         // Throw our Exception for correct reaction on error.
         throw new AuditException($e->getMessage(), $plugin_id);
       }
-      // Override original class to mock object.
+      // Save original class for plugin instance.
+      $this->definitions[$plugin_id]['original_class'] = $this->definitions[$plugin_id]['class'];
+      // Override original class to mock (fake) object.
       $this->definitions[$plugin_id]['class'] = MockPluginCheck::class;
       // Try again create needed plugin instance.
       return parent::createInstance($plugin_id, $configuration);
