@@ -3,10 +3,8 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Exception\AuditSkipTestException;
-use Drupal\adv_audit\Exception\AuditException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\adv_audit\Exception\RequirementsException;
