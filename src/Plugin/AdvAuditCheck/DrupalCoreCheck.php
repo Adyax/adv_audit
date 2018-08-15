@@ -22,7 +22,7 @@ use Drupal\update\UpdateManagerInterface;
  *  enabled = true,
  * )
  */
-class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
   /**
    * Project name.
    */
@@ -89,16 +89,14 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterfa
     $current_version = $projects_data[self::PROJECT_NAME]['existing_version'];
     $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
-    if ($current_version != $recommended_version) {
-      return new AuditReason(
-        $this->id(), AuditResultResponseInterface::RESULT_FAIL,
-        $this->t('Current core version @c_ver differs from recommended version @r_ver', ['@c_ver' => $current_version, '@r_ver' => $recommended_version]),
-        ['@version' => $current_version]);
-    }
-    else {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@version' => $current_version]);
-    }
-  }
+    $status = AuditResultResponseInterface::RESULT_PASS;
+    $params = ['@version' => $current_version];
 
+    if ($current_version != $recommended_version) {
+      $status = AuditResultResponseInterface::RESULT_FAIL;
+    }
+
+    return new AuditReason($this->id(), $status, NULL, $params);
+  }
 
 }

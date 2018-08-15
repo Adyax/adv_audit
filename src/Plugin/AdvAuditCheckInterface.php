@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines an interface for Advances audit check plugins.
@@ -34,7 +33,6 @@ interface AdvAuditCheckInterface extends PluginInspectionInterface, Requirements
   const SEVERITY_CRITICAL = 'critical';
   const SEVERITY_HIGH = 'high';
   const SEVERITY_LOW = 'low';
-
 
   /**
    * An alias for getPluginId() for backwards compatibility reasons.

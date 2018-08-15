@@ -57,6 +57,9 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   }
 }
 
+/**
+ *
+ */
 function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
   $render = \Drupal::service('adv_audit.renderer');

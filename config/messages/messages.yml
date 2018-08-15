@@ -7,7 +7,7 @@ plugins:
     success: 'Success message!!'
     help: 'Check cron settings.'
     impacts: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duo Reges: constructio interrete. Satis est ad hoc responsum. Quid vero? Primum quid tu dicis breve?'
-  configuration_manager_status_check:
+  configuration_manager_status:
     description: 'Check current status of config files via configuration manager and provide the status.'
     actions: 'Review and update configurations'
     impacts: 'There are should not be any changes in config files because next deployment may revert all that changes. All the configuration changes on the site should be immediately imported into the configuration files through the config manager and must be updated in the project code.'
@@ -21,16 +21,30 @@ plugins:
     fail: 'Current Drupal core version is outdated - @version'
     success: 'Current Drupal core version is up to date - @version'
     help: 'Check the Drupal core version and its actuality.'
+  features_status_check:
+    description: 'Features provides a centralized place to manage, configure and export components and write them to code. This convenience makes Features an excellent tool for managing changes (for Drupal7) between development environments and version control in conjunction with Git, SVN, or other version control systems.'
+    actions: 'It is recommended to update features with the latest structure and settings done in the BO.'
+    impacts: 'statuses overridden, needs review and rebuilding must be avoided because it means that configurations that are defined in the feature module''s code have been overridden in the Drupal backend by a user and during next execution of features revert execution (that is a part of any normal Continuous Deployment process) these changes will be lost.'
+    fail: 'There are non-actual features on web-site.'
+    success: ''
+    help: 'Check if all Features are actual.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
-    actions: '@link are @count modules with security updates. These modules must be updated as soon as possible. @list'
+    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible. @list'
     impacts: 'If you don''t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
     fail: 'There are outdated modules with security updates.'
     success: 'All modules are up-to-date.'
     help: 'Check security updates for contrib modules.'
+  database_update_required:
+    description: 'Check database state.'
+    actions: 'Apply all pending database updates.'
+    impacts: 'This point is very important and if do not apply all pending database updates for all modules it can lead to unstable work of project and finally can broke website at all.'
+    fail: 'Database need to be updated.'
+    success: 'Up to date.'
+    help: 'Check database state.'
   modules_update_check:
     description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it''s important to update modules to stable releases (if exists).'
-    actions: '@link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
+    actions: '%link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
     impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
     fail: 'There are outdated modules with non-security updates.'
     success: 'All modules are up-to-date.'
@@ -65,7 +79,7 @@ plugins:
     help: 'Check cache settings.'
   js_css_agregation:
     description: 'Allows you to improve the frontend performanceof your site.'
-    actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
+    actions: 'Enable core aggregation or use %link (that includes all latest security updates).'
     impacts: 'Without aggregation pages are loaded slowly as it''s a lot of css/js files are requires more time for loading..'
     fail: 'Core aggregation disabled.'
     success: 'Core aggregation enabled.'
@@ -78,3 +92,24 @@ plugins:
     warning: "Some views has unknown cache type. Please check it manually."
     success: "All cache configurations for views setted up correctly."
     help: 'Check views cache configuration.'
+  php_max_execution_time:
+     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+     actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
+     impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
+     fail: 'max_execution_time is greater than 300'
+     success: 'max_execution_time is less or equal than 300'
+     help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+  performance_modules_status:
+     description: ''
+     actions: 'Disable listed modules.'
+     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+     fail: ''
+     success: ''
+     help: 'Check statuses of development and UI modules.'
+  register_globals_check:
+    description: 'Checks if the register_globals is disabled.'
+    actions: 'Drupal requires register_globals to be disabled.'
+    impacts: 'register_globals is enabled. Drupal requires this configuration directive to be disabled. Your site may not be secure when register_globals is enabled.'
+    fail: 'register_globals is enabled.'
+    success: 'register_globals is disabled.'
+    help: 'Checks if the register_globals is disabled.'

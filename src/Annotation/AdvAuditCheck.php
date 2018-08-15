@@ -55,7 +55,7 @@ class AdvAuditCheck extends Plugin {
   /**
    * Default status of plugin.
    *
-   * @var boolean
+   * @var bool
    */
   public $enabled;
 

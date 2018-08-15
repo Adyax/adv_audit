@@ -8,13 +8,14 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+
 /**
  * @AdvAuditCheck(
  *   id = "js_css_agregation",
  *   label = @Translation("Javascript & CSS aggregation"),
  *   category = "performance",
  *   requirements = {},
- *   enabled = false,
+ *   enabled = true,
  *   severity = "high"
  * )
  */
@@ -34,9 +35,9 @@ class JsCssAgregationCheck extends AdvAuditCheckBase {
     }
 
     $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
-    $params = ['@link' => $link->toString()];
+    $params = ['%link' => $link->toString()];
 
-    return new AuditReason($this->id(), $status, $params);
+    return new AuditReason($this->id(), $status, NULL, $params);
   }
 
 }

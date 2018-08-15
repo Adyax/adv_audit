@@ -24,7 +24,7 @@ use Drupal\Core\State\StateInterface;
  * )
  */
 class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
-  
+
   /**
    * Length of the day in seconds.
    */
@@ -75,7 +75,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, StateInterface $state,  EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, StateInterface $state, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->state = $state;
@@ -137,7 +137,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     $form['minimum_cache_lifetime'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Cache minimum age allowed in secconds'),
-      '#default_value' => $this->state->get($this->buildStateConfigKey())
+      '#default_value' => $this->state->get($this->buildStateConfigKey()),
     ];
 
     return $form;
@@ -174,7 +174,6 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
   protected function auditDisplayCache($display, $display_name, $view) {
     $cache = $display->getOption('cache');
 
-    $this->auditDisplayCache($display);
     if (empty($cache) || $cache['type'] == 'none') {
       $this->withoutCache[] = $this->t('Display @display_name of view @view_id has wrong cache settings.', [
         '@display_name' => $display_name,
