@@ -12,7 +12,6 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -86,10 +85,7 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
 
     $renderData = $this->getUsersInfo();
 
-    $rolesList = Role::loadMultiple();
-    foreach ($rolesList as $role => $value) {
-      $renderData['roles_list'][] = $role;
-    }
+    $renderData['roles_list'] = $this->getRolesList();
 
     $renderData['filesystem_info'] = $this->getFilesystemInfo();
 
@@ -201,6 +197,26 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
     // Total size in MBytes.
     $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
 
+    return $renderData;
+  }
+
+  /**
+   * Get list of roles.
+   *
+   * @return array
+   *   List of roles and the corresponding number of users.
+   */
+  protected function getRolesList() {
+    $result = $this->connection->query(
+      'SELECT roles_target_id AS name,
+       COUNT(entity_id) AS count_users
+       FROM {user__roles}
+       GROUP BY name
+       ORDER BY name ASC'
+      )->fetchAll();
+    foreach ($result as $row) {
+      $renderData[$row->name] = $row->count_users;
+    }
     return $renderData;
   }
 

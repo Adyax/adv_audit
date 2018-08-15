@@ -8,9 +8,13 @@
 </div>
 <div class="roles-list">
   <span><span>List Roles</span> - Show all available roles and user counts.</span>
-  {% for role in global_info.roles_list %}
-  {{ role }},
-  {% endfor %}.
+  {% for role, count in global_info.roles_list %}
+    {% if loop.last %}
+      {{ role }}: {{ count }}.
+    {% else %}
+      {{ role }}: {{ count }},
+    {% endif %}
+  {% endfor %}
 </div>
 <div class="admin-info">
   <div>
