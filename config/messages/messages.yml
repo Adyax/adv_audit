@@ -85,27 +85,27 @@ plugins:
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   preformance_views:
-    description: "Query results and  should be cached for at least 1 minute or use tag caching."
-    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
-    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
-    fail: "Views caching is configured wrongly."
-    warning: "Some views has unknown cache type. Please check it manually."
-    success: "All cache configurations for views setted up correctly."
+    description: 'Query results and  should be cached for at least 1 minute or use tag caching.'
+    actions: 'Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).'
+    impacts: 'This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.'
+    fail: 'Views caching is configured wrongly.'
+    warning: 'Some views has unknown cache type. Please check it manually.'
+    success: 'All cache configurations for views setted up correctly.'
     help: 'Check views cache configuration.'
   php_max_execution_time:
-     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
-     actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
-     impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
-     fail: 'max_execution_time is greater than 300'
-     success: 'max_execution_time is less or equal than 300'
-     help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
+    impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
+    fail: 'max_execution_time is greater than 300'
+    success: 'max_execution_time is less or equal than 300'
+    help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
   performance_modules_status:
-     description: ''
-     actions: 'Disable listed modules.'
-     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
-     fail: ''
-     success: ''
-     help: 'Check statuses of development and UI modules.'
+    description: ''
+    actions: 'Disable listed modules.'
+    impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+    fail: ''
+    success: ''
+    help: 'Check statuses of development and UI modules.'
   register_globals_check:
     description: 'Checks if the register_globals is disabled.'
     actions: 'Drupal requires register_globals to be disabled.'
@@ -113,3 +113,10 @@ plugins:
     fail: 'register_globals is enabled.'
     success: 'register_globals is disabled.'
     help: 'Checks if the register_globals is disabled.'
+  page_speed_insights:
+    description: 'PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved.'
+    actions: 'Check results and apply corresponding fixes. Here you can run and see extended results %gi_link'
+    impacts: 'The listed recommendations must be fulfilled. It will increase the overall site performance.'
+    fail: 'Your optimization is low'
+    success: 'Your optimization is good'
+    help: ''
