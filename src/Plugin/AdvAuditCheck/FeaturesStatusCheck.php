@@ -6,7 +6,6 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -66,7 +65,7 @@ class FeaturesStatusCheck extends AdvAuditCheckBase implements ContainerFactoryP
 
     $packages = $this->featuresManager->filterPackages($packages, $current_bundle->getMachineName());
 
-    $overridenPackages = array();
+    $overridenPackages = [];
 
     foreach ($packages as $package) {
       if (!empty($this->featuresManager->detectOverrides($package))) {

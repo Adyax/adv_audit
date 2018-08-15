@@ -2,7 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -38,7 +37,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   /**
    * Retrieves a configuration object.
    *
-   * This is the main entry point to the configuration API. Calling
+   * This is the main entry point to the configuration API. Calling.
    * @code $this->config('book.admin') @endcode will return a configuration
    * object in which the book module can store its administrative settings.
    *
@@ -90,6 +89,9 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     $this->configFactory = NULL;
   }
 
+  /**
+   *
+   */
   public function getMessage($type) {
 
   }
@@ -146,6 +148,9 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     return $this->pluginDefinition['severity'];
   }
 
+  /**
+   *
+   */
   public function setSeverityLevel($level) {
     $state = $this->getStateService();
     $state->set('adv_audit.plugin.severity.' . $this->getPluginId(), $level);
@@ -154,10 +159,10 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   /**
    * Additional configuration form for plugin instance.
    * Value will be store in state storage and can be uses bu next key:
-   *   - adv_audit.plugin.PLUGIN_ID.config.KEY
+   *   - adv_audit.plugin.PLUGIN_ID.config.KEY.
    *
    * @return array
-   *    The form structure.
+   *   The form structure.
    */
   public function configForm() {
     return [];
@@ -258,7 +263,6 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
       }
     }
   }
-
 
   /**
    * Check required libraries.

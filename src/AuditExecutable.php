@@ -101,7 +101,7 @@ class AuditExecutable {
         throw new AuditSkipTestException('Audit checkpoint plugin not meet the requirements');
       }
       catch (AuditException $e) {
-        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0 , $e);
+        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0, $e);
       }
     }
     catch (AuditSkipTestException $e) {

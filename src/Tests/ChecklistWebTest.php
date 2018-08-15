@@ -61,7 +61,6 @@ class ChecklistWebTest extends WebTestBase {
     $this->drupalLogin($this->user);
 
     // Populate $checks.
-
     // Clear cache.
     Checklist::clearCache();
   }

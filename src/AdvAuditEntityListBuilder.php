@@ -13,7 +13,6 @@ use Drupal\Core\Link;
  */
 class AdvAuditEntityListBuilder extends EntityListBuilder {
 
-
   /**
    * {@inheritdoc}
    */
@@ -36,7 +35,5 @@ class AdvAuditEntityListBuilder extends EntityListBuilder {
     );
     return $row + parent::buildRow($entity);
   }
-
-
 
 }

@@ -9,11 +9,11 @@
  * Implements hook_uninstall().
  */
 function adv_audit_uninstall() {
-//  $checkpoint_manager = \Drupal::service('plugin.manager.adv_audit_checkpoints');
-//  $plugins = $checkpoint_manager->getDefinitions();
-//  foreach ($plugins as &$plugin) {
-//    $plugin = 'adv_audit.' . $plugin['id'];
-//  }
-//  \Drupal::state()->deleteMultiple($plugins);
-//  \Drupal::configFactory()->getEditable('adv_audit.config')->delete();
+  // $checkpoint_manager = \Drupal::service('plugin.manager.adv_audit_checkpoints');
+  //  $plugins = $checkpoint_manager->getDefinitions();
+  //  foreach ($plugins as &$plugin) {
+  //    $plugin = 'adv_audit.' . $plugin['id'];
+  //  }
+  //  \Drupal::state()->deleteMultiple($plugins);
+  //  \Drupal::configFactory()->getEditable('adv_audit.config')->delete();
 }

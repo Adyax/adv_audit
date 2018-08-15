@@ -62,7 +62,7 @@ class AuditRunTestBatch {
       $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
-    /** @var AuditResultResponse $result_response */
+    /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
     $result_response = &$context['results']['result_response'];
 
     // Number processed in this batch.
@@ -237,7 +237,7 @@ class AuditRunTestBatch {
    * @param mixed $entity
    *   The Entity object for save.
    */
-  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL ) {
+  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL) {
     if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),

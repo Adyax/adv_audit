@@ -95,7 +95,7 @@ class AuditReportRenderer implements RenderableInterface {
       '#categories' => $this->doBuildCategory(),
       '#attached' => [
         'library' => [
-          'adv_audit/adv_audit.report'
+          'adv_audit/adv_audit.report',
         ],
       ],
     ];
@@ -169,7 +169,7 @@ class AuditReportRenderer implements RenderableInterface {
    * Get Audit Reason object by plugin id.
    *
    * @param string $plugin_id
-   *    The plugin id.
+   *   The plugin id.
    *
    * @return \Drupal\adv_audit\AuditReason
    *   The audit reason object.
@@ -273,7 +273,6 @@ class AuditReportRenderer implements RenderableInterface {
     return $build;
   }
 
-
   /**
    * Render output messages.
    *
@@ -283,7 +282,6 @@ class AuditReportRenderer implements RenderableInterface {
    *   The Audit reason object.
    * @param string $msg_type
    *   The type of builded message.
-   *
    *
    * @return array
    *   The builded message.

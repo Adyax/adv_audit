@@ -28,4 +28,3 @@ entity.adv_audit.delete_form:
   base_route:  entity.adv_audit.canonical
   title: Delete
   weight: 10
-
