@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Provide example of Adv audit plugin.
- */
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
@@ -71,6 +67,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     $this->state = $state;
     $this->messagesStorage = $messages_storage;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -101,7 +98,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    *   Return AuditReason object instance.
    */
   public function perform() {
-    // Created link object and put in both result because this link used on other messages like actions
+    // Created link object and put in both result because this link used on other messages like actions.
     $example_link = Link::createFromRoute('LINK', '<front>');
     if ($this->state->get($this->buildStateConfigKey()) == 1) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => rand(1, 100), '%link' => $example_link->toString()]);
@@ -117,7 +114,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     $form['check_should_passed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Select this if check should passed'),
-      '#default_value' => $this->state->get($this->buildStateConfigKey())
+      '#default_value' => $this->state->get($this->buildStateConfigKey()),
     ];
 
     return $form;
@@ -163,6 +160,7 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
           ],
         ];
         break;
+
       // Override messages success output.
       // At this moment you have fully control what how will build success messages.
       case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:

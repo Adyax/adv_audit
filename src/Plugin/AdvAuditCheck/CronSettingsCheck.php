@@ -23,7 +23,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  enabled = true,
  * )
  */
-class CronSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * Length of the day in seconds.
@@ -112,6 +112,5 @@ class CronSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInter
     }
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
   }
-
 
 }

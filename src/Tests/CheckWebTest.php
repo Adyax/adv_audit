@@ -50,7 +50,6 @@ class CheckWebTest extends WebTestBase {
     $this->drupalLogin($this->user);
 
     // Get checks.
-
   }
 
   /**

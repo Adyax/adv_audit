@@ -22,7 +22,7 @@ interface AdvAuditReasonRenderableInterface {
    *   The saved AuditReason object.
    * @param string $type
    *   Type of current build process.
-   *    See in AuditMessagesStorageInterface::MSG_TYPE_*
+   *    See in AuditMessagesStorageInterface::MSG_TYPE_*.
    *
    * @return array
    *   Returns a render array representation of the message.

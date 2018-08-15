@@ -106,3 +106,10 @@ plugins:
      fail: ''
      success: ''
      help: 'Check statuses of development and UI modules.'
+  register_globals_check:
+    description: 'Checks if the register_globals is disabled.'
+    actions: 'Drupal requires register_globals to be disabled.'
+    impacts: 'register_globals is enabled. Drupal requires this configuration directive to be disabled. Your site may not be secure when register_globals is enabled.'
+    fail: 'register_globals is enabled.'
+    success: 'register_globals is disabled.'
+    help: 'Checks if the register_globals is disabled.'
