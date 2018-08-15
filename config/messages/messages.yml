@@ -113,3 +113,11 @@ plugins:
     fail: 'register_globals is enabled.'
     success: 'register_globals is disabled.'
     help: 'Checks if the register_globals is disabled.'
+  trusted_host_check:
+    description: 'Check Trusted Host Settings.'
+    actions: 'Please configure trusted_host_patterns setting in settings.php.'
+    impacts: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.'
+    fail: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.'
+    warning: 'The trusted_host_patterns setting is not configured in settings.php.'
+    success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
+    help: 'Check Trusted Host Settings.'
