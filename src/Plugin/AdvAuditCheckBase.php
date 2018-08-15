@@ -34,6 +34,8 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   protected $configFactory;
 
+  protected $pluginDefinitionOverridden;
+
   /**
    * Retrieves a configuration object.
    *
@@ -52,6 +54,19 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   protected function config($name) {
     return $this->configFactory()->get($name);
+  }
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    // Load overriden definition
+    $this->pluginDefinitionOverridden = $this->getStateService()->get('adv_audit.plugin.definition' . $this->id(), $this->pluginDefinition);
+  }
+
+  /**
+   * Save overridden plugin definition.
+   */
+  public function __destruct() {
+    $this->getStateService()->set('adv_audit.plugin.definition.' . $this->id(), $this->pluginDefinitionOverridden);
   }
 
   /**
@@ -90,13 +105,6 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   }
 
   /**
-   *
-   */
-  public function getMessage($type) {
-
-  }
-
-  /**
    * Return category id from plugin definition.
    *
    * @return mixed
@@ -128,7 +136,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * {@inheritdoc}
    */
   public function label() {
-    return $this->pluginDefinition['label'];
+    return $this->pluginDefinitionOverridden['label'];
   }
 
   /**
@@ -139,21 +147,14 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   public function getSeverityLevel() {
     // Severity level can be overridden by plugin settings.
-    $state = $this->getStateService();
-    if ($level = $state->get('adv_audit.plugin.severity.' . $this->getPluginId())) {
-      // Return overridden severity for plugin.
-      return $level;
-    }
-    // Return default severity from plugin definition.
-    return $this->pluginDefinition['severity'];
+    return $this->pluginDefinitionOverridden['severity'];
   }
 
   /**
    *
    */
   public function setSeverityLevel($level) {
-    $state = $this->getStateService();
-    $state->set('adv_audit.plugin.severity.' . $this->getPluginId(), $level);
+    $this->pluginDefinitionOverridden['severity'] = $level;
   }
 
   /**
@@ -354,14 +355,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   Return status for plugin.
    */
   public function getStatus() {
-    // Status can be overridden by plugin settings.
-    $state = $this->getStateService();
-    if ($status = $state->get('adv_audit.plugin.enabled.' . $this->getPluginId())) {
-      // Return overridden status for plugin.
-      return $status;
-    }
-    // Return default status from plugin definition.
-    return $this->pluginDefinition['enabled'];
+    return $this->pluginDefinitionOverridden['enabled'];
   }
 
   /**
@@ -371,8 +365,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   New status for plugin.
    */
   public function setPluginStatus($status = TRUE) {
-    $state = $this->getStateService();
-    $state->set('adv_audit.plugin.status.' . $this->getPluginId(), $status);
+    $this->pluginDefinitionOverridden['enabled'] = $status;
   }
 
   /**

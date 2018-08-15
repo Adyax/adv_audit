@@ -1,12 +1,12 @@
 plugins:
   cron_settings:
-    description: 'Provide tool to control codebase state.'
-    actions: 'Install and configure some advanced cron module.'
+    description: "<p>Provide tool to control codebase state.</p>\r\n"
+    actions: "<p>Install and configure some advanced cron module.</p>\r\n"
     impatcts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: <br><ul><li>Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.</li> <li>Drupal will not periodically clean up log files</li> <li>application will not have a possibility automatically update feeds</li> <li>update manager will not have a possibility to check automatically pending updates</li> <li>search indexes that also uses cron will not index new/updated content and many other points</li></ul>'
-    fail: 'Its fail message49'
-    success: 'Success message!!'
+    fail: "<p>Its fail message49</p>\r\n"
+    success: "<p>Success message!!</p>\r\n"
     help: 'Check cron settings.'
-    impacts: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duo Reges: constructio interrete. Satis est ad hoc responsum. Quid vero? Primum quid tu dicis breve?'
+    impacts: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duo Reges: constructio interrete. Satis est ad hoc responsum. Quid vero? Primum quid tu dicis breve?</p>\r\n"
   configuration_manager_status:
     description: 'Check current status of config files via configuration manager and provide the status.'
     actions: 'Review and update configurations'
@@ -50,11 +50,11 @@ plugins:
     success: 'All modules are up-to-date.'
     help: 'Check non-security updates for modules.'
   backend_cache_settings:
-    description: 'By default Drupal stores its cache in the database which, depending on the size of the database and amount of visitors, can increase the load on the database server. Currently, there are a lot of reads from cache, most cache data is serialized objects with size about 1mb per object. It is a good practice to remove cache from the database to in-memory storage (reading from memory is always faster than from the disk). Standard solution for in-memory cache storage in Drupal is Memcached, it is recommended to install and use the module.'
-    actions: 'Install and configure Memcache or Redis extensions.'
-    impacts: 'Without memcache or redis loading on server side will increase because Drupal will always perform calls to database instead of fast in-memory storage.'
-    fail: 'No memcached or redis cache used on the site.'
-    success: 'Backend cache configured properly on the site.'
+    description: "<p>By default Drupal stores its cache in the database which, depending on the size of the database and amount of visitors, can increase the load on the database server. Currently, there are a lot of reads from cache, most cache data is serialized objects with size about 1mb per object. It is a good practice to remove cache from the database to in-memory storage (reading from memory is always faster than from the disk). Standard solution for in-memory cache storage in Drupal is Memcached, it is recommended to install and use the module.</p>\r\n"
+    actions: "<p>Install and configure Memcache or Redis extensions.</p>\r\n"
+    impacts: "<p>Without memcache or redis loading on server side will increase because Drupal will always perform calls to database instead of fast in-memory storage.</p>\r\n"
+    fail: "<p>No memcached or redis cache used on the site.</p>\r\n"
+    success: "<p>Backend cache configured properly on the site.</p>\r\n"
     help: 'Check usage of memcache/redis.'
   patched_modules_check:
     description: 'Check if core and contribution modules were hacked.'
@@ -85,27 +85,27 @@ plugins:
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   preformance_views:
-    description: "Query results and  should be cached for at least 1 minute or use tag caching."
-    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
-    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
-    fail: "Views caching is configured wrongly."
-    warning: "Some views has unknown cache type. Please check it manually."
-    success: "All cache configurations for views setted up correctly."
+    description: 'Query results and  should be cached for at least 1 minute or use tag caching.'
+    actions: 'Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).'
+    impacts: 'This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.'
+    fail: 'Views caching is configured wrongly.'
+    warning: 'Some views has unknown cache type. Please check it manually.'
+    success: 'All cache configurations for views setted up correctly.'
     help: 'Check views cache configuration.'
   php_max_execution_time:
-     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
-     actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
-     impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
-     fail: 'max_execution_time is greater than 300'
-     success: 'max_execution_time is less or equal than 300'
-     help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
+    impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
+    fail: 'max_execution_time is greater than 300'
+    success: 'max_execution_time is less or equal than 300'
+    help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
   performance_modules_status:
-     description: ''
-     actions: 'Disable listed modules.'
-     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
-     fail: ''
-     success: ''
-     help: 'Check statuses of development and UI modules.'
+    description: ''
+    actions: 'Disable listed modules.'
+    impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+    fail: ''
+    success: ''
+    help: 'Check statuses of development and UI modules.'
   register_globals_check:
     description: 'Checks if the register_globals is disabled.'
     actions: 'Drupal requires register_globals to be disabled.'

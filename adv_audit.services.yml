@@ -11,3 +11,6 @@ services:
   adv_audit.renderer:
     class: Drupal\adv_audit\Renderer\AuditReportRenderer
     arguments: ['@renderer', '@plugin.manager.adv_audit_check', '@adv_audit.messages', '@config.factory']
+  adv_audit.manager.category:
+    class: Drupal\adv_audit\AuditCategoryManagerService
+    arguments: ['@config.factory', '@plugin.manager.adv_audit_check']

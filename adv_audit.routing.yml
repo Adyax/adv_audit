@@ -1,7 +1,8 @@
 adv_audit:
   path: 'admin/reports/adv-audit'
   defaults:
-    _controller: '\Drupal\adv_audit\Controller\AdvAuditChecklistController::index'
+    _entity_list: 'adv_audit'
+    _title: 'List of audit reports'
   requirements:
     _permission: 'access auditor list'
 
@@ -14,11 +15,11 @@ adv_audit.help:
   requirements:
     _permission: 'access auditor list'
 
-adv_audit.settings:
+adv_audit.list:
   path: 'admin/config/adv-audit'
   defaults:
-    _form: '\Drupal\adv_audit\Form\SettingsForm'
-    _title: 'Audit configuration'
+    _controller: 'adv_audit.manager.category:buildCategoriesOverview'
+    _title: 'Advanced Audit'
   requirements:
     _permission: 'access auditor list'
 
@@ -30,13 +31,6 @@ adv_audit.run:
   requirements:
     _permission: 'access auditor list'
 
-adv_audit.toggle:
-  path: 'admin/reports/adv-audit/toggle/{check_id}'
-  defaults:
-    _controller: '\Drupal\adv_audit\Controller\AdvAuditToggleController::index'
-  requirements:
-    _permission: 'access auditor list'
-
 adv_audit.plugin.settings:
   path: 'admin/config/adv-audit/plugin/{plugin_id}/edit'
   defaults:
@@ -44,13 +38,3 @@ adv_audit.plugin.settings:
     _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
   requirements:
     _permission: 'edit adv_audit plugin'
-
-adv_audit.admin_path:
-  path: '/admin/sctructure/adv_audit'
-  defaults:
-    _entity_list: 'adv_audit'
-    _title: 'Audit results List'
-  requirements:
-    _permission: 'administer site configuration'
-
-#------------------------------------- End of Audit entity ----------------------------------------#
