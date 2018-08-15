@@ -74,57 +74,55 @@ class AuditExecutable {
    * {@inheritdoc}
    */
   public function performTest() {
-
     try {
-      try {
-        // Knock off test if the requirements haven't been met.
-        $this->test->checkRequirements();
-        // Run audit checkpoint perform.
-        $return = $this->test->perform();
-        // Check what plugin return correct response.
-        if (!($return instanceof AuditReason)) {
-          throw new AuditException('Response from ' . $this->test->id() . ' have a not correct type.');
-        }
+      // Knock off test if the requirements haven't been met.
+      $this->test->checkRequirements();
+      // Run audit checkpoint perform.
+      $result = $this->test->perform();
+      // Check what plugin return correct response.
+      if (!($result instanceof AuditReason)) {
+        // Mark Result as Skipped.
+        $msg = $this->t('AuditPlugin @id returned an invalid result. Expected instance of "AuditReason" but @type was found', [
+          '@id' => $this->test->id(),
+          '@type' => get_class($result) || gettype($result),
+        ]);
+        $this->message->display($msg, 'status');
+        return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
       }
-      catch (RequirementsException $e) {
-        $this->message->display(
-          $this->t(
-            'Audit checkpoint @id did not meet the requirements. @message @requirements',
-            [
-              '@id' => $this->test->id(),
-              '@message' => $e->getMessage(),
-              '@requirements' => $e->getRequirementsString(),
-            ]
-          ),
-          'error'
-        );
-        throw new AuditSkipTestException('Audit checkpoint plugin not meet the requirements');
-      }
-      catch (AuditException $e) {
-        throw new \Exception('Plugin logic problem: ' . $e->getPluginId(), 0 , $e);
-      }
+
+      return $result;
     }
     catch (AuditSkipTestException $e) {
-      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, 'Audit plugin was skip this audit point.');
-      // Skip test and save log record.
+      $this->handleException($e);
+
+      // Following message should be removed.
+      // There is no sense to use separate message and method for requirements.
       $this->message->display(
         $this->t(
-          'Test @id was skipped. @message',
+          'Audit checkpoint @id did not meet the requirements. @message @requirements',
           [
             '@id' => $this->test->id(),
             '@message' => $e->getMessage(),
+            '@requirements' => $e->getRequirementsString(),
           ]
         ),
-        'status');
+        'error'
+      );
+
+      // Skip test and save log record.
+      $this->message->display($msg, 'status');
+      $msg = $this->t('Audit Check @id was skipped due to missing requirements: @message', [
+          '@id' => $this->test->id(),
+          '@message' => $e->getMessage(),
+        ]);
+      return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
     }
     catch (\Exception $e) {
-      // We should handle all exception what can occur in audit plugins.
+      // We should handle all exceptions occurred during Audit execution.
       $this->handleException($e);
-      // In any case we should store this result in Result response collections and mark it as Failed.
-      $return = new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, $e->getMessage());
+      // Mark Result as Skipped.
+      return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $e->getMessage());
     }
-
-    return $return;
   }
 
   /**
