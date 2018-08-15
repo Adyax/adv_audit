@@ -9,13 +9,13 @@ use Drupal\Core\Config\FileStorage;
  */
 class MessageStorageFactory {
 
-    /**
-     * Returns a FileStorage object working with the sync config directory.
-     *
-     * @return \Drupal\Core\Config\FileStorage FileStorage
-     */
-    public static function getMsgDir() {
-        return new FileStorage(drupal_get_path('module', 'adv_audit') . '/config/messages');
-    }
+  /**
+   * Returns a FileStorage object working with the sync config directory.
+   *
+   * @return \Drupal\Core\Config\FileStorage FileStorage
+   */
+  public static function getMsgDir() {
+    return new FileStorage(drupal_get_path('module', 'adv_audit') . '/config/messages');
+  }
 
 }

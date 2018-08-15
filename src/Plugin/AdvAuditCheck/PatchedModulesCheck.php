@@ -29,7 +29,7 @@ use Drupal\hacked\Controller\HackedController;
  *   severity = "high"
  * )
  */
-class PatchedModulesCheck extends AdvAuditCheckBase implements  AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * Data key.
