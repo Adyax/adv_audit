@@ -7,6 +7,9 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use JsonSerializable;
 use Serializable;
 
+/**
+ *
+ */
 class AuditResultResponse implements AuditResultResponseInterface, JsonSerializable, Serializable {
 
   /**
@@ -50,6 +53,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *   Execution status.
    *
    * @deprecated Use ::addReason method.
+   *
    * @return void
    */
   public function addResultReport(AdvAuditCheckInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
@@ -77,11 +81,13 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   }
 
   /**
-   * Specify data which should be serialized to JSON
+   * Specify data which should be serialized to JSON.
    *
    * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+   *
    * @return mixed data which can be serialized by <b>json_encode</b>,
-   * which is a value of any type other than a resource.
+   *   which is a value of any type other than a resource.
+   *
    * @since 5.4.0
    */
   public function jsonSerialize() {
@@ -89,10 +95,12 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   }
 
   /**
-   * String representation of object
+   * String representation of object.
    *
    * @link http://php.net/manual/en/serializable.serialize.php
+   *
    * @return string the string representation of the object or null
+   *
    * @since 5.1.0
    */
   public function serialize() {
@@ -100,15 +108,17 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   }
 
   /**
-   * Constructs the object
+   * Constructs the object.
    *
    * @link http://php.net/manual/en/serializable.unserialize.php
    *
-   * @param string $serialized <p>
-   * The string representation of the object.
-   * </p>
+   * @param string $serialized
+   *   <p>
+   *   The string representation of the object.
+   *   </p>.
    *
    * @return void
+   *
    * @since 5.1.0
    */
   public function unserialize($serialized) {

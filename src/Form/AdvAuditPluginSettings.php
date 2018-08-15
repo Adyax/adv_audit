@@ -174,7 +174,6 @@ class AdvAuditPluginSettings extends FormBase {
     return $form;
   }
 
-
   /**
    * Temporary submit handler for run audit and display result.
    */

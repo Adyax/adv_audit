@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class AdvAuditCheckManager extends DefaultPluginManager {
 
-
   /**
    * Constructs a new AdvAuditCheckManager object.
    *
@@ -38,7 +37,7 @@ class AdvAuditCheckManager extends DefaultPluginManager {
    */
   public function getPluginsByCategory() {
     $list = [];
-    foreach($this->getDefinitions() as $plugin) {
+    foreach ($this->getDefinitions() as $plugin) {
       $list[$plugin['category']][$plugin['id']] = $plugin;
     }
     return $list;
