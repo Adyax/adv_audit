@@ -81,47 +81,42 @@ class AuditExecutable {
       $result = $this->test->perform();
       // Check what plugin return correct response.
       if (!($result instanceof AuditReason)) {
+        $result_type = get_class($result);
+        if (empty($result_type)) {
+          $result_type = gettype($result);
+        }
         // Mark Result as Skipped.
         $msg = $this->t('AuditPlugin @id returned an invalid result. Expected instance of "AuditReason" but @type was found', [
           '@id' => $this->test->id(),
-          '@type' => get_class($result) || gettype($result),
+          '@type' => $result_type,
         ]);
         $this->message->display($msg, 'status');
+
         return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
       }
 
       return $result;
     }
+    catch (RequirementsException $e) {
+      $msg = $this->t('Audit checkpoint @id did not meet the requirements. @message @requirements', [
+        '@id' => $this->test->id(),
+        '@message' => $e->getMessage(),
+        '@requirements' => $e->getRequirementsString(),
+      ]);
+
+      return $this->handleExecutionException($e, $msg);
+    }
     catch (AuditSkipTestException $e) {
-      $this->handleException($e);
-
-      // Following message should be removed.
-      // There is no sense to use separate message and method for requirements.
-      $this->message->display(
-        $this->t(
-          'Audit checkpoint @id did not meet the requirements. @message @requirements',
-          [
-            '@id' => $this->test->id(),
-            '@message' => $e->getMessage(),
-            '@requirements' => $e->getRequirementsString(),
-          ]
-        ),
-        'error'
-      );
-
-      // Skip test and save log record.
-      $this->message->display($msg, 'status');
       $msg = $this->t('Audit Check @id was skipped due to missing requirements: @message', [
-          '@id' => $this->test->id(),
-          '@message' => $e->getMessage(),
-        ]);
-      return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+        '@id' => $this->test->id(),
+        '@message' => $e->getMessage(),
+      ]);
+
+      return $this->handleExecutionException($e, $msg);
     }
     catch (\Exception $e) {
       // We should handle all exceptions occurred during Audit execution.
-      $this->handleException($e);
-      // Mark Result as Skipped.
-      return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $e->getMessage());
+      return $this->handleExecutionException($e);
     }
   }
 
@@ -133,10 +128,25 @@ class AuditExecutable {
    * @param \Exception $exception
    *   Object representing the exception.
    */
-  protected function handleException(\Exception $exception) {
+  protected function handleExecutionException(\Exception $exception, $msg = '', $msg_type = 'status') {
     $result = Error::decodeException($exception);
-    $handle_message = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
-    $this->message->display($handle_message, 'error');
+
+    $handle_message = $this->t('Audit Check @id was skipped due to exception $msg in @file, line:@line)', [
+      '@id' => $this->test->id(),
+      '@message' => $exception->getMessage(),
+      '@file' => $result['%file'],
+      '@line' => $result['%line'],
+    ]);
+
+    // @TODO: Add $handle_message to Log.
+    if (empty($msg)) {
+      $msg = $handle_message;
+    }
+    // Display Status Message.
+    $this->message->display($msg, $msg_type);
+
+    // Mark Result as Skipped.
+    return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
 }
