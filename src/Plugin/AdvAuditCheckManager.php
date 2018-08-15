@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\adv_audit\AuditExecutable;
-use Drupal\adv_audit\Exception\AuditException;
+use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -77,8 +77,8 @@ class AdvAuditCheckManager extends DefaultPluginManager {
       // If current action context is run test scenarios we should
       // throw the error.
       if (isset($configuration[AuditExecutable::AUDIT_EXECUTE_RUN])) {
-        // Throw our Exception for correct reaction on error.
-        throw new AuditException($e->getMessage(), $plugin_id);
+        // Throw our RequirementsException for correct reaction on error.
+        throw new RequirementsException($e->getMessage(), ['service' => $e->getSourceId()]);
       }
       // Save original class for plugin instance.
       $this->definitions[$plugin_id]['original_class'] = $this->definitions[$plugin_id]['class'];
