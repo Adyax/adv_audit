@@ -71,7 +71,12 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
 
       return [
         'link' => ['#markup' => $arguments['%link']],
-        'count' => ['#markup' => $this->stringTranslation->formatPlural($arguments['@count'], '1 module', '@count modules')],
+        'count' => [
+          '#markup' => $this->stringTranslation->formatPlural(
+            $arguments['@count'],
+            '1 module',
+            '@count modules')->render(),
+        ],
         'list' => $render_list,
       ];
     }
