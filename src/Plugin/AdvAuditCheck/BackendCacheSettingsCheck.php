@@ -22,7 +22,15 @@ use Drupal\Core\Site\Settings;
  *  enabled = true,
  * )
  */
-class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * Backend cache list.
+   */
+  const BACKEND_CACHE = [
+    'cache.backend.memcache',
+    'cache.backend.redis',
+  ];
 
   /**
    * The settings object.
@@ -65,40 +73,13 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCh
     $cache_settings = $this->settings->get('cache');
     $cache_default = isset($cache_settings['default']) ? $cache_settings['default'] : 'cache.backend.database';
 
-    switch ($cache_default) {
-      case 'cache.backend.memcache':
-        return $this->memcached_check();
-        break;
-
-      case 'cache.backend.redis':
-        return $this->redis_check();
-        break;
-
-      default:
-        return new AuditReason($this->id(),
-          AuditResultResponseInterface::RESULT_FAIL);
+    $status = AuditResultResponseInterface::RESULT_FAIL;
+    if (in_array($cache_default, self::BACKEND_CACHE)) {
+      $status = AuditResultResponseInterface::RESULT_PASS;
     }
 
-  }
+    return new AuditReason($this->id(), $status);
 
-  /**
-   * Check memcached connection.
-   */
-  private function memcached_check() {
-    return new AuditReason($this->id(),
-      AuditResultResponseInterface::RESULT_PASS,
-      $this->t('Memcached is configured properly')
-    );
-
-  }
-
-  /**
-   * Check redis connection.
-   */
-  private function redis_check() {
-    return new AuditReason($this->id(),
-      AuditResultResponseInterface::RESULT_PASS,
-      $this->t('Redis is configured properly'));
   }
 
 }
