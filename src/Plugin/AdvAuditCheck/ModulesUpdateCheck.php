@@ -23,7 +23,7 @@ use Drupal\Core\Url;
  *   severity = "high"
  * )
  */
-class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * Constructs a new ModulesUpdateCheck object.
@@ -53,6 +53,7 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements  AdvAuditCh
       $container->get('module_handler')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -91,6 +92,5 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements  AdvAuditCh
 
     return new AuditReason($this->id(), $status, NULL, $params);
   }
-
 
 }

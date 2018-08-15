@@ -11,7 +11,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 /**
  * Class AuditMessagesStorage.
  */
-class AuditMessagesStorage implements AuditMessagesStorageInterface{
+class AuditMessagesStorage implements AuditMessagesStorageInterface {
 
   use StringTranslationTrait;
 

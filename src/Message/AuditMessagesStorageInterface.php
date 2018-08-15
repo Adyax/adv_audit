@@ -2,7 +2,9 @@
 
 namespace Drupal\adv_audit\Message;
 
-
+/**
+ *
+ */
 interface AuditMessagesStorageInterface {
   const MSG_TYPE_DESCRIPTION = 'description';
   const MSG_TYPE_ACTIONS = 'actions';
@@ -14,7 +16,14 @@ interface AuditMessagesStorageInterface {
 
   const COLLECTION_NAME = 'messages';
 
+  /**
+   *
+   */
   public function set($plugin_id, $type, $string);
+
+  /**
+   *
+   */
   public function get($plugin_id, $type);
 
   /**
@@ -30,8 +39,9 @@ interface AuditMessagesStorageInterface {
    *   - 'langcode' (defaults to the current language): A language code, to
    *     translate to a language other than what is used to display the page.
    *   - 'context' (defaults to the empty context): The context the source
-   *     string belongs to. See the
-   *     @link i18n Internationalization topic @endlink for more information
+   *     string belongs to. See the.
+   *
+   * @link i18n Internationalization topic @endlink for more information
    *     about string contexts.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
@@ -62,24 +72,25 @@ interface AuditMessagesStorageInterface {
    *     - A MarkupInterface object cast to a string, the replaced value in the
    *       returned string be forcibly sanitized using
    *       \Drupal\Component\Utility\Html::escape().
-   *       @code
+   *
+   * @code
    *         $this->placeholderFormat('This will force HTML-escaping of the replacement value: @text', ['@text' => (string) $safe_string_interface_object));
-   *       @endcode
+   * @endcode
    *     Use this placeholder as the default choice for anything displayed on
    *     the site, but not within HTML attributes, JavaScript, or CSS. Doing so
    *     is a security risk.
    *   - %variable: Use when the replacement value is to be wrapped in <em>
    *     tags.
    *     A call like:
-   *     @code
+   * @code
    *       $string = "%output_text";
    *       $arguments = ['%output_text' => 'text output here.'];
    *       $this->placeholderFormat($string, $arguments);
-   *     @endcode
+   * @endcode
    *     makes the following HTML code:
-   *     @code
+   * @code
    *       <em class="placeholder">text output here.</em>
-   *     @endcode
+   * @endcode
    *     As with @variable, do not use this within HTML attributes, JavaScript,
    *     or CSS. Doing so is a security risk.
    *   - :variable: Return value is escaped with
@@ -87,12 +98,12 @@ interface AuditMessagesStorageInterface {
    *     protocols using UrlHelper::stripDangerousProtocols(). Use this when
    *     using the "href" attribute, ensuring the attribute value is always
    *     wrapped in quotes:
-   *     @code
+   * @code
    *     // Secure (with quotes):
    *     $this->placeholderFormat('<a href=":url">@variable</a>', [':url' => $url, '@variable' => $variable]);
    *     // Insecure (without quotes):
    *     $this->placeholderFormat('<a href=:url>@variable</a>', [':url' => $url, '@variable' => $variable]);
-   *     @endcode
+   * @endcode
    *     When ":variable" comes from arbitrary user input, the result is secure,
    *     but not guaranteed to be a valid URL (which means the resulting output
    *     could fail HTML validation). To guarantee a valid URL, use
@@ -110,6 +121,5 @@ interface AuditMessagesStorageInterface {
    * @see \Drupal\Core\Url::fromUri()
    */
   public function replacePlaceholder($plugin_id, $type, $args);
-
 
 }
