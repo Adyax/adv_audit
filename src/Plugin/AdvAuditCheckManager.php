@@ -2,9 +2,13 @@
 
 namespace Drupal\adv_audit\Plugin;
 
+use Drupal\adv_audit\AuditExecutable;
+use Drupal\adv_audit\Exception\AuditException;
+use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Provides the Advances audit check plugin manager.
@@ -46,15 +50,43 @@ class AdvAuditCheckManager extends DefaultPluginManager {
   /**
    * Get list of plugin by selected category.
    *
-   * @param $category_id
+   * @param string $category_id
    *   The category ID.
    *
    * @return array|mixed
    *   Return list if plugin in selected category.
    */
-  public function getLPluginsByCategoryFilter($category_id) {
+  public function getPluginsByCategoryFilter($category_id) {
     $list = $this->getPluginsByCategory();
     return isset($list[$category_id]) ? $list[$category_id] : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createInstance($plugin_id, array $configuration = []) {
+    // In some cases audit plugins can have dependency to non-existent service.
+    // This is a normal situation when some service is not available on site for
+    // audit plugin.
+    // We should catch this exception and try to resolve the problem,
+    // for having the opportunity to display plugin in listings.
+    try {
+      return parent::createInstance($plugin_id, $configuration);
+    }
+    catch (ServiceNotFoundException $e) {
+      // If current action context is run test scenarios we should
+      // throw the error.
+      if (isset($configuration[AuditExecutable::AUDIT_EXECUTE_RUN])) {
+        // Throw our Exception for correct reaction on error.
+        throw new AuditException($e->getMessage(), $plugin_id);
+      }
+      // Save original class for plugin instance.
+      $this->definitions[$plugin_id]['original_class'] = $this->definitions[$plugin_id]['class'];
+      // Override original class to mock (fake) object.
+      $this->definitions[$plugin_id]['class'] = MockPluginCheck::class;
+      // Try again create needed plugin instance.
+      return parent::createInstance($plugin_id, $configuration);
+    }
   }
 
 }

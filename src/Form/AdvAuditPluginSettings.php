@@ -2,8 +2,9 @@
 
 namespace Drupal\adv_audit\Form;
 
+use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Exception\RequirementsException;
+use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
@@ -44,7 +45,7 @@ class AdvAuditPluginSettings extends FormBase {
    *
    * @var mixed
    */
-  protected $plugin_id;
+  protected $pluginId;
 
   /**
    * The plugin instance.
@@ -60,8 +61,8 @@ class AdvAuditPluginSettings extends FormBase {
     $this->advAuditPluginManager = $manager;
     $this->messageStorage = $storage_message;
     $this->currentRequest = $request_stack->getCurrentRequest();
-    $this->plugin_id = $request_stack->getCurrentRequest()->attributes->get('plugin_id');
-    $this->pluginInstance = $this->advAuditPluginManager->createInstance($this->plugin_id);
+    $this->pluginId = $request_stack->getCurrentRequest()->attributes->get('plugin_id');
+    $this->pluginInstance = $this->advAuditPluginManager->createInstance($this->pluginId);
   }
 
   /**
@@ -86,6 +87,7 @@ class AdvAuditPluginSettings extends FormBase {
    * Get title of config form page.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Return TranslatableMarkup object.
    */
   public function getTitle() {
     return $this->t('Configure plugin @label form', ['@label' => $this->pluginInstance->label()]);
@@ -99,7 +101,7 @@ class AdvAuditPluginSettings extends FormBase {
 
     $form['status'] = [
       '#type' => 'checkbox',
-      '#title' => t('Enabled'),
+      '#title' => $this->t('Enabled'),
       '#default_value' => $this->pluginInstance->isEnabled(),
     ];
 
@@ -117,35 +119,35 @@ class AdvAuditPluginSettings extends FormBase {
     $form['messages'][AuditMessagesStorageInterface::MSG_TYPE_DESCRIPTION] = [
       '#type' => 'text_format',
       '#title' => $this->t('Description'),
-      '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_DESCRIPTION),
+      '#default_value' => $this->messageStorage->get($this->pluginId, AuditMessagesStorageInterface::MSG_TYPE_DESCRIPTION),
     ];
 
     $form['messages'][AuditMessagesStorageInterface::MSG_TYPE_ACTIONS] = [
       '#type' => 'text_format',
       '#title' => $this->t('Action'),
       '#description' => $this->t('What actions should be provided to fix plugin issue.'),
-      '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_ACTIONS),
+      '#default_value' => $this->messageStorage->get($this->pluginId, AuditMessagesStorageInterface::MSG_TYPE_ACTIONS),
     ];
 
     $form['messages'][AuditMessagesStorageInterface::MSG_TYPE_IMPACTS] = [
       '#type' => 'text_format',
       '#title' => $this->t('Impact'),
       '#description' => $this->t('Why this issue should be fixed.'),
-      '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_IMPACTS),
+      '#default_value' => $this->messageStorage->get($this->pluginId, AuditMessagesStorageInterface::MSG_TYPE_IMPACTS),
     ];
 
     $form['messages'][AuditMessagesStorageInterface::MSG_TYPE_FAIL] = [
       '#type' => 'text_format',
       '#title' => $this->t('Fail message'),
       '#description' => $this->t('This text is used in case when verification was failed.'),
-      '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_FAIL),
+      '#default_value' => $this->messageStorage->get($this->pluginId, AuditMessagesStorageInterface::MSG_TYPE_FAIL),
     ];
 
     $form['messages'][AuditMessagesStorageInterface::MSG_TYPE_SUCCESS] = [
       '#type' => 'text_format',
       '#title' => $this->t('Success message'),
       '#description' => $this->t('This text is used in case when verification was failed.'),
-      '#default_value' => $this->messageStorage->get($this->plugin_id, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS),
+      '#default_value' => $this->messageStorage->get($this->pluginId, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS),
     ];
 
     if ($additional_form = $this->pluginInstance->configForm()) {
@@ -178,22 +180,17 @@ class AdvAuditPluginSettings extends FormBase {
    * Temporary submit handler for run audit and display result.
    */
   public function runTest(array &$form, FormStateInterface $form_state) {
-    // Check what plugin requirements are met.
-    try {
-      $this->pluginInstance->checkRequirements();
-    }
-    catch (RequirementsException $e) {
-      drupal_set_message($e->getMessage(), 'error');
-      return;
-    }
+    // Set context action for instance initialize plugin.
+    $configuration[AuditExecutable::AUDIT_EXECUTE_RUN] = TRUE;
+    $messages = new AuditMessageCapture();
+    $executable = new AuditExecutable($this->pluginInstance->id(), $configuration, $messages);
 
-    // Try run the test and grab the result.
-    $result = $this->pluginInstance->perform();
-    if ($result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
+    $test_reason = $executable->performTest();
+    if ($test_reason->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
       drupal_set_message($this->t('Audit check is PASSED'), 'status');
     }
     else {
-      drupal_set_message($this->t('Audit check is FAILED<br/>Reason:<p>@reason</p>', ['@reason' => implode('<br/>', $result->getReason())]), 'error');
+      drupal_set_message($this->t('Audit check is FAILED<br/>Reason:<p>@reason</p>', ['@reason' => implode('<br/>', $test_reason->getReason())]), 'error');
     }
 
     // Try to build output from plugin instance.
@@ -210,7 +207,7 @@ class AdvAuditPluginSettings extends FormBase {
     $this->pluginInstance->setPluginStatus($form_state->getValue('status'));
     $this->pluginInstance->setSeverityLevel($form_state->getValue('severity'));
     foreach ($form_state->getValue('messages', []) as $type => $text) {
-      $this->messageStorage->set($this->plugin_id, $type, $text['value']);
+      $this->messageStorage->set($this->pluginId, $type, $text['value']);
     }
 
     // Handle plugin config form submit.
