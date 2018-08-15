@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Predis\Client;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -9,7 +10,6 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Site\Settings;
 
 /**
@@ -22,7 +22,7 @@ use Drupal\Core\Site\Settings;
  *  enabled = true,
  * )
  */
-class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * The settings object.
@@ -156,7 +156,7 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements  AdvAuditCh
 
     if (class_exists($extension)) {
       if ($extension == 'Predis\Client') {
-        $redis = new \Predis\Client([
+        $redis = new Client([
           'host' => $redis_connection['host'],
           'port' => $redis_connection['port'],
           'timeout' => 0.8,

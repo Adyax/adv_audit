@@ -23,7 +23,7 @@ use Drupal\Core\Url;
  *   severity = "critical"
  * )
  */
-class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
    * Constructs a new ModulesSecurityCheck object.
@@ -92,6 +92,5 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements  AdvAudit
 
     return new AuditReason($this->id(), $status, NULL, $params);
   }
-
 
 }

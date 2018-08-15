@@ -6,7 +6,6 @@ use Drupal\adv_audit\Exception\AuditSkipTestException;
 use Drupal\adv_audit\Exception\AuditException;
 use Drupal\adv_audit\Message\AuditMessage;
 use Drupal\adv_audit\Message\AuditMessageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\adv_audit\Exception\RequirementsException;
@@ -19,11 +18,35 @@ class AuditExecutable {
   use StringTranslationTrait;
 
   /**
-   * List of test for performs.
+   * Defines a value for designating the usage context.
+   *
+   * Use this flag when you try to create instance plugin for determining
+   * the action to run audit scenarios.
+   *
+   * @see \Drupal\adv_audit\AuditExecutable::performTest().
+   */
+  const AUDIT_EXECUTE_RUN = 'audit_execute';
+
+  /**
+   * The test instance to perform.
    *
    * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
    */
   protected $test;
+
+  /**
+   * The test ID.
+   *
+   * @var string
+   */
+  protected $testId;
+
+  /**
+   * The configuration for initialize instance.
+   *
+   * @var array
+   */
+  protected $configuration;
 
   /**
    * The event dispatcher.
@@ -35,8 +58,6 @@ class AuditExecutable {
   /**
    * Migration audit service.
    *
-   * @todo Make this protected.
-   *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
   public $message;
@@ -44,15 +65,18 @@ class AuditExecutable {
   /**
    * Constructs a AuditExecutable and verifies.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
-   *   The test plugin instance.
+   * @param string $test_id
+   *   The test plugin id.
+   * @param array $configuration
+   *   The plugin configuration.
    * @param \Drupal\adv_audit\Message\AuditMessageInterface $message
    *   (optional) The audit message service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   (optional) The event dispatcher.
    */
-  public function __construct(AdvAuditCheckInterface $test, AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
-    $this->test = $test;
+  public function __construct($test_id, array $configuration = [], AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
+    $this->testId = $test_id;
+    $this->configuration = $configuration;
     $this->message = $message ?: new AuditMessage();
     $this->eventDispatcher = $event_dispatcher;
   }
@@ -75,6 +99,10 @@ class AuditExecutable {
    */
   public function performTest() {
     try {
+      // Set where we try to create plugin instance.
+      $this->configuration[self::AUDIT_EXECUTE_RUN] = TRUE;
+      // Init the audit plugin instance.
+      $this->test = $this->container()->get('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
       // Knock off test if the requirements haven't been met.
       $this->test->checkRequirements();
       // Run audit checkpoint perform.
@@ -147,6 +175,19 @@ class AuditExecutable {
 
     // Mark Result as Skipped.
     return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+  }
+
+  /**
+   * Returns the service container.
+   *
+   * This method is marked private to prevent sub-classes from retrieving
+   * services from the container through it.
+   *
+   * @return \Symfony\Component\DependencyInjection\ContainerInterface
+   *   The service container.
+   */
+  private function container() {
+    return \Drupal::getContainer();
   }
 
 }

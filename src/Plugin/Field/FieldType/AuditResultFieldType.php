@@ -43,8 +43,9 @@ class AuditResultFieldType extends StringLongItem {
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
     $response = new AuditResultResponse();
-    $response->addReason(new AuditReason('dummy', rand(0,2)));
+    $response->addReason(new AuditReason('dummy', rand(0, 2)));
     $values['value'] = serialize($response);
     return $values;
   }
+
 }
