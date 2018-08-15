@@ -46,7 +46,7 @@ class AdvAuditPermissions implements ContainerInjectionInterface {
     $plugin_list = $this->auditPluginManager->getPluginsByCategory();
 
     $perms = [];
-    // Generate audit permissions for all categories and plugins.
+    // Generate permissions for all categories and plugins.
     foreach ($categories as $category => $definition) {
       $perms += $this->buildPermissions('category', $category, $definition['label']);
 
@@ -78,10 +78,10 @@ class AdvAuditPermissions implements ContainerInjectionInterface {
 
     return [
       "adv_audit $type $id view" => [
-        'title' => $this->t('View audit results for @type %name', $params),
+        'title' => $this->t('View %name @type audit results', $params),
       ],
       "adv_audit $type $id edit" => [
-        'title' => $this->t('Edit settings for @type %name', $params),
+        'title' => $this->t('Edit %name @type settings', $params),
       ],
     ];
   }
