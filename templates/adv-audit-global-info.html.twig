@@ -1,0 +1,38 @@
+<h2>Users</h2>
+<div class="total-users">
+  <span><span>Count All</span> - Total number of Drupal users.</span>There are {{ global_info.total_users }} users.
+</div>
+<div class="blocked-users">
+  <span><span>Count Blocked</span> - Total number of blocked Drupal users</span> There
+  are {{ global_info.blocked_users }} blocked users.
+</div>
+<div class="roles-list">
+  <span><span>List Roles</span> - Show all available roles and user counts.</span>
+  {% for role in global_info.roles_list %}
+  {{ role }},
+  {% endfor %}.
+</div>
+<div class="admin-info">
+  <div>
+    <span><span>Identify UID #1</span> - Show username and email of UID #1.</span> UID #1: {{ global_info.uid1.name }},
+    email: {{ global_info.uid1.email }}
+  </div>
+  <div>
+    <span><span>UID #1 access</span> - Determine if UID #1 is blocked.</span> {{ global_info.uid1.status }}.
+  </div>
+</div>
+<h2>Codebase</h2>
+<div class="codebase">
+  <div>
+    <span><span>Drupal managed file count</span> - Determine the count of Drupal managed files.</span> Managed file
+    count: {{ global_info.filesystem_info.count_files }}
+  </div>
+  <div>
+    <span><span>Drupal managed file size</span> - Determine the size of Drupal managed files.</span> Managed file
+    size: {{ global_info.filesystem_info.files_total_size}}
+  </div>
+</div>
+<h2>Database</h2>
+<div class="total_users">
+  <span><span>Total size</span> - Determine the size of the database.</span> Total size: {{ global_info.db_size}}
+</div>

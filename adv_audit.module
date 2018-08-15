@@ -36,6 +36,10 @@ function adv_audit_theme() {
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
     ],
+    'adv_audit_global_info' => [
+      'variables' => ['global_info' => NULL],
+      'template' => 'adv-audit-global-info',
+    ],
   ];
 }
 
@@ -58,7 +62,7 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
 }
 
 /**
- *
+ * Prepares variables for templates.
  */
 function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */

@@ -4,8 +4,10 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -14,6 +16,8 @@ use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Get global info about projects.
+ *
  * @AdvAuditCheck(
  *  id = "intro_global_info_check",
  *  label = @Translation("Introduction, general results and global info"),
@@ -23,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  enabled = true,
  * )
  */
-class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
    * Entity Type Manager container.
@@ -94,7 +98,21 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
     if (!empty($errors)) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, 'NULL', $renderData);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    $build = [];
+    if ($type == AuditMessagesStorageInterface::MSG_TYPE_SUCCESS) {
+      $build['global_info'] = [
+        '#theme' => 'adv_audit_global_info',
+        '#global_info' => $reason->getArguments(),
+      ];
+    }
+    return $build;
   }
 
   /**
