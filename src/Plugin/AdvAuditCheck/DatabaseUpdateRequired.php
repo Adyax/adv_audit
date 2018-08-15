@@ -38,7 +38,6 @@ class DatabaseUpdateRequired extends AdvAuditCheckBase implements AdvAuditCheckI
     $plugin_id,
     $plugin_definition,
     SystemManager $system_manager
-
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->systemManager = $system_manager;

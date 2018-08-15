@@ -4,6 +4,8 @@ namespace Drupal\adv_audit\Exception;
 
 /**
  * Defines the audit exception class.
+ *
+ * @deprecated Use one of AuditSkipTestException or RequirementsException.
  */
 class AuditException extends \Exception {
 

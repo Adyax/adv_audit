@@ -7,25 +7,26 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 
 /**
+ * Register Globals Check plugin class.
+ *
  * @AdvAuditCheck(
- *   id = "php_max_execution_time",
- *   label = @Translation("Checking php max_execution_time setting"),
- *   category = "performance",
+ *   id = "register_globals_check",
+ *   label = @Translation("PHP register globals"),
+ *   category = "security",
  *   requirements = {},
  *   enabled = true,
  *   severity = "high"
  * )
  */
-class PhpMaxExecutionTimeCheck extends AdvAuditCheckBase {
+class RegisterGlobalsCheck extends AdvAuditCheckBase {
 
   /**
-   * Process checkpoint review.
+   * {@inheritdoc}
    */
   public function perform() {
-    $time = intval(ini_get('max_execution_time'));
-
     $status = AuditResultResponseInterface::RESULT_PASS;
-    if ($time > 300 || $time === 0) {
+    $register_globals = trim(ini_get('register_globals'));
+    if (!empty($register_globals) && strtolower($register_globals) != 'off') {
       $status = AuditResultResponseInterface::RESULT_FAIL;
     }
 
