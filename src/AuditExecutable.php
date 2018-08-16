@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Exception\AuditSkipTestException;
-use Drupal\adv_audit\Message\AuditMessage;
+use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessageInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -55,7 +55,7 @@ class AuditExecutable {
   protected $eventDispatcher;
 
   /**
-   * Migration audit service.
+   * Audit messages.
    *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
@@ -76,8 +76,14 @@ class AuditExecutable {
   public function __construct($test_id, array $configuration = [], AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
     $this->testId = $test_id;
     $this->configuration = $configuration;
-    $this->message = $message ?: new AuditMessage();
+    $this->message = $message ?: new AuditMessageCapture();
     $this->eventDispatcher = $event_dispatcher;
+  }
+
+  public static function run($test_id) {
+    $executable = new AuditExecutable($test_id);
+
+    return [$executable->performTest(), $executable->message->getMessages()];
   }
 
   /**
@@ -100,8 +106,9 @@ class AuditExecutable {
     try {
       // Set where we try to create plugin instance.
       $this->configuration[self::AUDIT_EXECUTE_RUN] = TRUE;
+
       // Init the audit plugin instance.
-      $this->test = $this->container()->get('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
+      $this->test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
       // Knock off test if the requirements haven't been met.
       $this->test->checkRequirements();
       // Run audit checkpoint perform.
@@ -125,8 +132,8 @@ class AuditExecutable {
       return $result;
     }
     catch (RequirementsException $e) {
-      $msg = $this->t('Audit checkpoint @id did not meet the requirements. @message @requirements', [
-        '@id' => $this->test->id(),
+      $msg = $this->t('Audit `@id` did not meet the requirements. @message @requirements', [
+        '@id' => $this->testId,
         '@message' => $e->getMessage(),
         '@requirements' => $e->getRequirementsString(),
       ]);
@@ -135,7 +142,7 @@ class AuditExecutable {
     }
     catch (AuditSkipTestException $e) {
       $msg = $this->t('Audit Check @id was skipped due to missing requirements: @message', [
-        '@id' => $this->test->id(),
+        '@id' => $this->testId,
         '@message' => $e->getMessage(),
       ]);
 
@@ -159,13 +166,14 @@ class AuditExecutable {
     $result = Error::decodeException($exception);
 
     $handle_message = $this->t('Audit Check @id was skipped due to exception $msg in @file, line:@line)', [
-      '@id' => $this->test->id(),
+      '@id' => $this->testId,
       '@message' => $exception->getMessage(),
       '@file' => $result['%file'],
       '@line' => $result['%line'],
     ]);
 
-    // @TODO: Add $handle_message to Log.
+    \Drupal::logger('adv_audit_batch')->error($handle_message);
+
     if (empty($msg)) {
       $msg = $handle_message;
     }
@@ -173,7 +181,7 @@ class AuditExecutable {
     $this->message->display($msg, $msg_type);
 
     // Mark Result as Skipped.
-    return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+    return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
   /**
