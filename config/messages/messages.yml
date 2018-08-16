@@ -121,3 +121,11 @@ plugins:
     warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  php_version_check:
+    description: 'Check PHP version.'
+    actions: 'Please upgrade to PHP version %recommended or higher for the best ongoing support.'
+    impacts: 'Upgrade to PHP version %recommended or higher to ensure your site can receive updates and remain secure.'
+    fail: 'It is recommended to upgrade to PHP version %recommended or higher for the best ongoing support.'
+    warning: 'It is recommended to upgrade to PHP version %recommended or higher.'
+    success: 'PHP version correct.'
+    help: 'Check PHP version.'
