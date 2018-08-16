@@ -125,6 +125,6 @@ plugins:
     description: 'Check ImageAPI Optimize.'
     actions: 'Install and configure %link module.'
     impacts: 'With lots of not optimized images pages will load more slowly.'
-    fail: "The module %link isn't installed."
+    fail: "The module %link isn't installed and configured correctly"
     success: 'Module %link is installed.'
-    help: 'Check if module %link is enabled.'
+    help: 'Check if module %link is enabled and configured.'

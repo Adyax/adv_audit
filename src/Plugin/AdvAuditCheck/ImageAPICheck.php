@@ -6,11 +6,12 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\image\Entity\ImageStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Url;
 
@@ -29,11 +30,11 @@ use Drupal\Core\Url;
 class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
-   * Drupal\Core\State\StateInterface definition.
+   * Provide access to service 'entity.query'.
    *
-   * @var \Drupal\Core\State\StateInterface
+   * @var \Drupal\Core\Entity\Query\QueryInterface
    */
-  protected $state;
+  protected $entityQueue;
 
   /**
    * The audit messages storage service.
@@ -58,16 +59,16 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   Interface for the state system.
+   * @param \Drupal\Core\Entity\Query\QueryFactory $entity_queue
+   *   Interface for entity queue system.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   Interface for working with drupal module system.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryFactory $entity_queue, AuditMessagesStorageInterface $messages_storage, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
+    $this->entityQueue = $entity_queue;
     $this->messagesStorage = $messages_storage;
     $this->moduleHandler = $module_handler;
   }
@@ -80,7 +81,7 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
+      $container->get('entity.query'),
       $container->get('adv_audit.messages'),
       $container->get('module_handler')
     );
@@ -97,8 +98,32 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     $url = Url::fromUri('https://www.drupal.org/project/imageapi_optimize', ['attributes' => ['target' => '_blank']]);
     $link = Link::fromTextAndUrl('ImageAPI Optimize', $url);
     if (!$this->moduleHandler->moduleExists('imageapi_optimize')) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['%link' => $link->toString()]);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi optimize check failed.')], ['%link' => $link->toString()]);
     }
+
+    // Check if pipelines were created.
+    $pipelines = imageapi_optimize_pipeline_options(FALSE, TRUE);
+    $pipeline_keys = array_keys($pipelines);
+    if (count($pipeline_keys) === 1 && empty($pipeline_keys[0])) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi is installed, but any pipeline has not been created.')], ['%link' => $link->toString()]);
+    }
+
+    // Check if every image_style uses some pipeline.
+    $styles = ImageStyle::loadMultiple();
+    $style_names = [];
+    foreach ($styles as $style) {
+      $pipeline = $style->getPipeline();
+      if (!isset($pipeline_keys[$pipeline])) {
+        $style_names[] = $style->get('label');
+      }
+    }
+    if (count($style_names)) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi is installed some image styles is not configured: !list.')], [
+        '!list' => implode(', ', $style_names),
+        '%link' => $link->toString(),
+      ]);
+    }
+
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['%link' => $link->toString()]);
   }
 
