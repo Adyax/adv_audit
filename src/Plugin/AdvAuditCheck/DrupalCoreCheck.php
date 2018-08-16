@@ -13,6 +13,8 @@ use Drupal\update\UpdateProcessor;
 use Drupal\update\UpdateManagerInterface;
 
 /**
+ * Check the Drupal core version and its actuality.
+ *
  * @AdvAuditCheck(
  *  id = "drupal_core",
  *  label = @Translation("Drupal core"),
@@ -51,6 +53,10 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
    *   The plugin_id for the plugin instance.
    * @param string $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\update\UpdateProcessor $update_processor
+   *   The update.processor implementation definition.
+   * @param \Drupal\update\UpdateManagerInterface $update_manager
+   *   The update.manager implementation definition.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateProcessor $update_processor, UpdateManagerInterface $update_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -90,7 +96,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
     $status = AuditResultResponseInterface::RESULT_PASS;
-    $params = ['@version' => $current_version];
+    $params = ['@version' => $current_version, '@recommended_version' => $recommended_version];
 
     if ($current_version != $recommended_version) {
       $status = AuditResultResponseInterface::RESULT_FAIL;
