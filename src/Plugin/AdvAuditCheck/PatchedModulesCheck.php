@@ -106,7 +106,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
       if (!empty($arguments[$key])) {
         $build = ['#theme' => 'hacked_report'];
         $build[self::DATA_KEY] = $arguments[$key];
-        return $arguments[$key];
+        return $build;
       }
     }
 
