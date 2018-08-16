@@ -23,13 +23,6 @@ class AuditRunTestBatch {
   const MESSAGE_LENGTH = 20;
 
   /**
-   * The processed items for one batch of a given audit.
-   *
-   * @var int
-   */
-  protected static $numProcessed = 0;
-
-  /**
    * AuditMessage instance to capture messages during the perform test process.
    *
    * @var \Drupal\adv_audit\Message\AuditMessageCapture
@@ -57,95 +50,58 @@ class AuditRunTestBatch {
       $context['sandbox']['messages'] = [];
       /** @var \Drupal\adv_audit\AuditResultResponseInterface */
       $context['results']['result_response'] = new AuditResultResponse();
-      $context['results']['failures'] = 0;
-      $context['results']['successes'] = 0;
+      $context['results']['fail_count'] = 0;
+      $context['results']['success_count'] = 0;
       $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
     /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
     $result_response = &$context['results']['result_response'];
 
-    // Number processed in this batch.
-    static::$numProcessed = 0;
-
-    $test_id = reset($context['sandbox']['test_ids']);
-    $configuration = [];
-
+    // Take current Audit off the list.
+    $test_id = array_shift($context['sandbox']['test_ids']);
+    $context['sandbox']['current']++;
 
     if ($test_id) {
-      static::$messages = new AuditMessageCapture();
-      $executable = new AuditExecutable($test_id, $configuration, static::$messages);
+      list($audit_reason, $audit_messages) = AuditExecutable::run($test_id);
 
-      $test_reason = $executable->performTest();
-
-      $test_name = $test_id;
       // Save audit checkpoint result.
-      $result_response->addReason($test_reason);
+      $result_response->addReason($audit_reason);
 
-      switch ($test_reason->getStatus()) {
+      $audit_result_status = $audit_reason->getStatus();
+      $message = new TranslatableMarkup('Audit `@test` is @status', ['@test' => $test_id, '@status' => $audit_result_status]);
+      $context['sandbox']['messages'][] = (string) $message;
+      $context['sandbox']['num_processed']++;
+
+      switch ($audit_result_status) {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
-          $context['sandbox']['num_processed'] += static::$numProcessed;
-          $message = new TranslatableMarkup('Audit @test is PASSED', ['@test' => $test_name]);
-          $context['sandbox']['messages'][] = (string) $message;
-          \Drupal::logger('adv_audit_batch')->notice($message);
-          $context['sandbox']['num_processed'] = 0;
-          $context['results']['successes']++;
+          \Drupal::logger('adv_audit_batch')->info($message);
+          $context['results']['success_count']++;
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit @test is FAILED', ['@test' => $test_name]);
-          $context['results']['failures']++;
-          \Drupal::logger('adv_audit_batch')->error('Audit @test is failed', ['@test' => $test_name]);
+          $context['results']['fail_count']++;
+          \Drupal::logger('adv_audit_batch')->error($message);
           break;
 
         case AuditResultResponseInterface::RESULT_SKIP:
-          $context['sandbox']['messages'][] = (string) new TranslatableMarkup('Audit test @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
-          \Drupal::logger('adv_audit_batch')->error('Audit on @test skipped due to unfulfilled dependencies', ['@test' => $test_name]);
+          $context['results']['skip_count']++;
+          \Drupal::logger('adv_audit_batch')->warning($message);
           break;
 
         default:
           break;
       }
 
-      // Unless we're continuing on with this test, take it off the list.
-      array_shift($context['sandbox']['test_ids']);
-      $context['sandbox']['current']++;
-
       // Add and log any captured messages.
-      foreach (static::$messages->getMessages() as $message) {
+      foreach ($audit_messages as $message) {
         $context['sandbox']['messages'][] = (string) $message;
         \Drupal::logger('adv_audit_batch')->error($message);
       }
-
-      // Only display the last MESSAGE_LENGTH messages, in reverse order.
-      $message_count = count($context['sandbox']['messages']);
-      $context['message'] = '';
-      for ($index = max(0, $message_count - self::MESSAGE_LENGTH); $index < $message_count; $index++) {
-        $context['message'] = $context['sandbox']['messages'][$index] . "<br />\n" . $context['message'];
-      }
-      if ($message_count > self::MESSAGE_LENGTH) {
-        // Indicate there are earlier messages not displayed.
-        $context['message'] .= '&hellip;';
-      }
-      // At the top of the list, display the next one (which will be the one
-      // that is running while this message is visible).
-      if (!empty($context['sandbox']['test_ids'])) {
-        $test_id = reset($context['sandbox']['test_ids']);
-        $test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($test_id);
-        $test_name = $test->label() ? $test->label() : $test_id;
-        $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
-          '@test' => $test_name,
-          '@current' => $context['sandbox']['current'],
-          '@max' => $context['sandbox']['max'],
-        ]) . "<br />\n" . $context['message'];
-      }
-    }
-    else {
-      array_shift($context['sandbox']['test_ids']);
-      $context['sandbox']['current']++;
     }
 
+    $context = self::displayMessages($context);
     $context['finished'] = 1 - count($context['sandbox']['test_ids']) / $context['sandbox']['max'];
   }
 
@@ -162,23 +118,23 @@ class AuditRunTestBatch {
    *   The time to run the batch.
    */
   public static function finished($success, $results, $operations, $elapsed) {
-    $successes = $results['successes'];
-    $failures = $results['failures'];
+    $success_count = $results['success_count'];
+    $fail_count = $results['fail_count'];
 
-    // If we had any successes log that for the user.
-    if ($successes > 0) {
+    // If we had any success_count log that for the user.
+    if ($success_count > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($successes, 'Process 1 audit successfully', 'Processed @count audits successfully'));
+        ->formatPlural($success_count, 'Process 1 audit successfully', 'Processed @count audits successfully'));
     }
-    // If we had failures, log them and show the test failed.
-    if ($failures > 0) {
+    // If we had fail_count, log them and show the test failed.
+    if ($fail_count > 0) {
       drupal_set_message(\Drupal::translation()
-        ->formatPlural($failures, '1 checkpoint failed', '@count checkpoints failed'));
+        ->formatPlural($fail_count, '1 checkpoint failed', '@count checkpoints failed'));
       drupal_set_message(t('Audit process not fully completed'), 'error');
     }
     else {
-      // Everything went off without a hitch. We may not have had successes
-      // but we didn't have failures so this is fine.
+      // Everything went off without a hitch. We may not have had success_count
+      // but we didn't have fail_count so this is fine.
       drupal_set_message(t('Congratulations, you process all audit checkpoints on your Drupal site!'));
     }
 
@@ -208,15 +164,11 @@ class AuditRunTestBatch {
     try {
       $args = [];
       $entity->set('audit_results', serialize($audit_result_response));
-      if ($entity->isNew()) {
-        $args['@is_new'] = 'new';
-      }
-      else {
-        $args['@is_new'] = '';
-      }
+      $args['@is_new'] = $entity->isNew() ? 'new' : '';
       $entity->save();
-      $args['%link'] = $entity->link('link');
-      drupal_set_message(t('The @is_new entity was saved. View audit report by this %link', $args));
+
+      $args['%link'] = $entity->link('Report');
+      drupal_set_message(t('The @is_new entity was saved. View audit %link', $args));
     }
     catch (EntityStorageException $e) {
       drupal_set_message('Can\'t save audit result to the entity. Save operations is failed.', 'error');
@@ -224,6 +176,41 @@ class AuditRunTestBatch {
     catch (InvalidArgumentException $e) {
       drupal_set_message('The specified audit_results field does not exist.', 'error');
     }
+  }
+
+  /**
+   * Display Batch messages during batch progress.
+   *
+   * @param $context
+   *   Context of the batch
+   *
+   * @return mixed
+   */
+  protected static function displayMessages(&$context) {
+    // Only display the last MESSAGE_LENGTH messages, in reverse order.
+    $message_count = count($context['sandbox']['messages']);
+    $context['message'] = '';
+    for ($index = max(0, $message_count - self::MESSAGE_LENGTH); $index < $message_count; $index++) {
+      $context['message'] = $context['sandbox']['messages'][$index] . "<br />\n" . $context['message'];
+    }
+
+    // Indicate if there are earlier messages not displayed.
+    if ($message_count > self::MESSAGE_LENGTH) {
+      $context['message'] .= '&hellip;';
+    }
+
+    // At the top of the list, display the next one (which will be the one
+    // that is running while this message is visible).
+    if (!empty($context['sandbox']['test_ids'])) {
+      $test_id = reset($context['sandbox']['test_ids']);
+
+      $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
+          '@test' => $test_id,
+          '@current' => $context['sandbox']['current'],
+          '@max' => $context['sandbox']['max'],
+        ]) . "<br />\n" . $context['message'];
+    }
+    return $context;
   }
 
   /**
