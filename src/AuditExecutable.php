@@ -114,19 +114,19 @@ class AuditExecutable {
         }
         // Mark Result as Skipped.
         $msg = $this->t('AuditPlugin @id returned an invalid result. Expected instance of "AuditReason" but @type was found', [
-          '@id' => $this->test->id(),
+          '@id' => $this->testId,
           '@type' => $result_type,
         ]);
         $this->message->display($msg, 'status');
 
-        return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+        return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
       }
 
       return $result;
     }
     catch (RequirementsException $e) {
       $msg = $this->t('Audit checkpoint @id did not meet the requirements. @message @requirements', [
-        '@id' => $this->test->id(),
+        '@id' => $this->testId,
         '@message' => $e->getMessage(),
         '@requirements' => $e->getRequirementsString(),
       ]);
@@ -135,7 +135,7 @@ class AuditExecutable {
     }
     catch (AuditSkipTestException $e) {
       $msg = $this->t('Audit Check @id was skipped due to missing requirements: @message', [
-        '@id' => $this->test->id(),
+        '@id' => $this->testId,
         '@message' => $e->getMessage(),
       ]);
 
@@ -154,12 +154,19 @@ class AuditExecutable {
    *
    * @param \Exception $exception
    *   Object representing the exception.
+   * @param string $msg
+   *   The error message.
+   * @param string $msg_type
+   *   The type of message.
+   *
+   * @return \Drupal\adv_audit\AuditReason
+   *   The AuditReason object.
    */
   protected function handleExecutionException(\Exception $exception, $msg = '', $msg_type = 'status') {
     $result = Error::decodeException($exception);
 
     $handle_message = $this->t('Audit Check @id was skipped due to exception $msg in @file, line:@line)', [
-      '@id' => $this->test->id(),
+      '@id' => $this->testId,
       '@message' => $exception->getMessage(),
       '@file' => $result['%file'],
       '@line' => $result['%line'],
@@ -173,7 +180,7 @@ class AuditExecutable {
     $this->message->display($msg, $msg_type);
 
     // Mark Result as Skipped.
-    return new AuditReason($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+    return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
   /**
