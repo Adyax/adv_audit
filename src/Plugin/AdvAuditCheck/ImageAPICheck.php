@@ -6,7 +6,6 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -28,13 +27,6 @@ use Drupal\Core\Url;
  * )
  */
 class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
-
-  /**
-   * Provide access to service 'entity.query'.
-   *
-   * @var \Drupal\Core\Entity\Query\QueryInterface
-   */
-  protected $entityQueue;
 
   /**
    * The audit messages storage service.
@@ -59,16 +51,13 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\Query\QueryFactory $entity_queue
-   *   Interface for entity queue system.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   Interface for working with drupal module system.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryFactory $entity_queue, AuditMessagesStorageInterface $messages_storage, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AuditMessagesStorageInterface $messages_storage, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityQueue = $entity_queue;
     $this->messagesStorage = $messages_storage;
     $this->moduleHandler = $module_handler;
   }
@@ -81,7 +70,6 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.query'),
       $container->get('adv_audit.messages'),
       $container->get('module_handler')
     );
