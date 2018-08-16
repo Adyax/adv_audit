@@ -205,7 +205,7 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
     if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
       return [];
     }
-    
+
     $arguments = $reason->getArguments();
     if (empty($arguments)) {
       return [];
@@ -213,8 +213,14 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
 
     $markup_key = '#markup';
     $message = [
-      $markup_key => '<div class="actions-message">' . $this->t('There are number of issues.') . '</div>',
+      '#type' => 'html_tag',
+      '#tag' => 'div',
+      '#value' => $this->t('There are number of issues.'),
+      '#attributes' => [
+        'class' => ['actions-message'],
+      ],
     ];
+
     $list = [
       '#theme' => 'item_list',
     ];
