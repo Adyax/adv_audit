@@ -7,6 +7,7 @@
 
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_theme().
@@ -29,6 +30,7 @@ function adv_audit_theme() {
         'title' => NULL,
         'score_point' => NULL,
         'categories' => NULL,
+        'global_info' => NULL,
       ],
       'template' => 'adv-audit-report-object',
     ],
@@ -65,6 +67,22 @@ function adv_audit_preprocess_adv_audit_report(&$variables) {
   $render = \Drupal::service('adv_audit.renderer');
   // Wrap to renderer object.
   $variables['report'] = $render->setAuditResult($variables['report']);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * @var \Drupal\Core\Entity\EntityInterface
+ */
+function adv_audit_adv_audit_presave(EntityInterface $entity) {
+
+  $advResultResponse = $entity->get('audit_results')->getValue()[0]['value'];
+
+  $advGlobalData = \Drupal::service('adv_audit.global_info');
+  $resultsGlobal = $advGlobalData->index();
+
+  $advResultResponse->setOverviewInfo($resultsGlobal);
+
 }
 
 /**

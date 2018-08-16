@@ -11,6 +11,7 @@
             </div>
             <div class="description">Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.</div>
         </div>
+      {{ dump(global_info) }}
         <div class="category-list">
             <h4>Alert categories</h4>
             {% for category in categories %}

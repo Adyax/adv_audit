@@ -2,10 +2,6 @@
 
 namespace Drupal\adv_audit\Controller;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,7 +11,7 @@ use Drupal\Core\Entity\EntityTypeManager;
 /**
  * Get globall info about project.
  */
-class AdvAuditEntityGlobalInfo extends AdvAuditCheckBase implements ContainerInjectionInterface {
+class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
   /**
    * Entity Type Manager container.
    *
@@ -64,7 +60,7 @@ class AdvAuditEntityGlobalInfo extends AdvAuditCheckBase implements ContainerInj
   /**
    * {@inheritdoc}
    */
-  public function perform() {
+  public function index() {
 
     $renderData = $this->getUsersInfo();
 
@@ -74,28 +70,7 @@ class AdvAuditEntityGlobalInfo extends AdvAuditCheckBase implements ContainerInj
 
     $renderData['db_size'] = $this->getDatabaseSize();
 
-    return $this->auditReportRender(
-      new AuditReason(
-        $this->id(),
-        AuditResultResponseInterface::RESULT_PASS,
-        'NULL', $renderData
-      ),
-      'success'
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    $build = [];
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_SUCCESS) {
-      $build['global_info'] = [
-        '#theme' => 'adv_audit_global_info',
-        '#global_info' => $reason->getArguments(),
-      ];
-    }
-    return $build;
+    return $renderData;
   }
 
   /**
