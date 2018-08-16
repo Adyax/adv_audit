@@ -3,8 +3,9 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\adv_audit\AuditExecutable;
-use Drupal\adv_audit\Exception\AuditException;
+use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheck\MockPluginCheck;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -73,12 +74,16 @@ class AdvAuditCheckManager extends DefaultPluginManager {
     try {
       return parent::createInstance($plugin_id, $configuration);
     }
-    catch (ServiceNotFoundException $e) {
+    catch (PluginNotFoundException | ServiceNotFoundException $e) {
       // If current action context is run test scenarios we should
       // throw the error.
       if (isset($configuration[AuditExecutable::AUDIT_EXECUTE_RUN])) {
-        // Throw our Exception for correct reaction on error.
-        throw new AuditException($e->getMessage(), $plugin_id);
+        $requirements = [];
+        if ($e instanceof ServiceNotFoundException) {
+          $requirements = ['service' => $e->getSourceId()];
+        }
+        // Throw our RequirementsException for correct reaction on error.
+        throw new RequirementsException($e->getMessage(), $requirements);
       }
       // Save original class for plugin instance.
       $this->definitions[$plugin_id]['original_class'] = $this->definitions[$plugin_id]['class'];
