@@ -90,7 +90,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
     $status = AuditResultResponseInterface::RESULT_PASS;
-    $params = ['@version' => $current_version];
+    $params = ['@version' => $current_version, '@recommended_version' => $recommended_version];
 
     if ($current_version != $recommended_version) {
       $status = AuditResultResponseInterface::RESULT_FAIL;
