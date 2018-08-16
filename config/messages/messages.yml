@@ -114,8 +114,8 @@ plugins:
     success: 'register_globals is disabled.'
     help: 'Checks if the register_globals is disabled.'
   page_speed_insights:
-    description: 'PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved.'
-    actions: 'Check results and apply corresponding fixes. Here you can run and see extended results %gi_link'
+    description: 'PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved. Basic auth not supported. Public URLs acceptable only.'
+    actions: 'Check results and apply corresponding fixes.'
     impacts: 'The listed recommendations must be fulfilled. It will increase the overall site performance.'
     fail: 'Your optimization is low'
     success: 'Your optimization is good'

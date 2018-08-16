@@ -114,14 +114,26 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
   }
 
   /**
+   * Build key string for access to stored value from config.
+   *
+   * @return string
+   *   The generated key.
+   */
+  protected function buildStateConfigScore() {
+    return 'adv_audit.plugin.' . $this->id() . '.config.gi_target_score';
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function perform() {
     $gi_link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/pagespeed/insights'));
+    $status = AuditResultResponseInterface::RESULT_PASS;
 
-    // We can't go further without API key.
-    if (empty($key = $this->state->get($this->buildStateConfigKey()))) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('API key not found.'), ['%gi_link' => $gi_link->toString()]);
+    // Check plugin settings.
+    if (empty($key = $this->state->get($this->buildStateConfigKey()))
+      || empty($target_score = $this->state->get($this->buildStateConfigScore()))) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('Please check plugin settings and provide API key and target score.'));
     }
 
     $url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
@@ -129,7 +141,6 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     // Build request URL.
     $options = ['absolute' => TRUE, 'query' => ['url' => $url, 'key' => $key]];
     $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)->toString();
-    $status = NULL;
 
     foreach (['desktop', 'mobile'] as $strategy) {
       // Get insights result.
@@ -141,14 +152,13 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
       }
       catch (RequestException $e) {
         watchdog_exception('adv_auditor', $e);
-        // Can't use regular response interface in this case.
-        return FALSE;
+        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('Request failed. Please check your logs.'));
       }
 
       $score[] = ucfirst($strategy) . ': ' . $response->ruleGroups->SPEED->score;
 
       // Mark the whole run as failed if any of tests didn't pass.
-      if ($response->ruleGroups->SPEED->score < self::TARGET_SCORE) {
+      if ($response->ruleGroups->SPEED->score < $target_score) {
         $status = AuditResultResponseInterface::RESULT_FAIL;
       }
 
@@ -163,11 +173,11 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
       }
     }
 
-    $status = !isset($status) ? AuditResultResponseInterface::RESULT_PASS : $status;
+    $score[] = $this->t('Here you can run and see extended results %gi_link', ['%gi_link' => $gi_link->toString()]);
+
     $arguments = [
       '%items' => $optimization_suggestions,
       '%score' => $score,
-      '%gi_link' => $gi_link->toString(),
     ];
     return new AuditReason($this->id(), $status, NULL, $arguments);
 
@@ -185,6 +195,17 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
       '#description' => $this->t('You can create API key via this @link', ['@link' => $link->toString()]),
     ];
 
+    $form['gi_target_score'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Enter desired target score.'),
+      '#default_value' => $this->state->get($this->buildStateConfigScore()),
+      '#description' => $this->t('Here you can change target score for your tests. [1-100]'),
+      '#attributes' => [
+        'min' => '1',
+        'max' => '100',
+      ],
+    ];
+
     return $form;
   }
 
@@ -196,6 +217,10 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     $values = ['additional_settings', 'plugin_config', 'gi_key'];
     $value = $form_state->getValue($values, 0);
     $this->state->set($this->buildStateConfigKey(), $value);
+
+    $scores_conf = ['additional_settings', 'plugin_config', 'gi_target_score'];
+    $score_conf = $form_state->getValue($scores_conf, self::TARGET_SCORE);
+    $this->state->set($this->buildStateConfigScore(), $score_conf);
   }
 
   /**
@@ -203,18 +228,18 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    */
   public function auditReportRender(AuditReason $reason, $type) {
     $build = [];
-    $args = $reason->getArguments();
+
+    // Override output only if we have correct GI response.
     if (in_array($type, [AuditMessagesStorageInterface::MSG_TYPE_FAIL, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS])
-      && !empty($args['%score'])) {
+      && !empty($args = $reason->getArguments()) && !empty($args['%score'])) {
 
       $build['google_insights_score'] = [
         '#theme' => 'item_list',
         '#title' => $this->t('PageSpeed Insights Score:'),
-        '#list_type' => 'ol',
+        '#list_type' => 'ul',
         '#items' => $args['%score'],
       ];
 
-      $args = $reason->getArguments();
       $build['google_insights_result'] = [
         '#type' => 'table',
         '#header' => [
@@ -222,7 +247,9 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
           $this->t('Description'),
         ],
         '#rows' => $args['%items'],
+        '#empty' => $this->t('No actions needed.'),
       ];
+
       return $build;
     }
 
