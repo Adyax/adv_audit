@@ -206,15 +206,16 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $build['performance_views_fails'] = [
-        '#theme' => 'table',
-        '#header' => [$this->t('View Id'), $this->t('Display'), $this->t('Reason')],
-        '#rows' => $reason->getArguments(),
-      ];
-      return $build;
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+      return [];
     }
-    return [];
+
+    $build['performance_views_fails'] = [
+      '#theme' => 'table',
+      '#header' => [$this->t('View Id'), $this->t('Display'), $this->t('Reason')],
+      '#rows' => $reason->getArguments(),
+    ];
+    return $build;
   }
 
 }
