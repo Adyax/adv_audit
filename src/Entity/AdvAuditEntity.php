@@ -79,10 +79,12 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-    if ($this instanceof RevisionableInterface) {
-      if ($rel === 'revision_revert' || $rel === 'revision_revert') {
-        $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
-      }
+
+    if ($rel === 'revision_revert' && $this instanceof RevisionableInterface) {
+      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+    }
+    elseif ($rel === 'revision_delete' && $this instanceof RevisionableInterface) {
+      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
     }
 
     return $uri_route_parameters;
