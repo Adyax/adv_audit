@@ -38,7 +38,7 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
    *
    * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
    */
-  protected $serverStorage;
+  protected $entityTypeManager;
 
   /**
    * Not fully indexed indexes.
@@ -104,7 +104,7 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
     $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
-    $query = \Drupal::entityQuery('search_api_server');
+    $query = $this->serverStorage->getQuery();
     $server_ids = $query->execute();
 
     if (!empty($server_ids)) {
