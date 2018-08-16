@@ -111,7 +111,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function serialize() {
-    return serialize($this->results);
+    return serialize([
+      'results' => $this->results,
+      'overviewInfo' => $this->overviewInfo,
+    ]);
   }
 
   /**
@@ -129,7 +132,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function unserialize($serialized) {
-    $this->results = unserialize($serialized);
+    $data = unserialize($serialized);
+    foreach ($data as $key => $value) {
+      $this->{$key} = $value;
+    }
   }
 
   /**
