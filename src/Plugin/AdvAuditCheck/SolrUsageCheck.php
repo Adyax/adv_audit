@@ -55,14 +55,14 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
   protected $unavailableServers = [];
 
   /**
-   * The search servers with with no indexes.
+   * The search servers with no indexes.
    *
    * @var array
    */
   protected $noIndexesServers = [];
 
   /**
-   * The search servers with with no active indexes.
+   * The search servers with no active indexes.
    *
    * @var array
    */
@@ -202,35 +202,35 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments)) {
-        return [];
-      }
-
-      $markup_key = '#markup';
-      $message = [
-        $markup_key => '<div class="actions-message">' . $this->t('There are number of issues.') . '</div>',
-      ];
-      $list = [
-        '#theme' => 'item_list',
-      ];
-      $items = [];
-      foreach ($arguments as $issue => $entities) {
-        $item[$markup_key] = $issue;
-        $item['children'] = ['#theme' => 'item_list'];
-        foreach ($entities as $entity) {
-          $item['children']['#items'][] = [$markup_key => $entity];
-        }
-
-        $items[] = $item;
-      }
-      $list['#items'] = $items;
-
-      return [$message, $list];
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+      return [];
+    }
+    
+    $arguments = $reason->getArguments();
+    if (empty($arguments)) {
+      return [];
     }
 
-    return [];
+    $markup_key = '#markup';
+    $message = [
+      $markup_key => '<div class="actions-message">' . $this->t('There are number of issues.') . '</div>',
+    ];
+    $list = [
+      '#theme' => 'item_list',
+    ];
+    $items = [];
+    foreach ($arguments as $issue => $entities) {
+      $item[$markup_key] = $issue;
+      $item['children'] = ['#theme' => 'item_list'];
+      foreach ($entities as $entity) {
+        $item['children']['#items'][] = [$markup_key => $entity];
+      }
+
+      $items[] = $item;
+    }
+    $list['#items'] = $items;
+
+    return [$message, $list];
   }
 
 }
