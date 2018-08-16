@@ -43,7 +43,18 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
   protected $moduleHandler;
 
   /**
-   * {@inheritdoc}
+   * Constructs a new ImageAPICheck object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
+   *   Interface for the audit messages.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   Interface for working with drupal module system.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, AuditMessagesStorageInterface $messages_storage, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
