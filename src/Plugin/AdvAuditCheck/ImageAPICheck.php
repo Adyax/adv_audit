@@ -102,4 +102,45 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['%link' => $link->toString()]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    switch ($type) {
+      case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
+        $build = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => ['custom-fail-color'],
+          ],
+          'message' => [
+            // @codingStandardsIgnoreLine
+            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $reason->getArguments())
+              ->__toString(),
+          ],
+        ];
+        break;
+
+      case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
+        $build = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => ['custom-pass-color'],
+          ],
+          'message' => [
+            // @codingStandardsIgnoreLine
+            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_SUCCESS), $reason->getArguments())
+              ->__toString(),
+          ],
+        ];
+        break;
+
+      default:
+        $build = [];
+        break;
+    }
+
+    return $build;
+  }
+
 }
