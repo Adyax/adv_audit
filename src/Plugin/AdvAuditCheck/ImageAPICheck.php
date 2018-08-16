@@ -101,4 +101,5 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     }
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['%link' => $link->toString()]);
   }
+
 }
