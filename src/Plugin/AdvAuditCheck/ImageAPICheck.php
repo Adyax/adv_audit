@@ -71,18 +71,24 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
    *   Return AuditReason object instance.
    */
   public function perform() {
+
     // Created placeholder link for messages.
     $url = Url::fromUri('https://www.drupal.org/project/imageapi_optimize', ['attributes' => ['target' => '_blank']]);
     $link = Link::fromTextAndUrl('ImageAPI Optimize', $url);
+
+    $arguments = [
+      '%link' => $link->toString(),
+    ];
+
     if (!$this->moduleHandler->moduleExists('imageapi_optimize')) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi optimize check failed.')], ['%link' => $link->toString()]);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $arguments);
     }
 
     // Check if pipelines were created.
     $pipelines = imageapi_optimize_pipeline_options(FALSE, TRUE);
     $pipeline_keys = array_keys($pipelines);
     if (count($pipeline_keys) === 1 && empty($pipeline_keys[0])) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi is installed, but any pipeline has not been created.')], ['%link' => $link->toString()]);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, but any pipeline has not been created.', $arguments));
     }
 
     // Check if every image_style uses some pipeline.
@@ -95,51 +101,43 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
       }
     }
     if (count($style_names)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, [$this->t('ImageApi is installed some image styles is not configured: !list.')], [
-        '!list' => implode(', ', $style_names),
-        '%link' => $link->toString(),
-      ]);
+      $arguments['list'] = $style_names;
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, some image styles are not configured:', $arguments), $arguments);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['%link' => $link->toString()]);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, $arguments);
   }
 
   /**
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    switch ($type) {
-      case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
-        $build = [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-fail-color'],
-          ],
-          'message' => [
-            // @codingStandardsIgnoreLine
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $reason->getArguments())
-              ->__toString(),
-          ],
-        ];
-        break;
+    $build = [];
+    if ($type === AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
 
-      case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
-        $build = [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-pass-color'],
-          ],
-          'message' => [
-            // @codingStandardsIgnoreLine
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_SUCCESS), $reason->getArguments())
-              ->__toString(),
-          ],
-        ];
-        break;
+      $arguments = $reason->getArguments();
+      $build = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['custom-fail-color'],
+        ],
+      ];
 
-      default:
-        $build = [];
-        break;
+      // Render image_style list.
+      if (isset($arguments['list'])) {
+        $build['list'] = [
+          '#theme' => 'item_list',
+          '#items' => $arguments['list'],
+          '#weight' => 1,
+        ];
+        unset($arguments['list']);
+      }
+
+      $build['message'] = [
+        '#weight' => 0,
+        '#markup' => $reason->getReason()[0],
+      ];
+
     }
 
     return $build;
