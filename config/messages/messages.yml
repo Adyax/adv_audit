@@ -84,7 +84,7 @@ plugins:
     fail: 'Core aggregation disabled.'
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
-  preformance_views:
+  performance_views:
     description: "Query results and  should be cached for at least 1 minute or use tag caching."
     actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
     impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
@@ -113,3 +113,11 @@ plugins:
     fail: 'register_globals is enabled.'
     success: 'register_globals is disabled.'
     help: 'Checks if the register_globals is disabled.'
+  trusted_host_check:
+    description: 'Check Trusted Host Settings.'
+    actions: 'Please configure trusted_host_patterns setting in settings.php.'
+    impacts: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.'
+    fail: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.'
+    warning: 'The trusted_host_patterns setting is not configured in settings.php.'
+    success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
+    help: 'Check Trusted Host Settings.'
