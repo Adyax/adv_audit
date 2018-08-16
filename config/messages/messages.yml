@@ -121,3 +121,10 @@ plugins:
     warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  imageapi_optimize_check:
+    description: 'Check ImageAPI Optimize.'
+    actions: 'Install and configure %link module.'
+    impacts: 'With lots of not optimized images pages will load more slowly.'
+    fail: "The module %link isn't installed."
+    success: 'Module %link is installed.'
+    help: 'Check if module %link is enabled.'
