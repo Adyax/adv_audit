@@ -101,7 +101,7 @@ class AuditRunTestBatch {
       }
     }
 
-    $context = self::displayMessages($context);
+    $context = static::displayMessages($context);
     $context['finished'] = 1 - count($context['sandbox']['test_ids']) / $context['sandbox']['max'];
   }
 

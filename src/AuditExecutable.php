@@ -184,17 +184,4 @@ class AuditExecutable {
     return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
-  /**
-   * Returns the service container.
-   *
-   * This method is marked private to prevent sub-classes from retrieving
-   * services from the container through it.
-   *
-   * @return \Symfony\Component\DependencyInjection\ContainerInterface
-   *   The service container.
-   */
-  private function container() {
-    return \Drupal::getContainer();
-  }
-
 }
