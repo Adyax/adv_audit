@@ -1,33 +1,21 @@
 <?php
 
-namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
+namespace Drupal\adv_audit\Controller;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Get global info about projects.
- *
- * @AdvAuditCheck(
- *  id = "intro_global_info_check",
- *  label = @Translation("Introduction, general results and global info"),
- *  category = "other",
- *  severity = "normal",
- *  requirements = {},
- *  enabled = true,
- * )
+ * Get globall info about project.
  */
-class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
-
+class AdvAuditEntityGlobalInfo extends AdvAuditCheckBase implements ContainerInjectionInterface {
   /**
    * Entity Type Manager container.
    *
@@ -54,8 +42,7 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root) {
     $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
     $this->kernel = $kernel;
@@ -65,11 +52,8 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container) {
     return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('database'),
       $container->get('kernel'),
@@ -81,7 +65,6 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function perform() {
-    $errors = [];
 
     $renderData = $this->getUsersInfo();
 
@@ -91,10 +74,14 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
 
     $renderData['db_size'] = $this->getDatabaseSize();
 
-    if (!empty($errors)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
-    }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, 'NULL', $renderData);
+    return $this->auditReportRender(
+      new AuditReason(
+        $this->id(),
+        AuditResultResponseInterface::RESULT_PASS,
+        'NULL', $renderData
+      ),
+      'success'
+    );
   }
 
   /**
@@ -213,7 +200,7 @@ class IntroGlobalInfoCheck extends AdvAuditCheckBase implements ContainerFactory
        FROM {user__roles}
        GROUP BY name
        ORDER BY name ASC'
-      )->fetchAll();
+    )->fetchAll();
     foreach ($result as $row) {
       $renderData[$row->name] = $row->count_users;
     }

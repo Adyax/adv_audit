@@ -92,13 +92,6 @@ plugins:
     warning: "Some views has unknown cache type. Please check it manually."
     success: "All cache configurations for views setted up correctly."
     help: 'Check views cache configuration.'
-  intro_global_info_check:
-    description: ''
-    actions: ''
-    impacts: ''
-    fail: ''
-    success: ''
-    help: ''
   php_max_execution_time:
      description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
      actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'

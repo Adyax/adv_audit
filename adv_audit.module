@@ -36,10 +36,6 @@ function adv_audit_theme() {
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
     ],
-    'adv_audit_global_info' => [
-      'variables' => ['global_info' => NULL],
-      'template' => 'adv-audit-global-info',
-    ],
   ];
 }
 
