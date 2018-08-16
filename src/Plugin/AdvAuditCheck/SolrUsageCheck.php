@@ -213,13 +213,12 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
 
     $markup_key = '#markup';
     $message = [
-      '#type' => 'html_tag',
-      '#tag' => 'div',
-      '#value' => $this->t('There are number of issues.'),
+      '#type' => 'container',
       '#attributes' => [
         'class' => ['actions-message'],
       ],
     ];
+    $message['msg'][$markup_key] = $this->t('There are number of issues.')->__toString();
 
     $list = [
       '#theme' => 'item_list',
