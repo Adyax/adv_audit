@@ -183,7 +183,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    */
   protected function getDefaultPerformSettings() {
     return [
-      'max_table_size' => 2,
+      'max_table_size' => 512,
       'excluded_tables' => '',
     ];
   }

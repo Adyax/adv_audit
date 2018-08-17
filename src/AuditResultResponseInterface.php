@@ -12,31 +12,17 @@ interface AuditResultResponseInterface {
   /**
    * Test is passed correctly.
    */
-  const RESULT_FAIL = 0;
+  const RESULT_FAIL = 'FAILED';
 
   /**
    * Test is failed..
    */
-  const RESULT_PASS = 1;
-
-  /**
-   * Additional states of result.
-   *
-   * @deprecated Please use one of FAIL or PASS status.
-   */
-  const RESULT_WARN = 2;
+  const RESULT_PASS = 'PASSED';
 
   /**
    * The test was skipped.
    */
-  const RESULT_SKIP = 2;
-
-  /**
-   * Additional states of result.
-   *
-   * @deprecated will be removed.
-   */
-  const RESULT_INFO = 3;
+  const RESULT_SKIP = 'SKIPPED';
 
   /**
    * Add result of the running test.
