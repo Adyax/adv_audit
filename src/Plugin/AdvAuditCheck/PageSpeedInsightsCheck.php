@@ -129,10 +129,11 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
   public function perform() {
     $gi_link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/pagespeed/insights'));
     $status = AuditResultResponseInterface::RESULT_PASS;
+    $key = $this->state->get($this->buildStateConfigKey());
+    $target_score = $this->state->get($this->buildStateConfigScore());
 
     // Check plugin settings.
-    if (empty($key = $this->state->get($this->buildStateConfigKey()))
-      || empty($target_score = $this->state->get($this->buildStateConfigScore()))) {
+    if (empty($key) || empty($target_score)) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('Please check plugin settings and provide API key and target score.'));
     }
 
