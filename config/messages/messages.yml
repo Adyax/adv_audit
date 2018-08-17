@@ -121,3 +121,10 @@ plugins:
     warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  database_usage:
+    description: 'Check Database usage.'
+    actions: 'Optimize DB, install optimize_db or run optimize command directly from command line. Investigate root cause of this problem.'
+    impacts: 'There is known issue in Drupal with cache_form table, so any abnormal sizes of the tables in database could be considered as a problem - the size of the tables will increase.'
+    fail: 'There are abnormal size of tables in database: '
+    success: 'There are no abnormal size of tables in database.'
+    help: 'Check if there are no abnormal size of tables in database.'
