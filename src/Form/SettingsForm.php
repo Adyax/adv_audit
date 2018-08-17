@@ -182,8 +182,8 @@ class SettingsForm extends ConfigFormBase {
           '#title' => $plugin['label'],
           '#default_value' => $plugin_instance->getStatus(),
           '#attributes' => [
-            'disabled' => !$category_access
-          ]
+            'disabled' => !$category_access,
+          ],
         ];
         $form['categories'][$key][$plugin['id']][$plugin['id'] . '_edit'] = [
           '#type' => 'link',
@@ -192,7 +192,7 @@ class SettingsForm extends ConfigFormBase {
           '#attributes' => [
             'class' => ['edit', 'edit-checkpoint'],
           ],
-          '#access' => $category_access
+          '#access' => $category_access,
         ];
       }
     }
@@ -228,7 +228,8 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Need to implement this part as separate service for have better management of plugin category.
+    // Need to implement this part as separate service
+    // for have better management of plugin category.
   }
 
 }

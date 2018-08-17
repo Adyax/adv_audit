@@ -2,7 +2,6 @@
 
 namespace Drupal\adv_audit;
 
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
