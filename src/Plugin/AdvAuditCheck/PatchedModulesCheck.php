@@ -113,7 +113,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
           'class' => ['fail-message'],
         ],
       ];
-      $message['msg']['#markup'] = $this->t('Update listed modules as soon as possible.')->__toString();
+      $message['msg']['#markup'] = $this->t('Update listed modules as soon as possible.');
 
       $build = ['#theme' => 'hacked_report'];
       $build[self::DATA_KEY] = $arguments[$key];
