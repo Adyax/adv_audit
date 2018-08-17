@@ -93,19 +93,19 @@ plugins:
     success: "All cache configurations for views setted up correctly."
     help: 'Check views cache configuration.'
   php_max_execution_time:
-     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
-     actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
-     impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
-     fail: 'max_execution_time is greater than 300'
-     success: 'max_execution_time is less or equal than 300'
-     help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
+    actions: 'Set the max_execution_time setting value to 00 or less in php.ini.'
+    impacts: 'The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.'
+    fail: 'max_execution_time is greater than 300'
+    success: 'max_execution_time is less or equal than 300'
+    help: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
   performance_modules_status:
-     description: ''
-     actions: 'Disable listed modules.'
-     impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
-     fail: ''
-     success: ''
-     help: 'Check statuses of development and UI modules.'
+    description: ''
+    actions: 'Disable listed modules.'
+    impacts: 'Development and UI modules negatively affect the performance of the site (especially dblog and devel).'
+    fail: ''
+    success: ''
+    help: 'Check statuses of development and UI modules.'
   register_globals_check:
     description: 'Checks if the register_globals is disabled.'
     actions: 'Drupal requires register_globals to be disabled.'
@@ -121,6 +121,20 @@ plugins:
     warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  imageapi_optimize_check:
+    description: 'Check ImageAPI Optimize.'
+    actions: 'Install and configure %link module.'
+    impacts: 'With lots of not optimized images pages will load more slowly.'
+    fail: "The module %link isn't installed and configured correctly"
+    success: 'Module %link is installed.'
+    help: 'Check if module %link is enabled and configured.'
+  page_speed_insights:
+    description: 'PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved. Basic auth not supported. Public URLs acceptable only.'
+    actions: 'Check results and apply corresponding fixes.'
+    impacts: 'The listed recommendations must be fulfilled. It will increase the overall site performance.'
+    fail: 'Your optimization is low'
+    success: 'Your optimization is good'
+    help: ''
   solr_usage:
      description: 'Checks Search API solr indexes and servers status.'
      actions: 'There are number of issues.'
