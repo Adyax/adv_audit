@@ -4,7 +4,9 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -23,7 +25,7 @@ use Drupal\Core\State\StateInterface;
  *  enabled = true,
  * )
  */
-class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
    * Length of the day in seconds.
@@ -115,7 +117,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     }
 
     if (count($this->withoutCache)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->withoutCache);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $this->withoutCache);
     }
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
   }
@@ -175,21 +177,45 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     $cache = $display->getOption('cache');
 
     if (empty($cache) || $cache['type'] == 'none') {
-      $this->withoutCache[] = $this->t('Display @display_name of view @view_id has wrong cache settings.', [
-        '@display_name' => $display_name,
-        '@view_id' => $view->id(),
-      ]);
+      $this->withoutCache[] = [
+        $view->id(),
+        $display_name,
+        $this->t('Display @display_name of view @view_id has wrong cache settings.', [
+          '@display_name' => $display_name,
+          '@view_id' => $view->id(),
+        ]
+      )];
     }
     elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
       $minimum = $this->getMinimumCacheTime($cache);
       if ($minimum < $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME)) {
-        $this->withoutCache[] = $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
-          '@display_name' => $display_name,
-          '@view_id' => $view->id(),
-          '@allowed' => $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME),
-        ]);
+        $this->withoutCache[] = [
+          $view->id(),
+          $display_name,
+          $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
+            '@display_name' => $display_name,
+            '@view_id' => $view->id(),
+            '@allowed' => $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME),
+          ]
+        )];
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+      return [];
+    }
+
+    $build['performance_views_fails'] = [
+      '#theme' => 'table',
+      '#header' => [$this->t('View Id'), $this->t('Display'), $this->t('Reason')],
+      '#rows' => $reason->getArguments(),
+    ];
+    return $build;
   }
 
 }
