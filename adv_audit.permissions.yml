@@ -28,3 +28,9 @@ revert all audit result entity revisions:
 delete all audit result entity revisions:
   title: 'Delete all revisions'
   description: 'Role requires permission to <em>view Audit Result entity revisions</em> and <em>delete rights</em> for audit result entity entities in question or <em>administer audit result entity entities</em>.'
+
+access auditor list:
+  title: 'Access auditor list'
+
+permission_callbacks:
+  - \Drupal\adv_audit\AdvAuditPermissions::auditPermissions
