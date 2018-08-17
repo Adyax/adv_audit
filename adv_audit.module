@@ -75,14 +75,16 @@ function adv_audit_preprocess_adv_audit_report(&$variables) {
  * @var \Drupal\Core\Entity\EntityInterface
  */
 function adv_audit_adv_audit_presave(EntityInterface $entity) {
-
+  // Get response object.
   $advResultResponse = $entity->get('audit_results')->getValue()[0]['value'];
 
+  // Get global info.
   $advGlobalData = \Drupal::service('adv_audit.global_info');
   $resultsGlobal = $advGlobalData->index();
 
+  // Set global info.
   $advResultResponse->setOverviewInfo($resultsGlobal);
-
+  $entity->set('audit_results', serialize($advResultResponse));
 }
 
 /**

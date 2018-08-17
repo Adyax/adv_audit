@@ -1,61 +1,126 @@
 <div class="audit-report-container">
-    <header>
-        <h3 class="title">{{ title }}</h3>
-    </header>
-    <div class="content">
-        <div class="score-container">
-            <div class="score-point">
-                <div class="flex-none">
-                    <div class="aq-circle aq-circle--large render-score-status" data-score-point="{{ score_point }}">{{ score_point }}</div>
-                </div>
-            </div>
-            <div class="description">Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.</div>
+  <header>
+    <h3 class="title">{{ title }}</h3>
+  </header>
+  <div class="content">
+    <div class="score-container">
+      <div class="score-point">
+        <div class="flex-none">
+          <div class="aq-circle aq-circle--large render-score-status"
+               data-score-point="{{ score_point }}">{{ score_point }}</div>
         </div>
-      {{ dump(global_info) }}
-        <div class="category-list">
-            <h4>Alert categories</h4>
-            {% for category in categories %}
-            <div class="adv-category-item row layout-row">
-                <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>
-                <div class="cat-title aq-dataset__data flex-50">{{ category.label }}</div>
-                <div class="cat-summary  aq-dataset__data flex-30">{{ category.passed }} of {{ category.total }} issues resolved</div>
-                <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed" data-category-id="{{ category.id }}" href="#">View</a></div>
-                <div class="detailed-view" category-id="{{ category.id }}" style="display: none">
-                    <div class="report-items">
-                        {% for report in category.reports %}
-                        <div {{ report.result_attributes }}>
-                            <div class="panel-heading">
-                                <strong>{{ report.name }}</strong>
-                            </div>
-                            <div class="panel-heading">
-                                <small>{{ report.description }}</small>
-                            </div>
-                            </br>
-                            <div class="panel-heading">
-                                <strong>{{ 'Results: '|t }}</strong>
-                                {{ report.result|raw }}
-                            </div>
-                            </br>
-                            <div class="panel-heading">
-                                <strong>{{ 'Importance: '|t }}</strong>
-                                <small>{{ report.severity }}</small>
-                            </div>
-                            </br>
-                            <div class="panel-heading">
-                                <strong>{{ 'Actions to be done: '|t }}</strong>
-                                <small>{{ report.actions }}</small>
-                            </div>
-                            </br>
-                            <div class="panel-heading">
-                                <strong>{{ 'Impacts: '|t }}</strong>
-                                <small>{{ report.impacts }}</small>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+      </div>
+      <div class="description">Insight score is a rating given to your site by Adyax Advanced Audit module. Insight
+        assigns different weights to each alert, the reported percentage and the number of resolved issues do not
+        directly relate to one another.
+      </div>
     </div>
+    <div class="adv-category-item row layout-row">
+      <div class="cat-view aq-dataset__data">
+        <a class="report-view-detailed" data-category-id="global-info" href="#">
+          <h3>Global Info</h3>
+        </a>
+      </div>
+      <div class="detailed-view" category-id="global-info" style="display: none">
+        <div class="global-info">
+          <h2>Users</h2>
+          <div class="total-users">
+            <span><span>Count All</span> - Total number of Drupal users.</span>There are {{ global_info.total_users }}
+            users.
+          </div>
+          <div class="blocked-users">
+            <span><span>Count Blocked</span> - Total number of blocked Drupal users</span> There
+            are {{ global_info.blocked_users }} blocked users.
+          </div>
+          <div class="roles-list">
+            <span><span>List Roles</span> - Show all available roles and user counts.</span>
+            {% for role, count in global_info.roles_list %}
+              {% if loop.last %}
+                {{ role }}: {{ count }}.
+              {% else %}
+                {{ role }}: {{ count }},
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="admin-info">
+            <div>
+              <span><span>Identify UID #1</span> - Show username and email of UID #1.</span> UID
+              #1: {{ global_info.uid1.name }},
+              email: {{ global_info.uid1.email }}
+            </div>
+            <div>
+              <span><span>UID #1 access</span> - Determine if UID #1 is blocked.</span> UID #1
+              is {{ global_info.uid1.status }}.
+            </div>
+          </div>
+          <h2>Codebase</h2>
+          <div class="codebase">
+            <div>
+              <span><span>Drupal managed file count</span> - Determine the count of Drupal managed files.</span> Managed
+              file
+              count: {{ global_info.filesystem_info.count_files }}
+            </div>
+            <div>
+              <span><span>Drupal managed file size</span> - Determine the size of Drupal managed files.</span> Managed
+              file
+              size: {{ global_info.filesystem_info.files_total_size }}
+            </div>
+          </div>
+          <h2>Database</h2>
+          <div class="total_users">
+            <span><span>Total size</span> - Determine the size of the database.</span> Total
+            size: {{ global_info.db_size }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="category-list">
+      <h4>Alert categories</h4>
+      {% for category in categories %}
+        <div class="adv-category-item row layout-row">
+          <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>
+          <div class="cat-title aq-dataset__data flex-50">{{ category.label }}</div>
+          <div class="cat-summary  aq-dataset__data flex-30">{{ category.passed }} of {{ category.total }} issues
+            resolved
+          </div>
+          <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed"
+                                                            data-category-id="{{ category.id }}" href="#">View</a></div>
+          <div class="detailed-view" category-id="{{ category.id }}" style="display: none">
+            <div class="report-items">
+              {% for report in category.reports %}
+                <div {{ report.result_attributes }}>
+                  <div class="panel-heading">
+                    <strong>{{ report.name }}</strong>
+                  </div>
+                  <div class="panel-heading">
+                    <small>{{ report.description }}</small>
+                  </div>
+                  </br>
+                  <div class="panel-heading">
+                    <strong>{{ 'Results: '|t }}</strong>
+                    {{ report.result|raw }}
+                  </div>
+                  </br>
+                  <div class="panel-heading">
+                    <strong>{{ 'Importance: '|t }}</strong>
+                    <small>{{ report.severity }}</small>
+                  </div>
+                  </br>
+                  <div class="panel-heading">
+                    <strong>{{ 'Actions to be done: '|t }}</strong>
+                    <small>{{ report.actions }}</small>
+                  </div>
+                  </br>
+                  <div class="panel-heading">
+                    <strong>{{ 'Impacts: '|t }}</strong>
+                    <small>{{ report.impacts }}</small>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>

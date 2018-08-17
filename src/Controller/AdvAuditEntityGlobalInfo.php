@@ -9,7 +9,7 @@ use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
 
 /**
- * Get globall info about project.
+ * Get global info about project.
  */
 class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
   /**
