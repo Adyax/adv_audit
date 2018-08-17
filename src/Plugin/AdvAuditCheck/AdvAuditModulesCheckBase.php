@@ -61,7 +61,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
         'class' => ['fail-message'],
       ],
     ];
-    $message['msg']['#markup'] = $this->t('There are outdated modules with security updates.')->__toString();
+    $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
 
     if (!empty($arguments['list'])) {
       $render_list = [
