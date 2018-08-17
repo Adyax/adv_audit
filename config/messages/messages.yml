@@ -135,3 +135,10 @@ plugins:
     fail: 'Your optimization is low'
     success: 'Your optimization is good'
     help: ''
+  solr_usage:
+     description: 'Checks Search API solr indexes and servers status.'
+     actions: 'There are number of issues.'
+     impacts: 'Disabled servers and indexes and not fully indexed content may cause problems with site search.'
+     fail: 'There are one or more unused Search API entities: %list'
+     success: 'All Search API entities are used.'
+     help: 'Checks if all of indexes are active and all contents are indexed.'
