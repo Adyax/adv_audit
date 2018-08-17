@@ -106,8 +106,13 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     $styles = ImageStyle::loadMultiple();
     $style_names = [];
     foreach ($styles as $style) {
+
+      // Get pipeline for image style.
+      // @see Drupal\imageapi_optimize\Entity\ImageStyleWithPipeline::getPipeline().
       $pipeline = $style->getPipeline();
-      if (!isset($pipeline_keys[$pipeline])) {
+
+      // Check if image_stype pipeline exist.
+      if ($pipeline && !isset($pipeline_keys[$pipeline])) {
         $style_names[] = $style->get('label');
       }
     }
