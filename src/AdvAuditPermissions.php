@@ -17,14 +17,14 @@ class AdvAuditPermissions implements ContainerInjectionInterface {
 
   protected $config;
 
-  protected $auditPluginManager;
-
   /**
-   * {@inheritdoc}
+   * Constructs a new AdvAuditPermissions object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Use DI to work with config.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager) {
+  public function __construct(ConfigFactoryInterface $config_factory) {
     $this->config = $config_factory;
-    $this->auditPluginManager = $advAuditCheckListManager;
   }
 
   /**
@@ -32,8 +32,7 @@ class AdvAuditPermissions implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_check')
+      $container->get('config.factory')
     );
   }
 
@@ -43,47 +42,16 @@ class AdvAuditPermissions implements ContainerInjectionInterface {
   public function auditPermissions() {
     $audit_config = $this->config->get('adv_audit.config');
     $categories = $audit_config->get('adv_audit_settings.categories');
-    $plugin_list = $this->auditPluginManager->getPluginsByCategory();
 
     $perms = [];
     // Generate permissions for all categories and plugins.
     foreach ($categories as $category => $definition) {
-      $perms += $this->buildPermissions('category', $category, $definition['label']);
-
-      $plugins = $plugin_list[$category];
-
-      foreach ($plugins as $plugin) {
-        $perms += $this->buildPermissions('plugin', $plugin['id'], $plugin['label']);
-      }
+      $perms["adv_audit category $category edit"] = [
+        'title' => $this->t('Edit %name category settings', ['%name' => $definition['label']]),
+      ];
     }
 
     return $perms;
-  }
-
-  /**
-   * Returns a list of permissions.
-   *
-   * @param string $type
-   * @param string $id
-   * @param string $name
-   *
-   * @return array
-   *   An associative array of permission names and descriptions.
-   */
-  protected function buildPermissions($type, $id, $name) {
-    $params = [
-      '%name' => $name,
-      '@type' => $type,
-    ];
-
-    return [
-      "adv_audit $type $id view" => [
-        'title' => $this->t('View %name @type audit results', $params),
-      ],
-      "adv_audit $type $id edit" => [
-        'title' => $this->t('Edit %name @type settings', $params),
-      ],
-    ];
   }
 
 }

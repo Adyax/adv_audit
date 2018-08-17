@@ -43,7 +43,7 @@ adv_audit.plugin.settings:
     _form: '\Drupal\adv_audit\Form\AdvAuditPluginSettings'
     _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
   requirements:
-    _permission: 'edit adv_audit plugin'
+    _custom_access: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::checkAccess'
 
 adv_audit.admin_path:
   path: '/admin/sctructure/adv_audit'

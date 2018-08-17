@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\State;
 use Drupal\Core\Url;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 
 /**
@@ -24,6 +25,13 @@ class SettingsForm extends ConfigFormBase {
   protected $state;
 
   /**
+   * Drupal\Core\Session\AccountProxy definition.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
    * SettingsForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -34,13 +42,16 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with state.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Use DI to work with redirect destination.
+   * @param \Drupal\Core\Session\AccountProxy $current_user
+   *   Current user entity.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination, AccountProxy $current_user) {
     $this->configCategories = $config_factory->get('adv_audit.config');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
     $this->config = $config_factory;
     $this->redirectDestination = $redirect_destination;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -58,7 +69,8 @@ class SettingsForm extends ConfigFormBase {
       $container->get('config.factory'),
       $container->get('plugin.manager.adv_audit_check'),
       $container->get('state'),
-      $container->get('redirect.destination')
+      $container->get('redirect.destination'),
+      $container->get('current_user')
     );
   }
 
@@ -136,6 +148,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'container',
     ];
     foreach ($categories as $key => $category) {
+      $category_access = $this->currentUser->hasPermission("adv_audit category {$key} edit");
 
       $form['categories'][$key] = [
         '#type' => 'fieldset',
@@ -149,6 +162,7 @@ class SettingsForm extends ConfigFormBase {
         ],
         '#attributes' => [
           'class' => ['category-wrapper'],
+          'disabled' => !$category_access,
         ],
       ];
 
@@ -167,6 +181,9 @@ class SettingsForm extends ConfigFormBase {
           '#type' => 'checkbox',
           '#title' => $plugin['label'],
           '#default_value' => $plugin_instance->getStatus(),
+          '#attributes' => [
+            'disabled' => !$category_access
+          ]
         ];
         $form['categories'][$key][$plugin['id']][$plugin['id'] . '_edit'] = [
           '#type' => 'link',
@@ -175,6 +192,7 @@ class SettingsForm extends ConfigFormBase {
           '#attributes' => [
             'class' => ['edit', 'edit-checkpoint'],
           ],
+          '#access' => $category_access
         ];
       }
     }
