@@ -17,6 +17,7 @@
 
             $('a.report-view-detailed').click(function (e) {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 var self = $(this);
 
                 $('div.detailed-view[category-id="' + self.data('category-id') + '"]').toggle();

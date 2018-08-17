@@ -20,6 +20,13 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   protected $results;
 
   /**
+   * Store global information.
+   *
+   * @var mixed
+   */
+  protected $overviewInfo;
+
+  /**
    * AuditResultResponse constructor.
    */
   public function __construct() {
@@ -104,7 +111,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function serialize() {
-    return serialize($this->results);
+    return serialize([
+      'results' => $this->results,
+      'overviewInfo' => $this->overviewInfo,
+    ]);
   }
 
   /**
@@ -122,7 +132,30 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function unserialize($serialized) {
-    $this->results = unserialize($serialized);
+    $data = unserialize($serialized);
+    foreach ($data as $key => $value) {
+      $this->{$key} = $value;
+    }
+  }
+
+  /**
+   * Get overview information data.
+   *
+   * @return mixed
+   *   Return array.
+   */
+  public function getOverviewInfo() {
+    return $this->overviewInfo;
+  }
+
+  /**
+   * Set overview information data.
+   *
+   * @param mixed $overviewInfo
+   *   Information for save.
+   */
+  public function setOverviewInfo($overviewInfo) {
+    $this->overviewInfo = $overviewInfo;
   }
 
 }
