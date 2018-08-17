@@ -2,7 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Predis\Client;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -13,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Site\Settings;
 
 /**
+ * Backend Cache Check plugin class.
+ *
  * @AdvAuditCheck(
  *  id = "backend_cache_settings",
  *  label = @Translation("Memcache/Redis settings"),
@@ -48,6 +49,8 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditChe
    *   The plugin_id for the plugin instance.
    * @param string $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Site\Settings $settings
+   *   Read only settings that are initialized with the class.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, Settings $settings) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
