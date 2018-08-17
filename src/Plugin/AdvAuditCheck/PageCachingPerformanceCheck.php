@@ -5,7 +5,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -14,6 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 
 /**
+ * Constructs a new CronSettingsCheck object.
+ *
  * @AdvAuditCheck(
  *  id = "page_caching_performance",
  *  label = @Translation("Page caching performance"),
@@ -23,12 +24,12 @@ use Drupal\Core\Url;
  *  enabled = true,
  * )
  */
-class PageCachingPerformanceCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class PageCachingPerformanceCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Returns the default http client.
    *
-   * @return \GuzzleHttp\Client
+   * @var \GuzzleHttp\Client
    *   A guzzle http client instance.
    */
   protected $httpClient;
@@ -56,6 +57,10 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements AdvAuditC
    *   The plugin_id for the plugin instance.
    * @param string $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Defines the interface for the state system.
+   * @param \GuzzleHttp\Client $http_cient
+   *   Guzzle http client.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, Client $http_cient) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
