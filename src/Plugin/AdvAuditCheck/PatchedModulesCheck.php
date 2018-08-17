@@ -95,22 +95,31 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments)) {
-        return [];
-      }
-
-      $key = 'hacked_modules';
-
-      if (!empty($arguments[$key])) {
-        $build = ['#theme' => 'hacked_report'];
-        $build[self::DATA_KEY] = $arguments[$key];
-        return $build;
-      }
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+      return [];
     }
 
-    return [];
+    $arguments = $reason->getArguments();
+    if (empty($arguments)) {
+      return [];
+    }
+
+    $key = 'hacked_modules';
+
+    if (!empty($arguments[$key])) {
+      $message = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['fail-message'],
+        ],
+      ];
+      $message['msg']['#markup'] = $this->t('Update listed modules as soon as possible.')->__toString();
+
+      $build = ['#theme' => 'hacked_report'];
+      $build[self::DATA_KEY] = $arguments[$key];
+
+      return [$message, $build];
+    }
   }
 
 }

@@ -87,7 +87,7 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditChe
     $params = [
       '%link' => $link->toString(),
       '@count' => $this->count,
-      '@list' => $this->updates,
+      'list' => $this->updates,
     ];
 
     return new AuditReason($this->id(), $status, NULL, $params);
