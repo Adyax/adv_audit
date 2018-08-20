@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides implementation for the Run form.
+ *
+ * @todo This class in outdated. And should be refactoring with new rules of work.
  */
 class RunForm extends FormBase {
 
@@ -99,6 +101,8 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // In this case we are run all test implemented via plugins.
+    // @todo But we should run only enabled test for enabled category.
     $tests = $this->auditTestManager->getDefinitions();
     $batch = [
       'title' => $this->t('Running process audit'),

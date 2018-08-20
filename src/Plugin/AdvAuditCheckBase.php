@@ -34,7 +34,19 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   protected $configFactory;
 
-  protected $pluginDefinitionOverridden;
+  /**
+   * The plugin config storage service.
+   *
+   * @var \Drupal\adv_audit\AdvAuditPluginConfigStorageServiceInterface
+   */
+  protected $pluginSettingsStorage;
+
+  public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->pluginSettingsStorage = $this->container()
+      ->get('adv_adit.plugin.config')
+      ->setPluginId($plugin_id);
+  }
 
   /**
    * Retrieves a configuration object.
@@ -54,19 +66,6 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   protected function config($name) {
     return $this->configFactory()->get($name);
-  }
-
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    // Load overriden definition
-    $this->pluginDefinitionOverridden = $this->getStateService()->get('adv_audit.plugin.definition' . $this->id(), $this->pluginDefinition);
-  }
-
-  /**
-   * Save overridden plugin definition.
-   */
-  public function __destruct() {
-    $this->getStateService()->set('adv_audit.plugin.definition.' . $this->id(), $this->pluginDefinitionOverridden);
   }
 
   /**
@@ -136,7 +135,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * {@inheritdoc}
    */
   public function label() {
-    return $this->pluginDefinitionOverridden['label'];
+    return $this->pluginDefinition['label'];
   }
 
   /**
@@ -146,15 +145,14 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   The severity level of plugin.
    */
   public function getSeverityLevel() {
-    // Severity level can be overridden by plugin settings.
-    return $this->pluginDefinitionOverridden['severity'];
+    return $this->pluginSettingsStorage->get('severity', $this->pluginDefinition['severity']);
   }
 
   /**
-   *
+   * Set plugin severity level.
    */
   public function setSeverityLevel($level) {
-    $this->pluginDefinitionOverridden['severity'] = $level;
+    $this->pluginSettingsStorage->set('severity', $level);
   }
 
   /**
@@ -355,7 +353,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   Return status for plugin.
    */
   public function getStatus() {
-    return $this->pluginDefinitionOverridden['enabled'];
+    return $this->pluginSettingsStorage->get('enabled', $this->pluginDefinition['enabled']);
   }
 
   /**
@@ -365,20 +363,27 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   New status for plugin.
    */
   public function setPluginStatus($status = TRUE) {
-    $this->pluginDefinitionOverridden['enabled'] = $status;
+    $this->pluginSettingsStorage->set('enabled', $status);
   }
 
   /**
-   * Get State service.
+   * Get plugin weight value.
    *
-   * @return \Drupal\Core\State\StateInterface|object
-   *   Return state service object.
+   * @return mixed
+   *   Weight value.
    */
-  private function getStateService() {
-    if (!$this->stateService) {
-      $this->stateService = $this->container()->get('state');
-    }
-    return $this->stateService;
+  public function getWeight() {
+    return $this->pluginSettingsStorage->get('weight', 0);
+  }
+
+  /**
+   * Set weight value for plugin.
+   *
+   * @param int $weight
+   *   Return module weight.
+   */
+  public function setWeight($weight) {
+    $this->pluginSettingsStorage->set('weight', $weight);
   }
 
   /**

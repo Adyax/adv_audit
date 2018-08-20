@@ -8,6 +8,11 @@ adv_audit.list_tab:
   title: 'Overview'
   base_route: adv_audit.list
 
+adv_audit.preset_collection:
+  route_name: entity.adv_audit_preset_entity.collection
+  title: 'Preset'
+  base_route: adv_audit.list
+
 entity.adv_audit.canonical:
   route_name: entity.adv_audit.canonical
   base_route: entity.adv_audit.canonical

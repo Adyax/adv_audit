@@ -24,7 +24,7 @@ adv_audit.list:
     _permission: 'access auditor list'
 
 adv_audit.run:
-  path: 'admin/config/adv-audit-run'
+  path: 'admin/config/adv-audit/run'
   defaults:
     _form: '\Drupal\adv_audit\Form\RunForm'
     _title: 'Run audit'
@@ -38,3 +38,11 @@ adv_audit.plugin.settings:
     _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
   requirements:
     _permission: 'edit adv_audit plugin'
+
+adv_audit.category.settings_form:
+  path: 'admin/config/adv-audit/category/{category_id}/edit'
+  defaults:
+    _form: '\Drupal\adv_audit\Form\AdvAuditCategorySettingsForm'
+    _title: 'Category settings'
+  requirements:
+    _access: 'TRUE'

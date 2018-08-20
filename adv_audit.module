@@ -85,3 +85,16 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
       return $output;
   }
 }
+
+/**
+ *
+ * @param $definition
+ */
+function adv_audit_adv_audit_check_info_alter(&$definitions) {
+  foreach ($definitions as $plugin_id => &$definition) {
+    $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
+    if ($overridden_config) {
+      $definition = \Drupal\Component\Utility\NestedArray::mergeDeep($definition, $overridden_config);
+    }
+  }
+}

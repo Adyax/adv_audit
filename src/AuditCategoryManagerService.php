@@ -2,9 +2,10 @@
 
 namespace Drupal\adv_audit;
 
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RedirectDestinationTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
@@ -68,8 +69,8 @@ class AuditCategoryManagerService {
   public function getListOfCategories() {
     $list = [];
     foreach ($this->categoryDefinitions as $category_id => $category_definition) {
-      if (!$category_definition['status']) {
-        unset($list[$category_id]);
+      if ($category_definition['status'] == 0) {
+        continue;
       }
       $list[$category_id] = $category_definition['label'];
     }
@@ -78,6 +79,8 @@ class AuditCategoryManagerService {
 
   /**
    * Handler callback for page '/admin/config/adv-audit'
+   *
+   * @todo Implement this form via separate class.
    *
    * @return array
    *   Return render array of page.
@@ -100,7 +103,10 @@ class AuditCategoryManagerService {
     foreach ($this->categoryDefinitions as $category_id => $definition) {
       $build[$category_id] = [
         '#type' => 'fieldset',
-        '#title' => $definition['label'],
+        '#title' => $this->t('@label (%edit_link)', [
+          '@label' => $definition['label'],
+          '%edit_link' => Link::createFromRoute('Edit', 'adv_audit.category.settings_form', ['category_id' => $category_id])->toString(),
+        ]),
         '#attributes' => [
           'class' => ['category-wrapper'],
         ],
@@ -128,19 +134,23 @@ class AuditCategoryManagerService {
             '#attributes' => [
               'class' => ['edit', 'edit-checkpoint'],
             ],
-          ]
+          ],
+          '#weight' => $plugin_insatnce->getWeight(),
         ];
       }
+      uasort($build[$category_id], [SortArray::class, 'sortByWeightProperty']);
 
       if (empty($build[$category_id][$pid])) {
         $build[$category_id][$pid]['#markup'] = $this->t('There are no audit plugins available for this category.');
       }
     }
-
-
     return $build;
   }
 
 
+  public function updateCategoryDefinitionValue($category_id, $key, $value) {
+    $config = $this->configFactory->getEditable('adv_audit.config');
+    $config->set('adv_audit_settings.categories.' . $category_id . '.' . $key, $value)->save();
+  }
 
 }

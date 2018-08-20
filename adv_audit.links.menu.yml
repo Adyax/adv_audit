@@ -27,3 +27,12 @@ adv_audit.admin.structure.settings:
   description: 'Configure Audit Result entity entities'
   route_name: adv_audit.list
   parent: system.admin_structure
+
+# Adv audit preset entity menu items definition
+entity.adv_audit_preset_entity.collection:
+  title: 'Adv audit preset entity'
+  route_name: entity.adv_audit_preset_entity.collection
+  description: 'List Adv audit preset entity (bundles)'
+  parent: system.admin_structure
+  weight: 99
+

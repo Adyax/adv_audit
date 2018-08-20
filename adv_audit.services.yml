@@ -14,3 +14,7 @@ services:
   adv_audit.manager.category:
     class: Drupal\adv_audit\AuditCategoryManagerService
     arguments: ['@config.factory', '@plugin.manager.adv_audit_check']
+  adv_adit.plugin.config:
+    class: Drupal\adv_audit\AdvAuditPluginConfigStorageService
+    arguments: ['@state']
+    scope: prototype

@@ -30,4 +30,3 @@ adv_audit_settings:
       label: Other recommendations
       status: 1
       weight: 0
-untrusted_roles: ['anonymous']
