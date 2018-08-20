@@ -103,7 +103,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
 
     $form['mem'] = [
       '#title' => $this->t('Memory treshold for fail'),
-      '#description' => t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15. 
+      '#description' => t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15.
         If one of the listed URLs consumes more than given treshold check will be cosidered as failed.'),
       '#default_value' => $this->state->get($this->buildStateConfigKeys()['mem']),
       '#required' => TRUE,
