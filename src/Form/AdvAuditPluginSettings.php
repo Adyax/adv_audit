@@ -13,6 +13,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Provides implementation for the Run form.
@@ -219,6 +221,14 @@ class AdvAuditPluginSettings extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $this->pluginInstance->configFormValidate($form, $form_state);
+  }
+
+  /**
+   * Checks if the user has access for edit this plugin.
+   */
+  public function checkAccess(AccountInterface $account) {
+    $id = $this->pluginInstance->getCategoryName();
+    return AccessResult::allowedIfHasPermission($account, "adv_audit category $id edit");
   }
 
 }
