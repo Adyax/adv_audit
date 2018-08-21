@@ -18,3 +18,7 @@ services:
     class: Drupal\adv_audit\AdvAuditPluginConfigStorageService
     arguments: ['@state']
     scope: prototype
+  adv_audit.route_subscriber:
+    class: Drupal\adv_audit\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

@@ -3,6 +3,8 @@
 namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\AuditCategoryManagerService;
+use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Entity\AdvAuditEntity;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityForm;
@@ -125,6 +127,53 @@ class AdvAuditPresetEntityForm extends EntityForm {
         ]));
     }
     $form_state->setRedirectUrl($adv_audit_preset_entity->toUrl('collection'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function actionsElement(array $form, FormStateInterface $form_state) {
+    $elements = parent::actionsElement($form, $form_state);
+    if (!$this->entity->isNew()) {
+      $elements['execute'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Execute preset'),
+        '#submit' => ['::submitForm', '::save', '::presetRunBatch']
+      ];
+    }
+    return $elements;
+  }
+
+  /**
+   * Submit handler for run batch operations.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state object.
+   */
+  public function presetRunBatch(array $form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    // Unset not plugin value.
+    unset($values['label']);
+    unset($values['id']);
+    // Configure batch
+    $batch = [
+      'title' => $this->t('Running process audit'),
+      'init_message' => $this->t('Prepare to process.'),
+      'progress_message' => $this->t('Progress @current out of @total.'),
+      'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
+      'operations' => [
+        [
+          [AuditRunTestBatch::class, 'run'],
+          [array_keys(array_filter($values)), []],
+        ],
+      ],
+      'finished' => [
+        AuditRunTestBatch::class, 'finished',
+      ],
+    ];
+    batch_set($batch);
   }
 
 }

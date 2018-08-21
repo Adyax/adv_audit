@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Plugin\Field\FieldType;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponse;
+use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
 
@@ -43,7 +44,7 @@ class AuditResultFieldType extends StringLongItem {
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
     $response = new AuditResultResponse();
-    $response->addReason(new AuditReason('dummy', rand(0, 2)));
+    $response->addReason(new AuditReason('dummy', AuditResultResponseInterface::RESULT_SKIP));
     $values['value'] = serialize($response);
     return $values;
   }

@@ -52,7 +52,6 @@ class AuditRunTestBatch {
       $context['results']['result_response'] = new AuditResultResponse();
       $context['results']['fail_count'] = 0;
       $context['results']['success_count'] = 0;
-      $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
     }
 
     /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
@@ -147,14 +146,20 @@ class AuditRunTestBatch {
     $audit_result_response = $results['result_response'];
     // In case when we already have result entity.
     // Occurred when we save new revision.
-    $entity = $results['report_entity'];
-
+    $entity = NULL;
+    // I find only one way how to pass entity id to finished handler.
+    $entity_id = isset($_SESSION['result_entity_id']) ? $_SESSION['result_entity_id'] : NULL;
+    if ($entity_id) {
+      unset($_SESSION['result_entity_id']);
+      $entity = AdvAuditEntity::load($entity_id);
+    }
     // Check what we have valid result object.
     if (!($audit_result_response instanceof AuditResultResponse)) {
       drupal_set_message('Can\'t save audit result to the entity. Have problem with result object.', 'error');
       return;
     }
-    // Check the destination entity.
+    // If we not have audit entity then we should created it and save result
+    // to new entity.
     if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),
@@ -163,6 +168,15 @@ class AuditRunTestBatch {
 
     try {
       $args = [];
+      // Check what it not new entity, that's mean what we are working with the
+      // already saved entity. And we should create a new revision and save the
+      // result.
+      if (!$entity->isNew()) {
+        $entity->setNewRevision();
+        // If a new revision is created, save the current user as revision author.
+        $entity->setRevisionCreationTime(REQUEST_TIME);
+        $entity->setRevisionUserId(1);
+      }
       $entity->set('audit_results', serialize($audit_result_response));
       $args['@is_new'] = $entity->isNew() ? 'new' : '';
       $entity->save();
