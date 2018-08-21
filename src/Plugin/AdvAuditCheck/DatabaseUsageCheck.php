@@ -95,34 +95,8 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     // Transform Mb into bytes.
     $max_length = $settings['max_table_size'] * 1024 * 1024;
 
-    // Don't check some tables (ex. node).
-    $excluded_tables = trim($settings['excluded_tables']);
-    $excluded_tables = explode(',', $excluded_tables);
-    $db_type = $this->database->databaseType();
     try {
-      if ($db_type == 'pgsql') {
-        $query = $this->database->select('pg_catalog.pg_statio_user_tables', 'ist');
-        $query->fields('ist', ['relname']);
-        $query->condition('ist.schemaname', 'public');
-        if (count($excluded_tables)) {
-          $query->condition('ist.relname', $excluded_tables, 'NOT IN');
-        }
-        $query->addExpression('pg_total_relation_size(relid)', 'data_length');
-        $result = $query->execute();
-        $tables = $result->fetchAllAssoc('relname');
-      }
-      else {
-        $query = $this->database->select('information_schema.TABLES', 'ist');
-        $query->fields('ist', ['TABLE_NAME']);
-        $query->addExpression('DATA_LENGTH', 'data_length');
-        $query->addExpression('TABLE_NAME', 'relname');
-        $query->condition('ist.table_schema', $this->database->getConnectionOptions()['database']);
-        if (count($excluded_tables)) {
-          $query->condition('ist.TABLE_NAME', $excluded_tables, 'NOT IN');
-        }
-        $result = $query->execute();
-        $tables = $result->fetchAllAssoc('TABLE_NAME');
-      }
+      $tables = $this->getTables();
       if (count($tables)) {
         $flag = FALSE;
         foreach ($tables as $key => &$table) {
@@ -149,6 +123,42 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP);
     }
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+  }
+
+  /**
+   * Get database tables.
+   */
+  protected function getTables() {
+    $settings = $this->getPerformSettings();
+    // Don't check some tables (ex. node).
+    $excluded_tables = trim($settings['excluded_tables']);
+    $excluded_tables = explode(',', $excluded_tables);
+    $db_type = $this->database->databaseType();
+    $tb_name_key = 'relname';
+    if ($db_type == 'pgsql') {
+      $query = $this->database->select('pg_catalog.pg_statio_user_tables', 'ist');
+      $query->fields('ist', [$tb_name_key]);
+      $query->condition('ist.schemaname', 'public');
+      if (count($excluded_tables)) {
+        $query->condition('ist.relname', $excluded_tables, 'NOT IN');
+      }
+      $query->addExpression('pg_total_relation_size(relid)', 'data_length');
+      $result = $query->execute();
+      $tables = $result->fetchAllAssoc($tb_name_key);
+    }
+    else {
+      $query = $this->database->select('information_schema.TABLES', 'ist');
+      $query->fields('ist', ['TABLE_NAME']);
+      $query->addExpression('DATA_LENGTH', 'data_length');
+      $query->addExpression('TABLE_NAME', $tb_name_key);
+      $query->condition('ist.table_schema', $this->database->getConnectionOptions()['database']);
+      if (count($excluded_tables)) {
+        $query->condition('ist.TABLE_NAME', $excluded_tables, 'NOT IN');
+      }
+      $result = $query->execute();
+      $tables = $result->fetchAllAssoc('TABLE_NAME');
+    }
+    return $tables;
   }
 
   /**
