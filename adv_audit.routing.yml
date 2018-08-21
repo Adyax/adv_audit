@@ -54,9 +54,3 @@ adv_audit.admin_path:
     _permission: 'administer site configuration'
 
 #------------------------------------- End of Audit entity ----------------------------------------#
-adv_audit.global:
-  path: 'admin/reports/adv-audit/global'
-  defaults:
-    _controller: '\Drupal\adv_audit\Controller\AdvAuditEntityGlobalInfo:index'
-  requirements:
-    _permission: 'access auditor list'
