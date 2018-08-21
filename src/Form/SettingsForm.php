@@ -167,6 +167,9 @@ class SettingsForm extends ConfigFormBase {
       ];
 
       $current_url = $this->redirectDestination->get();
+      if (empty($plugin_list[$key])) {
+        continue;
+      }
       foreach ($plugin_list[$key] as $plugin) {
         /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
         $plugin_instance = $this->auditPluginManager->createInstance($plugin['id']);
