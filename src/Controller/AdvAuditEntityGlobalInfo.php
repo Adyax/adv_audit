@@ -68,32 +68,7 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
 
     $renderData['filesystem_info'] = $this->getFilesystemInfo();
 
-    $renderData['db_size'] = $this->getDatabaseSize();
-
     return $renderData;
-  }
-
-  /**
-   * Get size of current Database.
-   *
-   * @return mixed
-   *   Returns DB's size or false.
-   */
-  protected function getDatabaseSize() {
-    $query = $this->connection->query(
-      "SELECT table_schema \"db_name\", Round(Sum(data_length + index_length) / 1024 / 1024, 2) \"db_size\"
-      FROM   information_schema.tables
-      GROUP  BY table_schema;"
-    );
-    $result = $query->fetchAll();
-    $currentDBName = $this->connection->getConnectionOptions()['database'];
-    foreach ($result as $db) {
-      if ($db->db_name == $currentDBName) {
-        return $db->db_size;
-      }
-    }
-
-    return FALSE;
   }
 
   /**
