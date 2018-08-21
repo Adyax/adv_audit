@@ -163,6 +163,10 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $memory_treshold = $this->state->get($this->buildStateConfigKeys()['mem']) / 100;
     $total_memory = Bytes::toInt(ini_get('memory_limit'));
 
+    if ($total_memory === 0) {
+      return new AuditReason($this->id(), $status, NULL, $params);
+    }
+
     foreach ($urls as $url) {
       $sub_request = Request::create($this->request->getSchemeAndHttpHost() . $url, 'GET');
       if ($this->request->getSession()) {
@@ -172,7 +176,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
 
       $memory = memory_get_peak_usage(TRUE);
 
-      if ($total_memory !== 0 && $memory / $total_memory > $memory_treshold) {
+      if ($memory / $total_memory > $memory_treshold) {
         $params['failed_urls'][$url] = format_size($memory)->render();
         $status = AuditResultResponseInterface::RESULT_FAIL;
       }
