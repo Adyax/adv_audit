@@ -149,3 +149,10 @@ plugins:
      fail: 'There are pages that should not be aceesed by anonimous user.'
      success: 'All pages are secured.'
      help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
+  memory_usage:
+    description: 'Checks given URLs for abnormal big memory usage.'
+    actions: 'Check listed URLs and make investigation of memory usage and optimisation.'
+    impacts: 'Pages with big memory amount usage can affect server performance.'
+    fail: 'Some pages have abnormal big memory usage.'
+    success: 'Memory usage is normal.'
+    help: 'Checks given URLs for abnormal big memory usage.'
