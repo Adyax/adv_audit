@@ -161,11 +161,16 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $urls = $this->parseLines($this->state->get($this->buildStateConfigKeys()['urls']));
 
     $memory_treshold = $this->state->get($this->buildStateConfigKeys()['mem']) / 100;
-    $total_memory = Bytes::toInt(ini_get('memory_limit'));
+    $total_memory = intval(ini_get('memory_limit'));
 
-    if ($total_memory === 0) {
-      return new AuditReason($this->id(), $status, NULL, $params);
+    if ($total_memory <= 0) {
+      $status = AuditResultResponseInterface::RESULT_SKIP;
+      $reason = t('Memory limit has value @value. Looks like server is not correctly configured.',
+        ['@value' => $total_memory]);
+      return new AuditReason($this->id(), $status, $reason, $params);
     }
+
+    $total_memory = Bytes::toInt($total_memory);
 
     foreach ($urls as $url) {
       $sub_request = Request::create($this->request->getSchemeAndHttpHost() . $url, 'GET');
