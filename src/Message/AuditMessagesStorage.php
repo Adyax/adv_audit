@@ -50,7 +50,7 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
     $this->advAuditMessageStorage = $adv_audit_message_storage;
     $this->state = $state;
     // Try to load already saved messages via State storage.
-    $this->collections = $this->state->get(static::STATE_STORAGE_KEY. []);
+    $this->collections = $this->state->get(static::STATE_STORAGE_KEY, []);
     // Merge new values with already overriden.
     $this->collections = NestedArray::mergeDeep($this->advAuditMessageStorage->read(static::COLLECTION_NAME), $this->collections);
   }
