@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Message;
 
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\State\StateInterface;
@@ -49,13 +50,9 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
     $this->advAuditMessageStorage = $adv_audit_message_storage;
     $this->state = $state;
     // Try to load already saved messages via State storage.
-    if ($data = $this->state->get(static::STATE_STORAGE_KEY)) {
-      $this->collections = $data;
-    }
-    else {
-      // Load default messages definition from file.
-      $this->collections = $this->advAuditMessageStorage->read(static::COLLECTION_NAME);
-    }
+    $this->collections = $this->state->get(static::STATE_STORAGE_KEY. []);
+    // Merge new values with already overriden.
+    $this->collections = NestedArray::mergeDeep($this->advAuditMessageStorage->read(static::COLLECTION_NAME), $this->collections);
   }
 
   /**
