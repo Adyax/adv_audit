@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
@@ -98,7 +99,17 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    // Render status.
+    $arguments = $reason->getArguments();
+    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      $build['admin_name_check'] = [
+        '#theme' => 'item_list',
+        '#title' => $this->t('Current name of admin is %admin', ['%admin' => $arguments['admin_name']]),
+        '#list_type' => 'ol',
+        '#items' => $reason->getArguments(),
+      ];
+      return $build;
+    }
+    return [];
   }
 
 }

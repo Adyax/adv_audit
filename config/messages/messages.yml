@@ -142,3 +142,10 @@ plugins:
      fail: 'There are one or more unused Search API entities: %list'
      success: 'All Search API entities are used.'
      help: 'Checks if all of indexes are active and all contents are indexed.'
+  admin_name_check:
+    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is name.'
+    actions: 'Check admin username if it consists admin part or parts of host name'
+    impacts: ''
+    fail: 'There are one or more reasons why admin''s name is unsecured. See bellow. The current admin username is name.'
+    success: 'Admin username is good'
+    help: 'Check admin username'
