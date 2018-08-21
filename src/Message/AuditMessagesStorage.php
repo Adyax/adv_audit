@@ -6,6 +6,7 @@ use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Config\StorageInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -14,6 +15,11 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class AuditMessagesStorage implements AuditMessagesStorageInterface {
 
   use StringTranslationTrait;
+
+  /**
+   * The default key for store messages via state api.
+   */
+  const STATE_STORAGE_KEY = 'adv_audit.messages';
 
   /**
    * Drupal\Core\Config\StorageInterface definition.
@@ -30,35 +36,49 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
   protected $collections;
 
   /**
+   * The state service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * Constructs a new AuditMessagesService object.
    */
-  public function __construct(StorageInterface $adv_audit_message_storage) {
+  public function __construct(StorageInterface $adv_audit_message_storage, StateInterface $state) {
     $this->advAuditMessageStorage = $adv_audit_message_storage;
-    $this->collections = $this->advAuditMessageStorage->read(static::COLLECTION_NAME);
+    $this->state = $state;
+    // Try to load already saved messages via State storage.
+    if ($data = $this->state->get(static::STATE_STORAGE_KEY)) {
+      $this->collections = $data;
+    }
+    else {
+      // Load default messages definition from file.
+      $this->collections = $this->advAuditMessageStorage->read(static::COLLECTION_NAME);
+    }
   }
 
   /**
    * Save value of message type.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *   The plugin id.
-   * @param $type
+   * @param string $type
    *   The message type.
-   * @param $string
+   * @param string $string
    *   New value for message type.
    */
   public function set($plugin_id, $type, $string) {
     $this->collections['plugins'][$plugin_id][$type] = $string;
-    $this->advAuditMessageStorage->write(static::COLLECTION_NAME, $this->collections);
-
+    $this->state->set(static::STATE_STORAGE_KEY, $this->collections);
   }
 
   /**
    * Get value for plugin by message type.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *   The plugin id.
-   * @param $type
+   * @param string $type
    *   The message type.
    *
    * @return null|string

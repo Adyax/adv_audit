@@ -7,7 +7,7 @@ services:
     factory: Drupal\adv_audit\Message\MessageStorageFactory::getMsgDir
   adv_audit.messages:
     class: Drupal\adv_audit\Message\AuditMessagesStorage
-    arguments: ['@adv_audit.message.storage']
+    arguments: ['@adv_audit.message.storage', '@state']
   adv_audit.renderer:
     class: Drupal\adv_audit\Renderer\AuditReportRenderer
     arguments: ['@renderer', '@plugin.manager.adv_audit_check', '@adv_audit.messages', '@config.factory']
