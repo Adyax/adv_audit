@@ -217,6 +217,13 @@ class AdvAuditPluginSettings extends FormBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $this->pluginInstance->configFormValidate($form, $form_state);
+  }
+
+  /**
    * Checks if the user has access for edit this plugin.
    */
   public function checkAccess(AccountInterface $account) {
