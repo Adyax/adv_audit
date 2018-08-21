@@ -10,73 +10,80 @@
                data-score-point="{{ score_point }}">{{ score_point }}</div>
         </div>
       </div>
-      <div class="description">{% trans %}Insight score is a rating given to your site by Adyax Advanced Audit module. Insight
-        assigns different weights to each alert, the reported percentage and the number of resolved issues do not
-        directly relate to one another.{% endtrans %}
+      <div class="description">
+        {% trans %}
+          Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.
+        {% endtrans %}
       </div>
     </div>
     <div class="adv-category-item row layout-row">
       <div class="cat-view aq-dataset__data">
         <a class="report-view-detailed" data-category-id="global-info" href="#">
-          <h3>{% trans %}Global Info{% endtrans %}</h3>
+          <h3>{{ 'Global Info'|t }}</h3>
         </a>
       </div>
       <div class="detailed-view" category-id="global-info" style="display: none">
         <div class="global-info">
-          <h2>{% trans %}Users{% endtrans %}</h2>
+          <h2>{{ 'Users'|t }}</h2>
           <div class="total-users">
-            {% trans %}
-              <span><span>Count All</span> - Total number of Drupal users.</span>There are {{ global_info.total_users }} users.
-            {% endtrans %}
+            <p>
+              {% trans %}
+                Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
+              {% endtrans %}
+            </p>
           </div>
           <div class="blocked-users">
-            {% trans %}
-              <span><span>Count Blocked</span> - Total number of blocked Drupal users.</span> There are {{ global_info.blocked_users }} blocked users.
-            {% endtrans %}
+            <p>
+              {% trans %}
+                Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
+              {% endtrans %}
+            </p>
           </div>
           <div class="roles-list">
-            {% trans %}
-              <span><span>List Roles</span> - Show all available roles and user counts.</span>
-            {% endtrans %}
-            {% for role, count in global_info.roles_list %}
-              {% if loop.last %}
-                {{ role }}: {{ count }}.
-              {% else %}
-                {{ role }}: {{ count }},
-              {% endif %}
-            {% endfor %}
+            <p>
+              {% trans %}
+                List Roles - Show all available roles and user counts.
+              {% endtrans %}
+              {% for role, count in global_info.roles_list %}
+                {% if loop.last %}
+                  {{ role }}: {{ count }}.
+                {% else %}
+                  {{ role }}: {{ count }},
+                {% endif %}
+              {% endfor %}
+            </p>
           </div>
           <div class="admin-info">
-            <div>
+            <p>
               {% trans %}
-                <span><span>Identify UID #1</span> - Show username and email of UID #1.</span> UID #1:
+                Identify UID #1 - Show username and email of UID #1. UID #1:
               {% endtrans %}
               {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
-            </div>
-            <div>
+            </p>
+            <p>
               {% trans %}
-                <span><span>UID #1 access</span> - Determine if UID #1 is blocked.</span> UID #1 is {{ global_info.uid1.status }}.
+                UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
               {% endtrans %}
-            </div>
+            </p>
           </div>
-          <h2>{% trans %}Codebase{% endtrans %}</h2>
+          <h2>{{ 'Codebase'|t }}</h2>
           <div class="codebase">
-            <div>
+            <p>
               {% trans %}
-                <span><span>Drupal managed file count</span> - Determine the count of Drupal managed files.</span> Managed file count: {{ global_info.filesystem_info.count_files }}
+                Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
               {% endtrans %}
-            </div>
-            <div>
+            </p>
+            <p>
               {% trans %}
-                <span><span>Drupal managed file size</span> -Determine the size of Drupal managed files.</span> Managed file size: {{ global_info.filesystem_info.files_total_size }}
+                Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
               {% endtrans %}
-            </div>
+            </p>
           </div>
         </div>
       </div>
     </div>
     <div class="category-list">
-      <h4>{% trans %}Alert categories{% endtrans %}</h4>
+      <h4>{{ 'Alert categories'|t }}</h4>
       {% for category in categories %}
         <div class="adv-category-item row layout-row">
           <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>

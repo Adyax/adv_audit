@@ -144,15 +144,14 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    *   List of roles and the corresponding number of users.
    */
   protected function getRolesList() {
-    $result = $this->connection->query(
-      'SELECT roles_target_id AS name,
-       COUNT(entity_id) AS count_users
-       FROM {user__roles}
-       GROUP BY name
-       ORDER BY name ASC'
-    )->fetchAll();
+    $query = $this->connection->select('user__roles', 'ur');
+    $query->addExpression('COUNT(ur.entity_id)', 'user_count');
+    $query->fields('ur', ['roles_target_id']);
+    $query->groupBy('ur.roles_target_id');
+    $query->orderBy('ur.roles_target_id', 'ASC');
+    $result = $query->execute()->fetchAll();
     foreach ($result as $row) {
-      $renderData[$row->name] = $row->count_users;
+      $renderData[$row->roles_target_id] = $row->user_count;
     }
     return $renderData;
   }
