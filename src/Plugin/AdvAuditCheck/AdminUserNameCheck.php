@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "admin_name_check",
  *   label = @Translation("Administrator's name check"),
  *   category = "security",
- *   severity = "low",
+ *   severity = "high",
  *   requirements = {},
  *   enabled = TRUE,
  * )
@@ -63,9 +63,10 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     $user = $this->entityTypeManager->getStorage('user')->load(1);
     $adminNAme = $user->get('name')->value;
     $secure = TRUE;
-    $arguments = [];
 
-    $arguments['admin_name'] = $adminNAme;
+    $arguments = [
+      '%name' => $adminNAme,
+    ];
 
     // Get host.
     $parsed_base = parse_url($base_url);
@@ -99,13 +100,26 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
+    $items = [];
+
     $arguments = $reason->getArguments();
+
+    if ($arguments['has_host_parts']) {
+      $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments['has_host_parts']);
+    }
+    if ($arguments['has_default_admin_name']) {
+      $items[] = 'Admin\'s username seems like default username for administrator';
+    }
+    if ($arguments['has_admin_parts'] == TRUE && $arguments['%name'] != 'admin') {
+      $items[] = 'There are "admin" parts in username';
+    }
+
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       $build['admin_name_check'] = [
         '#theme' => 'item_list',
-        '#title' => $this->t('Current name of admin is %admin', ['%admin' => $arguments['admin_name']]),
+        '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments['%name']]),
         '#list_type' => 'ol',
-        '#items' => $reason->getArguments(),
+        '#items' => $items,
       ];
       return $build;
     }
