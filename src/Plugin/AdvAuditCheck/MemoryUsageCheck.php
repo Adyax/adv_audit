@@ -101,12 +101,16 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     ];
     $form['urls'][$type_key] = 'textarea';
 
+    $current_limit = ini_get('memory_limit');
     $form['mem'] = [
       '#title' => $this->t('Memory treshold for fail'),
       '#description' => t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15.
-        If one of the listed URLs consumes more than given treshold check will be cosidered as failed.'),
+        If one of the listed URLs consumes more than given treshold check will be cosidered as failed.
+        Current limit is @limit', ['@limit' => $current_limit]),
       '#default_value' => $this->state->get($this->buildStateConfigKeys()['mem']),
+      '#field_suffix' => '%',
       '#required' => TRUE,
+      '#size' => 10,
     ];
     $form['mem'][$type_key] = 'textfield';
 
@@ -130,12 +134,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
    */
   public function configFormValidate($form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
-    $value = $form_state->getValue(array_merge($base, ['urls']));
-
-    $urls = $value;
-    $urls = explode("\n", $urls);
-    $urls = array_filter($urls, 'trim');
-    $urls = str_replace("\r", "", $urls);
+    $urls = $this->parseLines($form_state->getValue(array_merge($base, ['urls'])));
 
     foreach ($urls as $url) {
       if (!UrlHelper::isValid($url) || substr($url, 0, 1) !== '/') {
@@ -147,7 +146,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $value = $form_state->getValue(array_merge($base, ['mem']));
     if (!is_numeric($value) || $value <= 0) {
       $form_state->setErrorByName(
-        'additional_settings][plugin_config][memory_fail_treshold',
+        'additional_settings][plugin_config][mem',
         $this->t('Memory treshold should be positive numeric.')
       );
     }
@@ -159,10 +158,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   public function perform() {
     $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
-    $urls = $this->state->get($this->buildStateConfigKeys()['urls']);
-    $urls = explode("\n", $urls);
-    $urls = array_filter($urls, 'trim');
-    $urls = str_replace("\r", "", $urls);
+    $urls = $this->parseLines($this->state->get($this->buildStateConfigKeys()['urls']));
 
     $memory_treshold = $this->state->get($this->buildStateConfigKeys()['mem']) / 100;
     $total_memory = Bytes::toInt(ini_get('memory_limit'));
@@ -220,6 +216,26 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $list['#items'] = $items;
 
     return [$message, $list];
+  }
+
+  /**
+   * Parses textarea lines into array.
+   *
+   * @param string $lines
+   *   Textarea content.
+   *
+   * @return array
+   *   The textarea lines.
+   */
+  private function parseLines($lines) {
+    $lines = explode("\n", $lines);
+
+    if (!count($lines)) {
+      return [];
+    }
+    $lines = array_filter($lines, 'trim');
+
+    return str_replace("\r", "", $lines);
   }
 
 }
