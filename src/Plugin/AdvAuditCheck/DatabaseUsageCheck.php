@@ -98,26 +98,51 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     // Don't check some tables (ex. node).
     $excluded_tables = trim($settings['excluded_tables']);
     $excluded_tables = explode(',', $excluded_tables);
-
+    $db_type = $this->database->databaseType();
     try {
-      $query = $this->database->select('information_schema.TABLES', 'ist');
-      $query->fields('ist', ['TABLE_NAME']);
-      $query->addExpression('ROUND(DATA_LENGTH / 1024 / 1024)', 'data_length');
-      $query->condition('ist.DATA_LENGTH', $max_length, '>');
-      $query->condition('ist.table_schema', $this->database->getConnectionOptions()['database']);
-      if (count($excluded_tables)) {
-        $query->condition('ist.TABLE_NAME', $excluded_tables, 'NOT IN');
-      }
-      $result = $query->execute();
-      $tables = $result->fetchAllAssoc('TABLE_NAME');
-
-      if (count($tables)) {
-
-        // Prepare argument to render.
-        foreach ($tables as &$table) {
-          $table = (array) $table;
+      if ($db_type == 'pgsql') {
+        $query = $this->database->select('pg_catalog.pg_statio_user_tables', 'ist');
+        $query->fields('ist', ['relname']);
+        $query->condition('ist.schemaname', 'public');
+        if (count($excluded_tables)) {
+          $query->condition('ist.relname', $excluded_tables, 'NOT IN');
         }
-        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['rows' => $tables]);
+        $query->addExpression('pg_total_relation_size(relid)', 'data_length');
+        $result = $query->execute();
+        $tables = $result->fetchAllAssoc('relname');
+      }
+      else {
+        $query = $this->database->select('information_schema.TABLES', 'ist');
+        $query->fields('ist', ['TABLE_NAME']);
+        $query->addExpression('DATA_LENGTH', 'data_length');
+        $query->addExpression('TABLE_NAME', 'relname');
+        $query->condition('ist.table_schema', $this->database->getConnectionOptions()['database']);
+        if (count($excluded_tables)) {
+          $query->condition('ist.TABLE_NAME', $excluded_tables, 'NOT IN');
+        }
+        $result = $query->execute();
+        $tables = $result->fetchAllAssoc('TABLE_NAME');
+      }
+      if (count($tables)) {
+        $flag = FALSE;
+        foreach ($tables as $key => &$table) {
+          // We can't compare calculated value in sql query.
+          // So, we have to check this condition here.
+          if ($table->data_length > $max_length) {
+            $flag = TRUE;
+            // Prepare argument to render.
+            $table = [
+              'name' => $table->relname,
+              'size' => round($table->data_length / 1024 / 1024, 2),
+            ];
+          }
+          else {
+            unset($tables[$key]);
+          }
+        }
+        if ($flag) {
+          return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['rows' => $tables]);
+        }
       }
     }
     catch (Exception $e) {
