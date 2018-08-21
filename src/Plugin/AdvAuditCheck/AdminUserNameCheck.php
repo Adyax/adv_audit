@@ -27,6 +27,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
+   * Placeholder in messages.yml.
+   */
+  const NAME_PLACEHOLDER = '%name';
+
+  /**
+   * Default administrator's username.
+   */
+  const ADMIN_NAME = 'admin';
+
+  /**
+   * Host parts key.
+   */
+  const HAS_HOST = 'has_host_parts';
+  /**
    * Entity type manager container.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -65,7 +79,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     $secure = TRUE;
 
     $arguments = [
-      '%name' => $adminNAme,
+      self::NAME_PLACEHOLDER => $adminNAme,
     ];
 
     // Get host.
@@ -75,18 +89,18 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     foreach ($host_parts as $part) {
       if (stripos($adminNAme, $part) !== FALSE) {
         $secure = FALSE;
-        $arguments['has_host_parts'][] = $part;
+        $arguments[self::HAS_HOST][] = $part;
       }
     }
 
     // The username contains "admin".
-    if (stripos($adminNAme, 'admin') !== FALSE) {
+    if (stripos($adminNAme, self::ADMIN_NAME) !== FALSE) {
       $secure = FALSE;
       $arguments['has_admin_parts'] = TRUE;
     }
 
     // Very bad variant for administrator's name.
-    if ($adminNAme == 'admin') {
+    if ($adminNAme == self::ADMIN_NAME) {
       $arguments['has_default_admin_name'] = TRUE;
     }
 
@@ -104,20 +118,20 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
 
     $arguments = $reason->getArguments();
 
-    if ($arguments['has_host_parts']) {
-      $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments['has_host_parts']);
+    if ($arguments[self::HAS_HOST]) {
+      $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments[self::HAS_HOST]);
     }
     if ($arguments['has_default_admin_name']) {
       $items[] = 'Admin\'s username seems like default username for administrator';
     }
-    if ($arguments['has_admin_parts'] == TRUE && $arguments['%name'] != 'admin') {
+    if ($arguments['has_admin_parts'] && $arguments[self::NAME_PLACEHOLDER] != self::ADMIN_NAME) {
       $items[] = 'There are "admin" parts in username';
     }
 
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       $build['admin_name_check'] = [
         '#theme' => 'item_list',
-        '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments['%name']]),
+        '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments[self::NAME_PLACEHOLDER]]),
         '#list_type' => 'ol',
         '#items' => $items,
       ];
