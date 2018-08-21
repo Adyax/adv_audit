@@ -172,7 +172,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
 
       $memory = memory_get_peak_usage(TRUE);
 
-      if ($memory / $total_memory > $memory_treshold) {
+      if ($total_memory !== 0 && $memory / $total_memory > $memory_treshold) {
         $params['failed_urls'][$url] = format_size($memory)->render();
         $status = AuditResultResponseInterface::RESULT_FAIL;
       }
