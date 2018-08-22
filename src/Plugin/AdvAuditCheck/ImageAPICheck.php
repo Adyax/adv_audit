@@ -95,33 +95,37 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $arguments);
     }
 
+    $status = AuditResultResponseInterface::RESULT_PASS;
+    $message = NULL;
     // Check if pipelines were created.
     $pipelines = imageapi_optimize_pipeline_options(FALSE, TRUE);
     $pipeline_keys = array_keys($pipelines);
     if (count($pipeline_keys) === 1 && empty($pipeline_keys[0])) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, but any pipeline has not been created.', $arguments));
+      $message = 'ImageApi is installed, but any pipeline has not been created.';
+      $status = AuditResultResponseInterface::RESULT_FAIL;
     }
 
-    // Check if every image_style uses some pipeline.
-    $styles = ImageStyle::loadMultiple();
-    $style_names = [];
-    foreach ($styles as $style) {
+    if (is_null($message)) {
+      // Check if every image_style uses some pipeline.
+      $styles = ImageStyle::loadMultiple();
+      $style_names = [];
+      foreach ($styles as $style) {
+        // Get pipeline for image style.
+        // @see Drupal\imageapi_optimize\Entity\ImageStyleWithPipeline::getPipeline().
+        $pipeline = $style->getPipeline();
 
-      // Get pipeline for image style.
-      // @see Drupal\imageapi_optimize\Entity\ImageStyleWithPipeline::getPipeline().
-      $pipeline = $style->getPipeline();
-
-      // Check if image_style's pipeline exist.
-      if ($pipeline && !isset($pipeline_keys[$pipeline])) {
-        $style_names[] = $style->get('label');
+        // Check if image_style's pipeline exist.
+        if ($pipeline && !isset($pipelines[$pipeline])) {
+          $style_names[] = $style->get('label');
+        }
+      }
+      if (count($style_names)) {
+        $status = AuditResultResponseInterface::RESULT_FAIL;
+        $arguments['list'] = $style_names;
+        $message = 'ImageApi is installed, some image styles are not configured:';
       }
     }
-    if (count($style_names)) {
-      $arguments['list'] = $style_names;
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, some image styles are not configured:', $arguments), $arguments);
-    }
-
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, $arguments);
+    return new AuditReason($this->id(), $status, $message, $arguments);
   }
 
   /**
@@ -130,13 +134,9 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
   public function auditReportRender(AuditReason $reason, $type) {
     $build = [];
     if ($type === AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-
       $arguments = $reason->getArguments();
       $build = [
         '#type' => 'container',
-        '#attributes' => [
-          'class' => ['custom-fail-color'],
-        ],
       ];
 
       // Render image_style list.
@@ -151,7 +151,7 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
 
       $build['message'] = [
         '#weight' => 0,
-        '#markup' => $reason->getReason()[0],
+        '#markup' => $this->t($reason->getReason()[0], $arguments),
       ];
 
     }
