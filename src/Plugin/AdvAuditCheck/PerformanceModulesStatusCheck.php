@@ -8,13 +8,13 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
+ * Performance modules status plugin class.
+ *
  * @AdvAuditCheck(
  *  id = "performance_modules_status",
  *  label = @Translation("Performance modules status"),
@@ -24,7 +24,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  enabled = true,
  * )
  */
-class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements  ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
    * List of modules to check.
@@ -52,6 +52,8 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements  Contai
    *   The plugin_id for the plugin instance.
    * @param string $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
