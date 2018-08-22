@@ -88,7 +88,7 @@ class AdvAuditEntityForm extends ContentEntityForm {
         }
       }
 
-      // Configure batch
+      // Configure batch.
       $batch = [
         'title' => $this->t('Running process audit'),
         'init_message' => $this->t('Prepare to process.'),

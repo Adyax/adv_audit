@@ -80,7 +80,7 @@ class AuditCategoryManagerService {
   /**
    * Handler callback for page '/admin/config/adv-audit'
    *
-   * @todo Implement this form via separate class.
+   * @needs_review
    *
    * @return array
    *   Return render array of page.
