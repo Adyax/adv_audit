@@ -11,7 +11,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Plugin if users table contains anonymous user).
+ * Plugin checks if users table contains anonymous user.
  *
  * @AdvAuditCheck(
  *   id = "anonymous_user_table",
