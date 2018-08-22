@@ -40,6 +40,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * Host parts key.
    */
   const HAS_HOST = 'has_host_parts';
+
   /**
    * Entity type manager container.
    *
