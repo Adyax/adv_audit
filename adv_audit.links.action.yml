@@ -1,0 +1,6 @@
+entity.adv_audit_preset_entity.add_form:
+  route_name: entity.adv_audit_preset_entity.add_form
+  title: 'Add new preset'
+  appears_on:
+    - entity.adv_audit_preset_entity.collection
+
