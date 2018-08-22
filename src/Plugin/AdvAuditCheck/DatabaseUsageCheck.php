@@ -97,13 +97,13 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
 
     try {
       $tables = $this->getTables();
+      $status = AuditResultResponseInterface::RESULT_PASS;
       if (count($tables)) {
-        $flag = FALSE;
         foreach ($tables as $key => &$table) {
           // We can't compare calculated value in sql query.
           // So, we have to check this condition here.
           if ($table->data_length > $max_length) {
-            $flag = TRUE;
+            $status = AuditResultResponseInterface::RESULT_FAIL;
             // Prepare argument to render.
             $table = [
               'name' => $table->relname,
@@ -114,15 +114,12 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
             unset($tables[$key]);
           }
         }
-        if ($flag) {
-          return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['rows' => $tables]);
-        }
       }
+      return new AuditReason($this->id(), $status, NULL, ['rows' => $tables]);
     }
     catch (Exception $e) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP);
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
   }
 
   /**
