@@ -30,7 +30,7 @@ plugins:
     help: 'Check if all Features are actual.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
-    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible. @list'
+    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible.'
     impacts: 'If you don''t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
     fail: 'There are outdated modules with security updates.'
     success: 'All modules are up-to-date.'
@@ -44,7 +44,7 @@ plugins:
     help: 'Check database state.'
   modules_update_check:
     description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it''s important to update modules to stable releases (if exists).'
-    actions: '%link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
+    actions: '%link are @count modules with non-security updates. Apply all updates (we recommend apply only stable releases).'
     impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
     fail: 'There are outdated modules with non-security updates.'
     success: 'All modules are up-to-date.'
@@ -58,7 +58,7 @@ plugins:
     help: 'Check usage of memcache/redis.'
   patched_modules_check:
     description: 'Check if core and contribution modules were hacked.'
-    actions: 'Review patched modules and make sure, that every change could be restored from patch has been stored in file.@list'
+    actions: 'Review patched modules and make sure, that every change could be restored from patch has been stored in file.'
     impacts: 'Without storing patches in files, web-site could be broken during updates.'
     fail: 'There are hacked modules.'
     success: 'All modules are original.'
@@ -85,12 +85,11 @@ plugins:
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   performance_views:
-    description: "Query results and  should be cached for at least 1 minute or use tag caching."
-    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
-    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
-    fail: "Views caching is configured wrongly."
-    warning: "Some views has unknown cache type. Please check it manually."
-    success: "All cache configurations for views setted up correctly."
+    description: 'Query results and  should be cached for at least 1 minute or use tag caching.'
+    actions: 'Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).'
+    impacts: 'This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.'
+    fail: 'Views caching is configured wrongly.'
+    success: 'All cache configurations for views setted up correctly.'
     help: 'Check views cache configuration.'
   php_max_execution_time:
     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
@@ -118,9 +117,15 @@ plugins:
     actions: 'Please configure trusted_host_patterns setting in settings.php.'
     impacts: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.'
     fail: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.'
-    warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  php_version_check:
+    description: 'Check PHP version.'
+    actions: 'Please upgrade to PHP version %recommended or higher for the best ongoing support.'
+    impacts: 'Upgrade to PHP version %recommended or higher to ensure your site can receive updates and remain secure.'
+    fail: 'It is recommended to upgrade to PHP version %recommended or higher for the best ongoing support.'
+    success: 'PHP version correct.'
+    help: 'Check PHP version.'
   imageapi_optimize_check:
     description: 'Check ImageAPI Optimize.'
     actions: 'Install and configure %link module.'
@@ -136,12 +141,12 @@ plugins:
     success: 'Your optimization is good'
     help: ''
   solr_usage:
-     description: 'Checks Search API solr indexes and servers status.'
-     actions: 'There are number of issues.'
-     impacts: 'Disabled servers and indexes and not fully indexed content may cause problems with site search.'
-     fail: 'There are one or more unused Search API entities: %list'
-     success: 'All Search API entities are used.'
-     help: 'Checks if all of indexes are active and all contents are indexed.'
+    description: 'Checks Search API solr indexes and servers status.'
+    actions: 'There are number of issues.'
+    impacts: 'Disabled servers and indexes and not fully indexed content may cause problems with site search.'
+    fail: 'There are one or more unused Search API entities: %list'
+    success: 'All Search API entities are used.'
+    help: 'Checks if all of indexes are active and all contents are indexed.'
   memory_usage:
     description: 'Checks given URLs for abnormal big memory usage.'
     actions: 'Check listed URLs and make investigation of memory usage and optimisation.'
@@ -149,3 +154,10 @@ plugins:
     fail: 'Some pages have abnormal big memory usage.'
     success: 'Memory usage is normal.'
     help: 'Checks given URLs for abnormal big memory usage.'
+  admin_name_check:
+    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
+    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
+    impacts: ''
+    fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
+    success: 'Admin username is secure'
+    help: 'Check admin username'

@@ -29,6 +29,7 @@ function adv_audit_theme() {
         'title' => NULL,
         'score_point' => NULL,
         'categories' => NULL,
+        'global_info' => NULL,
       ],
       'template' => 'adv-audit-report-object',
     ],
@@ -58,7 +59,7 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
 }
 
 /**
- *
+ * Prepares variables for templates.
  */
 function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
