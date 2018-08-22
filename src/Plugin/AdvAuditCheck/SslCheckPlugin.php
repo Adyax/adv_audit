@@ -17,10 +17,11 @@ use Drupal\Core\State\StateInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\Url;
-use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
+ * SSL test plugin based on SSLLabs API.
+ *
  * @AdvAuditCheck(
  *  id = "ssllab_check",
  *  label = @Translation("SSL test"),
@@ -45,7 +46,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    * SslLab analize API call.
    */
   const ANALYZE_API_CALL = 'analyze';
-  
+
   /**
    * SslLab report URL.
    */
@@ -71,7 +72,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    * @var \Drupal\adv_audit\Message\AuditMessagesStorageInterface
    */
   protected $messagesStorage;
-  
+
   /**
    * The request stack.
    *
@@ -80,14 +81,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   protected $request;
 
   /**
-   * Constructs a new ExampleAuditCheckPlugin object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
-   *   The plugin implementation definition.
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, Client $http_client, RequestStack $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -113,7 +107,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   }
 
   /**
-   * Build key string for access to stored value from config.
+   * Build key string for access to stored value from "Check should passed".
    *
    * @return string
    *   The generated key.
@@ -121,9 +115,9 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   protected function buildStateConfigKey() {
     return 'adv_audit.plugin.' . $this->id() . '.config.check_should_passed';
   }
-  
+
   /**
-   * Build key string for access to stored value from config.
+   * Build key string for access to stored value from config for domain.
    *
    * @return string
    *   The generated key.
@@ -135,7 +129,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   /**
    * {@inheritdoc}
    */
-  public function perform() {        
+  public function perform() {
     if ($this->state->get($this->buildStateConfigKey()) == 1) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
     }
@@ -147,7 +141,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'host' => $current_domain,
         'all' => 'done',
         'maxAge' => 1,
-      ]
+      ],
     ];
     $ssllab_analyze_url = Url::fromUri(self::SSLLAB_API_URL . self::ANALYZE_API_CALL, $options)->toString();
     try {
@@ -160,19 +154,21 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     // Wait until report will be ready.
     if (!in_array($result->status, ['READY', 'ERROR'])) {
       sleep(10);
+      flush();
+      ob_flush();
       return $this->perform();
     }
     $report_options = [
       'query' => [
         'd' => $current_domain,
-      ]
+      ],
     ];
     $report_url = Url::fromUri(self::REPORT_URL, $report_options);
-    
+
     if ($result->status == 'ERROR') {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed with ERROR. For more details please visit @link', ['@link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
     }
-    
+
     foreach ($result->endpoints as $endpoint) {
       if (!in_array($endpoint->grade, ['A', 'A+'])) {
         return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed. For more details please visit @link', ['@link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
@@ -205,8 +201,16 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
-    $check_should_passed = $form_state->getValue(['additional_settings', 'plugin_config', 'check_should_passed'], 0);
-    $domain = $form_state->getValue(['additional_settings', 'plugin_config', 'domain'], 0);
+    $check_should_passed = $form_state->getValue([
+      'additional_settings',
+      'plugin_config',
+      'check_should_passed',
+    ], 0);
+    $domain = $form_state->getValue([
+      'additional_settings',
+      'plugin_config',
+      'domain',
+    ], 0);
 
     $this->state->set($this->buildStateConfigKey(), $check_should_passed);
     $this->state->set($this->buildStateConfigDomain(), $domain);
@@ -216,12 +220,10 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    * {@inheritdoc}
    */
   public function checkRequirements() {
-    // Please be careful.
-    // Before extend check Requirements method you should call parent method before.
     parent::checkRequirements();
-    // Just check that we are able to send requests to SslLabs and don't have impediments on server side.
+    // Just check that we are able to send requests to SslLabs.
     try {
-      $service_check = $this->httpClient->request('GET', self::SSLLAB_API_URL . self::INFO_API_CALL);
+      $this->httpClient->request('GET', self::SSLLAB_API_URL . self::INFO_API_CALL);
     }
     catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);
@@ -233,8 +235,6 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    */
   public function auditReportRender(AuditReason $reason, $type) {
     switch ($type) {
-      // Override messages fail output.
-      // In this case, we will not use messages from messages.yml file and directly will render what you return.
       case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
         $build = [
           '#type' => 'container',
@@ -247,8 +247,6 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         ];
         break;
 
-      // Override messages success output.
-      // At this moment you have fully control what how will build success messages.
       case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
         $build = [
           '#type' => 'container',
@@ -262,8 +260,6 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         break;
 
       default:
-        // Return empty array.
-        // In this case will display messages from messages.yml file for you plugin.
         $build = [];
         break;
     }
