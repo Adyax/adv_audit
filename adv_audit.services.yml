@@ -11,3 +11,6 @@ services:
   adv_audit.renderer:
     class: Drupal\adv_audit\Renderer\AuditReportRenderer
     arguments: ['@renderer', '@plugin.manager.adv_audit_check', '@adv_audit.messages', '@config.factory']
+  adv_audit.global_info:
+    class: Drupal\adv_audit\Controller\AdvAuditEntityGlobalInfo
+    arguments: ['@entity_type.manager', '@database', '@kernel', '@app.root']
