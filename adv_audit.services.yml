@@ -22,3 +22,6 @@ services:
     class: Drupal\adv_audit\Routing\RouteSubscriber
     tags:
       - { name: event_subscriber }
+  adv_audit.global_info:
+    class: Drupal\adv_audit\Controller\AdvAuditEntityGlobalInfo
+    arguments: ['@entity_type.manager', '@database', '@kernel', '@app.root']

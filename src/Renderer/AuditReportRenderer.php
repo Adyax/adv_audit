@@ -49,6 +49,8 @@ class AuditReportRenderer implements RenderableInterface {
   protected $configFactory;
 
   /**
+   * Drupal\adv_audit\AuditResultResponse.
+   *
    * @var \Drupal\adv_audit\AuditResultResponse
    */
   protected $auditResultResponse;
@@ -93,6 +95,7 @@ class AuditReportRenderer implements RenderableInterface {
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
       '#categories' => $this->doBuildCategory(),
+      '#global_info' => $this->auditResultResponse->getOverviewInfo(),
       '#attached' => [
         'library' => [
           'adv_audit/adv_audit.report',

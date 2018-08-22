@@ -2,11 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\Field\FieldType;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponse;
-use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
+use Drupal\Core\Field\Plugin\Field\FieldType\MapItem;
 
 /**
  * Plugin implementation of the 'audit_result' field type.
@@ -19,34 +15,32 @@ use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
  *   default_formatter = "audit_report_formatter"
  * )
  */
-class AuditResultFieldType extends StringLongItem {
+class AuditResultFieldType extends MapItem {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __set($name, $value) {
+    if (isset($value) && !empty($value)) {
+      $this->values[$name] = $value;
+    }
+  }
 
   /**
    * {@inheritdoc}
    */
   public function getValue() {
-    // Update the values and return them.
-    foreach ($this->properties as $name => $property) {
-      $definition = $property->getDataDefinition();
-      if (!$definition->isComputed()) {
-        $value = $property->getValue();
-        // Only write NULL values if the whole map is not NULL.
-        if (isset($this->values) || isset($value)) {
-          $this->values[$name] = unserialize($value);
-        }
-      }
-    }
     return $this->values;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    $response = new AuditResultResponse();
-    $response->addReason(new AuditReason('dummy', AuditResultResponseInterface::RESULT_SKIP));
-    $values['value'] = serialize($response);
-    return $values;
+  public function __isset($name) {
+    if (isset($this->properties[$name])) {
+      return $this->properties[$name]->getValue() !== NULL;
+    }
+    return $this->values->$name;
   }
 
 }

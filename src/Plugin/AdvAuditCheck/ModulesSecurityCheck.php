@@ -75,9 +75,9 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
         $status = AuditResultResponseInterface::RESULT_FAIL;
         $this->count += 1;
         $this->updates[] = [
-          'label' => Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])),
+          'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
           'current_v' => $project['existing_version'],
-          'recommended_v' => $project['recommended'] || $project['latest_version'],
+          'recommended_v' => $project['recommended'],
         ];
       }
     }
@@ -87,7 +87,7 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
     $params = [
       '%link' => $link->toString(),
       '@count' => $this->count,
-      '@list' => $this->updates,
+      'list' => $this->updates,
     ];
 
     return new AuditReason($this->id(), $status, NULL, $params);
