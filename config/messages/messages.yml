@@ -85,12 +85,11 @@ plugins:
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   performance_views:
-    description: "Query results and  should be cached for at least 1 minute or use tag caching."
-    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
-    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
-    fail: "Views caching is configured wrongly."
-    warning: "Some views has unknown cache type. Please check it manually."
-    success: "All cache configurations for views setted up correctly."
+    description: 'Query results and  should be cached for at least 1 minute or use tag caching.'
+    actions: 'Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).'
+    impacts: 'This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.'
+    fail: 'Views caching is configured wrongly.'
+    success: 'All cache configurations for views setted up correctly.'
     help: 'Check views cache configuration.'
   php_max_execution_time:
     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
@@ -118,9 +117,15 @@ plugins:
     actions: 'Please configure trusted_host_patterns setting in settings.php.'
     impacts: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.'
     fail: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.'
-    warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  php_version_check:
+    description: 'Check PHP version.'
+    actions: 'Please upgrade to PHP version %recommended or higher for the best ongoing support.'
+    impacts: 'Upgrade to PHP version %recommended or higher to ensure your site can receive updates and remain secure.'
+    fail: 'It is recommended to upgrade to PHP version %recommended or higher for the best ongoing support.'
+    success: 'PHP version correct.'
+    help: 'Check PHP version.'
   imageapi_optimize_check:
     description: 'Check ImageAPI Optimize.'
     actions: 'Install and configure %link module.'
@@ -136,9 +141,16 @@ plugins:
     success: 'Your optimization is good'
     help: ''
   solr_usage:
-     description: 'Checks Search API solr indexes and servers status.'
-     actions: 'There are number of issues.'
-     impacts: 'Disabled servers and indexes and not fully indexed content may cause problems with site search.'
-     fail: 'There are one or more unused Search API entities: %list'
-     success: 'All Search API entities are used.'
-     help: 'Checks if all of indexes are active and all contents are indexed.'
+    description: 'Checks Search API solr indexes and servers status.'
+    actions: 'There are number of issues.'
+    impacts: 'Disabled servers and indexes and not fully indexed content may cause problems with site search.'
+    fail: 'There are one or more unused Search API entities: %list'
+    success: 'All Search API entities are used.'
+    help: 'Checks if all of indexes are active and all contents are indexed.'
+  memory_usage:
+    description: 'Checks given URLs for abnormal big memory usage.'
+    actions: 'Check listed URLs and make investigation of memory usage and optimisation.'
+    impacts: 'Pages with big memory amount usage can affect server performance.'
+    fail: 'Some pages have abnormal big memory usage.'
+    success: 'Memory usage is normal.'
+    help: 'Checks given URLs for abnormal big memory usage.'
