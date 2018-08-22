@@ -63,7 +63,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
    * @param \Drupal\user\PermissionHandler $user_permission
-   *   Interface for the audit messages.
+   *   Provide access to user permissions.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, PermissionHandler $user_permission) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
