@@ -36,7 +36,6 @@ class AdvAuditEntityListBuilder extends EntityListBuilder {
     );
     $row['score'] = 0;
     $result = $entity->get('audit_results')->first()->getValue();
-    $result = unserialize($result['value']);
     if ($result instanceof AuditResultResponseInterface) {
       $row['score'] = $result->calculateScore();
     }
