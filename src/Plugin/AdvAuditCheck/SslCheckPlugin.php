@@ -107,34 +107,27 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   }
 
   /**
-   * Build key string for access to stored value from "Check should passed".
+   * Build key string for access to stored value from config.
    *
-   * @return string
-   *   The generated key.
+   * @return array
+   *   The generated keys.
    */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.check_should_passed';
-  }
-
-  /**
-   * Build key string for access to stored value from config for domain.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigDomain() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.domain';
+  protected function buildStateConfigKeys() {
+    return [
+      'check_should_passed' => 'adv_audit.plugin.' . $this->id() . '.config.check_should_passed',
+      'domain' => 'adv_audit.plugin.' . $this->id() . '.config.domain',
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function perform() {
-    if ($this->state->get($this->buildStateConfigKey()) == 1) {
+    if ($this->state->get($this->buildStateConfigKeys()['check_should_passed']) == 1) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
     }
 
-    $predefined_domain = $this->state->get($this->buildStateConfigDomain(), FALSE);
+    $predefined_domain = $this->state->get($this->buildStateConfigKeys()['domain'], FALSE);
     $current_domain = $predefined_domain ? $predefined_domain : $this->request->getHost();
     $options = [
       'query' => [
@@ -166,15 +159,15 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     $report_url = Url::fromUri(self::REPORT_URL, $report_options);
 
     if ($result->status == 'ERROR') {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed with ERROR. For more details please visit @link', ['@link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed with ERROR. For more details please visit %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
     }
 
     foreach ($result->endpoints as $endpoint) {
       if (!in_array($endpoint->grade, ['A', 'A+'])) {
-        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed. For more details please visit @link', ['@link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed. For more details please visit %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
       }
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, 'Check of SSL is passed. Please check @link', ['@link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, 'Check of SSL is passed. Please check %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
   }
 
   /**
@@ -184,12 +177,12 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     $form['check_should_passed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Select this if check should passed'),
-      '#default_value' => $this->state->get($this->buildStateConfigKey()),
+      '#default_value' => $this->state->get($this->buildStateConfigKeys()['check_should_passed']),
     ];
     $form['domain'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Domain for checking'),
-      '#default_value' => $this->state->get($this->buildStateConfigDomain()),
+      '#default_value' => $this->state->get($this->buildStateConfigKeys()['domain']),
       '#description' => $this->t('You could specify this value in case of you need to check specific domain. Could be used for testing purpose or if we need to test canonical domain.'),
     ];
 
@@ -212,8 +205,8 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
       'domain',
     ], 0);
 
-    $this->state->set($this->buildStateConfigKey(), $check_should_passed);
-    $this->state->set($this->buildStateConfigDomain(), $domain);
+    $this->state->set($this->buildStateConfigKeys()['check_should_passed'], $check_should_passed);
+    $this->state->set($this->buildStateConfigKeys()['domain'], $domain);
   }
 
   /**
