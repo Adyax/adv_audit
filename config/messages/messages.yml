@@ -154,3 +154,10 @@ plugins:
     fail: 'Some pages have abnormal big memory usage.'
     success: 'Memory usage is normal.'
     help: 'Checks given URLs for abnormal big memory usage.'
+  admin_name_check:
+    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
+    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
+    impacts: ''
+    fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
+    success: 'Admin username is secure'
+    help: 'Check admin username'
