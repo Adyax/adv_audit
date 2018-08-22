@@ -8,13 +8,14 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\user\Entity\User;
+use GuzzleHttp\Client;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Checks if any admin pages and other unused default Drupal pages are available for anonymous users.
@@ -50,11 +51,19 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   protected $state;
 
   /**
-   * Symfony\Component\HttpKernel\HttpKernelInterface definition.
+   * The Entity type manegr.
    *
-   * @var \Symfony\Component\HttpKernel\HttpKernelInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $httpKernel;
+  protected $entityTypeManager;
+
+  /**
+   * Returns the default http client.
+   *
+   * @var \GuzzleHttp\Client
+   *   A guzzle http client instance.
+   */
+  protected $httpClient;
 
   /**
    * Request object.
@@ -63,66 +72,31 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
    */
   protected $request;
 
-  /**
-   * The module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The current user.
-   *
-   * @var \Symfony\Component\HttpFoundation\Session\Session
-   */
-  protected $session;
-
-  /**
-   * The search server storage.
-   *
-   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
-   */
-  protected $entityTypeManager;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $services) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state,
+                              EntityTypeManagerInterface $etm, Client $client, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $services['state_service'];
-    $this->httpKernel = $services['http_kernel_service'];
-    $this->request = $services['request_service'];
-    $this->currentUser = $services['current_user_service'];
-    $this->moduleHandler = $services['module_handler_service'];
-    $this->session = $services['session_service'];
-    $this->entityTypeManager = $services['etm'];
+    $this->state = $state;
+    $this->entityTypeManager = $etm;
+    $this->httpClient = $client;
+    $this->request = $request;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $services = [
-      'state_service' => $container->get('state'),
-      'http_kernel_service' => $container->get('http_kernel'),
-      'request_service' => $container->get('request_stack')->getCurrentRequest(),
-      'current_user_service' => $container->get('current_user'),
-      'module_handler_service' => $container->get('module_handler'),
-      'session_service' => $container->get('session'),
-      'etm' => $container->get('entity_type.manager'),
-    ];
     return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $services
+      $container->get('state'),
+      $container->get('entity_type.manager'),
+      $container->get('http_client'),
+      $container->get('request_stack')->getCurrentRequest()
     );
   }
 
@@ -185,32 +159,27 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
     $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
-    $uid = $this->currentUser->id();
-    $this->switchToAnonymousUser();
+    $user_urls = $this->parseLines($this->state->get($this->buildStateConfigKey()));
+    $urls = array_merge(self::URLS, $user_urls);
 
-    try {
-      $user_urls = $this->parseLines($this->state->get($this->buildStateConfigKey()));
-      $urls = array_merge(self::URLS, $user_urls);
+    foreach ($urls as $url) {
+      $url = $this->replaceEntityPlaceholder($url);
 
-      foreach ($urls as $url) {
-        $url = $this->replaceEntityPlaceholder($url);
-
-        $sub_request = Request::create($this->request->getSchemeAndHttpHost() . $url, 'GET');
-        if ($this->request->getSession()) {
-          $sub_request->setSession($this->request->getSession());
+      try {
+        $response = $this->httpClient->get($this->request->getSchemeAndHttpHost() . $url);
+      }
+      catch (\Exception $e) {
+        $code = $e->getCode();
+        if (!empty($code) && in_array($code, [401, 403, 404])) {
+          continue;
         }
-        $sub_response = $this->httpKernel->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
-        if ($sub_response->getStatusCode() != 403 && $sub_response->getStatusCode() != 404) {
-          $params['failed_urls'][] = $url;
-          $status = AuditResultResponseInterface::RESULT_FAIL;
-        }
+        throwException($e);
       }
 
-      $this->switchBack($uid);
-    }
-    catch (\Exception $e) {
-      $this->switchBack($uid);
-      throwException($e);
+      if ($response->getStatusCode() == 200) {
+        $params['failed_urls'][] = $url;
+        $status = AuditResultResponseInterface::RESULT_FAIL;
+      }
     }
 
     return new AuditReason($this->id(), $status, NULL, $params);
@@ -281,34 +250,6 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
     $lines = array_filter($lines, 'trim');
 
     return str_replace("\r", "", $lines);
-  }
-
-  /**
-   * Switch to anonymous user.
-   */
-  private function switchToAnonymousUser() {
-    $anonymous = User::load(0);
-
-    $this->moduleHandler->invokeAll('user_logout', [$this->currentUser]);
-    $this->currentUser->setAccount($anonymous);
-    $this->session->set('uid', $anonymous->id());
-    $this->moduleHandler->invokeAll('user_login', [$anonymous]);
-  }
-
-  /**
-   * Switchback to old user.
-   *
-   * @param int $uid
-   *   User uid.
-   */
-  private function switchBack($uid) {
-    $current_user = User::load($uid);
-    $anonymous = User::load(0);
-
-    $this->moduleHandler->invokeAll('user_logout', [$anonymous]);
-    $this->currentUser->setAccount($current_user);
-    $this->session->set('uid', $uid);
-    $this->moduleHandler->invokeAll('user_login', [$current_user]);
   }
 
   /**
