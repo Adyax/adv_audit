@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *  enabled = true,
  * )
  */
-class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * SslLab the main API entry point.
@@ -221,43 +221,6 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    switch ($type) {
-      case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
-        $build = [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-fail-color'],
-          ],
-          'message' => [
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $reason->getArguments())->__toString(),
-          ],
-        ];
-        break;
-
-      case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
-        $build = [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-pass-color'],
-          ],
-          'message' => [
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_SUCCESS), $reason->getArguments())->__toString(),
-          ],
-        ];
-        break;
-
-      default:
-        $build = [];
-        break;
-    }
-
-    return $build;
   }
 
 }
