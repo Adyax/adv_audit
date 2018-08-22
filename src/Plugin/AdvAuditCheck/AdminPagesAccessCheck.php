@@ -76,8 +76,7 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state,
-                              EntityTypeManagerInterface $etm, Client $client, Request $request) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, EntityTypeManagerInterface $etm, Client $client, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->state = $state;
     $this->entityTypeManager = $etm;
