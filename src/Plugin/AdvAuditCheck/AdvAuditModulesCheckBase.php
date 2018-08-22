@@ -46,42 +46,39 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments)) {
-        return [];
-      }
-
-      $list_key = '@list';
-
-      if (!empty($arguments[$list_key])) {
-        $render_list = [
-          '#type' => 'table',
-          '#header' => [
-            $this->t('Name'),
-            $this->t('Installed version'),
-            $this->t('Recommended version'),
-          ],
-          '#rows' => $arguments[$list_key],
-        ];
-      }
-      else {
-        $render_list = [];
-      }
-
-      return [
-        'link' => ['#markup' => $arguments['%link']],
-        'count' => [
-          '#markup' => $this->formatPlural(
-            $arguments['@count'],
-            '1 module',
-            '@count modules')->render(),
-        ],
-        'list' => $render_list,
-      ];
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      return [];
     }
 
-    return [];
+    $arguments = $reason->getArguments();
+    if (empty($arguments)) {
+      return [];
+    }
+
+    $message = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['fail-message'],
+      ],
+    ];
+    $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
+
+    if (!empty($arguments['list'])) {
+      $render_list = [
+        '#type' => 'table',
+        '#header' => [
+          $this->t('Name'),
+          $this->t('Installed version'),
+          $this->t('Recommended version'),
+        ],
+        '#rows' => $arguments['list'],
+      ];
+    }
+    else {
+      $render_list = [];
+    }
+
+    return [$message, $render_list];
   }
 
 }
