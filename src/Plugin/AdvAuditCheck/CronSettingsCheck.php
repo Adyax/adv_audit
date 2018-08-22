@@ -86,6 +86,7 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
    * {@inheritdoc}
    */
   public function perform() {
+    include_once DRUPAL_ROOT . '/core/includes/install.inc';
     $cron_config = $this->configFactory->get('system.cron');
     // Cron warning threshold defaults to two days.
     $threshold_warning = $cron_config->get('threshold.requirements_warning');

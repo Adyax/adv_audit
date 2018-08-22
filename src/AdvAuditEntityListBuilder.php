@@ -17,8 +17,9 @@ class AdvAuditEntityListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('Audit Result entity ID');
+    $header['id'] = $this->t('Report ID');
     $header['name'] = $this->t('Name');
+    $header['score'] = $this->t('Score point');
     return $header + parent::buildHeader();
   }
 
@@ -30,9 +31,15 @@ class AdvAuditEntityListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.adv_audit.edit_form',
+      'entity.adv_audit.canonical',
       ['adv_audit' => $entity->id()]
     );
+    $row['score'] = 0;
+    $result = $entity->get('audit_results')->first()->getValue();
+    $result = unserialize($result['value']);
+    if ($result instanceof AuditResultResponseInterface) {
+      $row['score'] = $result->calculateScore();
+    }
     return $row + parent::buildRow($entity);
   }
 

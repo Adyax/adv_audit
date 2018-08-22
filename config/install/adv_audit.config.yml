@@ -5,22 +5,28 @@ adv_audit_settings:
     core_and_modules:
       label: Drupal core and contributed modules
       status: 1
+      weight: 0
     security:
       label: Security
       status: 1
+      weight: 0
     architecture_analysis:
       label: Architecture analysis
       status: 1
+      weight: 0
     server_configuration:
       label: Server Configuration
       status: 1
+      weight: 0
     code_review:
       label: Code review (custom modules and themes)
       status: 1
+      weight: 0
     performance:
       label: Performance
       status: 1
+      weight: 0
     other:
       label: Other recommendations
       status: 1
-untrusted_roles: ['anonymous']
+      weight: 0
