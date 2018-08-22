@@ -7,11 +7,12 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\Core\Database\Connection;
+use Drupal\user\PermissionHandler;
 
 /**
  * Check permission of untrusted roles.
@@ -42,6 +43,13 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
   protected $messagesStorage;
 
   /**
+   * Provide access to user permission service.
+   *
+   * @var \Drupal\user\PermissionHandler
+   */
+  protected $userPermission;
+
+  /**
    * Constructs a new PerformanceViewsCheck object.
    *
    * @param array $configuration
@@ -54,11 +62,14 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    *   Access to state service.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
+   * @param \Drupal\user\PermissionHandler $user_permission
+   *   Interface for the audit messages.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, PermissionHandler $user_permission) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->state = $state;
     $this->messagesStorage = $messages_storage;
+    $this->userPermission = $user_permission;
   }
 
   /**
@@ -70,7 +81,8 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       $plugin_id,
       $plugin_definition,
       $container->get('state'),
-      $container->get('adv_audit.messages')
+      $container->get('adv_audit.messages'),
+      $container->get('user.permissions')
     );
   }
 
@@ -79,34 +91,27 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    */
   public function perform() {
     $settings = $this->getPerformSettings();
-
-    // Transform Mb into bytes.
-    $max_length = $settings['max_table_size'] * 1024 * 1024;
-
-    try {
-      $tables = $this->getTables();
-      $status = AuditResultResponseInterface::RESULT_PASS;
-      if (count($tables)) {
-        foreach ($tables as $key => &$table) {
-          // We can't compare calculated value in sql query.
-          // So, we have to check this condition here.
-          if ($table->data_length > $max_length) {
-            $status = AuditResultResponseInterface::RESULT_FAIL;
-            // Prepare argument to render.
-            $table = [
-              'name' => $table->relname,
-              'size' => round($table->data_length / 1024 / 1024, 2),
-            ];
-          }
-          else {
-            unset($tables[$key]);
-          }
+    $wrong_permissions = [];
+    $all_permissions = $this->userPermission->getPermissions();
+    $all_permission_strings = array_keys($all_permissions);
+    $untrusted_permissions = $this->rolePermissions($settings['untrusted_roles'], TRUE);
+    foreach ($untrusted_permissions as $rid => $permissions) {
+      $intersect = array_intersect($all_permission_strings, $permissions);
+      foreach ($intersect as $permission) {
+        if (isset($all_permissions[$permission]['restrict access'])) {
+          $wrong_permissions[$rid][] = $permission;
         }
       }
-      return new AuditReason($this->id(), $status, NULL, ['rows' => $tables]);
-    } catch (Exception $e) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP);
     }
+
+    $status = AuditResultResponseInterface::RESULT_PASS;
+    $message = NULL;
+    $arguments = [];
+    if (!empty($wrong_permissions)) {
+      $status = AuditResultResponseInterface::RESULT_FAIL;
+      $arguments['permission'] = $wrong_permissions;
+    }
+    return new AuditReason($this->id(), $status, $message, $arguments);
   }
 
   /**
@@ -123,7 +128,6 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    * {@inheritdoc}
    */
   public function configForm() {
-
     $form = [];
     $settings = $this->getPerformSettings();
 
@@ -138,10 +142,72 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       '#type' => 'checkboxes',
       '#title' => $this->t('Untrusted roles.'),
       '#default_value' => $settings['untrusted_roles'],
-      '#options' => $options
+      '#options' => $options,
     ];
 
     return $form;
+  }
+
+  /**
+   * Gets all the permissions.
+   *
+   * @param bool $meta
+   *   Whether to return only permission strings or metadata too.
+   *
+   * @see \Drupal\user\PermissionHandlerInterface::getPermissions()
+   *
+   * @return array
+   *   Array of every permission.
+   */
+  protected function permissions($meta = FALSE) {
+    // Not injected because of hard testability.
+    $permissions = \Drupal::service('user.permissions')->getPermissions();
+
+    if (!$meta) {
+      return array_keys($permissions);
+    }
+    return $permissions;
+  }
+
+  /**
+   * Returns the permission strings that a group of roles have.
+   *
+   * @param string[] $role_ids
+   *   The array of roleIDs to check.
+   * @param bool $group_by_role_id
+   *   Choose whether to group permissions by role ID.
+   *
+   * @return array
+   *   An array of the permissions untrusted roles have. If $groupByRoleId is
+   *   true, the array key is the role ID, the value is the array of permissions
+   *   the role has.
+   */
+  protected function rolePermissions(array $role_ids, $group_by_role_id = FALSE) {
+
+    // Get the permissions the given roles have, grouped by roles.
+    $permissions_grouped = user_role_permissions($role_ids);
+
+    // Fill up the administrative roles' permissions too.
+    foreach ($role_ids as $role_id) {
+      $role = Role::load($role_id);
+      if ($role->isAdmin()) {
+        $permissions_grouped[$role_id] = $this->permissions();
+      }
+    }
+
+    if ($group_by_role_id) {
+      // If the result should be grouped, we have nothing else to do.
+      return $permissions_grouped;
+    }
+    else {
+      // Merge the grouped permissions into $untrusted_permissions.
+      $untrusted_permissions = [];
+      foreach ($permissions_grouped as $permissions) {
+        $untrusted_permissions = array_merge($untrusted_permissions, $permissions);
+      }
+
+      return array_values(array_unique($untrusted_permissions));
+    }
   }
 
   /**
@@ -149,6 +215,11 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
+    foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
+      if (!$untrusted_role) {
+        unset($value['plugin_config']['untrusted_roles'][$key]);
+      }
+    }
     $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
   }
 
@@ -181,24 +252,23 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
         '#type' => 'container',
       ];
 
-      // Render tables.
-      if (isset($arguments['rows'])) {
-        $build['list'] = [
-          '#type' => 'table',
-          '#weight' => 1,
-          '#header' => [
-            $this->t('Name'),
-            $this->t('Size (Mb)'),
-          ],
-          '#rows' => $arguments['rows'],
-        ];
-        unset($arguments['rows']);
+      // Render permissions.
+      if (isset($arguments['permission'])) {
+        foreach ($arguments['permission'] as $key => $permissions) {
+          $build[$key] = [
+            '#theme' => 'item_list',
+            '#weight' => 1,
+            '#title' => $this->t($key),
+            '#items' => $permissions,
+          ];
+        }
+        unset($arguments['permission']);
       }
 
       // Get default fail message.
       $build['message'] = [
         '#weight' => 0,
-        '#markup' => $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL),
+        '#markup' => $this->messagesStorage->get($this->id(), $type),
       ];
     }
     return $build;
