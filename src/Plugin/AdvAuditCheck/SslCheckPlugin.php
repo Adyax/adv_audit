@@ -221,6 +221,10 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);
     }
+
+    if (PHP_SAPI === 'cli' && !$this->state->get($this->buildStateConfigKeys()['domain'], FALSE)) {
+      throw new RequirementsException('Can\'t define domain for check', ['ssllab_check']);
+    }
   }
 
 }
