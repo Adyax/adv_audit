@@ -71,7 +71,7 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
    * @var \Symfony\Component\HttpFoundation\Request
    */
   protected $request;
-  
+
   /**
    * {@inheritdoc}
    */
