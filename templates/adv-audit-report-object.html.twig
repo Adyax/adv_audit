@@ -121,6 +121,18 @@
                     <strong>{{ 'Impacts: '|t }}</strong>
                     <small>{{ report.impacts }}</small>
                   </div>
+                  {% if report.reason|length > 0 %}
+                    <div class="panel-heading">
+                      <strong>{{ 'Why this check is failed: '|t }}</strong>
+                      <small>
+                        <ul>
+                        {% for item in report.reason %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                        </ul>
+                      </small>
+                    </div>
+                  {% endif %}
                 </div>
               {% endfor %}
             </div>

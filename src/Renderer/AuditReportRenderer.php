@@ -103,16 +103,6 @@ class AuditReportRenderer implements RenderableInterface {
       ],
     ];
 
-    $build['#score_point__status'] = 'success';
-    $score_point = $build['#score_point'];
-
-    if ($score_point <= 80 && $score_point >= 40) {
-      $build['#score_point__status'] = 'warning';
-    }
-    elseif ($score_point < 40) {
-      $build['#score_point__status'] = 'danger';
-    }
-
     return $build;
   }
 
@@ -263,6 +253,7 @@ class AuditReportRenderer implements RenderableInterface {
       case AuditResultResponseInterface::RESULT_FAIL:
         $build['result_attributes']->addClass('status-failed');
         $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+        $build['reason'] = $audit_reason->getReason();
         break;
 
       default:
