@@ -26,19 +26,13 @@ class TrustedHostCheck extends AdvAuditCheckBase {
    * {@inheritdoc}
    */
   public function perform() {
-    $params = [];
-    $reason = NULL;
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $trusted_host_patterns = Settings::get('trusted_host_patterns');
 
     if (empty($trusted_host_patterns)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
-    }
-    else {
-      $params = ['%trusted_host_patterns' => implode(', ', $trusted_host_patterns)];
+      return $this->fail("Trusted hosts param is empty.");
     }
 
-    return new AuditReason($this->id(), $status, $reason, $params);
+    return $this->success();
   }
 
 }

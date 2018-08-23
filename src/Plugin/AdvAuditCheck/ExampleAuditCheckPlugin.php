@@ -77,10 +77,12 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     $example_link = Link::createFromRoute('LINK', '<front>');
     // Check our condition.
     if (rand(0, 1) == 1) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => 'this is RANDOM variable', '%link' => $example_link->toString()]);
+//      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => 'this is RANDOM variable', '%link' => $example_link->toString()]);
+      return $this->success();
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'This text will be output if result are FAILED.', ['@hash' => 'this is HASH variable', '%link' => $example_link->toString()]);
+//    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'This text will be output if result are FAILED.', );
+    return $this->fail('This text will be output if result are FAILED.', ['@hash' => 'this is HASH variable', '%link' => $example_link->toString()]);
   }
 
   /**
