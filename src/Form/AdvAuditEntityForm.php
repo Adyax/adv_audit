@@ -79,7 +79,7 @@ class AdvAuditEntityForm extends ContentEntityForm {
     $_SESSION['result_entity_id'] = $entity->id();
 
     // Get previous result of audit.
-    $result_audit = $entity->get('audit_results')->first()->getValue()['value'];
+    $result_audit = $entity->get('audit_results')->first()->getValue();
     if ($result_audit instanceof AuditResultResponseInterface) {
       $test_ids = [];
       foreach ($result_audit->getAuditResults() as $audit_reason) {
