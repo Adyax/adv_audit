@@ -12,9 +12,12 @@ use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 
 /**
+ * This example of plugin.
+ *
+ * This plugin described all features are available for checkpoint plugins.
+ *
  * @AdvAuditCheck(
  *  id = "adv_audit_check_example",
  *  label = @Translation("Example plugin"),
@@ -39,20 +42,6 @@ use Drupal\Core\State\StateInterface;
 class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
-   * Drupal\Core\State\StateInterface definition.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
-   * The audit messages storage service.
-   *
-   * @var \Drupal\adv_audit\Message\AuditMessagesStorageInterface
-   */
-  protected $messagesStorage;
-
-  /**
    * Constructs a new ExampleAuditCheckPlugin object.
    *
    * @param array $configuration
@@ -62,10 +51,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
-    $this->messagesStorage = $messages_storage;
   }
 
   /**
@@ -75,20 +62,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition,
-      $container->get('state'),
-      $container->get('adv_audit.messages')
+      $plugin_definition
     );
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.check_should_passed';
   }
 
   /**
@@ -100,21 +75,23 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
   public function perform() {
     // Created link object and put in both result because this link used on other messages like actions.
     $example_link = Link::createFromRoute('LINK', '<front>');
-    if ($this->state->get($this->buildStateConfigKey()) == 1) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => rand(1, 100), '%link' => $example_link->toString()]);
+    // Check our condition.
+    if (rand(0, 1) == 1) {
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => 'this is RANDOM variable', '%link' => $example_link->toString()]);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, ['@hash' => md5('this is simple string'), '%link' => $example_link->toString()]);
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'This text will be output if result are FAILED.', ['@hash' => 'this is HASH variable', '%link' => $example_link->toString()]);
   }
 
   /**
    * {@inheritdoc}
+   *
+   * Method is optional.
    */
   public function configForm() {
     $form['check_should_passed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Select this if check should passed'),
-      '#default_value' => $this->state->get($this->buildStateConfigKey()),
     ];
 
     return $form;
@@ -122,28 +99,39 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
 
   /**
    * {@inheritdoc}
+   *
+   * Method is optional.
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
     $value = $form_state->getValue(['additional_settings', 'plugin_config', 'check_should_passed'], 0);
-    $this->state->set($this->buildStateConfigKey(), $value);
+    // In this place we can save our value from config form.
   }
 
   /**
    * {@inheritdoc}
+   *
+   * Method is optional.
    */
   public function checkRequirements() {
     // Please be careful.
     // Before extend check Requirements method you should call parent method before.
     parent::checkRequirements();
     // Check our custom requirements for plugin.
-    if ($this->state->get('install_task') != 'done') {
+    if (rand(0, 10) < 2) {
       throw new RequirementsException('Human readable reason message.', ['install_task']);
     }
   }
 
   /**
    * {@inheritdoc}
+   *
+   * Method is optional.
+   *
+   * NOTE:
+   *   This method can be implemented if you should display table or something
+   *   else like the numeric list instead of standard text message from
+   *   message.yml file
    */
   public function auditReportRender(AuditReason $reason, $type) {
     switch ($type) {
@@ -152,11 +140,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
       case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
         $build = [
           '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-fail-color'],
-          ],
           'message' => [
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $reason->getArguments())->__toString(),
+            '#markup' => 'My custom HTML markup for display MSG_TYPE_FAIL message.',
           ],
         ];
         break;
@@ -166,18 +151,15 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
       case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
         $build = [
           '#type' => 'container',
-          '#attributes' => [
-            'class' => ['custom-pass-color'],
-          ],
           'message' => [
-            '#markup' => $this->t($this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_SUCCESS), $reason->getArguments())->__toString(),
+            '#markup' => 'My custom HTML markup for display MSG_TYPE_SUCCESS message.',
           ],
         ];
         break;
 
       default:
         // Return empty array.
-        // In this case will display messages from messages.yml file for you plugin.
+        // In this case all other messages will be displayed from messages.yml file for you plugin.
         $build = [];
         break;
     }

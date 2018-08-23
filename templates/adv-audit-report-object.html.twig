@@ -102,25 +102,46 @@
                     <small>{{ report.description }}</small>
                   </div>
                   </br>
+                  {% if report.result is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Results: '|t }}</strong>
                     {{ report.result|raw }}
                   </div>
-                  </br>
+                    </br>
+                  {% endif %}
+                    {% if report.severity is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Importance: '|t }}</strong>
                     <small>{{ report.severity }}</small>
                   </div>
                   </br>
+                    {% endif %}
+                    {% if report.actions is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Actions to be done: '|t }}</strong>
                     <small>{{ report.actions }}</small>
                   </div>
                   </br>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Impacts: '|t }}</strong>
                     <small>{{ report.impacts }}</small>
                   </div>
+                    {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty and report.reason.0 != null %}
+                    <div class="panel-heading">
+                      <strong>{{ 'Why this check is failed: '|t }}</strong>
+                      <small>
+                        <ul>
+                        {% for item in report.reason %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                        </ul>
+                      </small>
+                    </div>
+                  {% endif %}
                 </div>
               {% endfor %}
             </div>
