@@ -5,6 +5,7 @@
  * Main module file.
  */
 
+use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -33,6 +34,7 @@ function adv_audit_theme() {
       ],
       'template' => 'adv-audit-report-object',
     ],
+
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
@@ -55,6 +57,34 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
   $variables += ['content' => []];
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
+  }
+
+  // Build score history table.
+  $entity = $variables['elements']['#adv_audit'];
+  $variables['content']['score_history'] = [
+    '#type' => 'table',
+    '#caption' => t('Score history'),
+    '#empty' => t('No score history to display.'),
+    '#header' => [
+      'id' => t('ID'),
+      'score' => t('Score'),
+      'date' => t('Date'),
+      'operations' => t('Operations'),
+    ],
+  ];
+  $adv_storage = \Drupal::service('entity_type.manager')->getStorage('adv_audit');
+  $vids = $adv_storage->revisionIds($entity);
+  foreach ($vids as $rev_id) {
+    if ($rev_id == $entity->id()) {
+      continue;
+    }
+    /** @var \Drupal\Core\Entity\EntityInterface $rev_entity */
+    $rev_entity = $adv_storage->loadRevision($rev_id);
+    $result = $rev_entity->get('audit_results')->first()->getValue();
+    $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
+    $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
+    $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
+    $variables['content']['score_history'][$rev_id]['operations'] = \Drupal\Core\Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
   }
 }
 
@@ -84,5 +114,18 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
 
     default:
       return $output;
+  }
+}
+
+/**
+ *
+ * @param $definition
+ */
+function adv_audit_adv_audit_check_info_alter(&$definitions) {
+  foreach ($definitions as $plugin_id => &$definition) {
+    $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
+    if ($overridden_config) {
+      $definition = \Drupal\Component\Utility\NestedArray::mergeDeep($definition, $overridden_config);
+    }
   }
 }

@@ -1,0 +1,21 @@
+adv_audit.preset.*:
+  type: config_entity
+  label: 'Adv audit preset'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Name'
+    uuid:
+      type: string
+    plugins:
+      type: sequence
+      label: 'List of plugins for preset'
+      sequence:
+        id:
+          type: string
+        status:
+          type: integer
+

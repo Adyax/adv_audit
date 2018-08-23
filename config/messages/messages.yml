@@ -16,7 +16,7 @@ plugins:
     help: 'Check non-security updates for modules.'
   drupal_core:
     description: 'Check the Drupal core version and its actuality.'
-    actions: 'Update drupal core to version @recommended_version.'
+    actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
     impacts: 'If you don''t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
     fail: 'Current Drupal core version is outdated - @version'
     success: 'Current Drupal core version is up to date - @version'
@@ -26,7 +26,7 @@ plugins:
     actions: 'It is recommended to update features with the latest structure and settings done in the BO.'
     impacts: 'statuses overridden, needs review and rebuilding must be avoided because it means that configurations that are defined in the feature module''s code have been overridden in the Drupal backend by a user and during next execution of features revert execution (that is a part of any normal Continuous Deployment process) these changes will be lost.'
     fail: 'There are non-actual features on web-site.'
-    success: ''
+    success: 'All Features are actual.'
     help: 'Check if all Features are actual.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'

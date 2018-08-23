@@ -77,7 +77,7 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditChe
         $this->updates[] = [
           'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
           'current_v' => $project['existing_version'],
-          'recommended_v' => $project['recommended'] || $project['latest_version'],
+          'recommended_v' => $project['recommended'],
         ];
       }
     }
