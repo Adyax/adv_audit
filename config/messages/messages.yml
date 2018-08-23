@@ -168,3 +168,10 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  views_access_controlled:
+    description: 'Views can check if the user is allowed access to the content. It is recommended that all Views implement some amount of access control, at a minimum checking for the permission "access content".'
+    actions: 'Limit access to the listed views/displays by permissions.'
+    impacts: 'Unlimited access to these views can impact site security.'
+    fail: 'There are views that should not be aceesed unlimited.'
+    success: 'All views are limited by permissions/roles.'
+    help: 'Checks views are access controlled.'
