@@ -170,8 +170,8 @@ plugins:
     help: 'Check admin username'
   anonymous_user_table:
     description: 'The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table.'
-    actions: ''
-    impacts: ''
+    actions: 'Need to create user with uid 0 if not exists.'
+    impacts: 'Table "users" must contain User ID 0 for security reasons.'
     fail: 'The table "users" does not contain user with uid = 0.'
     success: 'The table "users" contain anonymous user.'
     help: 'Check if table "users" contains anonymous user.'
