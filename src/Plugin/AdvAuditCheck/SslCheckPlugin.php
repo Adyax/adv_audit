@@ -147,8 +147,6 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     // Wait until report will be ready.
     if (!in_array($result->status, ['READY', 'ERROR'])) {
       sleep(10); //NOSONAR
-      flush();
-      ob_flush();
       return $this->perform();
     }
     $report_options = [
