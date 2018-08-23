@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\StreamWrapper\PublicStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -114,8 +115,7 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    */
   protected function getFilesystemInfo() {
 
-    $path = $this->root . '/' . $this->kernel->getSitePath() . '/files';
-
+    $path = PublicStream::basePath();
     $iterator = new \RecursiveDirectoryIterator($path);
     $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
     $objects = new \RecursiveIteratorIterator($iterator);
