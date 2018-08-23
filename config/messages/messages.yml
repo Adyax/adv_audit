@@ -168,3 +168,9 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  temporary_files:
+    description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
+    impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
+    fail: 'Sensitive temporary files were found: %files'
+    success: 'Sensitive temporary files were not found.'
+    help: 'Check sensitive temporary files.'
