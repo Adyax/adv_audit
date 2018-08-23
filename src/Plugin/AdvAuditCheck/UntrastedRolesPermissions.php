@@ -161,7 +161,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    */
   protected function permissions($meta = FALSE) {
     // Not injected because of hard testability.
-    $permissions = \Drupal::service('user.permissions')->getPermissions();
+    $permissions = $this->userPermission->getPermissions();
 
     if (!$meta) {
       return array_keys($permissions);
