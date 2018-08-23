@@ -122,7 +122,7 @@ class AuditCategoryManagerService {
           'status' => [
             '#type' => 'checkbox',
             '#title' => $plugin['label'],
-            '#checked' => $plugin_insatnce->isEnabled(),
+            '#checked' => $plugin_insatnce->isEnabled() ? TRUE : FALSE,
             '#attributes' => [
               'disabled' => 'disabled',
             ],
