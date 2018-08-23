@@ -2,10 +2,14 @@
 
 namespace Drupal\adv_audit\Form;
 
+use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Batch\AuditRunTestBatch;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountProxy;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Form controller for Audit Result entity edit forms.
@@ -47,8 +51,8 @@ class AdvAuditEntityForm extends ContentEntityForm {
     if (!$this->entity->isNew()) {
       $form['new_revision'] = [
         '#type' => 'checkbox',
-        '#title' => $this->t('Create new revision'),
-        '#default_value' => FALSE,
+        '#title' => $this->t('Create new version of report'),
+        '#default_value' => TRUE,
         '#weight' => 10,
       ];
     }
@@ -59,36 +63,61 @@ class AdvAuditEntityForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Remove button and internal Form API values from submitted values.
+    $form_state->cleanValues();
+    $this->entity = $this->buildEntity($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->entity;
 
-    // Save as a new revision if requested to do so.
-    if (!$form_state->isValueEmpty('new_revision') && $form_state->getValue('new_revision') != FALSE) {
-      $entity->setNewRevision();
+    // No other way to pass the entity to batch finished handler.
+    $_SESSION['result_entity_id'] = $entity->id();
 
-      // If a new revision is created, save the current user as revision author.
-      $entity->setRevisionCreationTime(REQUEST_TIME);
-      $entity->setRevisionUserId($this->currentUser->id());
-    }
-    else {
-      $entity->setNewRevision(FALSE);
-    }
+    // Get previous result of audit.
+    $result_audit = $entity->get('audit_results')->first()->getValue()['value'];
+    if ($result_audit instanceof AuditResultResponseInterface) {
+      $test_ids = [];
+      foreach ($result_audit->getAuditResults() as $audit_reason) {
+        if ($audit_reason instanceof AuditReason) {
+          $test_ids[] = $audit_reason->getPluginId();
+        }
+      }
 
-    $status = parent::save($form, $form_state);
-
-    switch ($status) {
-      case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Audit Result entity.', [
-          '%label' => $entity->label(),
-        ]));
-        break;
-
-      default:
-        drupal_set_message($this->t('Saved the %label Audit Result entity.', [
-          '%label' => $entity->label(),
-        ]));
+      // Configure batch.
+      $batch = [
+        'title' => $this->t('Running process audit'),
+        'init_message' => $this->t('Prepare to process.'),
+        'progress_message' => $this->t('Progress @current out of @total.'),
+        'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
+        'operations' => [
+          [
+            [AuditRunTestBatch::class, 'run'],
+            [$test_ids, []],
+          ],
+        ],
+        'finished' => [
+          AuditRunTestBatch::class, 'finished',
+        ],
+      ];
+      batch_set($batch);
     }
     $form_state->setRedirect('entity.adv_audit.canonical', ['adv_audit' => $entity->id()]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function actions(array $form, FormStateInterface $form_state) {
+    $actions = parent::actions($form, $form_state);
+    if (!$this->entity->isNew()) {
+      $actions['submit']['#value'] = $this->t('Update report audit');
+    }
+    return $actions;
   }
 
 }
