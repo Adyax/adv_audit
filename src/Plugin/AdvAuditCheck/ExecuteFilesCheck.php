@@ -80,7 +80,7 @@ class ExecuteFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
     $file_path = PublicStream::basePath() . '/adv_audit_test.php';
 
     // Create the test file.
-    if ($test_file = @fopen('./' . $file_path, 'w')) {
+    if ($test_file = fopen('./' . $file_path, 'w')) {
       fwrite($test_file, $content);
       fclose($test_file);
     }
