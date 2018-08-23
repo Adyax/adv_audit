@@ -81,7 +81,6 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     /** @var \Drupal\Core\Entity\EntityInterface $rev_entity */
     $rev_entity = $adv_storage->loadRevision($rev_id);
     $result = $rev_entity->get('audit_results')->first()->getValue();
-    $result = unserialize($result['value']);
     $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
     $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
     $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];

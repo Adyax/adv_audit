@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Renderer;
 
+use Drupal\adv_audit\AuditCategoryManagerService;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -63,13 +64,21 @@ class AuditReportRenderer implements RenderableInterface {
   protected $metaInformation = [];
 
   /**
+   * The category manager service.
+   *
+   * @var \Drupal\adv_audit\AuditCategoryManagerService
+   */
+  protected $categoryManager;
+
+  /**
    * Constructs a new Renderer object.
    */
-  public function __construct(RendererInterface $renderer, AdvAuditCheckManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory) {
+  public function __construct(RendererInterface $renderer, AdvAuditCheckManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
     $this->renderer = $renderer;
     $this->pluginManagerAdvAuditCheck = $plugin_manager_adv_audit_check;
     $this->advAuditMessages = $adv_audit_messages;
     $this->configFactory = $config_factory;
+    $this->categoryManager = $category_manager;
   }
 
   /**
@@ -107,24 +116,6 @@ class AuditReportRenderer implements RenderableInterface {
   }
 
   /**
-   * Get list of available categories.
-   *
-   * @return array
-   *   List of categories.
-   */
-  protected function getCategoriesList() {
-    $audit_config = $this->configFactory->get('adv_audit.config');
-    $categories = $audit_config->get('adv_audit_settings.categories');
-    $list = [];
-    foreach ($categories as $id => $cat_definition) {
-      if ($cat_definition['status']) {
-        $list[$id] = $cat_definition['label'];
-      }
-    }
-    return $list;
-  }
-
-  /**
    * Build categories list.
    *
    * @return array
@@ -133,7 +124,7 @@ class AuditReportRenderer implements RenderableInterface {
   protected function doBuildCategory() {
     $build = [];
 
-    foreach ($this->getCategoriesList() as $category_id => $category_label) {
+    foreach ($this->categoryManager->getListOfCategories() as $category_id => $category_label) {
       $build[$category_id] = [
         'label' => $category_label,
         'score' => $this->calculateScoreByCategory($category_id),
@@ -254,10 +245,15 @@ class AuditReportRenderer implements RenderableInterface {
         $build['result_attributes']->addClass('status-failed');
         $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $build['reason'] = $audit_reason->getReason();
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
 
       default:
         $build['result_attributes']->addClass('status-skipped');
+        $build['reason'] = $audit_reason->getReason();
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
     }
 
@@ -293,7 +289,7 @@ class AuditReportRenderer implements RenderableInterface {
     }
     // Get needed message from yml config file.
     // Replace dynamic variables.
-    $msg_string = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $audit_reason->getArguments());
+    $msg_string = @$this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $audit_reason->getArguments());
     return ['#markup' => $msg_string];
   }
 
