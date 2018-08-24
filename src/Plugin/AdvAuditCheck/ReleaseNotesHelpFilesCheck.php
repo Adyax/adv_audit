@@ -78,7 +78,7 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
    */
   public function configForm() {
     $description = t(
-      'Place one filepath per line as relative without preceding slash. i.e path/to/file . 
+      'Place one filepath per line as relative without preceding slash. i.e path/to/file.
        <br />Default files: @files',
       [
         '@files' => new FormattableMarkup(
