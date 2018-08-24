@@ -57,7 +57,7 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
   /**
    * {@inheritdoc}
    */
-  public function perform($condition = NULL) {
+  public function perform() {
     $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 

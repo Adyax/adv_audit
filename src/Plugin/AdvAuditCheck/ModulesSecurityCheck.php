@@ -57,7 +57,7 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
   /**
    * {@inheritdoc}
    */
-  public function perform($condition = NULL) {
+  public function perform() {
     $this->count = 0;
     $projects = update_get_available(TRUE);
     $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
