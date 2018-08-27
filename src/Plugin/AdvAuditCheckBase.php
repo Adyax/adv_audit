@@ -2,7 +2,10 @@
 
 namespace Drupal\adv_audit\Plugin;
 
+use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Exception\RequirementsException;
+use Drupal\adv_audit\AuditResultResponseInterface;
+
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -11,7 +14,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 /**
  * Base class for Advances audit check plugins.
  */
-abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInterface {
+abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInterface, AuditCheckResultInterface {
 
   use StringTranslationTrait;
 
@@ -412,4 +415,24 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     return \Drupal::getContainer();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function success(): AuditReason {
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fail($msg, array $issue_details): AuditReason {
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, $msg, $issue_details);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function skip($msg): AuditReason {
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
+  }
 }
