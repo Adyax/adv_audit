@@ -77,20 +77,15 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
    * {@inheritdoc}
    */
   public function configForm() {
-    $description = t(
-      'Place one filepath per line as relative without preceding slash. i.e path/to/file.
-       <br />Default files: @files',
-      [
-        '@files' => new FormattableMarkup(
-        '<br />' . implode('<br />',
-          self::DEFAULT_FILES), []),
-      ]
-    );
+    $description = t('Place one filepath per line as relative without preceding slash. i.e path/to/file.');
+    $default_value = $this->state->get($this->buildStateConfigKey());
+    $default_value = !empty($default_value) ? $default_value : implode("\r\n", self::DEFAULT_FILES);
+
     $form['files'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Files for checking'),
       '#description' => $description,
-      '#default_value' => $this->state->get($this->buildStateConfigKey()),
+      '#default_value' => $default_value,
     ];
 
     return $form;
@@ -113,10 +108,10 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
     $params = [];
 
     $config_files = $this->parseLines($this->state->get($this->buildStateConfigKey()));
-    $files = array_merge(self::DEFAULT_FILES, $config_files);
+    $config_files = !empty($config_files) ? $config_files : self::DEFAULT_FILES;
 
     $remaining_files = [];
-    foreach ($files as $file) {
+    foreach ($config_files as $file) {
       if (file_exists(DRUPAL_ROOT . '/' . $file)) {
         array_push($remaining_files, $file);
       }
