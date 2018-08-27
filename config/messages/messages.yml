@@ -203,3 +203,10 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  dangerous_tags_check:
+    description: 'Checks content (fields) on dangerous tags.'
+    actions: 'Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content. It is recommended you remove such contents.'
+    impacts: 'Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content.'
+    fail: 'Dangerous tags were found in submitted content (fields).'
+    success: 'Dangerous tags were not found in any submitted content (fields).'
+    help: 'Script and PHP code in content does not align with Drupal best practices.'
