@@ -182,3 +182,10 @@ plugins:
     fail: 'Errors display is enabled on production environment.'
     success: 'Errors display is disabled on production environment.'
     help: 'Check errors display.'
+  opcache_check:
+    description: 'OPcache improves PHP performance by storing precompiled script bytecode in shared memory, thereby removing the need for PHP to load and parse scripts on each request.'
+    actions: 'Enable PHP Opcache extension.'
+    impacts: 'PHP OPcode caching can improve your site''s performance considerably.'
+    fail: 'Opcache extension disabled.'
+    success: 'Opcache extension enabled.'
+    help: 'Checks if PHP Opcache extension is enabled.'
