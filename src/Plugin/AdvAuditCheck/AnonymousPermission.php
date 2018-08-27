@@ -118,7 +118,6 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
         '#items' => $wrong_permission,
       ];
       $arguments['%list'] = $this->renderer->render($permissions);
-      return $this->fail($message, $arguments);
     }
     return new AuditReason($this->id(), $status, $message, $arguments);
   }
