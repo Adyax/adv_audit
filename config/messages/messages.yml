@@ -203,3 +203,10 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  opcache_check:
+    description: 'Certain HTML tags can allow an attacker to take control of your site. Drupal''s input format system makes use of a set filters to run on incoming text.'
+    actions: 'The ''HTML Filter'' strips out harmful tags and Javascript events and should be used on all formats accessible by untrusted users.'
+    impacts: 'Certain HTML tags can allow an attacker to take control of your site.'
+    fail: 'Untrusted users are allowed to input dangerous HTML tags.'
+    success: 'Untrusted users are not allowed to input dangerous HTML tags.'
+    help: 'Certain HTML tags can allow an attacker to take control of your site. Drupal''s input format system makes use of a set filters to run on incoming text. The ''HTML Filter'' strips out harmful tags and Javascript events and should be used on all formats accessible by untrusted users.'
