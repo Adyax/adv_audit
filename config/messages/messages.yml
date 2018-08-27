@@ -161,6 +161,13 @@ plugins:
     fail: 'Some pages have abnormal big memory usage.'
     success: 'Memory usage is normal.'
     help: 'Checks given URLs for abnormal big memory usage.'
+  ssllab_check:
+    description: 'Checks SSL.'
+    actions: 'Performs a deep analysis of the configuration of SSL.'
+    impacts: 'SSL settings issues could have impact to security and search engine ranking.'
+    fail: 'SSL settings have security issues. For more info please visit %link.'
+    success: 'Grade is A or A+ which is OK. For more info please visit %link.'
+    help: 'Please check server SSL settings.'
   admin_name_check:
     description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
     actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
@@ -175,3 +182,10 @@ plugins:
     fail: 'The table "users" does not contain user with uid = 0.'
     success: 'The table "users" contain anonymous user.'
     help: 'Check if table "users" contains anonymous user.'
+  errors_display:
+    description: 'As a form of hardening your site you should avoid information disclosure. Drupal by default prints errors to the screen and writes them to the log. Error messages disclose the full path to the file where the error occured.'
+    actions: 'Set errors display "None" for production environment.'
+    impacts: 'Real users should not see any service alerts from the site since this is not secure. Errors and notices can tell the user about the structure of files and modules since the error message will contain a full path to the problematic file - information disclosure.'
+    fail: 'Errors display is enabled on production environment.'
+    success: 'Errors display is disabled on production environment.'
+    help: 'Check errors display.'
