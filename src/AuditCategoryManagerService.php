@@ -33,7 +33,6 @@ class AuditCategoryManagerService {
 
   protected $categoryDefinitions;
 
-
   /**
    * Constructs a new AduitCategoryManagerService object.
    */
@@ -46,7 +45,7 @@ class AuditCategoryManagerService {
   /**
    * Return definition properties for selected category.
    *
-   * @param $category_id
+   * @param string $category_id
    *   The category id.
    *
    * @return array
@@ -56,6 +55,15 @@ class AuditCategoryManagerService {
     return isset($this->categoryDefinitions[$category_id]) ? $this->categoryDefinitions[$category_id] : [];
   }
 
+  /**
+   * Get category status by ID.
+   *
+   * @param string $id
+   *   Machine name of category.
+   *
+   * @return mixed
+   *   Return category status.
+   */
   public function getStatus($id) {
     return $this->categoryDefinitions[$id]['status'];
   }
@@ -78,25 +86,20 @@ class AuditCategoryManagerService {
   }
 
   /**
-   * Handler callback for page '/admin/config/adv-audit'
-   *
-   * @needs_review
-   *
-   * @return array
-   *   Return render array of page.
+   * Handler callback for page '/admin/config/adv-audit'.
    */
   public function buildCategoriesOverview() {
     $build = [
       '#type' => 'container',
       '#attached' => [
         'library' => [
-          'adv_audit/adv_audit.admin'
+          'adv_audit/adv_audit.admin',
         ],
       ],
       'title' => [
         '#type' => 'html_tag',
         '#tag' => 'h3',
-        '#value' => $this->t('List of available audit plugins:')
+        '#value' => $this->t('List of available audit plugins:'),
       ],
     ];
 
@@ -113,7 +116,7 @@ class AuditCategoryManagerService {
       ];
       foreach ($this->pluginManagerAdvAuditCheck->getPluginsByCategoryFilter($category_id) as $plugin) {
         $pid = $plugin['id'];
-        $plugin_insatnce = $this->pluginManagerAdvAuditCheck->createInstance($pid);
+        $plugin_instance = $this->pluginManagerAdvAuditCheck->createInstance($pid);
         $build[$category_id][$pid] = [
           '#type' => 'container',
           '#attributes' => [
@@ -122,7 +125,7 @@ class AuditCategoryManagerService {
           'status' => [
             '#type' => 'checkbox',
             '#title' => $plugin['label'],
-            '#checked' => $plugin_insatnce->isEnabled() ? TRUE : FALSE,
+            '#checked' => $plugin_instance->isEnabled() ? TRUE : FALSE,
             '#attributes' => [
               'disabled' => 'disabled',
             ],
@@ -135,7 +138,7 @@ class AuditCategoryManagerService {
               'class' => ['edit', 'edit-checkpoint'],
             ],
           ],
-          '#weight' => $plugin_insatnce->getWeight(),
+          '#weight' => $plugin_instance->getWeight(),
         ];
       }
       uasort($build[$category_id], [SortArray::class, 'sortByWeightProperty']);
@@ -147,7 +150,16 @@ class AuditCategoryManagerService {
     return $build;
   }
 
-
+  /**
+   * Update category definition.
+   *
+   * @param string $category_id
+   *   Machine name of category.
+   * @param string $key
+   *   Configuration key.
+   * @param mixed $value
+   *   New value.
+   */
   public function updateCategoryDefinitionValue($category_id, $key, $value) {
     $config = $this->configFactory->getEditable('adv_audit.config');
     $config->set('adv_audit_settings.categories.' . $category_id . '.' . $key, $value)->save();

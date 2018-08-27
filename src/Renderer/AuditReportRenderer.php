@@ -99,7 +99,7 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
-    $build = [
+    return [
       '#theme' => 'adv_audit_report_object',
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
@@ -112,7 +112,6 @@ class AuditReportRenderer implements RenderableInterface {
       ],
     ];
 
-    return $build;
   }
 
   /**
@@ -239,21 +238,19 @@ class AuditReportRenderer implements RenderableInterface {
       case AuditResultResponseInterface::RESULT_PASS:
         $build['result_attributes']->addClass('status-passed');
         $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
 
       case AuditResultResponseInterface::RESULT_FAIL:
         $build['result_attributes']->addClass('status-failed');
         $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $build['reason'] = $audit_reason->getReason();
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
 
       default:
         $build['result_attributes']->addClass('status-skipped');
         $build['reason'] = $audit_reason->getReason();
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
     }
 
@@ -289,7 +286,8 @@ class AuditReportRenderer implements RenderableInterface {
     }
     // Get needed message from yml config file.
     // Replace dynamic variables.
-    $msg_string = @$this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $audit_reason->getArguments());
+    $arguments = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
+    $msg_string = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $arguments);
     return ['#markup' => $msg_string];
   }
 

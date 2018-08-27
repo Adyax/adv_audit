@@ -7,7 +7,6 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -108,7 +107,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     if (!$secure) {
       return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $arguments);
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
   /**
@@ -117,6 +116,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   public function auditReportRender(AuditReason $reason, $type) {
     $items = [];
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+
       $arguments = $reason->getArguments();
       if (isset($arguments[self::HAS_HOST])) {
         $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments[self::HAS_HOST]);
@@ -128,13 +128,12 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
         $items[] = 'There are "admin" parts in username';
       }
 
-      $build = [
+      return [
         '#theme' => 'item_list',
         '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments[self::NAME_PLACEHOLDER]]),
         '#list_type' => 'ol',
         '#items' => $items,
       ];
-      return $build;
     }
     return [];
   }
