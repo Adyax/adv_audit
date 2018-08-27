@@ -6,8 +6,6 @@ use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
-use Drupal\adv_audit\Message\AuditMessageCapture;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use InvalidArgumentException;
@@ -16,7 +14,6 @@ use InvalidArgumentException;
  * Runs a single test batch.
  */
 class AuditRunTestBatch {
-
   /**
    * Maximum number of previous messages to display.
    */
@@ -39,7 +36,7 @@ class AuditRunTestBatch {
    * @param array $context
    *   The batch context.
    */
-  public static function run($initial_ids, $config, &$context) {
+  public static function run(array $initial_ids, array $config, array &$context) {
     if (!isset($context['sandbox']['test_ids'])) {
       $context['sandbox']['max'] = count($initial_ids);
       $context['sandbox']['current'] = 1;
@@ -48,11 +45,11 @@ class AuditRunTestBatch {
       // test_ids will be the list of IDs remaining to run.
       $context['sandbox']['test_ids'] = $initial_ids;
       $context['sandbox']['messages'] = [];
-      /** @var \Drupal\adv_audit\AuditResultResponseInterface */
+      // @var \Drupal\adv_audit\AuditResultResponseInterface
       $context['results']['result_response'] = new AuditResultResponse();
-      $context['results']['fail_count'] = 0;
-      $context['results']['success_count'] = 0;
-      $context['results']['report_entity'] = isset($config['report_entity']) ? $config['report_entity'] : NULL;
+      $context['results']['@skip_count'] = 0;
+      $context['results']['@fail_count'] = 0;
+      $context['results']['@success_count'] = 0;
     }
 
     /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
@@ -77,16 +74,16 @@ class AuditRunTestBatch {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
           \Drupal::logger('adv_audit_batch')->info($message);
-          $context['results']['success_count']++;
+          $context['results']['@success_count']++;
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
-          $context['results']['fail_count']++;
+          $context['results']['@fail_count']++;
           \Drupal::logger('adv_audit_batch')->error($message);
           break;
 
         case AuditResultResponseInterface::RESULT_SKIP:
-          $context['results']['skip_count']++;
+          $context['results']['@skip_count']++;
           \Drupal::logger('adv_audit_batch')->warning($message);
           break;
 
@@ -117,44 +114,27 @@ class AuditRunTestBatch {
    * @param string $elapsed
    *   The time to run the batch.
    */
-  public static function finished($success, $results, $operations, $elapsed) {
-    $success_count = $results['success_count'];
-    $fail_count = $results['fail_count'];
-
-    // If we had any success_count log that for the user.
-    if ($success_count > 0) {
-      drupal_set_message(\Drupal::translation()
-        ->formatPlural($success_count, 'Process 1 audit successfully', 'Processed @count audits successfully'));
-    }
-    // If we had fail_count, log them and show the test failed.
-    if ($fail_count > 0) {
-      drupal_set_message(\Drupal::translation()
-        ->formatPlural($fail_count, '1 checkpoint failed', '@count checkpoints failed'));
-      drupal_set_message(t('Audit process not fully completed'), 'error');
-    }
-    else {
-      // Everything went off without a hitch. We may not have had success_count
-      // but we didn't have fail_count so this is fine.
-      drupal_set_message(t('Congratulations, you process all audit checkpoints on your Drupal site!'));
-    }
-
-    if (!$success) {
-      drupal_set_message('The batch process is not fully completed.', 'error');
-      return;
-    }
+  public static function finished($success, array $results, array $operations, $elapsed) {
+    drupal_set_message(t('Audit process has finished: @success_count succeed, @fail_count failed, @skip_count skipped.', $results));
 
     // If all are OK then try to save audit report result to the entity.
     $audit_result_response = $results['result_response'];
     // In case when we already have result entity.
     // Occurred when we save new revision.
-    $entity = $results['report_entity'];
-
+    $entity = NULL;
+    // I find only one way how to pass entity id to finished handler.
+    $entity_id = isset($_SESSION['result_entity_id']) ? $_SESSION['result_entity_id'] : NULL;
+    if ($entity_id) {
+      unset($_SESSION['result_entity_id']);
+      $entity = AdvAuditEntity::load($entity_id);
+    }
     // Check what we have valid result object.
     if (!($audit_result_response instanceof AuditResultResponse)) {
-      drupal_set_message('Can\'t save audit result to the entity. Have problem with result object.', 'error');
+      drupal_set_message(t("Can't save audit result to the entity. Have problem with result object."), 'error');
       return;
     }
-    // Check the destination entity.
+    // If we not have audit entity then we should created it and save result
+    // to new entity.
     if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
       $entity = AdvAuditEntity::create([
         'name' => AdvAuditEntity::generateEntityName(),
@@ -163,6 +143,23 @@ class AuditRunTestBatch {
 
     try {
       $args = [];
+      // Check what it not new entity, that's mean what we are working with the
+      // already saved entity. And we should create a new revision and save the
+      // result.
+      if (!$entity->isNew()) {
+        $entity->setNewRevision();
+        // If a new revision is created, save the current user as revision author.
+        $entity->setRevisionCreationTime(REQUEST_TIME);
+        $entity->setRevisionUserId(1);
+      }
+
+      // Get global info.
+      $advGlobalData = \Drupal::service('adv_audit.global_info');
+      $resultsGlobal = $advGlobalData->index();
+
+      // Set global info.
+      $audit_result_response->setOverviewInfo($resultsGlobal);
+
       $entity->set('audit_results', serialize($audit_result_response));
       $args['@is_new'] = $entity->isNew() ? 'new' : '';
       $entity->save();
@@ -171,20 +168,21 @@ class AuditRunTestBatch {
       drupal_set_message(t('The @is_new entity was saved. View audit %link', $args));
     }
     catch (EntityStorageException $e) {
-      drupal_set_message('Can\'t save audit result to the entity. Save operations is failed.', 'error');
+      drupal_set_message(t("Can't save audit result to the entity. Save operations is failed."), 'error');
     }
     catch (InvalidArgumentException $e) {
-      drupal_set_message('The specified audit_results field does not exist.', 'error');
+      drupal_set_message(t('The specified audit_results field does not exist.'), 'error');
     }
   }
 
   /**
    * Display Batch messages during batch progress.
    *
-   * @param $context
-   *   Context of the batch
+   * @param mixed $context
+   *   Context of the batch.
    *
    * @return mixed
+   *   Context of the batch.
    */
   protected static function displayMessages(&$context) {
     // Only display the last MESSAGE_LENGTH messages, in reverse order.
@@ -205,10 +203,10 @@ class AuditRunTestBatch {
       $test_id = reset($context['sandbox']['test_ids']);
 
       $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
-          '@test' => $test_id,
-          '@current' => $context['sandbox']['current'],
-          '@max' => $context['sandbox']['max'],
-        ]) . "<br />\n" . $context['message'];
+        '@test' => $test_id,
+        '@current' => $context['sandbox']['current'],
+        '@max' => $context['sandbox']['max'],
+      ]) . "<br />\n" . $context['message'];
     }
     return $context;
   }
@@ -227,6 +225,14 @@ class AuditRunTestBatch {
         'name' => AdvAuditEntity::generateEntityName(),
       ]);
     }
+
+    // Get global info.
+    $advGlobalData = \Drupal::service('adv_audit.global_info');
+    $resultsGlobal = $advGlobalData->index();
+
+    // Set global info.
+    $auditResultResponse->setOverviewInfo($resultsGlobal);
+
     $entity->set('audit_results', serialize($auditResultResponse));
     $entity->save();
   }

@@ -51,7 +51,7 @@ This method should return object \Drupal\adv_audit\AuditReason
 With needed information about current result of testing like:
  - Test ID (current plugin ID)
  - Status of the test result passed/failled
- - (optional) Short reason about why this test is failed. If you have much what one reason, you can use array.
+ - (optional) Short reason about why this test is failed. If you have much what one reason, you can use array. SHOULD NOT CONTAIN ANY DYNAMIC VALUES.
  - Arguments: Use for store dynamic values for placeholder replacement.
  
  For Example (Plugin: drupal_core)
