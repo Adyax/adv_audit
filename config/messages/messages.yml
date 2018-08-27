@@ -168,3 +168,10 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  errors_display:
+    description: 'As a form of hardening your site you should avoid information disclosure. Drupal by default prints errors to the screen and writes them to the log. Error messages disclose the full path to the file where the error occured.'
+    actions: 'Set errors display "None" for production environment.'
+    impacts: 'Real users should not see any service alerts from the site since this is not secure. Errors and notices can tell the user about the structure of files and modules since the error message will contain a full path to the problematic file - information disclosure.'
+    fail: 'Errors display is enabled on production environment.'
+    success: 'Errors display is disabled on production environment.'
+    help: 'Check errors display.'
