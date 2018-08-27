@@ -168,3 +168,10 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  anonymous_user_permission:
+    description: 'Check if anonymous users can create, delete or update some entity.'
+    actions: 'Check permissions for anonymous.'
+    impacts: 'all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code'
+    fail: 'Anonymous user have some unsecure permissions: %list .'
+    success: 'Permissions for anonymous users are correct.'
+    help: 'Check anonymous permissions.'
