@@ -23,7 +23,7 @@ interface AuditCheckResultInterface  {
    * @return \Drupal\adv_audit\AuditReason
    *   Return AuditReason object instance.
    */
-  public function fail($msg, array $issues): AuditReason;
+  public function fail($msg, array $issue_details): AuditReason;
 
   /**
    * Return Skip result.
