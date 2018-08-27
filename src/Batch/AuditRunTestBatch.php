@@ -148,17 +148,23 @@ class AuditRunTestBatch {
       // result.
       if (!$entity->isNew()) {
         $entity->setNewRevision();
-        // If a new revision is created, save the current user as revision author.
+        // If a new revision is created, save the current user as
+        // revision author.
         $entity->setRevisionCreationTime(REQUEST_TIME);
         $entity->setRevisionUserId(1);
       }
 
-      // Get global info.
-      $advGlobalData = \Drupal::service('adv_audit.global_info');
-      $resultsGlobal = $advGlobalData->index();
+      // Include  Global Info if it enabled.
+      $global_info_status = \Drupal::config('adv_audit.config')
+        ->get('adv_audit_settings.categories');
+      if ($global_info_status['global_info']['status'] == 1) {
+        // Get global info.
+        $advGlobalData = \Drupal::service('adv_audit.global_info');
+        $resultsGlobal = $advGlobalData->index();
 
-      // Set global info.
-      $audit_result_response->setOverviewInfo($resultsGlobal);
+        // Set global info.
+        $audit_result_response->setOverviewInfo($resultsGlobal);
+      }
 
       $entity->set('audit_results', serialize($audit_result_response));
       $args['@is_new'] = $entity->isNew() ? 'new' : '';
