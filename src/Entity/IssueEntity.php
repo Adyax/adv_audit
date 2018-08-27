@@ -112,8 +112,8 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       }
     }
 
-    // If no revision author has been set explicitly, make the adv_audit_issue owner the
-    // revision author.
+    // If no revision author has been set explicitly,
+    // make the adv_audit_issue owner the revision author.
     if (!$this->getRevisionUser()) {
       $this->setRevisionUserId($this->getOwnerId());
     }
@@ -174,7 +174,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
   /**
    * {@inheritdoc}
    */
-  public function setStatus($status, $message = NULL, $variables = array(), $type = 'debug') {
+  public function setStatus($status) {
     // Check if a valid status is given.
     if (array_key_exists($status, static::getStatuses())) {
       $this->status = $status;
@@ -192,7 +192,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
   /**
    * {@inheritdoc}
    */
-  public function getStatuses() {
+  public static function getStatuses() {
     return [static::STATUS_OPEN, static::STATUS_FIXED, static::STATUS_REJECTED];
   }
 
@@ -281,10 +281,8 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Status'))
       ->setDescription(t('Issue status'))
-      ->setSetting('allowed_values', [static::STATUS_OPEN, static::STATUS_FIXED, static::STATUS_REJECTED])
+      ->setSetting('allowed_values', static::getStatuses())
       ->setDefaultValue(static::STATUS_OPEN)
-      //      ->setDisplayConfigurable('view', TRUE)
-      //      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => -4,
@@ -304,6 +302,32 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       ->setDescription(t('The time that the entity was last edited.'));
 
     return $fields;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(array $values = []) {
+    if (!empty($values['name'])) {
+      // Do not create new issue if the same exists.
+      $issue = static::loadByName($values['name']);
+      if (!empty($issue)) {
+        return $issue;
+      }
+    }
+
+    return parent::create($values);
+  }
+
+  /**
+   * Load Issue by it's unique name.
+   *
+   * @param string $name
+   *   Unique issue name.
+   */
+  public static function loadByName($name) {
+    $entities = \Drupal::entityTypeManager()->getStorage('adv_audit_issue')->loadByProperties(['name' => $name]);
+    return empty($entities) ? NULL : reset($entities);
   }
 
 }
