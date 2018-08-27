@@ -14,7 +14,6 @@ use InvalidArgumentException;
  * Runs a single test batch.
  */
 class AuditRunTestBatch {
-
   /**
    * Maximum number of previous messages to display.
    */
@@ -48,8 +47,9 @@ class AuditRunTestBatch {
       $context['sandbox']['messages'] = [];
       // @var \Drupal\adv_audit\AuditResultResponseInterface
       $context['results']['result_response'] = new AuditResultResponse();
-      $context['results']['fail_count'] = 0;
-      $context['results']['success_count'] = 0;
+      $context['results']['@skip_count'] = 0;
+      $context['results']['@fail_count'] = 0;
+      $context['results']['@success_count'] = 0;
     }
 
     /** @var \Drupal\adv_audit\AuditResultResponse $result_response */
@@ -74,16 +74,16 @@ class AuditRunTestBatch {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
           \Drupal::logger('adv_audit_batch')->info($message);
-          $context['results']['success_count']++;
+          $context['results']['@success_count']++;
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
-          $context['results']['fail_count']++;
+          $context['results']['@fail_count']++;
           \Drupal::logger('adv_audit_batch')->error($message);
           break;
 
         case AuditResultResponseInterface::RESULT_SKIP:
-          $context['results']['skip_count']++;
+          $context['results']['@skip_count']++;
           \Drupal::logger('adv_audit_batch')->warning($message);
           break;
 
@@ -115,30 +115,7 @@ class AuditRunTestBatch {
    *   The time to run the batch.
    */
   public static function finished($success, array $results, array $operations, $elapsed) {
-    $success_count = $results['success_count'];
-    $fail_count = $results['fail_count'];
-
-    // If we had any success_count log that for the user.
-    if ($success_count > 0) {
-      drupal_set_message(\Drupal::translation()
-        ->formatPlural($success_count, 'Process 1 audit successfully', 'Processed @count audits successfully'));
-    }
-    // If we had fail_count, log them and show the test failed.
-    if ($fail_count > 0) {
-      drupal_set_message(\Drupal::translation()
-        ->formatPlural($fail_count, '1 checkpoint failed', '@count checkpoints failed'));
-      drupal_set_message(t('Audit process not fully completed'), 'error');
-    }
-    else {
-      // Everything went off without a hitch. We may not have had success_count
-      // but we didn't have fail_count so this is fine.
-      drupal_set_message(t('Congratulations, you process all audit checkpoints on your Drupal site!'));
-    }
-
-    if (!$success) {
-      drupal_set_message(t('The batch process is not fully completed.'), 'error');
-      return;
-    }
+    drupal_set_message(t('Audit process has finished: @success_count succeed, @fail_count failed, @skip_count skipped.', $results));
 
     // If all are OK then try to save audit report result to the entity.
     $audit_result_response = $results['result_response'];
