@@ -1,4 +1,3 @@
-
 (function ($, Drupal) {
     Drupal.behaviors.advAuditViewResult = {
         attach: function attach(context, settings) {
@@ -21,7 +20,13 @@
                 var self = $(this);
 
                 $('div.detailed-view[category-id="' + self.data('category-id') + '"]').toggle();
-            })
+            });
+
+            $('.report-title').click(function () {
+                var activeClass = 'active';
+                $('.audit-reason').removeClass(activeClass);
+                $(this).parent().addClass(activeClass);
+            });
         }
     };
 })(jQuery, Drupal);
