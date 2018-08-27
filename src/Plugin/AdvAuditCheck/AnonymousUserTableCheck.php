@@ -2,10 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -62,9 +59,9 @@ class AnonymousUserTableCheck extends AdvAuditCheckBase implements ContainerFact
     $result = $query->execute()->fetchAll();
 
     if (empty($result)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
+      return $this->fail();
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
 }
