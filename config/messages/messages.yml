@@ -175,6 +175,13 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  anonymous_user_table:
+    description: 'The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table.'
+    actions: 'Need to create user with uid 0 if not exists.'
+    impacts: 'Table "users" must contain User ID 0 for security reasons.'
+    fail: 'The table "users" does not contain user with uid = 0.'
+    success: 'The table "users" contain anonymous user.'
+    help: 'Check if table "users" contains anonymous user.'
   errors_display:
     description: 'As a form of hardening your site you should avoid information disclosure. Drupal by default prints errors to the screen and writes them to the log. Error messages disclose the full path to the file where the error occured.'
     actions: 'Set errors display "None" for production environment.'
