@@ -28,9 +28,8 @@ class OpcacheCheck extends AdvAuditCheckBase {
     if ($opcache_enabled) {
       return $this->success();
     }
-    else {
-      return $this->fail(t('Opcache is disabled.'));
-    }
+
+    return $this->fail(t('Opcache is disabled.'));
   }
 
 }
