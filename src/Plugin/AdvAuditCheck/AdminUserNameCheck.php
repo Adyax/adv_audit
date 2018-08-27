@@ -116,12 +116,9 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    */
   public function auditReportRender(AuditReason $reason, $type) {
     $items = [];
-
-    $arguments = $reason->getArguments();
-
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-
-      if ($arguments[self::HAS_HOST]) {
+      $arguments = $reason->getArguments();
+      if (isset($arguments[self::HAS_HOST])) {
         $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments[self::HAS_HOST]);
       }
       if ($arguments['has_default_admin_name']) {
@@ -131,7 +128,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
         $items[] = 'There are "admin" parts in username';
       }
 
-      $build['admin_name_check'] = [
+      $build = [
         '#theme' => 'item_list',
         '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments[self::NAME_PLACEHOLDER]]),
         '#list_type' => 'ol',

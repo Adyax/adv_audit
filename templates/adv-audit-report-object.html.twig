@@ -16,68 +16,70 @@
         {% endtrans %}
       </div>
     </div>
-    <div class="adv-category-item row layout-row">
-      <div class="cat-view aq-dataset__data">
-        <a class="report-view-detailed" data-category-id="global-info" href="#">
-          <h3>{{ 'Global Info'|t }}</h3>
-        </a>
-      </div>
-      <div class="detailed-view" category-id="global-info" style="display: none">
-        <div class="global-info">
-          <h2>{{ 'Users'|t }}</h2>
-          <div class="total-users">
-            <p>
-              {% trans %}
-                Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
-              {% endtrans %}
-            </p>
-          </div>
-          <div class="blocked-users">
-            <p>
-              {% trans %}
-                Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
-              {% endtrans %}
-            </p>
-          </div>
-          <div class="roles-list">
-            <p>
-              {% trans %}
-                List Roles - Show all available roles and user counts.
-              {% endtrans %}
-              {% for role, count in global_info.roles_list %}
-                {% if loop.last %}
-                  {{ role }}: {{ count }}.
-                {% else %}
-                  {{ role }}: {{ count }},
-                {% endif %}
-              {% endfor %}
-            </p>
-          </div>
-          <div class="admin-info">
-            <p>
-              {% trans %}
-                Identify UID #1 - Show username and email of UID #1. UID #1:
-              {% endtrans %}
-              {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
-            </p>
-            <p>
-              {% trans %}
-                UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
-              {% endtrans %}
-            </p>
-          </div>
-          <h2>{{ 'Codebase'|t }}</h2>
-          <div class="codebase">
-            <p>
-              {% trans %}
-                Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
-              {% endtrans %}
-            </p>
-            <p>
-              {% trans %}
-                Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
-              {% endtrans %}
-            </p>
+    <div class="global-info-container">
+      <div class="adv-category-item row layout-row">
+        <div class="cat-view aq-dataset__data">
+          <a class="report-view-detailed" data-category-id="global-info" href="#">
+            <h3>{{ 'Global Info'|t }}</h3>
+          </a>
+        </div>
+        <div class="detailed-view" category-id="global-info" style="display: none">
+          <div class="global-info">
+            <h2>{{ 'Users'|t }}</h2>
+            <div class="total-users">
+              <p>
+                {% trans %}
+                  Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
+                {% endtrans %}
+              </p>
+            </div>
+            <div class="blocked-users">
+              <p>
+                {% trans %}
+                  Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
+                {% endtrans %}
+              </p>
+            </div>
+            <div class="roles-list">
+              <p>
+                {% trans %}
+                  List Roles - Show all available roles and user counts.
+                {% endtrans %}
+                {% for role, count in global_info.roles_list %}
+                  {% if loop.last %}
+                    {{ role }}: {{ count }}.
+                  {% else %}
+                    {{ role }}: {{ count }},
+                  {% endif %}
+                {% endfor %}
+              </p>
+            </div>
+            <div class="admin-info">
+              <p>
+                {% trans %}
+                  Identify UID #1 - Show username and email of UID #1. UID #1:
+                {% endtrans %}
+                {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
+              </p>
+              <p>
+                {% trans %}
+                  UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
+                {% endtrans %}
+              </p>
+            </div>
+            <h2>{{ 'Codebase'|t }}</h2>
+            <div class="codebase">
+              <p>
+                {% trans %}
+                  Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
+                {% endtrans %}
+              </p>
+              <p>
+                {% trans %}
+                  Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
+                {% endtrans %}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -102,25 +104,46 @@
                     <small>{{ report.description }}</small>
                   </div>
                   </br>
+                  {% if report.result is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Results: '|t }}</strong>
                     {{ report.result|raw }}
                   </div>
-                  </br>
+                    </br>
+                  {% endif %}
+                    {% if report.severity is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Importance: '|t }}</strong>
                     <small>{{ report.severity }}</small>
                   </div>
                   </br>
+                    {% endif %}
+                    {% if report.actions is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Actions to be done: '|t }}</strong>
                     <small>{{ report.actions }}</small>
                   </div>
                   </br>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
                   <div class="panel-heading">
                     <strong>{{ 'Impacts: '|t }}</strong>
                     <small>{{ report.impacts }}</small>
                   </div>
+                    {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty and report.reason.0 != null %}
+                    <div class="panel-heading">
+                      <strong>{{ 'Why this check is failed: '|t }}</strong>
+                      <small>
+                        <ul>
+                        {% for item in report.reason %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                        </ul>
+                      </small>
+                    </div>
+                  {% endif %}
                 </div>
               {% endfor %}
             </div>

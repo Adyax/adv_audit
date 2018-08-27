@@ -84,8 +84,7 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
     if ($is_overriden) {
       return new AuditReason(
         $this->id(),
-        AuditResultResponseInterface::RESULT_FAIL,
-        $this->t('There are differences between configurations stored in database and files.')
+        AuditResultResponseInterface::RESULT_FAIL
       );
     }
 
