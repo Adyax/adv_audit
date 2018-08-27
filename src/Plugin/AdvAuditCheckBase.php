@@ -425,8 +425,8 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   /**
    * {@inheritdoc}
    */
-  public function fail($msg, array $issues): AuditReason {
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, $msg, $params);
+  public function fail($msg, array $issue_details): AuditReason {
+    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, $msg, $issue_details);
   }
 
   /**
