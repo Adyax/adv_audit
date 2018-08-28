@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DrupalKernel;
@@ -37,13 +38,21 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
   protected $root;
 
   /**
+   * The drupal module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root) {
+  public function __construct(EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root, ModuleHandler $module_handler) {
     $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
     $this->kernel = $kernel;
     $this->root = $root;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -54,7 +63,8 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
       $container->get('entity_type.manager'),
       $container->get('database'),
       $container->get('kernel'),
-      $container->get('app.root')
+      $container->get('app.root'),
+      $container->get('module_handler')
     );
   }
 
@@ -115,26 +125,30 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    */
   protected function getFilesystemInfo() {
 
-    $path = PublicStream::basePath();
-    $iterator = new \RecursiveDirectoryIterator($path);
-    $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
-    $objects = new \RecursiveIteratorIterator($iterator);
+    if (!$this->moduleHandler->moduleExists('s3fs')) {
+      $path = PublicStream::basePath();
+      $iterator = new \RecursiveDirectoryIterator($path);
+      $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
+      $objects = new \RecursiveIteratorIterator($iterator);
 
-    // Counters.
-    $countFiles = 0;
-    $filesTotalSize = 0;
+      // Counters.
+      $countFiles = 0;
+      $filesTotalSize = 0;
 
-    foreach ($objects as $name => $object) {
-      $filesTotalSize += filesize($name);
-      $countFiles++;
+      foreach ($objects as $name => $object) {
+        $filesTotalSize += filesize($name);
+        $countFiles++;
+      }
+
+      $renderData['count_files'] = $countFiles;
+
+      // Total size in MBytes.
+      $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
+
+      return $renderData;
     }
+    return ['s3fs' => TRUE];
 
-    $renderData['count_files'] = $countFiles;
-
-    // Total size in MBytes.
-    $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
-
-    return $renderData;
   }
 
   /**
