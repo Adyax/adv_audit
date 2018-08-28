@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
@@ -12,6 +10,8 @@ use Drupal\system\SystemManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Check if there is any DB update required.
+ *
  * @AdvAuditCheck(
  *   id = "database_update_required",
  *   label = @Translation("No database updates required"),
@@ -61,13 +61,11 @@ class DatabaseUpdateRequired extends AdvAuditCheckBase implements AdvAuditCheckI
    */
   public function perform() {
     $requirements = $this->systemManager->listRequirements();
-    if (isset($requirements['update']['severity'])) {
-      return new AuditReason(
-        $this->id(),
-        AuditResultResponseInterface::RESULT_FAIL
-      );
+    if (!empty($requirements['update']['severity'])) {
+      return $this->fail();
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+
+    return $this->success();
   }
 
 }

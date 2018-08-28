@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -24,21 +23,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
-
-  /**
-   * Placeholder in messages.yml.
-   */
-  const NAME_PLACEHOLDER = '%name';
-
   /**
    * Default administrator's username.
    */
-  const ADMIN_NAME = 'admin';
-
-  /**
-   * Host parts key.
-   */
-  const HAS_HOST = 'has_host_parts';
+  const DEFAULT_ADMIN_NAME = 'admin';
 
   /**
    * Entity type manager container.
@@ -76,38 +64,33 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     // Get admin's name.
     $user = $this->entityTypeManager->getStorage('user')->load(1);
     $admin_name = $user->get('name')->value;
-    $secure = TRUE;
-
-    $arguments = [
-      self::NAME_PLACEHOLDER => $admin_name,
-    ];
 
     // Get host.
     $parsed_base = parse_url($base_url);
     $host_parts = explode('.', $parsed_base['host']);
 
+    // Check Admin name for host parts.
     foreach ($host_parts as $part) {
       if (stripos($admin_name, $part) !== FALSE) {
-        $secure = FALSE;
-        $arguments[self::HAS_HOST][] = $part;
+        $issue_details['has_host_parts'][] = $part;
       }
     }
 
+    // Insecure admin name.
+    if ($admin_name == self::DEFAULT_ADMIN_NAME) {
+      $issue_details['has_default_admin_name'] = TRUE;
+    }
     // The username contains "admin".
-    if (stripos($admin_name, self::ADMIN_NAME) !== FALSE) {
-      $secure = FALSE;
-      $arguments['has_admin_parts'] = TRUE;
+    elseif (stripos($admin_name, self::DEFAULT_ADMIN_NAME) !== FALSE) {
+      $issue_details['has_admin_parts'] = TRUE;
     }
 
-    // Very bad variant for administrator's name.
-    if ($admin_name == self::ADMIN_NAME) {
-      $arguments['has_default_admin_name'] = TRUE;
+    if (empty($issue_details)) {
+      return $this->success();
     }
 
-    if (!$secure) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $arguments);
-    }
-    return $this->success();
+    $issue_details['%name'] = $admin_name;
+    return $this->fail(NULL, $issue_details);
   }
 
   /**
@@ -115,27 +98,27 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    */
   public function auditReportRender(AuditReason $reason, $type) {
     $items = [];
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-
-      $arguments = $reason->getArguments();
-      if (isset($arguments[self::HAS_HOST])) {
-        $items[] = 'There are host parts in admin username: ' . implode(', ', $arguments[self::HAS_HOST]);
-      }
-      if ($arguments['has_default_admin_name']) {
-        $items[] = 'Admin\'s username seems like default username for administrator';
-      }
-      if ($arguments['has_admin_parts'] && $arguments[self::NAME_PLACEHOLDER] != self::ADMIN_NAME) {
-        $items[] = 'There are "admin" parts in username';
-      }
-
-      return [
-        '#theme' => 'item_list',
-        '#title' => $this->t('Current name of admin is %name', ['%name' => $arguments[self::NAME_PLACEHOLDER]]),
-        '#list_type' => 'ol',
-        '#items' => $items,
-      ];
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      return [];
     }
-    return [];
+
+    $issue_details = $reason->getArguments();
+    if (!empty($issue_details['has_host_parts'])) {
+      $items[] = 'There are host parts in admin username: ' . implode(', ', $issue_details['has_host_parts']);
+    }
+    if ($issue_details['has_default_admin_name']) {
+      $items[] = "Using default name `admin` for superuser is highly insecure.";
+    }
+    elseif ($issue_details['has_admin_parts']) {
+      $items[] = 'There is "admin" word in superuser name.';
+    }
+
+    return [
+      '#theme' => 'item_list',
+      '#title' => $this->t('Current name of admin is %name', $issue_details),
+      '#list_type' => 'ol',
+      '#items' => $items,
+    ];
   }
 
 }
