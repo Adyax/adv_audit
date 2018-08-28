@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Link;
@@ -118,7 +117,7 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     }
     if (count($style_names)) {
       $arguments['list'] = $style_names;
-      $message = $this->t('ImageApi is installed, some image styles are not configured: ');
+      $message = $this->t('ImageApi is installed, some image styles are not configured:');
       return $this->fail($message, $arguments);
     }
 
