@@ -82,26 +82,25 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
    *   Return AuditReason object instance.
    */
   public function perform() {
-
     // Created placeholder link for messages.
     $url = Url::fromUri('https://www.drupal.org/project/imageapi_optimize', ['attributes' => ['target' => '_blank']]);
     $link = Link::fromTextAndUrl('ImageAPI Optimize', $url);
-
     $arguments = [
       '%link' => $link->toString(),
     ];
+    $message = NULL;
 
     if (!$this->moduleHandler->moduleExists('imageapi_optimize')) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'The ImageApi module is not installed.', $arguments);
+      $message = $this->t('The ImageApi module is not installed.');
+      return $this->fail($message, $arguments);
     }
 
-    $status = AuditResultResponseInterface::RESULT_PASS;
-    $message = NULL;
     // Check if pipelines were created.
     $pipelines = imageapi_optimize_pipeline_options(FALSE, TRUE);
     $pipeline_keys = array_keys($pipelines);
     if (count($pipeline_keys) === 1 && empty($pipeline_keys[0])) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, but no pipeline is created.'));
+      $message = $this->t('ImageApi is installed, but no pipeline is created.');
+      return $this->fail($message, $arguments);
     }
 
     // Check if every image_style uses some pipeline.
@@ -118,11 +117,12 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
       }
     }
     if (count($style_names)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $arguments['list'] = $style_names;
-      $message = 'ImageApi is installed, some image styles are not configured:';
+      $message = $this->t('ImageApi is installed, some image styles are not configured: ');
+      return $this->fail($message, $arguments);
     }
-    return new AuditReason($this->id(), $status, $message, $arguments);
+
+    return $this->success($arguments);
   }
 
   /**
