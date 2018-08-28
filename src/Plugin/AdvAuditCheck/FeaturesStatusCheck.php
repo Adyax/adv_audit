@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -14,6 +13,8 @@ use Drupal\features\FeaturesManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Check if Features are overridden.
+ *
  * @AdvAuditCheck(
  *   id = "features_status_check",
  *   label = @Translation("Features status"),
@@ -65,19 +66,19 @@ class FeaturesStatusCheck extends AdvAuditCheckBase implements ContainerFactoryP
 
     $packages = $this->featuresManager->filterPackages($packages, $current_bundle->getMachineName());
 
-    $overridenPackages = [];
+    $overridden_packages = [];
 
     foreach ($packages as $package) {
       if (!empty($this->featuresManager->detectOverrides($package))) {
-        $overridenPackages[] = $package->getName();
+        $overridden_packages[] = $package->getName();
       }
     }
 
-    if (!empty($overridenPackages)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $overridenPackages);
+    if (!empty($overridden_packages)) {
+      return $this->fail(NULL, $overridden_packages);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
   /**

@@ -30,9 +30,7 @@ class AuditReason {
   /**
    * The main reason data.
    *
-   * May use to determine why test was failed.
-   *
-   * @var array|null|string|void
+   * @var string
    */
   protected $reason;
 
@@ -50,24 +48,15 @@ class AuditReason {
    *   The plugin id.
    * @param int $status
    *   The status of the perform test.
-   * @param null|mixed $reason
+   * @param string $reason
    *   Reason why test is failed. (optional)
    * @param array|mixed $arguments
    *   (optional) An associative array of replacements to make after
    *   translation of status message.
    */
-  public function __construct($plugin_id, $status, $reason = [], $arguments = []) {
+  public function __construct($plugin_id, $status, $reason = '', $arguments = []) {
     $this->status = $status;
     $this->testId = $plugin_id;
-    $this->reason = '';
-    if (!is_array($reason)) {
-      $reason = [$reason];
-    }
-    foreach ($reason as $key => $string) {
-      if ($string instanceof TranslatableMarkup) {
-        $reason[$key] = $string->__toString();
-      }
-    }
     $this->reason = $reason;
     $this->arguments = $arguments;
   }
@@ -114,8 +103,8 @@ class AuditReason {
   /**
    * Get list of available reasons from saved object.
    *
-   * @return array
-   *   Return array of reasons.
+   * @return string
+   *   Return string of reasons.
    */
   public function getReason() {
     return $this->reason;

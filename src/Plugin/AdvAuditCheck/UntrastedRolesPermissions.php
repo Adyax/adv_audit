@@ -91,7 +91,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    */
   public function perform() {
     $settings = $this->getPerformSettings();
-    $wrong_permissions = [];
+    $unsafe_permissions = [];
     $all_permissions = $this->userPermission->getPermissions();
     $all_permission_strings = array_keys($all_permissions);
     $untrusted_permissions = $this->rolePermissions($settings['untrusted_roles'], TRUE);
@@ -99,19 +99,18 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       $intersect = array_intersect($all_permission_strings, $permissions);
       foreach ($intersect as $permission) {
         if (isset($all_permissions[$permission]['restrict access'])) {
-          $wrong_permissions[$rid][] = $permission;
+          $unsafe_permissions[$rid][] = $permission;
         }
       }
     }
 
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $message = NULL;
     $arguments = [];
-    if (!empty($wrong_permissions)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
-      $arguments['permission'] = $wrong_permissions;
+    if (!empty($unsafe_permissions)) {
+      $arguments['permission'] = $unsafe_permissions;
+      return $this->fail($message, $arguments);
     }
-    return new AuditReason($this->id(), $status, $message, $arguments);
+    return $this->pass();
   }
 
   /**
