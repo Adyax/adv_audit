@@ -97,53 +97,57 @@
             <div class="report-items">
               {% for report in category.reports %}
                 <div {{ report.result_attributes }}>
-                  <div class="panel-heading">
-                    <strong>{{ report.name }}</strong>
+                  <div class="report-title">
+                    <h3>{{ report.name }}</h3>
                   </div>
-                  <div class="panel-heading">
-                    <small>{{ report.description }}</small>
-                  </div>
-                  </br>
-                  {% if report.result is not empty %}
-                  <div class="panel-heading">
-                    <strong>{{ 'Results: '|t }}</strong>
-                    {{ report.result|raw }}
-                  </div>
-                    </br>
-                  {% endif %}
-                    {% if report.severity is not empty %}
-                  <div class="panel-heading">
-                    <strong>{{ 'Importance: '|t }}</strong>
-                    <small>{{ report.severity }}</small>
-                  </div>
-                  </br>
-                    {% endif %}
-                    {% if report.actions is not empty %}
-                  <div class="panel-heading">
-                    <strong>{{ 'Actions to be done: '|t }}</strong>
-                    <small>{{ report.actions }}</small>
-                  </div>
-                  </br>
-                    {% endif %}
-                    {% if report.impacts is not empty %}
-                  <div class="panel-heading">
-                    <strong>{{ 'Impacts: '|t }}</strong>
-                    <small>{{ report.impacts }}</small>
-                  </div>
-                    {% endif %}
-                  {# Should be moved to preprocess function #}
-                  {% if report.reason is not empty and report.reason.0 != null %}
-                    <div class="panel-heading">
-                      <strong>{{ 'Why this check is failed: '|t }}</strong>
-                      <small>
-                        <ul>
-                        {% for item in report.reason %}
-                          <li>{{ item }}</li>
-                        {% endfor %}
-                        </ul>
-                      </small>
+                  <div class="report-content">
+                    <div class="content-panel">
+                      <p><em>{{ report.description }}</em></p>
                     </div>
-                  {% endif %}
+                    {% if report.result is not empty %}
+                    <div class="content-panel">
+                      <p>
+                        <strong>{{ 'Results: '|t }}</strong>
+                        <em>{{ report.result|raw }}</em>
+                      </p>
+                    </div>
+                    {% endif %}
+                      {% if report.severity is not empty %}
+                    <div class="content-panel">
+                      <p>
+                        <strong>{{ 'Importance: '|t }}</strong>
+                        <em>{{ report.severity }}</em>
+                      </p>
+                    </div>
+                      {% endif %}
+                      {% if report.actions is not empty %}
+                    <div class="content-panel">
+                      <p>
+                        <strong>{{ 'Actions to be done: '|t }}</strong>
+                        <em>{{ report.actions }}</em>
+                      </p>
+                    </div>
+                      {% endif %}
+                      {% if report.impacts is not empty %}
+                    <div class="content-panel">
+                      <p>
+                        <strong>{{ 'Impacts: '|t }}</strong>
+                        <em>{{ report.impacts }}</em>
+                      </p>
+                    </div>
+                      {% endif %}
+                    {# Should be moved to preprocess function #}
+                    {% if report.reason is not empty and report.reason.0 != null %}
+                      <div class="content-panel">
+                        <strong>{{ 'Why this check is failed: '|t }}</strong>
+                        <ul>
+                          {% for item in report.reason %}
+                            <li>{{ item }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% endif %}
+                  </div>
                 </div>
               {% endfor %}
             </div>

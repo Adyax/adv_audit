@@ -192,7 +192,7 @@ class AdvAuditPluginSettings extends FormBase {
       drupal_set_message($this->t('Audit check is PASSED'), 'status');
     }
     else {
-      drupal_set_message($this->t('Audit check is FAILED<br/>Reason:<p>@reason</p>', ['@reason' => implode('<br/>', $test_reason->getReason())]), 'error');
+      drupal_set_message($this->t('Audit check is FAILED<br/>Reason:<p>@reason</p>', ['@reason' => $test_reason->getReason()]), 'error');
     }
 
     // Try to build output from plugin instance.
