@@ -52,7 +52,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
     $hacked = $hacked->hackedStatus();
 
     $issue_details['hacked_modules'] = [];
-    foreach ($hacked[self::DATA_KEY] as $project) {
+    foreach ($hacked['#data'] as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'module') {
         $issue_details['hacked_modules'][] = $project;
       }
@@ -73,7 +73,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
 
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
-    $is_validated = is_array($hacked) && isset($hacked[self::DATA_KEY]);
+    $is_validated = is_array($hacked) && isset($hacked['#data']);
 
     if (!$is_validated) {
       $link = Link::createFromRoute('here', 'hacked.report')->toString();
