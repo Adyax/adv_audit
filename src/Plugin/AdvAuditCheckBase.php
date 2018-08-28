@@ -44,6 +44,16 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   protected $pluginSettingsStorage;
 
+  /**
+   * AdvAuditCheckBase constructor.
+   *
+   * @param array $configuration
+   *   Configuration array.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param array $plugin_definition
+   *   The plugin implementation definition.
+   */
   public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginSettingsStorage = $this->container()
@@ -78,6 +88,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * when the config factory needs to be manipulated directly.
    *
    * @return \Drupal\Core\Config\ConfigFactoryInterface
+   *   Return configFactory.
    */
   protected function configFactory() {
     if (!$this->configFactory) {
@@ -123,7 +134,8 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   Return category label value.
    */
   public function getCategoryLabel() {
-    // TODO: Not best implementation of getting config value. We should re-write this.
+    // TODO: Not best implementation of getting config value.
+    // We should re-write this.
     return $this->config('adv_audit.config')->get('adv_audit_settings.categories' . $this->getCategoryName() . '.label');
   }
 
@@ -160,8 +172,9 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
 
   /**
    * Additional configuration form for plugin instance.
+   *
    * Value will be store in state storage and can be uses bu next key:
-   *   - adv_audit.plugin.PLUGIN_ID.config.KEY.
+   * - adv_audit.plugin.PLUGIN_ID.config.KEY.
    *
    * @return array
    *   The form structure.
@@ -178,7 +191,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
   }
 
   /**
@@ -189,7 +202,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function configFormValidate($form, FormStateInterface $form_state) {
+  public function configFormValidate(array $form, FormStateInterface $form_state) {
   }
 
   /**
@@ -229,7 +242,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * @param array $module_list
    *   An array containing the list of modules to check.
    */
-  private function checkRequiredModules($module_list) {
+  private function checkRequiredModules(array $module_list) {
     $module_handler = $this->container()->get('module_handler');
 
     foreach ($module_list as $module) {
@@ -264,7 +277,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * @param array $config_list
    *   An array containing the list of configss to check.
    */
-  private function checkRequiredConfigs($config_list) {
+  private function checkRequiredConfigs(array $config_list) {
     $config_factory = $this->container()->get('config.factory');
 
     foreach ($config_list as $config) {
@@ -283,7 +296,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * @param array $libraries_list
    *   An array containing the list of libraries to check.
    */
-  private function checkRequiredLibraries($libraries_list) {
+  private function checkRequiredLibraries(array $libraries_list) {
     $module_handler = $this->container()->get('module_handler');
 
     // Check if module Library API is enabled.
@@ -435,4 +448,5 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function skip($msg): AuditReason {
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
+
 }
