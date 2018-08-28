@@ -163,7 +163,8 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
 
       try {
         $response = $this->httpClient->get($this->request->getSchemeAndHttpHost() . $url);
-        if (TRUE || $response->getStatusCode() == 200) {
+        if ($response->getStatusCode() == 200) {
+          // Secure check fail: the page should not be accessible.
           $params['failed_urls'][] = $url;
         }
       }
