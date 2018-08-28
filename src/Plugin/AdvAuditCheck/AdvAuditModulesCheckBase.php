@@ -6,6 +6,8 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Base class for Advances audit modules updates check plugins.
@@ -41,6 +43,53 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
+
+  /**
+   * Defines whether to check For Security updates or not.
+   *
+   * @var bool
+   */
+  const CHECK_FOR_SECURITY_UPDATES = FALSE;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function perform() {
+    $projects = update_get_available(TRUE);
+    $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
+    $projects = update_calculate_project_data($projects);
+
+    $manager = $this->updateManager;
+
+    foreach ($projects as $project) {
+      if ($project['status'] == $manager::CURRENT || $project['project_type'] != 'module') {
+        continue;
+      }
+
+      if (!static::CHECK_FOR_SECURITY_UPDATES && !empty($project['security updates'])) {
+        continue;
+      }
+      if (static::CHECK_FOR_SECURITY_UPDATES && empty($project['security updates'])) {
+        continue;
+      }
+
+      $this->updates[] = [
+        'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
+        'current_v' => $project['existing_version'],
+        'recommended_v' => $project['recommended'],
+      ];
+    }
+
+    if (empty($this->updates)) {
+      return $this->success();
+    }
+
+    $params = [
+      'list' => $this->updates,
+    ];
+
+    return $this->fail(NULL, $params);
+  }
 
   /**
    * {@inheritdoc}
