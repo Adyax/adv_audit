@@ -99,8 +99,8 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
       return [];
     }
 
-    $arguments = $reason->getArguments();
-    if (empty($arguments)) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details)) {
       return [];
     }
 
@@ -112,7 +112,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
     ];
     $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
 
-    if (!empty($arguments['list'])) {
+    if (!empty($issue_details['list'])) {
       $render_list = [
         '#type' => 'table',
         '#header' => [
@@ -120,7 +120,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
           $this->t('Installed version'),
           $this->t('Recommended version'),
         ],
-        '#rows' => $arguments['list'],
+        '#rows' => $issue_details['list'],
       ];
     }
     else {
