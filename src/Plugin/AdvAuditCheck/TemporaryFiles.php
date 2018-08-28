@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\DrupalKernel;
@@ -75,7 +73,6 @@ class TemporaryFiles extends AdvAuditCheckBase implements ContainerFactoryPlugin
    * {@inheritdoc}
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $arguments = [];
 
     // Get list of files from the site directory.
@@ -100,15 +97,15 @@ class TemporaryFiles extends AdvAuditCheckBase implements ContainerFactoryPlugin
     }
 
     if (count($findings)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $render_array = [
         '#theme' => 'item_list',
         '#items' => $findings,
       ];
       $arguments['%files'] = $this->renderer->render($render_array);
+      return $this->fail(NULL, $arguments);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $arguments);
+    return $this->success();
 
   }
 

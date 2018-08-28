@@ -80,6 +80,14 @@ class AuditExecutable {
     $this->eventDispatcher = $event_dispatcher;
   }
 
+  /**
+   * Runs given $test_id.
+   *
+   * @return array
+   *   Array with 2 elements:
+   *   - Drupal\adv_audit\AuditReason.
+   *   - and array of messages.
+   */
   public static function run($test_id) {
     $executable = new AuditExecutable($test_id);
 
@@ -132,10 +140,9 @@ class AuditExecutable {
       return $result;
     }
     catch (RequirementsException $e) {
-      $msg = $this->t('Audit `@id` did not meet the requirements. @message @requirements', [
+      $msg = $this->t('Audit `@id` did not meet the requirements. @message', [
         '@id' => $this->testId,
         '@message' => $e->getMessage(),
-        '@requirements' => $e->getRequirementsString(),
       ]);
 
       return $this->handleExecutionException($e, $msg);
