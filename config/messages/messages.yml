@@ -189,6 +189,13 @@ plugins:
     fail: 'Release note & help files still present on your server.'
     success: 'Release note & help files have been removed.'
     help: 'Checks presense of release notes & help files on the server.'
+  untrusted_roles_permission:
+    description: 'You should never give administrators permission to non-administrators or people you do not trust. '
+    actions: 'Review permissions. '
+    impacts: 'Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems. '
+    fail: 'Untrusted roles have permissions:'
+    success: 'All permissions are correct. '
+    help: 'Check permissions for untrusted roles. '
   must_have_modules:
     description: ''
     actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
