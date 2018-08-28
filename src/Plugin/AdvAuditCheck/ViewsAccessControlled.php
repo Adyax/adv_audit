@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
@@ -58,11 +57,10 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
    * {@inheritdoc}
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
     if (!$this->moduleHandler->moduleExists('views')) {
-      return new AuditReason($this->id(), $status, NULL, $params);
+      return $this->success();
     }
 
     $findings = [];
@@ -81,11 +79,11 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
     }
 
     if (!empty($findings)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['failed_views'] = $findings;
+      return $this->fail(t('There are number of views with unlimited access.'), $params);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
   /**
