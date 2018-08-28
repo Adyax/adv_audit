@@ -59,6 +59,10 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
     $params = [];
     $result = $this->tablesEngines('MyISAM');
 
+    if (is_null($result)) {
+      return $this->skip($this->t('Curent DB driver is not MySQL.'));
+    }
+
     if (!empty($result['count'])) {
       $params['info'] = $result;
       return $this->fail($this->t('There are tables with MyISAM engine.'), $params);
@@ -80,27 +84,17 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
       return [];
     }
 
-    $markup_key = '#markup';
-    $message = [
+    return [
       '#type' => 'container',
-      '#attributes' => [
-        'class' => ['actions-message'],
+      'msg' => [
+        '#markup' => $this->t('There are number of MyISAM tables: @count',
+          ['@count' => $arguments['info']['count']]),
+      ],
+      'list' => [
+        '#theme' => 'item_list',
+        '#items' => $arguments['info']['tables'],
       ],
     ];
-    $message['msg'][$markup_key] = $this->t('There are number of MyISAM tables: @count',
-      ['@count' => $arguments['info']['count']]);
-
-    $list = [
-      '#theme' => 'item_list',
-    ];
-    $items = [];
-    foreach ($arguments['info']['tables'] as $table) {
-      $item[$markup_key] = $table;
-      $items[] = $item;
-    }
-    $list['#items'] = $items;
-
-    return [$message, $list];
   }
 
   /**
@@ -108,6 +102,10 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
    */
   private function calculateTablesEngines() {
     $connection_options = $this->connection->getConnectionOptions();
+
+    if (empty($connection_options['driver']) || $connection_options['driver'] != 'mysql') {
+      return NULL;
+    }
 
     $sql = 'SELECT TABLE_NAME AS name, ENGINE AS engine FROM information_schema.TABLES WHERE TABLES.table_schema = :db';
     $query = $this->connection->query($sql, [':db' => $connection_options['database']]);
@@ -126,6 +124,11 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
    */
   private function tablesEngines($engine) {
     $info = $this->calculateTablesEngines();
+
+    if (is_null($info)) {
+      return NULL;
+    }
+
     $counts = array_count_values($info);
 
     if (!empty($counts[$engine])) {
