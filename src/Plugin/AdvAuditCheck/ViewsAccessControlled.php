@@ -90,39 +90,26 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       return [];
     }
-
-    $key = 'failed_views';
 
     $arguments = $reason->getArguments();
-    if (empty($arguments[$key])) {
+    if (empty($arguments['failed_views'])) {
       return [];
     }
 
-    $markup_key = '#markup';
-    $message = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['fail-message'],
-      ],
-    ];
-    $message['msg'][$markup_key] = $this->t('There are views that should not have unlimited access.');
-
-    $list = [
-      '#theme' => 'item_list',
-    ];
     $items = [];
-    foreach ($arguments[$key] as $view => $displays) {
+    foreach ($arguments['failed_views'] as $view => $displays) {
       foreach ($displays as $display) {
-        $item[$markup_key] = $view . ':' . $display;
-        $items[] = $item;
+        $items[] = $view . ':' . $display;
       }
     }
-    $list['#items'] = $items;
 
-    return [$message, $list];
+    return [
+      '#theme' => 'item_list',
+      '#items' => $items,
+    ];
   }
 
 }
