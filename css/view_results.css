@@ -46,15 +46,30 @@
   letter-spacing: -1px;
   text-align: center;
 }
+
 .aq-circle--success {
   background-color: #b0e164;
 }
 .aq-circle--warning {
   background-color: #ffee58;
 }
+
 .aq-circle--danger {
   background-color: #ffa3ae;
 }
+
+.status-failed .report-title {
+  background: #ffa3ae url('../css/error.svg') no-repeat 20px 50%;
+}
+
+.status-passed .report-title {
+  background: #b0e164 url('../css/check.svg') no-repeat 20px 50%;
+}
+
+.status-skipped .report-title {
+  background: #ccc url('../css/questionmark-disc.svg') no-repeat 20px 50%;
+}
+
 .score-container .description{
   overflow: hidden;
   padding: 0.75rem;
@@ -113,19 +128,116 @@
   width: 50%;
 }
 
-.core-container + .adv-category-item .report-view-detailed {
-  display: block;
-  padding: 0.75rem;
+.category-list .detailed-view {
+  width: 100%;
+  overflow: hidden;
+}
+
+.global-info-container .report-view-detailed {
+  float: right;
+  padding: 0.5rem 1rem;
   border: 0.0625rem solid #ccc;
   background: #fff;
   color: rgba(0,0,0,0.87);
   text-align: center;
 }
 
-.core-container + .adv-category-item .report-view-detailed h3 {
+.global-info-container .report-view-detailed:focus,
+.global-info-container .report-view-detailed:hover {
+  text-decoration: none;
+  background: #ccc;
+}
+
+.global-info-container .report-view-detailed h3 {
   margin: 0;
   padding: 0;
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
+}
+
+.global-info-container .cat-view {
+  float: none;
+  overflow: hidden;
+  text-align: center;
+}
+
+.global-info-container .detailed-view {
+  overflow: hidden;
+  width: 100%;
+  margin: -1px 0 2rem;
+}
+
+.global-info {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+}
+
+.global-info h2 {
+  margin: 0 0 16px;
+}
+
+.global-info p {
+  margin: 0 0 16px;
+}
+
+.audit-reason {
+  overflow: hidden;
+  margin-top: 0.75rem;
+}
+
+.audit-reason:first-child {
+  margin: 0;
+}
+
+.audit-reason h3,
+.audit-reason p{
+  margin: 0 0 16px;
+}
+
+.audit-reason ul,
+.audit-reason ol {
+  padding: 0;
+}
+
+.report-title {
+  overflow: hidden;
+  padding: 0.75rem;
+  padding-left: 3rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.report-title h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.33333;
+}
+.report-title:after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 6px;
+  transform: rotate(45deg);
+}
+
+.audit-reason.active .report-title:after {
+  transform: rotate(-135deg);
+  top: 20px;
+}
+
+.report-content {
+  border: solid #ccc;
+  border-width: 0 1px 1px;
+  overflow: hidden;
+  padding: 0.75rem;
+  display: none;
+}
+
+.audit-reason.active .report-content {
+  display: block;
 }

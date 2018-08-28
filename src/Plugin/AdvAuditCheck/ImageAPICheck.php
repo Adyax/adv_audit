@@ -92,14 +92,14 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
     ];
 
     if (!$this->moduleHandler->moduleExists('imageapi_optimize')) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL), $arguments);
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'The ImageApi module is not installed.', $arguments);
     }
 
     // Check if pipelines were created.
     $pipelines = imageapi_optimize_pipeline_options(FALSE, TRUE);
     $pipeline_keys = array_keys($pipelines);
     if (count($pipeline_keys) === 1 && empty($pipeline_keys[0])) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, but any pipeline has not been created.', $arguments));
+      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, $this->t('ImageApi is installed, but no pipeline is created.'));
     }
 
     // Check if every image_style uses some pipeline.
@@ -151,7 +151,7 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
 
       $build['message'] = [
         '#weight' => 0,
-        '#markup' => $reason->getReason()[0],
+        '#markup' => $reason->getReason(),
       ];
 
     }
