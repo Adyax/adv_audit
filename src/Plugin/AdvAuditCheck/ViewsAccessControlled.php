@@ -80,7 +80,7 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
 
     if (!empty($findings)) {
       $params['failed_views'] = $findings;
-      return $this->fail(t('There are number of views with unlimited access.'), $params);
+      return $this->fail($this->t('There are number of views with unlimited access.'), $params);
     }
 
     return $this->success();
