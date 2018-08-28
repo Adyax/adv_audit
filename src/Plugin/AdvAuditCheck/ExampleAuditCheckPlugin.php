@@ -73,14 +73,12 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    *   Return AuditReason object instance.
    */
   public function perform() {
-    // Created link object and put in both result because this link used on other messages like actions.
-    $example_link = Link::createFromRoute('LINK', '<front>');
-    // Check our condition.
+    // Generate random result.
     if (rand(0, 1) == 1) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, NULL, ['@random' => 'this is RANDOM variable', '%link' => $example_link->toString()]);
+      return $this->success();
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'This text will be output if result are FAILED.', ['@hash' => 'this is HASH variable', '%link' => $example_link->toString()]);
+    return $this->fail('Here provide the reason while the AuditCheck has FAILED.');
   }
 
   /**
@@ -104,8 +102,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
-    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'check_should_passed'], 0);
     // In this place we can save our value from config form.
+    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'check_should_passed'], 0);
   }
 
   /**

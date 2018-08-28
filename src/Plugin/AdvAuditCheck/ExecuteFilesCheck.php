@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -67,7 +65,6 @@ class ExecuteFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
    */
   public function perform() {
     global $base_url;
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $url = Url::fromUri('https://www.drupal.org/node/615888', ['attributes' => ['target' => '_blank']]);
     $arguments = [
       '%risk_link' => Link::fromTextAndUrl($this->t('Drupal.org'), $url)
@@ -88,15 +85,15 @@ class ExecuteFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
     // Try to access the test file.
     try {
       $response = $this->httpClient->get($base_url . '/' . $file_path);
-      $responce_body = $response->getBody()->getContents();
-      if ($response->getStatusCode() == 200 && $message == $responce_body) {
-        $status = AuditResultResponseInterface::RESULT_FAIL;
+      $response_body = $response->getBody()->getContents();
+      if ($response->getStatusCode() == 200 && $message == $response_body) {
+        return $this->fail(NULL, $arguments);
       }
     }
     catch (RequestException $e) {
       // Access was denied to the file.
     }
-    return new AuditReason($this->id(), $status, NULL, $arguments);
+    return $this->success($arguments);
   }
 
 }

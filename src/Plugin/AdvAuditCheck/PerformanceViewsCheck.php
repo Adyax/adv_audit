@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -16,6 +15,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\StateInterface;
 
 /**
+ * Check Views cache settings.
+ *
  * @AdvAuditCheck(
  *  id = "performance_views",
  *  label = @Translation("Views performance settings"),
@@ -117,9 +118,9 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     }
 
     if (count($this->withoutCache)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $this->withoutCache);
+      return $this->fail(NULL, $this->withoutCache);
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
   /**
@@ -183,8 +184,8 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
         $this->t('Display @display_name of view @view_id has wrong cache settings.', [
           '@display_name' => $display_name,
           '@view_id' => $view->id(),
-        ]
-      )];
+        ]),
+      ];
     }
     elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
       $minimum = $this->getMinimumCacheTime($cache);
@@ -196,8 +197,8 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
             '@display_name' => $display_name,
             '@view_id' => $view->id(),
             '@allowed' => $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME),
-          ]
-        )];
+          ]),
+        ];
       }
     }
   }
@@ -206,13 +207,17 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       return [];
     }
 
     $build['performance_views_fails'] = [
       '#theme' => 'table',
-      '#header' => [$this->t('View Id'), $this->t('Display'), $this->t('Reason')],
+      '#header' => [
+        $this->t('View Id'),
+        $this->t('Display'),
+        $this->t('Reason'),
+      ],
       '#rows' => $reason->getArguments(),
     ];
     return $build;
