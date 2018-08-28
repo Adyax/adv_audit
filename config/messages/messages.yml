@@ -182,6 +182,13 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  execute_files:
+    description: 'The Drupal files directory is for user-uploaded files and by default provides some protection against a malicious user executing arbitrary PHP code against your site. Read more about the risk of PHP code execution on %risk_link.'
+    actions: "Check file system's permission"
+    impacts: 'Ignoring of protecting against arbitrary code execution leads to opening of possibility to execute harmful code.'
+    fail: 'Files can be executed from drupal file system.'
+    success: 'Files can not be executed from drupal file system.'
+    help: 'Check if files can be executed in drupal files directory.'
   untrusted_roles_permission:
     description: 'You should never give administrators permission to non-administrators or people you do not trust. '
     actions: 'Review permissions. '
