@@ -5,7 +5,6 @@ namespace Drupal\adv_audit\Plugin;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\AuditResultResponseInterface;
-
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -88,7 +87,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    * when the config factory needs to be manipulated directly.
    *
    * @return \Drupal\Core\Config\ConfigFactoryInterface
-   *   Return configFactory.
+   *   ConfigFactory.
    */
   protected function configFactory() {
     if (!$this->configFactory) {
@@ -250,7 +249,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
 
       if (!$module_handler->moduleExists($module_name)) {
         throw new RequirementsException(
-          $this->t('Module @module_name are not enabled.', ['@module_name' => $module_name]),
+          $this->t('Module @module_name is not enabled.', ['@module_name' => $module_name]),
           $this->pluginDefinition['requirements']['module']
         );
       }

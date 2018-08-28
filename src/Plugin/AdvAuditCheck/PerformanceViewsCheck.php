@@ -206,7 +206,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       return [];
     }
 
