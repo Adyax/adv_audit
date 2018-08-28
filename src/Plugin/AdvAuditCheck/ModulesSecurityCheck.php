@@ -28,16 +28,20 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
   const CHECK_FOR_SECURITY_UPDATES = TRUE;
 
   /**
-   * Constructs a new ModulesSecurityCheck object.
+   * ModulesSecurityCheck constructor.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
    *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
+   * @param array $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\update\UpdateManagerInterface $update_manager
+   *   Update manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   Module handler.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateManagerInterface $update_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, UpdateManagerInterface $update_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->updateManager = $update_manager;
     $this->moduleHandler = $module_handler;
