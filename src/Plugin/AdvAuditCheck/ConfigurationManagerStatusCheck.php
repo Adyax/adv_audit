@@ -83,7 +83,7 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
 
     // Configuration is overridden.
     if ($is_overriden) {
-      return $this->fail();
+      return $this->fail("Configuration is overridden.");
     }
 
     return $this->success();
