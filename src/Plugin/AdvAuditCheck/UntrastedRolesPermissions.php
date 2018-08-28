@@ -110,7 +110,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       $arguments['permission'] = $unsafe_permissions;
       return $this->fail($message, $arguments);
     }
-    return $this->pass();
+    return $this->success();
   }
 
   /**
