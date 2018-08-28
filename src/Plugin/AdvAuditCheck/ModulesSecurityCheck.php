@@ -53,5 +53,5 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
       $container->get('module_handler')
     );
   }
-
+  
 }
