@@ -11,7 +11,6 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use GuzzleHttp\Client;
@@ -146,7 +145,8 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     }
     // Wait until report will be ready.
     if (!in_array($result->status, ['READY', 'ERROR'])) {
-      sleep(10); //NOSONAR
+      // NOSONAR.
+      sleep(10);
       return $this->perform();
     }
     $report_options = [

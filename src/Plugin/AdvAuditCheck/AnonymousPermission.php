@@ -102,24 +102,23 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
    */
   public function perform() {
     $anonymous_permissions = $this->rolePermissions(self::ANONYMOUS_ID);
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $message = NULL;
     $arguments = [];
-    $wrong_permission = [];
+    $unsafe_permission = [];
     foreach ($anonymous_permissions as $permission) {
       if (preg_match('/(\baccess\sall\b|\badd\b|\badminister\b|\bchange\b|\bclear\b|\bcreate\b|\bdelete\b|\bedit\b|\brevert\b|\bsave\b|\bsend\smail\b|\bset\svariable\b|\bupdate\b|\bupload\b|\bPHP\b|\bdevel\b)/i', $permission)) {
-        $wrong_permission[] = $permission;
+        $unsafe_permission[] = $permission;
       }
     }
-    if (!empty($wrong_permission)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
+    if (!empty($unsafe_permission)) {
       $permissions = [
         '#theme' => 'item_list',
-        '#items' => $wrong_permission,
+        '#items' => $unsafe_permission,
       ];
       $arguments['%list'] = $this->renderer->render($permissions);
+      return $this->fail($message, $arguments);
     }
-    return new AuditReason($this->id(), $status, $message, $arguments);
+    return $this->success();
   }
 
   /**
