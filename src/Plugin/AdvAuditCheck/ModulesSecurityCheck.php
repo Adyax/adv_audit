@@ -10,6 +10,8 @@ use Drupal\update\UpdateManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
+ * Check modules for security updates.
+ *
  * @AdvAuditCheck(
  *   id = "modules_security_check",
  *   label = @Translation("Modules security updates"),
@@ -53,5 +55,5 @@ class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditC
       $container->get('module_handler')
     );
   }
-  
+
 }
