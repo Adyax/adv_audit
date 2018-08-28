@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
@@ -18,7 +17,7 @@ use Drupal\Core\State\StateInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Checks if any admin pages and other unused default Drupal pages are available for anonymous users.
+ * Checks if access to admin pages is forbidden for anonymous users.
  *
  * @AdvAuditCheck(
  *   id = "admin_pages_access",
@@ -154,33 +153,39 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
    * Process checkpoint review.
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
     $user_urls = $this->parseLines($this->state->get($this->buildStateConfigKey()));
-    $urls = array_merge(self::URLS, $user_urls);
+    $urls = empty($user_urls) ? self::URLS : $user_urls;
 
     foreach ($urls as $url) {
       $url = $this->replaceEntityPlaceholder($url);
 
       try {
         $response = $this->httpClient->get($this->request->getSchemeAndHttpHost() . $url);
+        if (TRUE || $response->getStatusCode() == 200) {
+          $params['failed_urls'][] = $url;
+        }
       }
       catch (\Exception $e) {
         $code = $e->getCode();
         if (!empty($code) && in_array($code, [401, 403, 404])) {
+          // It's good code.
+          $params['failed_urls'][] = $url;
           continue;
         }
-        throwException($e);
-      }
-
-      if ($response->getStatusCode() == 200) {
-        $params['failed_urls'][] = $url;
-        $status = AuditResultResponseInterface::RESULT_FAIL;
+        if ($code > 500) {
+          // Log pages that produce server error.
+          $params['failed_urls'][] = $url;
+        }
       }
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    if (!empty($params['failed_urls'])) {
+      return $this->fail(NULL, $params);
+    }
+
+    return $this->success();
   }
 
   /**
@@ -191,33 +196,21 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
       return [];
     }
 
-    $key = 'failed_urls';
-
-    $arguments = $reason->getArguments();
-    if (empty($arguments[$key])) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details['failed_urls'])) {
       return [];
     }
 
-    $markup_key = '#markup';
-    $message = [
+    return [
       '#type' => 'container',
-      '#attributes' => [
-        'class' => ['fail-message'],
+      'msg' => [
+        '#markup' => $this->t('There are URLs that should not be available for anonymous user.'),
+      ],
+      'list' => [
+        '#theme' => 'item_list',
+        '#items' => $issue_details['failed_urls'],
       ],
     ];
-    $message['msg'][$markup_key] = $this->t('There are URLs that should not be available for anonymous user.')->__toString();
-
-    $list = [
-      '#theme' => 'item_list',
-    ];
-    $items = [];
-    foreach ($arguments[$key] as $url) {
-      $item[$markup_key] = $url;
-      $items[] = $item;
-    }
-    $list['#items'] = $items;
-
-    return [$message, $list];
   }
 
   /**
