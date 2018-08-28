@@ -4,6 +4,8 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\field\Entity\FieldConfig;
 
@@ -19,7 +21,7 @@ use Drupal\field\Entity\FieldConfig;
  *   severity = "high"
  * )
  */
-class UnsafeExtensionsCheck extends AdvAuditCheckBase {
+class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   /**
    * {@inheritdoc}
@@ -58,7 +60,7 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
         $entity = FieldConfig::load($entity_id);
         foreach ($unsafe_extensions as $extension) {
           $items[] = $this->t(
-            'Review @type in <em>@field</em> field on @bundle',
+            'Review @type in "@field" field on @bundle',
             [
               '@type' => $extension,
               '@field' => $entity->label(),
@@ -82,13 +84,12 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       $arguments = $reason->getArguments();
       if (!empty($arguments['fields'])) {
-        $build['unsafe_extensions'] = [
+        return [
           '#theme' => 'item_list',
           '#title' => $this->t('Fields with unsafe extensions:'),
           '#list_type' => 'ul',
           '#items' => $arguments['fields'],
         ];
-        return $build;
       }
     }
 
