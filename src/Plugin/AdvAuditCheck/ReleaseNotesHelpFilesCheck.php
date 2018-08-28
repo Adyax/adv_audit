@@ -116,7 +116,7 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
 
     if (!empty($remaining_files)) {
       $params['remaining_files'] = $remaining_files;
-      return $this->fail(t('There are number of help/release notes files left.'), $params);
+      return $this->fail($this->t('There are number of help/release notes files left.'), $params);
     }
 
     return $this->success();
