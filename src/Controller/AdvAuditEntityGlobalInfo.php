@@ -126,34 +126,35 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    */
   protected function getFilesystemInfo() {
 
-    if (!$this->moduleHandler->moduleExists('s3fs')) {
-      $path['public_stream'] = PublicStream::basePath();
-      $path['private_stream'] = PrivateStream::basePath() ? PrivateStream::basePath() : FALSE;
+    if ($this->moduleHandler->moduleExists('s3fs')) {
+      return ['s3fs' => TRUE];
+    }
 
-      // Counters.
-      $countFiles = 0;
-      $filesTotalSize = 0;
-      foreach ($path as $item) {
-        if ($item) {
-          $iterator = new \RecursiveDirectoryIterator($item);
-          $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
-          $objects = new \RecursiveIteratorIterator($iterator);
+    $path['public_stream'] = PublicStream::basePath();
+    $path['private_stream'] = PrivateStream::basePath() ? PrivateStream::basePath() : FALSE;
 
-          foreach ($objects as $name => $object) {
-            $filesTotalSize += filesize($name);
-            $countFiles++;
-          }
+    // Counters.
+    $countFiles = 0;
+    $filesTotalSize = 0;
+    foreach ($path as $item) {
+      if ($item) {
+        $iterator = new \RecursiveDirectoryIterator($item);
+        $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
+        $objects = new \RecursiveIteratorIterator($iterator);
+
+        foreach ($objects as $name => $object) {
+          $filesTotalSize += filesize($name);
+          $countFiles++;
         }
       }
-
-      $renderData['count_files'] = $countFiles;
-
-      // Total size in MBytes.
-      $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
-
-      return $renderData;
     }
-    return ['s3fs' => TRUE];
+
+    $renderData['count_files'] = $countFiles;
+
+    // Total size in MBytes.
+    $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
+
+    return $renderData;
 
   }
 
