@@ -104,7 +104,6 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
    * {@inheritdoc}
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
     $config_files = $this->parseLines($this->state->get($this->buildStateConfigKey()));
@@ -118,11 +117,11 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
     }
 
     if (!empty($remaining_files)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['remaining_files'] = $remaining_files;
+      return $this->fail(t('There are number of help/release notes files left.'), $params);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
   /**
