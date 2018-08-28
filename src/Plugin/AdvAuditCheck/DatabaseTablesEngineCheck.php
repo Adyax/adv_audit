@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
@@ -57,16 +56,15 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
    * Process checkpoint review.
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
     $result = $this->tablesEngines('MyISAM');
 
     if (!empty($result['count'])) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['info'] = $result;
+      return $this->fail($this->t('There are tables with MyISAM engine.'), $params);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
   /**
