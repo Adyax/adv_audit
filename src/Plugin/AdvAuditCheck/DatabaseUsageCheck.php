@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -100,7 +99,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       $oversized_tables = [];
 
       if (count($tables)) {
-        foreach ($tables as $key => &$table) {
+        foreach ($tables as $table) {
           // We can't compare calculated value in sql query.
           // So, we have to check this condition here.
           if ($table->data_length > $max_length) {
