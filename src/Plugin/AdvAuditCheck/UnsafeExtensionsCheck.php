@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 
 use Drupal\field\Entity\FieldConfig;
 
@@ -27,7 +26,6 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
    */
   public function perform() {
     $fields = [];
-    $params = [];
     $unsafe_ext = [
       'swf',
       'exe',
@@ -41,7 +39,6 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
       'vbe',
       'vbs',
     ];
-    $status = AuditResultResponseInterface::RESULT_PASS;
 
     // Check field configuration entities.
     foreach (FieldConfig::loadMultiple() as $entity) {
@@ -57,7 +54,6 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
 
     if (!empty($fields)) {
       $items = [];
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       foreach ($fields as $entity_id => $unsafe_extensions) {
         $entity = FieldConfig::load($entity_id);
         foreach ($unsafe_extensions as $extension) {
@@ -73,9 +69,10 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase {
       }
 
       $params = ['fields' => $items];
+      return $this->fail('Unsafe file extensions are allowed in uploads.', $params);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
   /**
