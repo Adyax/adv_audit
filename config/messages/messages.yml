@@ -189,6 +189,13 @@ plugins:
     fail: 'Database contains MyISAM tables.'
     success: 'Database doesn''t contain MyISAM tables.'
     help: 'Check does the database contain MyISAM tables'
+  untrusted_roles_permission:
+    description: 'You should never give administrators permission to non-administrators or people you do not trust. '
+    actions: 'Review permissions. '
+    impacts: 'Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems. '
+    fail: 'Untrusted roles have permissions:'
+    success: 'All permissions are correct. '
+    help: 'Check permissions for untrusted roles. '
   must_have_modules:
     description: ''
     actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
