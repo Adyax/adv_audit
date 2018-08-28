@@ -182,6 +182,13 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  untrusted_roles_permission:
+    description: 'You should never give administrators permission to non-administrators or people you do not trust. '
+    actions: 'Review permissions. '
+    impacts: 'Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems. '
+    fail: 'Untrusted roles have permissions:'
+    success: 'All permissions are correct. '
+    help: 'Check permissions for untrusted roles. '
   must_have_modules:
     description: ''
     actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
