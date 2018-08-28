@@ -16,6 +16,7 @@
         {% endtrans %}
       </div>
     </div>
+    {% if global_info is not empty %}
     <div class="global-info-container">
       <div class="adv-category-item row layout-row">
         <div class="cat-view aq-dataset__data">
@@ -69,6 +70,13 @@
             </div>
             <h2>{{ 'Codebase'|t }}</h2>
             <div class="codebase">
+              {% if global_info.filesystem_info.s3fs == true %}
+                <p>
+                  {% trans %}
+                    There is s3fs module installed.
+                  {% endtrans %}
+                </p>
+              {% else %}
               <p>
                 {% trans %}
                   Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
@@ -79,11 +87,13 @@
                   Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
                 {% endtrans %}
               </p>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
+    {% endif %}
     <div class="category-list">
       <h4>{{ 'Alert categories'|t }}</h4>
       {% for category in categories %}

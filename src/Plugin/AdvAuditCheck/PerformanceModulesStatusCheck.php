@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -85,10 +84,10 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements Contain
     }
 
     if (!empty($enabled_modules)) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, NULL, $enabled_modules);
+      return $this->fail(NULL, $enabled_modules);
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
   /**
