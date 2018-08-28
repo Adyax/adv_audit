@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -16,6 +15,8 @@ use Drupal\Core\Link;
 use Drupal\hacked\Controller\HackedController;
 
 /**
+ * Check Contrib module and Core for patches.
+ *
  * @AdvAuditCheck(
  *   id = "patched_modules_check",
  *   label = @Translation("Patched modules."),
@@ -32,11 +33,6 @@ use Drupal\hacked\Controller\HackedController;
 class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Data key.
-   */
-  const DATA_KEY = '#data';
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -51,25 +47,22 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * Process checkpoint review.
    */
   public function perform() {
-    $params = [];
+    $issue_details = [];
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
 
-    $status = AuditResultResponseInterface::RESULT_PASS;
-    $hacked_modules = [];
-
-    foreach ($hacked[self::DATA_KEY] as $project) {
+    $issue_details['hacked_modules'] = [];
+    foreach ($hacked['#data'] as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'module') {
-        $status = AuditResultResponseInterface::RESULT_FAIL;
-        $hacked_modules[] = $project;
+        $issue_details['hacked_modules'][] = $project;
       }
     }
 
-    if ($status == AuditResultResponseInterface::RESULT_FAIL) {
-      $params['hacked_modules'] = $hacked_modules;
+    if (!empty($issue_details['hacked_modules'])) {
+      return $this->fail(NULL, $issue_details);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
   /**
@@ -80,7 +73,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
 
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
-    $is_validated = is_array($hacked) && isset($hacked[self::DATA_KEY]);
+    $is_validated = is_array($hacked) && isset($hacked['#data']);
 
     if (!$is_validated) {
       $link = Link::createFromRoute('here', 'hacked.report')->toString();
@@ -95,31 +88,21 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
+    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       return [];
     }
 
     $arguments = $reason->getArguments();
-    if (empty($arguments)) {
+    if (empty($arguments['hacked_modules'])) {
       return [];
     }
 
-    $key = 'hacked_modules';
+    $build = [
+      '#theme' => 'hacked_report',
+      '#data' => $arguments['hacked_modules'],
+    ];
 
-    if (!empty($arguments[$key])) {
-      $message = [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => ['fail-message'],
-        ],
-      ];
-      $message['msg']['#markup'] = $this->t('Update listed modules as soon as possible.');
-
-      $build = ['#theme' => 'hacked_report'];
-      $build[self::DATA_KEY] = $arguments[$key];
-
-      return [$message, $build];
-    }
+    return $build;
   }
 
 }

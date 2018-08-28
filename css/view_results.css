@@ -225,7 +225,7 @@
   transform: rotate(45deg);
 }
 
-.audit-reason.active .report-title:after {
+.report-title.active:after {
   transform: rotate(-135deg);
   top: 20px;
 }

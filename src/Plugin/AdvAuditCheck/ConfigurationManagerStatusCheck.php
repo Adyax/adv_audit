@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Config\CachedStorage;
@@ -16,6 +14,8 @@ use Drupal\update\UpdateManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Check if configuration is overridden.
+ *
  * @AdvAuditCheck(
  *   id = "configuration_manager_status",
  *   label = @Translation("Configuration Manager"),
@@ -81,15 +81,12 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
     $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
     $is_overriden = $storage_comparer->createChangelist()->hasChanges();
 
+    // Configuration is overridden.
     if ($is_overriden) {
-      return new AuditReason(
-        $this->id(),
-        AuditResultResponseInterface::RESULT_FAIL
-      );
+      return $this->fail("Configuration is overridden.");
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
-
+    return $this->success();
   }
 
 }
