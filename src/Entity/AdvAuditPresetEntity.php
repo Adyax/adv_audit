@@ -30,11 +30,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/adv-audit/preset/{adv_audit_preset_entity}",
- *     "add-form" = "/admin/config/adv-audit/preset/add",
- *     "edit-form" = "/admin/config/adv-audit/preset/{adv_audit_preset_entity}/edit",
- *     "delete-form" = "/admin/config/adv-audit/preset/{adv_audit_preset_entity}/delete",
- *     "collection" = "/admin/config/adv-audit/preset"
+ *     "canonical" = "/admin/reports/adv-audit/preset/{adv_audit_preset_entity}",
+ *     "add-form" = "/admin/reports/adv-audit/preset/add",
+ *     "edit-form" = "/admin/reports/adv-audit/preset/{adv_audit_preset_entity}/edit",
+ *     "delete-form" = "/admin/reports/adv-audit/preset/{adv_audit_preset_entity}/delete",
+ *     "collection" = "/admin/reports/adv-audit/preset"
  *   }
  * )
  */
