@@ -210,3 +210,10 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  code_audit_cs:
+    description: ''
+    actions: ''
+    impacts: ''
+    fail: 'There are issues in code. Results can be downloaded using links: @drupal @drupal_practice'
+    success: 'No code issues.'
+    help: ''
