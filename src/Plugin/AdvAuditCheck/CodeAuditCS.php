@@ -167,6 +167,10 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function perform() {
+    if (!function_exists('exec')) {
+      return $this->skip($this->t('exec function is disabled.'));
+    }
+
     $scheme = $this->configFactory()->get('system.file')->get('default_scheme') . '://';
     $drupal_failed = FALSE;
     $drupal_practice_failed = FALSE;
