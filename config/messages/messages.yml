@@ -272,3 +272,10 @@ plugins:
     fail: 'Unsafe file extensions are allowed in uploads.'
     success: 'Only safe extensions are allowed for uploaded files and images.'
     help: 'Only safe extensions are allowed for uploaded files and images.'
+  composer_usage_check:
+    description: 'It is the best practice to use composer for manage Drupal dependencies.'
+    actions: ''
+    impacts: ''
+    fail: 'The project do not uses composer.'
+    success: 'The project uses composer for manage dependencies.'
+    help: 'Check if the project uses composer.'
