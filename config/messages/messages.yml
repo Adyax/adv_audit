@@ -189,6 +189,12 @@ plugins:
     fail: 'Release note & help files still present on your server.'
     success: 'Release note & help files have been removed.'
     help: 'Checks presense of release notes & help files on the server.'
+  temporary_files:
+    description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
+    impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
+    fail: 'Sensitive temporary files were found: %files'
+    success: 'Sensitive temporary files were not found.'
+    help: 'Check sensitive temporary files.'
   execute_files:
     description: 'The Drupal files directory is for user-uploaded files and by default provides some protection against a malicious user executing arbitrary PHP code against your site. Read more about the risk of PHP code execution on %risk_link.'
     actions: "Check file system's permission"
@@ -245,3 +251,4 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+
