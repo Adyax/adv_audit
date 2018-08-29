@@ -182,6 +182,13 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  release_notes_help_files:
+    description: 'Checks presense of release notes & help files on the server.'
+    actions: 'Remove listed files from the server.'
+    impacts: 'Leaving these files on the webserver is a minor security risk. These files are useless on production anyway and they simply should not be there.'
+    fail: 'Release note & help files still present on your server.'
+    success: 'Release note & help files have been removed.'
+    help: 'Checks presense of release notes & help files on the server.'
   temporary_files:
     description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
     impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
