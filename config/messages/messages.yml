@@ -251,4 +251,10 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
-
+  unsafe_extensions_check:
+    description: 'Only safe extensions are allowed for uploaded files and images.'
+    actions: 'The following extensions are considered unsafe and should be removed or limited from use.'
+    impacts: 'File and image fields allow for uploaded files. Some extensions are considered dangerous because the files can be evaluated and then executed in the browser. A malicious user could use this opening to gain control of your site.'
+    fail: 'Unsafe file extensions are allowed in uploads.'
+    success: 'Only safe extensions are allowed for uploaded files and images.'
+    help: 'Only safe extensions are allowed for uploaded files and images.'
