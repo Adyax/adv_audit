@@ -69,7 +69,7 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   public function perform() {
     $fields = [];
     $settings = $this->getPerformSettings();
-    $unsafe_ext = explode(' ', $settings['unsafe_extensions']);
+    $unsafe_ext = explode(',', $settings['unsafe_extensions']);
     // Check field configuration entities.
     foreach (FieldConfig::loadMultiple() as $entity) {
       $extensions = $entity->getSetting('file_extensions');
@@ -136,32 +136,31 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   public function auditReportRender(AuditReason $reason, $type) {
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       $arguments = $reason->getArguments();
-      if (!empty($arguments['fields'])) {
-        $items = [];
-        $fields = $arguments['fields'];
-        if (!empty($fields)) {
-          foreach ($fields as $entity_id => $unsafe_extensions) {
-            $entity = FieldConfig::load($entity_id);
-            foreach ($unsafe_extensions as $extension) {
-              $items[] = $this->t(
-                'Review @type in "@field" field on @bundle',
-                [
-                  '@type' => $extension,
-                  '@field' => $entity->label(),
-                  '@bundle' => $entity->getTargetBundle(),
-                ]
-              )->render();
-            }
-          }
-        }
-
-        return [
-          '#theme' => 'item_list',
-          '#title' => $this->t('Fields with unsafe extensions:'),
-          '#list_type' => 'ul',
-          '#items' => $items,
-        ];
+      if (empty($arguments['fields'])) {
+        return [];
       }
+
+      $items = [];
+      foreach ($arguments['fields'] as $entity_id => $unsafe_extensions) {
+        $entity = FieldConfig::load($entity_id);
+        foreach ($unsafe_extensions as $extension) {
+          $items[] = $this->t(
+            'Review @type in "@field" field on @bundle',
+            [
+              '@type' => $extension,
+              '@field' => $entity->label(),
+              '@bundle' => $entity->getTargetBundle(),
+            ]
+          )->render();
+        }
+      }
+
+      return [
+        '#theme' => 'item_list',
+        '#title' => $this->t('Fields with unsafe extensions:'),
+        '#list_type' => 'ol',
+        '#items' => $items,
+      ];
     }
 
     return [];
