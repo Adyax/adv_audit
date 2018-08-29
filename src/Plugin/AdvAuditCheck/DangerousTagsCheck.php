@@ -6,6 +6,8 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 
+use Drupal\field\Entity\FieldStorageConfig;
+
 /**
  * Trusted Host Check plugin class.
  *
@@ -27,16 +29,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
     $params = [];
     $reason = NULL;
     $status = AuditResultResponseInterface::RESULT_PASS;
-    $trusted_host_patterns = Settings::get('trusted_host_patterns');
-
-    if (empty($trusted_host_patterns)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
-    }
-    else {
-      $params = ['%trusted_host_patterns' => implode(', ', $trusted_host_patterns)];
-    }
-
-    $findings = [];
+    $results = [];
 
     $field_types = [
       'text_with_summary',
@@ -79,7 +72,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
               foreach ($tags as $vulnerability => $tag) {
                 if (strpos($row->{$column_name}, '<' . $tag) !== FALSE) {
                   // Vulnerability found.
-                  $findings[$entity_type_id][$row->{$id}][$field_name][] = $vulnerability;
+                  $results[$entity_type_id][$row->{$id}][$field_name][] = $vulnerability;
                 }
               }
             }
@@ -88,10 +81,10 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
       }
     }
 
-    if (!empty($findings)) {
+    if (!empty($results)) {
       $status = AuditResultResponseInterface::RESULT_FAIL;
       $items = [];
-      foreach ($findings as $entity_type_id => $entities) {
+      foreach ($results as $entity_type_id => $entities) {
         foreach ($entities as $entity_id => $fields) {
           $entity = $this->entityManager()
             ->getStorage($entity_type_id)
@@ -109,11 +102,31 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
             );
           }
         }
-        $params = $items;
+        $params = ['fields' => $items];
       }
     }
 
     return new AuditReason($this->id(), $status, $reason, $params);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      $arguments = $reason->getArguments();
+      if (!empty($arguments['fields'])) {
+        $build['vulnerabilities'] = [
+          '#theme' => 'item_list',
+          '#title' => $this->t('The following items potentially have dangerous tags:'),
+          '#list_type' => 'ul',
+          '#items' => $arguments['fields'],
+        ];
+        return $build;
+      }
+    }
+
+    return [];
   }
 
 }
