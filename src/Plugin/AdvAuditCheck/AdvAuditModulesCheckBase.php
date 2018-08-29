@@ -6,6 +6,8 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Base class for Advances audit modules updates check plugins.
@@ -43,45 +45,89 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
   protected $moduleHandler;
 
   /**
+   * Defines whether to check For Security updates or not.
+   *
+   * @var bool
+   */
+  const CHECK_FOR_SECURITY_UPDATES = FALSE;
+
+  /**
    * {@inheritdoc}
    */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments)) {
-        return [];
+  public function perform() {
+    $projects = update_get_available(TRUE);
+    $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
+    $projects = update_calculate_project_data($projects);
+
+    $manager = $this->updateManager;
+
+    foreach ($projects as $project) {
+      if ($project['status'] == $manager::CURRENT || $project['project_type'] != 'module') {
+        continue;
       }
 
-      $list_key = '@list';
-
-      if (!empty($arguments[$list_key])) {
-        $render_list = [
-          '#type' => 'table',
-          '#header' => [
-            $this->t('Name'),
-            $this->t('Installed version'),
-            $this->t('Recommended version'),
-          ],
-          '#rows' => $arguments[$list_key],
-        ];
+      if (!static::CHECK_FOR_SECURITY_UPDATES && !empty($project['security updates'])) {
+        continue;
       }
-      else {
-        $render_list = [];
+      if (static::CHECK_FOR_SECURITY_UPDATES && empty($project['security updates'])) {
+        continue;
       }
 
-      return [
-        'link' => ['#markup' => $arguments['%link']],
-        'count' => [
-          '#markup' => $this->formatPlural(
-            $arguments['@count'],
-            '1 module',
-            '@count modules')->render(),
-        ],
-        'list' => $render_list,
+      $this->updates[] = [
+        'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
+        'current_v' => $project['existing_version'],
+        'recommended_v' => $project['recommended'],
       ];
     }
 
-    return [];
+    if (empty($this->updates)) {
+      return $this->success();
+    }
+
+    $params = [
+      'list' => $this->updates,
+    ];
+
+    return $this->fail(NULL, $params);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      return [];
+    }
+
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details)) {
+      return [];
+    }
+
+    $message = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['fail-message'],
+      ],
+    ];
+    $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
+
+    if (!empty($issue_details['list'])) {
+      $render_list = [
+        '#type' => 'table',
+        '#header' => [
+          $this->t('Name'),
+          $this->t('Installed version'),
+          $this->t('Recommended version'),
+        ],
+        '#rows' => $issue_details['list'],
+      ];
+    }
+    else {
+      $render_list = [];
+    }
+
+    return [$message, $render_list];
   }
 
 }

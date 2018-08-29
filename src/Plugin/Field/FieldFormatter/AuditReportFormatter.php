@@ -72,8 +72,6 @@ class AuditReportFormatter extends FormatterBase {
    */
   protected function getResultObject(FieldItemInterface $item) {
     $value = $item->getValue();
-    $value = isset($value['value']) ? $value['value'] : NULL;
-
     if (!($value instanceof AuditResultResponse)) {
       return new AuditResultResponse();
     }

@@ -2,18 +2,16 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\update\UpdateManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
+ * Check modules for non-security updates.
+ *
  * @AdvAuditCheck(
  *   id = "modules_update_check",
  *   label = @Translation("Modules non-security updates"),
@@ -24,6 +22,10 @@ use Drupal\Core\Url;
  * )
  */
 class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+  /**
+   * {@inheritdoc}
+   */
+  const CHECK_FOR_SECURITY_UPDATES = FALSE;
 
   /**
    * Constructs a new ModulesUpdateCheck object.
@@ -52,45 +54,6 @@ class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditChe
       $container->get('update.manager'),
       $container->get('module_handler')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function perform() {
-    $this->count = 0;
-    $projects = update_get_available(TRUE);
-    $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
-    $projects = update_calculate_project_data($projects);
-
-    $manager = $this->updateManager;
-    $status = AuditResultResponseInterface::RESULT_PASS;
-
-    foreach ($projects as $project) {
-      if ($project['status'] == $manager::CURRENT || $project['project_type'] != 'module') {
-        continue;
-      }
-
-      if (!isset($project['security updates'])) {
-        $status = AuditResultResponseInterface::RESULT_FAIL;
-        $this->count += 1;
-        $this->updates[] = [
-          'label' => Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])),
-          'current_v' => $project['existing_version'],
-          'recommended_v' => $project['recommended'] || $project['latest_version'],
-        ];
-      }
-    }
-
-    $link = Link::fromTextAndUrl($this->t('There'), Url::fromRoute('update.module_update'));
-
-    $params = [
-      '%link' => $link->toString(),
-      '@count' => $this->count,
-      '@list' => $this->updates,
-    ];
-
-    return new AuditReason($this->id(), $status, NULL, $params);
   }
 
 }

@@ -3,13 +3,10 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
-
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
+ * Check if CSS/JS aggregation is enabled.
+ *
  * @AdvAuditCheck(
  *   id = "js_css_agregation",
  *   label = @Translation("Javascript & CSS aggregation"),
@@ -28,16 +25,19 @@ class JsCssAgregationCheck extends AdvAuditCheckBase {
     $css_preprocess = $this->configFactory()->get('system.performance')->get('css.preprocess');
     $js_preprocess = $this->configFactory()->get('system.performance')->get('js.preprocess');
 
-    $status = AuditResultResponseInterface::RESULT_PASS;
-
-    if (!$css_preprocess || !$js_preprocess) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
+    $issue_details = [];
+    if (!$css_preprocess) {
+      $issue_details['css_aggregation_disabled'] = TRUE;
+    }
+    if (!$js_preprocess) {
+      $issue_details['js_aggregation_disabled'] = TRUE;
     }
 
-    $link = Link::fromTextAndUrl('Advanced CSS/JS Aggregation', Url::fromUri('https://www.drupal.org/project/advagg'));
-    $params = ['%link' => $link->toString()];
+    if (!empty($issue_details)) {
+      return $this->fail(NULL, $issue_details);
+    }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
 }

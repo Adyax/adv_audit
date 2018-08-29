@@ -99,6 +99,7 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Run AuditChecks implemented via plugins.
     $tests = $this->auditTestManager->getDefinitions();
     $batch = [
       'title' => $this->t('Running process audit'),

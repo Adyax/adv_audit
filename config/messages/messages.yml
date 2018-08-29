@@ -16,7 +16,7 @@ plugins:
     help: 'Check non-security updates for modules.'
   drupal_core:
     description: 'Check the Drupal core version and its actuality.'
-    actions: 'Update drupal core to version @recommended_version.'
+    actions: 'Enable core aggregation or use @link (that includes all latest security updates).'
     impacts: 'If you don''t monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.'
     fail: 'Current Drupal core version is outdated - @version'
     success: 'Current Drupal core version is up to date - @version'
@@ -26,11 +26,11 @@ plugins:
     actions: 'It is recommended to update features with the latest structure and settings done in the BO.'
     impacts: 'statuses overridden, needs review and rebuilding must be avoided because it means that configurations that are defined in the feature module''s code have been overridden in the Drupal backend by a user and during next execution of features revert execution (that is a part of any normal Continuous Deployment process) these changes will be lost.'
     fail: 'There are non-actual features on web-site.'
-    success: ''
+    success: 'All Features are actual.'
     help: 'Check if all Features are actual.'
   modules_security_check:
     description: 'Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.'
-    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible. @list'
+    actions: '%link are @count modules with security updates. These modules must be updated as soon as possible.'
     impacts: 'If you don''t monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they''re discovered) and try to exploit the known vulnerabilities. So it''s very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.'
     fail: 'There are outdated modules with security updates.'
     success: 'All modules are up-to-date.'
@@ -44,7 +44,7 @@ plugins:
     help: 'Check database state.'
   modules_update_check:
     description: 'The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it''s important to update modules to stable releases (if exists).'
-    actions: '%link are @count with non-security updates. Apply all updates (we recommend apply only stable releases). @list'
+    actions: '%link are @count modules with non-security updates. Apply all updates (we recommend apply only stable releases).'
     impacts: 'Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven''t updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.'
     fail: 'There are outdated modules with non-security updates.'
     success: 'All modules are up-to-date.'
@@ -58,7 +58,7 @@ plugins:
     help: 'Check usage of memcache/redis.'
   patched_modules_check:
     description: 'Check if core and contribution modules were hacked.'
-    actions: 'Review patched modules and make sure, that every change could be restored from patch has been stored in file.@list'
+    actions: 'Review patched modules and make sure, that every change could be restored from patch has been stored in file.'
     impacts: 'Without storing patches in files, web-site could be broken during updates.'
     fail: 'There are hacked modules.'
     success: 'All modules are original.'
@@ -85,12 +85,11 @@ plugins:
     success: 'Core aggregation enabled.'
     help: 'Check if agregation for js and css is enabled.'
   performance_views:
-    description: "Query results and  should be cached for at least 1 minute or use tag caching."
-    actions: "Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed)."
-    impacts: "This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office."
-    fail: "Views caching is configured wrongly."
-    warning: "Some views has unknown cache type. Please check it manually."
-    success: "All cache configurations for views setted up correctly."
+    description: 'Query results and  should be cached for at least 1 minute or use tag caching.'
+    actions: 'Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).'
+    impacts: 'This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.'
+    fail: 'Views caching is configured wrongly.'
+    success: 'All cache configurations for views setted up correctly.'
     help: 'Check views cache configuration.'
   php_max_execution_time:
     description: 'Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.'
@@ -118,9 +117,22 @@ plugins:
     actions: 'Please configure trusted_host_patterns setting in settings.php.'
     impacts: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.'
     fail: 'The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.'
-    warning: 'The trusted_host_patterns setting is not configured in settings.php.'
     success: 'The trusted_host_patterns setting is set to allow %trusted_host_patterns.'
     help: 'Check Trusted Host Settings.'
+  database_usage:
+    description: 'Check Database usage.'
+    actions: 'Optimize DB, install optimize_db or run optimize command directly from command line. Investigate root cause of this problem.'
+    impacts: 'There is known issue in Drupal with cache_form table, so any abnormal sizes of the tables in database could be considered as a problem - the size of the tables will increase.'
+    fail: 'There are abnormal size of tables in database: '
+    success: 'There are no abnormal size of tables in database.'
+    help: 'Check if there are no abnormal size of tables in database.'
+  php_version_check:
+    description: 'Check PHP version.'
+    actions: 'Please upgrade to PHP version %recommended or higher for the best ongoing support.'
+    impacts: 'Upgrade to PHP version %recommended or higher to ensure your site can receive updates and remain secure.'
+    fail: 'It is recommended to upgrade to PHP version %recommended or higher for the best ongoing support.'
+    success: 'PHP version correct.'
+    help: 'Check PHP version.'
   imageapi_optimize_check:
     description: 'Check ImageAPI Optimize.'
     actions: 'Install and configure %link module.'
@@ -142,6 +154,13 @@ plugins:
      fail: 'There are one or more unused Search API entities: %list'
      success: 'All Search API entities are used.'
      help: 'Checks if all of indexes are active and all contents are indexed.'
+  admin_pages_access:
+     description: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
+     actions: 'Limit access to the listed pages for anonymous user.'
+     impacts: 'Access to this pages for anonymous user can impact site security.'
+     fail: 'There are pages that should not be aceesed by anonimous user.'
+     success: 'All pages are secured.'
+     help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
   memory_usage:
     description: 'Checks given URLs for abnormal big memory usage.'
     actions: 'Check listed URLs and make investigation of memory usage and optimisation.'
@@ -149,3 +168,87 @@ plugins:
     fail: 'Some pages have abnormal big memory usage.'
     success: 'Memory usage is normal.'
     help: 'Checks given URLs for abnormal big memory usage.'
+  ssllab_check:
+    description: 'Checks SSL.'
+    actions: 'Performs a deep analysis of the configuration of SSL.'
+    impacts: 'SSL settings issues could have impact to security and search engine ranking.'
+    fail: 'SSL settings have security issues. For more info please visit %link.'
+    success: 'Grade is A or A+ which is OK. For more info please visit %link.'
+    help: 'Please check server SSL settings.'
+  admin_name_check:
+    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
+    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
+    impacts: ''
+    fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
+    success: 'Admin username is secure'
+    help: 'Check admin username'
+  release_notes_help_files:
+    description: 'Checks presense of release notes & help files on the server.'
+    actions: 'Remove listed files from the server.'
+    impacts: 'Leaving these files on the webserver is a minor security risk. These files are useless on production anyway and they simply should not be there.'
+    fail: 'Release note & help files still present on your server.'
+    success: 'Release note & help files have been removed.'
+    help: 'Checks presense of release notes & help files on the server.'
+  temporary_files:
+    description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
+    impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
+    fail: 'Sensitive temporary files were found: %files'
+    success: 'Sensitive temporary files were not found.'
+    help: 'Check sensitive temporary files.'
+  execute_files:
+    description: 'The Drupal files directory is for user-uploaded files and by default provides some protection against a malicious user executing arbitrary PHP code against your site. Read more about the risk of PHP code execution on %risk_link.'
+    actions: "Check file system's permission"
+    impacts: 'Ignoring of protecting against arbitrary code execution leads to opening of possibility to execute harmful code.'
+    fail: 'Files can be executed from drupal file system.'
+    success: 'Files can not be executed from drupal file system.'
+    help: 'Check if files can be executed in drupal files directory.'
+  untrusted_roles_permission:
+    description: 'You should never give administrators permission to non-administrators or people you do not trust. '
+    actions: 'Review permissions. '
+    impacts: 'Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems. '
+    fail: 'Untrusted roles have permissions:'
+    success: 'All permissions are correct. '
+    help: 'Check permissions for untrusted roles. '
+  must_have_modules:
+    description: ''
+    actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
+    impacts: 'If one or more modules are not installed site''s security can be in danger.'
+    fail: 'There is one or more recommeded modules disabled.'
+    success: 'All recommeded modules are enabled.'
+    help: ''
+  anonymous_user_permission:
+    description: 'Check if anonymous users can create, delete or update some entity.'
+    actions: 'Check permissions for anonymous.'
+    impacts: 'all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code'
+    fail: 'Anonymous user have some unsecure permissions: %list .'
+    success: 'Permissions for anonymous users are correct.'
+    help: 'Check anonymous permissions.'
+  views_access_controlled:
+    description: 'Views can check if the user is allowed access to the content. It is recommended that all Views implement some amount of access control, at a minimum checking for the permission "access content".'
+    actions: 'Limit access to the listed views/displays by permissions.'
+    impacts: 'Unlimited access to these views can impact site security.'
+    fail: 'There are views that should not be aceesed unlimited.'
+    success: 'All views are limited by permissions/roles.'
+    help: 'Checks views are access controlled.'
+  anonymous_user_table:
+    description: 'The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table.'
+    actions: 'Need to create user with uid 0 if not exists.'
+    impacts: 'Table "users" must contain User ID 0 for security reasons.'
+    fail: 'The table "users" does not contain user with uid = 0.'
+    success: 'The table "users" contain anonymous user.'
+    help: 'Check if table "users" contains anonymous user.'
+  errors_display:
+    description: 'As a form of hardening your site you should avoid information disclosure. Drupal by default prints errors to the screen and writes them to the log. Error messages disclose the full path to the file where the error occured.'
+    actions: 'Set errors display "None" for production environment.'
+    impacts: 'Real users should not see any service alerts from the site since this is not secure. Errors and notices can tell the user about the structure of files and modules since the error message will contain a full path to the problematic file - information disclosure.'
+    fail: 'Errors display is enabled on production environment.'
+    success: 'Errors display is disabled on production environment.'
+    help: 'Check errors display.'
+  opcache_check:
+    description: 'OPcache improves PHP performance by storing precompiled script bytecode in shared memory, thereby removing the need for PHP to load and parse scripts on each request.'
+    actions: 'Enable PHP Opcache extension.'
+    impacts: 'PHP OPcode caching can improve your site''s performance considerably.'
+    fail: 'Opcache extension disabled.'
+    success: 'Opcache extension enabled.'
+    help: 'Checks if PHP Opcache extension is enabled.'
+
