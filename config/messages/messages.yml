@@ -258,6 +258,13 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  account_settings:
+    description: 'Account %link. Current setting is "%current".'
+    actions: 'Change account %link.'
+    impacts: 'Account settings is not secure.'
+    fail: 'Your %link are set to "%current". Are you sure this is what you want? With improperly setup access rights, this can be dangerous...'
+    success: 'Account settings are secure. Current setting is "%current".'
+    help: 'Checks if account settings are secure.'
   unsafe_extensions_check:
     description: 'Only safe extensions are allowed for uploaded files and images.'
     actions: 'The following extensions are considered unsafe and should be removed or limited from use.'
