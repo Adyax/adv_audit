@@ -151,7 +151,7 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonR
               '@field' => $entity->label(),
               '@bundle' => $entity->getTargetBundle(),
             ]
-          )->render();
+          );
         }
       }
 
