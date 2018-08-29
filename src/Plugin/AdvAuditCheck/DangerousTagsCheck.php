@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 
 use Drupal\field\Entity\FieldStorageConfig;
 
@@ -27,8 +26,6 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
    */
   public function perform() {
     $params = [];
-    $reason = NULL;
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $results = [];
 
     $field_types = [
@@ -82,9 +79,25 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
     }
 
     if (!empty($results)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
+      $params = ['fields' => $results];
+      return $this->fail('Dangerous tags were found in submitted content (fields).', $params);
+    }
+
+    return $this->success();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      $arguments = $reason->getArguments();
+      if (empty($arguments['fields'])) {
+        return [];
+      }
+
       $items = [];
-      foreach ($results as $entity_type_id => $entities) {
+      foreach ($arguments['fields'] as $entity_type_id => $entities) {
         foreach ($entities as $entity_id => $fields) {
           $entity = $this->entityManager()
             ->getStorage($entity_type_id)
@@ -102,28 +115,14 @@ class DangerousTagsCheck extends AdvAuditCheckBase {
             );
           }
         }
-        $params = ['fields' => $items];
       }
-    }
 
-    return new AuditReason($this->id(), $status, $reason, $params);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      if (!empty($arguments['fields'])) {
-        $build['vulnerabilities'] = [
-          '#theme' => 'item_list',
-          '#title' => $this->t('The following items potentially have dangerous tags:'),
-          '#list_type' => 'ul',
-          '#items' => $arguments['fields'],
-        ];
-        return $build;
-      }
+      return [
+        '#theme' => 'item_list',
+        '#title' => $this->t('The following items potentially have dangerous tags:'),
+        '#list_type' => 'ol',
+        '#items' => $items,
+      ];
     }
 
     return [];
