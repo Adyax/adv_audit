@@ -182,6 +182,47 @@ plugins:
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
     success: 'Admin username is secure'
     help: 'Check admin username'
+  release_notes_help_files:
+    description: 'Checks presense of release notes & help files on the server.'
+    actions: 'Remove listed files from the server.'
+    impacts: 'Leaving these files on the webserver is a minor security risk. These files are useless on production anyway and they simply should not be there.'
+    fail: 'Release note & help files still present on your server.'
+    success: 'Release note & help files have been removed.'
+    help: 'Checks presense of release notes & help files on the server.'
+  temporary_files:
+    description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
+    impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
+    fail: 'Sensitive temporary files were found: %files'
+    success: 'Sensitive temporary files were not found.'
+    help: 'Check sensitive temporary files.'
+  execute_files:
+    description: 'The Drupal files directory is for user-uploaded files and by default provides some protection against a malicious user executing arbitrary PHP code against your site. Read more about the risk of PHP code execution on %risk_link.'
+    actions: "Check file system's permission"
+    impacts: 'Ignoring of protecting against arbitrary code execution leads to opening of possibility to execute harmful code.'
+    fail: 'Files can be executed from drupal file system.'
+    success: 'Files can not be executed from drupal file system.'
+    help: 'Check if files can be executed in drupal files directory.'
+  untrusted_roles_permission:
+    description: 'You should never give administrators permission to non-administrators or people you do not trust. '
+    actions: 'Review permissions. '
+    impacts: 'Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems. '
+    fail: 'Untrusted roles have permissions:'
+    success: 'All permissions are correct. '
+    help: 'Check permissions for untrusted roles. '
+  must_have_modules:
+    description: ''
+    actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
+    impacts: 'If one or more modules are not installed site''s security can be in danger.'
+    fail: 'There is one or more recommeded modules disabled.'
+    success: 'All recommeded modules are enabled.'
+    help: ''
+  anonymous_user_permission:
+    description: 'Check if anonymous users can create, delete or update some entity.'
+    actions: 'Check permissions for anonymous.'
+    impacts: 'all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code'
+    fail: 'Anonymous user have some unsecure permissions: %list .'
+    success: 'Permissions for anonymous users are correct.'
+    help: 'Check anonymous permissions.'
   views_access_controlled:
     description: 'Views can check if the user is allowed access to the content. It is recommended that all Views implement some amount of access control, at a minimum checking for the permission "access content".'
     actions: 'Limit access to the listed views/displays by permissions.'
@@ -211,9 +252,9 @@ plugins:
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
   code_audit_cs:
-    description: ''
-    actions: ''
-    impacts: ''
+    description: 'Checking Drupal code quality by CodeSniffer.'
+    actions: 'Fix all issues from generated files to improve code quality.'
+    impacts: 'Code with issues can be harder to support.'
     fail: 'There are issues in code. Results can be downloaded using links: @drupal @drupal_practice'
     success: 'No code issues.'
-    help: ''
+    help: 'Checking Drupal code quality by CodeSniffer.'

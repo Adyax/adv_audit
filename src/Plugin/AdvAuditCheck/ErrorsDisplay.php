@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
 /**
@@ -29,11 +27,12 @@ class ErrorsDisplay extends AdvAuditCheckBase {
   public function perform() {
     $config = $this->config('system.logging');
     $display = $config->get('error_level');
-    $status = AuditResultResponseInterface::RESULT_PASS;
+
     if ($display != 'hide') {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
+      $this->fail(NULL);
     }
-    return new AuditReason($this->id(), $status);
+
+    return $this->success();
   }
 
 }

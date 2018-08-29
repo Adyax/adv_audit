@@ -1,9 +1,12 @@
 <?php
 
-namespace Drupal\adv_audit\Controller;
+namespace Drupal\adv_audit;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\StreamWrapper\PrivateStream;
+use Drupal\Core\StreamWrapper\PublicStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -36,13 +39,21 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
   protected $root;
 
   /**
+   * The drupal module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root) {
+  public function __construct(EntityTypeManager $entity_type_manager, Connection $connection, DrupalKernel $kernel, $root, ModuleHandler $module_handler) {
     $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
     $this->kernel = $kernel;
     $this->root = $root;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -53,7 +64,8 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
       $container->get('entity_type.manager'),
       $container->get('database'),
       $container->get('kernel'),
-      $container->get('app.root')
+      $container->get('app.root'),
+      $container->get('module_handler')
     );
   }
 
@@ -114,19 +126,27 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    */
   protected function getFilesystemInfo() {
 
-    $path = $this->root . '/' . $this->kernel->getSitePath() . '/files';
+    if ($this->moduleHandler->moduleExists('s3fs')) {
+      return ['s3fs' => TRUE];
+    }
 
-    $iterator = new \RecursiveDirectoryIterator($path);
-    $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
-    $objects = new \RecursiveIteratorIterator($iterator);
+    $path['public_stream'] = PublicStream::basePath();
+    $path['private_stream'] = PrivateStream::basePath() ? PrivateStream::basePath() : FALSE;
 
     // Counters.
     $countFiles = 0;
     $filesTotalSize = 0;
+    foreach ($path as $item) {
+      if ($item) {
+        $iterator = new \RecursiveDirectoryIterator($item);
+        $iterator->setFlags(\RecursiveDirectoryIterator::SKIP_DOTS);
+        $objects = new \RecursiveIteratorIterator($iterator);
 
-    foreach ($objects as $name => $object) {
-      $filesTotalSize += filesize($name);
-      $countFiles++;
+        foreach ($objects as $name => $object) {
+          $filesTotalSize += filesize($name);
+          $countFiles++;
+        }
+      }
     }
 
     $renderData['count_files'] = $countFiles;
@@ -135,6 +155,7 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
     $renderData['files_total_size'] = round($filesTotalSize / 1048576, 2) . "MB";
 
     return $renderData;
+
   }
 
   /**

@@ -9,8 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\update\UpdateManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
-
 /**
+ * Check modules for non-security updates.
+ *
  * @AdvAuditCheck(
  *   id = "modules_update_check",
  *   label = @Translation("Modules non-security updates"),

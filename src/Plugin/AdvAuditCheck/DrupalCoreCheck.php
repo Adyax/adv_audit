@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
@@ -95,14 +93,13 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     $current_version = $projects_data[self::PROJECT_NAME]['existing_version'];
     $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = ['@version' => $current_version, '@recommended_version' => $recommended_version];
 
     if ($current_version != $recommended_version) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
+      $this->fail(NULL, $params);
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    return $this->success();
   }
 
 }

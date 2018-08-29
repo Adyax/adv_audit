@@ -131,6 +131,18 @@ class AuditRunTestBatch {
         'name' => AdvAuditEntity::generateEntityName(),
       ]);
 
+      // Include  Global Info if it enabled.
+      $global_info_status = \Drupal::config('adv_audit.config')
+        ->get('adv_audit_settings.categories');
+      if ($global_info_status['global_info']['status'] === 1) {
+        // Get global info.
+        $advGlobalData = \Drupal::service('adv_audit.global_info');
+        $resultsGlobal = $advGlobalData->index();
+
+        // Set global info.
+        $audit_result_response->setOverviewInfo($resultsGlobal);
+      }
+
       $entity->set('audit_results', serialize($audit_result_response));
       $entity->save();
 
@@ -179,32 +191,6 @@ class AuditRunTestBatch {
         '@max' => $context['sandbox']['max'],
       ]) . "<br />\n" . $context['message'];
     }
-  }
-
-  /**
-   * Save audit response result to the entity.
-   *
-   * @param \Drupal\adv_audit\AuditResultResponse $auditResultResponse
-   *   The response result object.
-   * @param mixed $entity
-   *   The Entity object for save.
-   */
-  protected function saveResult(AuditResultResponse $auditResultResponse, $entity = NULL) {
-    if (is_null($entity) || !($entity instanceof AdvAuditEntity)) {
-      $entity = AdvAuditEntity::create([
-        'name' => AdvAuditEntity::generateEntityName(),
-      ]);
-    }
-
-    // Get global info.
-    $advGlobalData = \Drupal::service('adv_audit.global_info');
-    $resultsGlobal = $advGlobalData->index();
-
-    // Set global info.
-    $auditResultResponse->setOverviewInfo($resultsGlobal);
-
-    $entity->set('audit_results', serialize($auditResultResponse));
-    $entity->save();
   }
 
 }
