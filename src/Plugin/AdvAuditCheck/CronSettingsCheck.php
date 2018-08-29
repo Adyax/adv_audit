@@ -122,7 +122,7 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
 
     if ($severity != REQUIREMENT_OK) {
       return $this->fail(NULL, [
-        '%link' => Link::createFromRoute('cron settings page', 'system.cron_settings')
+        '%link' => Link::createFromRoute($this->t('cron settings page'), 'system.cron_settings')
           ->toString(),
         '@time' => \Drupal::service('date.formatter')
           ->formatTimeDiffSince($cron_last),

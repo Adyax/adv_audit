@@ -2,7 +2,7 @@ plugins:
   cron_settings:
     description: 'Provide the status of cron execution and how often the cron is launched.'
     actions: 'Please check your %link.'
-    impatcts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems.'
+    impacts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems.'
     fail: 'There are problems with cron launch. Last run @time ago'
     success: 'No problems detected with cron launch.'
     help: 'Check cron settings.'
