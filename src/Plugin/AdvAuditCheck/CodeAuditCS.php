@@ -10,6 +10,8 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\adv_audit\Exception\RequirementsException;
 
 /**
  * Checs code quality by using Code Sniffer.
@@ -28,7 +30,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
   /**
    * Relative path to perform CS check.
    */
-  const PATH_TO_CHECK = 'modulessss';
+  const PATH_TO_CHECK = 'modules';
 
   /**
    * File extensions should be checked.
@@ -83,13 +85,21 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
   protected $fileSystem;
 
   /**
+   * Drupal\Core\Extension\ModuleHandlerInterface definition.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystem $file_system, StreamWrapperManager $swm, StateInterface $state) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystem $file_system, StreamWrapperManager $swm, StateInterface $state, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->fileSystem = $file_system;
     $this->swm = $swm;
     $this->state = $state;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -102,7 +112,8 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       $plugin_definition,
       $container->get('file_system'),
       $container->get('stream_wrapper_manager'),
-      $container->get('state')
+      $container->get('state'),
+      $container->get('module_handler')
     );
   }
 
@@ -133,7 +144,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       $this->state->get($state_keys['ignores']) : implode("\r\n", self::IGNORES);
     $form['ignores'] = [
       '#type' => 'textarea',
-      '#title' => $this->t('File extensions should be checked'),
+      '#title' => $this->t('Ignored subdirectories'),
       '#description' => t('Place one directory per line.'),
       '#default_value' => $default_value,
     ];
@@ -178,11 +189,11 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $state_keys = $this->buildStateConfigKeys();
 
     $exts = !empty($this->state->get($state_keys['exts'])) ?
-      $this->parseLines($this->state->get($state_keys['exts'])) : implode(',', self::FILE_EXTS);
+      implode(',', $this->parseLines($this->state->get($state_keys['exts']))) : implode(',', self::FILE_EXTS);
     $path = !empty($this->state->get($state_keys['path'])) ?
       $this->state->get($state_keys['path']) : self::PATH_TO_CHECK;
     $ignores = !empty($this->state->get($state_keys['ignores'])) ?
-      $this->state->get($state_keys['ignores']) : implode(',', self::IGNORES);
+      implode(',', $this->parseLines($this->state->get($state_keys['ignores']))) : implode(',', self::IGNORES);
     $output = !empty($this->state->get($state_keys['output'])) ?
       $this->state->get($state_keys['output']) : self::OUTPUT_URI;
 
@@ -193,27 +204,29 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $file_rel_path = $output . '/' . md5('phpcs_D_' . time()) . '.txt';
     $filepath = $this->fileSystem->realpath($scheme) . '/' . $file_rel_path;
 
-    $phpcs_cmd = "phpcs --standard=Drupal --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
+    $phpcs = $this->getCsDir();
+
+    $phpcs_cmd = "php {$phpcs} --standard=Drupal --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . '/' . $file_rel_path;
-      $drupal_link = $this->t('<a href="@url">Drupal</a>', ['@url' => $url]);
+      $drupal_link = $this->t('<a href="@url" download>Drupal</a>', ['@url' => $url]);
     }
 
     $file_rel_path = $output . '/' . md5('phpcs_DP_' . time()) . '.txt';
     $filepath = $this->fileSystem->realpath($scheme) . '/' . $file_rel_path;
 
-    $phpcs_cmd = "phpcs --standard=DrupalPractice --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
+    $phpcs_cmd = "php {$phpcs} --standard=DrupalPractice --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . '/' . $file_rel_path;
-      $drupal_practice_link = $this->t('<a href="@url">DrupalPractice</a>', ['@url' => $url]);
+      $drupal_practice_link = $this->t('<a href="@url" download>DrupalPractice</a>', ['@url' => $url]);
     }
 
     if ($drupal_failed || $drupal_practice_failed) {
@@ -224,6 +237,20 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     }
 
     return $this->success();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkRequirements() {
+    parent::checkRequirements();
+
+    if (!file_exists($this->getCsDir())) {
+      throw new RequirementsException(
+        $this->t('CodeSniffer is not installed'),
+        $this->pluginDefinition['requirements']['module']
+      );
+    }
   }
 
   /**
@@ -259,6 +286,19 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $lines = array_filter($lines, 'trim');
 
     return str_replace("\r", "", $lines);
+  }
+
+  /**
+   * Returns path to phpcs script.
+   *
+   * @return string
+   *   Path to phpcs script.
+   */
+  private function getCsDir() {
+    $moduel_path = $this->fileSystem->realpath($this->moduleHandler->getModule('adv_audit')->getPath());
+    $phpcs_path = 'vendor/squizlabs/php_codesniffer/scripts/phpcs';
+
+    return $moduel_path . '/' . $phpcs_path;
   }
 
 }
