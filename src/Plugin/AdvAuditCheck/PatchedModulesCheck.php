@@ -59,7 +59,7 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
     }
 
     if (!empty($issue_details['hacked_modules'])) {
-      return $this->fail(NULL, $issue_details);
+      return $this->fail('', $issue_details);
     }
 
     return $this->success();
@@ -92,17 +92,15 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
       return [];
     }
 
-    $arguments = $reason->getArguments();
-    if (empty($arguments['hacked_modules'])) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details['hacked_modules'])) {
       return [];
     }
 
-    $build = [
+    return [
       '#theme' => 'hacked_report',
-      '#data' => $arguments['hacked_modules'],
+      '#data' => $issue_details['hacked_modules'],
     ];
-
-    return $build;
   }
 
 }

@@ -25,7 +25,7 @@ class PhpMaxExecutionTimeCheck extends AdvAuditCheckBase {
     $time = intval(ini_get('max_execution_time'));
 
     if ($time > 300 || $time === 0) {
-      $this->fail("Max execution time is too high.");
+      $this->fail($this->t("Max execution time is too high."));
     }
 
     return $this->success();

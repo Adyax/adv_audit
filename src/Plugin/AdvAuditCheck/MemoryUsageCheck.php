@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
@@ -156,7 +155,6 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
    * Process checkpoint review.
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
     $urls = $this->parseLines($this->state->get($this->buildStateConfigKeys()['urls']));
 
@@ -164,10 +162,9 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $total_memory = intval(ini_get('memory_limit'));
 
     if ($total_memory <= 0) {
-      $status = AuditResultResponseInterface::RESULT_SKIP;
       $reason = t('Memory limit has value @value. Looks like server is not correctly configured.',
         ['@value' => $total_memory]);
-      return new AuditReason($this->id(), $status, $reason, $params);
+      return $this->skip($reason);
     }
 
     $total_memory = Bytes::toInt($total_memory);
@@ -183,11 +180,14 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
 
       if ($memory / $total_memory > $memory_treshold) {
         $params['failed_urls'][$url] = format_size($memory)->render();
-        $status = AuditResultResponseInterface::RESULT_FAIL;
       }
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    if (!empty($params)) {
+      return $this->fail('', $params);
+    }
+
+    return $this->success();
   }
 
   /**
@@ -198,33 +198,25 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
       return [];
     }
 
-    $key = 'failed_urls';
-
-    $arguments = $reason->getArguments();
-    if (empty($arguments[$key])) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details['failed_urls'])) {
       return [];
     }
 
-    $markup_key = '#markup';
-    $message = [
+    array_walk($issue_details['failed_urls'], function (&$value, &$key) {
+      $value = $key . ': ' . $value;
+    });
+
+    return [
       '#type' => 'container',
-      '#attributes' => [
-        'class' => ['fail-message'],
+      'msg' => [
+        '#markup' => $this->t('There are URLs with big memory usage.'),
+      ],
+      'list' => [
+        '#theme' => 'item_list',
+        '#items' => $issue_details['failed_urls'],
       ],
     ];
-    $message['msg'][$markup_key] = $this->t('There are URLs with big memory usage.')->__toString();
-
-    $list = [
-      '#theme' => 'item_list',
-    ];
-    $items = [];
-    foreach ($arguments[$key] as $url => $memory) {
-      $item[$markup_key] = $url . ': ' . $memory;
-      $items[] = $item;
-    }
-    $list['#items'] = $items;
-
-    return [$message, $list];
   }
 
   /**
