@@ -2,18 +2,18 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
-
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
+ * Plugin for cron settings check.
+ *
  * @AdvAuditCheck(
  *  id = "cron_settings",
  *  label = @Translation("Cron settings"),
@@ -24,11 +24,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  * )
  */
 class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
-
-  /**
-   * Length of the day in seconds.
-   */
-  const DAYTIMESTAMP = 86400;
 
   /**
    * The config factory.
@@ -61,7 +56,24 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, StateInterface $state) {
+
+  /**
+   * Constructs a new CronSettingsCheck object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param array $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Config factory instance.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   Module handler.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   State instance.
+   */
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, StateInterface $state) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
@@ -100,7 +112,7 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
     }
 
     // Determine severity based on time since cron last ran.
-    $severity = REQUIREMENT_INFO;
+    $severity = REQUIREMENT_OK;
     if (REQUEST_TIME - $cron_last > $threshold_error) {
       $severity = REQUIREMENT_ERROR;
     }
@@ -108,10 +120,15 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
       $severity = REQUIREMENT_WARNING;
     }
 
-    if ($severity == REQUIREMENT_ERROR) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
+    if ($severity != REQUIREMENT_OK) {
+      return $this->fail(NULL, [
+        '%link' => Link::createFromRoute('cron settings page', 'system.cron_settings')
+          ->toString(),
+        '@time' => \Drupal::service('date.formatter')
+          ->formatTimeDiffSince($cron_last),
+      ]);
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+    return $this->success();
   }
 
 }
