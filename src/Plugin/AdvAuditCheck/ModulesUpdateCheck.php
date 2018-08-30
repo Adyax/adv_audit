@@ -21,21 +21,14 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "high"
  * )
  */
-class ModulesUpdateCheck extends AdvAuditModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ModulesUpdateCheck extends ModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
   const CHECK_FOR_SECURITY_UPDATES = FALSE;
 
   /**
-   * Constructs a new ModulesUpdateCheck object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
-   *   The plugin implementation definition.
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, UpdateManagerInterface $update_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
