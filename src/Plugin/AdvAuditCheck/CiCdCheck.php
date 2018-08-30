@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -31,4 +32,3 @@ class CiCdCheck extends AdvAuditCheckBase {
   }
 
 }
-
