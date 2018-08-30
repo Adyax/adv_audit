@@ -3,8 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Check if the project uses composer.
@@ -18,30 +16,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class ComposerUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition
-    );
-  }
+class ComposerUsageCheck extends AdvAuditCheckBase {
 
   /**
    * {@inheritdoc}
    */
   public function perform() {
-    // TODO: Implement perform() method.
+
+    if (file_exists(DRUPAL_ROOT . '/composer.json') && file_exists(DRUPAL_ROOT . '/composer.lock')) {
+
+      return $this->success();
+    }
+
+    return $this->fail(NULL);
   }
 
 }
