@@ -130,33 +130,21 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
       return [];
     }
 
-    $key = 'remaining_files';
-
-    $arguments = $reason->getArguments();
-    if (empty($arguments[$key])) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details['remaining_files'])) {
       return [];
     }
 
-    $markup_key = '#markup';
-    $message = [
+    return [
       '#type' => 'container',
-      '#attributes' => [
-        'class' => ['fail-message'],
+      'msg' => [
+        '#markup' => $this->t('Release note & help files still present on your server.'),
+      ],
+      'list' => [
+        '#theme' => 'item_list',
+        '#items' => $issue_details['remaining_files'],
       ],
     ];
-    $message['msg'][$markup_key] = $this->t('Release note & help files still present on your server.');
-
-    $list = [
-      '#theme' => 'item_list',
-    ];
-    $items = [];
-    foreach ($arguments[$key] as $file) {
-      $item[$markup_key] = $file;
-      $items[] = $item;
-    }
-    $list['#items'] = $items;
-
-    return [$message, $list];
   }
 
   /**

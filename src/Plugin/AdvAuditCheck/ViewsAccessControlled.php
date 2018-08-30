@@ -94,15 +94,15 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
       return [];
     }
 
-    $arguments = $reason->getArguments();
-    if (empty($arguments['failed_views'])) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details['failed_views'])) {
       return [];
     }
 
     $items = [];
-    foreach ($arguments['failed_views'] as $view => $displays) {
+    foreach ($issue_details['failed_views'] as $view => $displays) {
       foreach ($displays as $display) {
-        $items[] = $view . ':' . $display;
+        $items[] = $view . ': ' . $display;
       }
     }
 

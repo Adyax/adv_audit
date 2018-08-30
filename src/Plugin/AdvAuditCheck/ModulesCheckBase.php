@@ -12,7 +12,7 @@ use Drupal\Core\Url;
 /**
  * Base class for Advances audit modules updates check plugins.
  */
-abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
+abstract class ModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   /**
    * Store modules list.

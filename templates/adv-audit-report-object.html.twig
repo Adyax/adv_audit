@@ -124,18 +124,14 @@
                     {% endif %}
                       {% if report.severity is not empty %}
                     <div class="content-panel">
-                      <p>
                         <strong>{{ 'Importance: '|t }}</strong>
                         <em>{{ report.severity }}</em>
-                      </p>
                     </div>
                       {% endif %}
                       {% if report.actions is not empty %}
                     <div class="content-panel">
-                      <p>
                         <strong>{{ 'Actions to be done: '|t }}</strong>
                         <em>{{ report.actions }}</em>
-                      </p>
                     </div>
                       {% endif %}
                       {% if report.impacts is not empty %}
@@ -147,14 +143,10 @@
                     </div>
                       {% endif %}
                     {# Should be moved to preprocess function #}
-                    {% if report.reason is not empty and report.reason.0 != null %}
+                    {% if report.reason is not empty %}
                       <div class="content-panel">
-                        <strong>{{ 'Why this check is failed: '|t }}</strong>
-                        <ul>
-                          {% for item in report.reason %}
-                            <li>{{ item }}</li>
-                          {% endfor %}
-                        </ul>
+                          <strong>{{ 'Why this check is failed: '|t }}</strong>
+                          {{ report.reason }}
                       </div>
                     {% endif %}
                   </div>
