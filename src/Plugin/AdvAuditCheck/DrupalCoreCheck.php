@@ -5,7 +5,9 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 
+use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\update\UpdateProcessor;
 use Drupal\update\UpdateManagerInterface;
@@ -93,13 +95,17 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     $current_version = $projects_data[self::PROJECT_NAME]['existing_version'];
     $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
 
-    $params = ['@version' => $current_version, '@recommended_version' => $recommended_version];
+    $params = [
+      '@version' => $current_version,
+      '@recommended_version' => $recommended_version,
+      '%link' => Link::fromTextAndUrl($this->t('recommended releases'), Url::fromUri('https://www.drupal.org/project/drupal'))->toString(),
+    ];
 
-    if ($current_version != $recommended_version) {
-      $this->fail(NULL, $params);
+    if ($current_version !== $recommended_version) {
+      return $this->fail(NULL, $params);
     }
 
-    return $this->success();
+    return $this->success($params);
   }
 
 }

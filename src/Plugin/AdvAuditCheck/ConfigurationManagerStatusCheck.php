@@ -10,6 +10,7 @@ use Drupal\Core\Config\DatabaseStorage;
 use Drupal\Core\Config\StorageComparer;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Link;
 use Drupal\update\UpdateManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -78,15 +79,19 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
    * {@inheritdoc}
    */
   public function perform() {
-    $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
-    $is_overriden = $storage_comparer->createChangelist()->hasChanges();
 
-    // Configuration is overridden.
-    if ($is_overriden) {
-      return $this->fail("Configuration is overridden.");
+    $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
+    $source_list = $this->syncStorage->listAll();
+    $ovveriden = $storage_comparer->createChangelist()->hasChanges();
+    if (empty($source_list) || !$ovveriden) {
+      return $this->success();
     }
 
-    return $this->success();
+    // Configuration is overridden.
+    return $this->fail("Configuration is overridden.", [
+      '%link' => Link::createFromRoute($this->t('configuration synchronization'), 'config.sync')
+        ->toString(),
+    ]);
   }
 
 }
