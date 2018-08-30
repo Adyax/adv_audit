@@ -219,24 +219,4 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     ];
   }
 
-  /**
-   * Parses textarea lines into array.
-   *
-   * @param string $lines
-   *   Textarea content.
-   *
-   * @return array
-   *   The textarea lines.
-   */
-  private function parseLines($lines) {
-    $lines = explode("\n", $lines);
-
-    if (!count($lines)) {
-      return [];
-    }
-    $lines = array_filter($lines, 'trim');
-
-    return str_replace("\r", "", $lines);
-  }
-
 }

@@ -157,24 +157,4 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
     return 'adv_audit.plugin.' . $this->id() . '.config.files';
   }
 
-  /**
-   * Parses textarea lines into array.
-   *
-   * @param string $lines
-   *   Textarea content.
-   *
-   * @return array
-   *   The textarea lines.
-   */
-  private function parseLines($lines) {
-    $lines = explode("\n", $lines);
-
-    if (!count($lines)) {
-      return [];
-    }
-    $lines = array_filter($lines, 'trim');
-
-    return str_replace("\r", "", $lines);
-  }
-
 }
