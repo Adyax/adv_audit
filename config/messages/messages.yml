@@ -278,3 +278,10 @@ plugins:
     fail: 'composer.json OR composer.lock file not found. The project do not uses composer.'
     success: 'The project uses composer for manage dependencies.'
     help: 'Check if the project uses composer.'
+  ci_cd_check:
+    description: 'Check if GITlab CI/CD exists. Continuous Integration is a software development practice in which you build and test software every time a developer pushes code to the application.'
+    actions: 'Use GITlab CI/CD.'
+    impacts: 'Without CI/CD process every deploy requires a lot of time because it requires fully manual actions (git pull, composer install, drush commands). With automated processes we’ll have possibility to run codesniffer check and run drush and composer commands that are needed for deployment more quickly and efficiently.'
+    fail: 'There is no GITlab CI/CD on project'
+    success: 'Project is uses GITlab CI/CD.'
+    help: 'Check if GITlab CI/CD exists.'
