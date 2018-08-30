@@ -1,12 +1,11 @@
 plugins:
   cron_settings:
-    description: 'Provide tool to control codebase state.'
-    actions: 'Install and configure some advanced cron module.'
-    impatcts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems: <br><ul><li>Drupal will not provide system-wide defaults to running jobs at particular times, storing (caching) web pages to improve efficiency, and performing other essential tasks.</li> <li>Drupal will not periodically clean up log files</li> <li>application will not have a possibility automatically update feeds</li> <li>update manager will not have a possibility to check automatically pending updates</li> <li>search indexes that also uses cron will not index new/updated content and many other points</li></ul>'
-    fail: 'Its fail message49'
-    success: 'Success message!!'
+    description: 'Provide the status of cron execution and how often the cron is launched.'
+    actions: 'Please check your %link.'
+    impacts: 'If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems.'
+    fail: 'There are problems with cron launch. Last run @time ago'
+    success: 'No problems detected with cron launch.'
     help: 'Check cron settings.'
-    impacts: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duo Reges: constructio interrete. Satis est ad hoc responsum. Quid vero? Primum quid tu dicis breve?'
   configuration_manager_status:
     description: 'Check current status of config files via configuration manager and provide the status.'
     actions: 'Review and update configurations'
