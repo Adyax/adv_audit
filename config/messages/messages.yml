@@ -257,6 +257,13 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  code_audit_cs:
+    description: 'Checking Drupal code quality by CodeSniffer.'
+    actions: 'Fix all issues from generated files to improve code quality.'
+    impacts: 'Code with issues can be harder to support.'
+    fail: 'There are issues in code. Results can be downloaded using links: @drupal @drupal_practice'
+    success: 'No code issues.'
+    help: 'Checking Drupal code quality by CodeSniffer.'
   account_settings:
     description: 'Account %link. Current setting is "%current".'
     actions: 'Change account %link.'
