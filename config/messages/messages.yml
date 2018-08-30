@@ -272,3 +272,10 @@ plugins:
     fail: 'Unsafe file extensions are allowed in uploads.'
     success: 'Only safe extensions are allowed for uploaded files and images.'
     help: 'Only safe extensions are allowed for uploaded files and images.'
+  ci_cd_check:
+    description: 'Continuous Integration is a software development practice in which you build and test software every time a developer pushes code to the application.'
+    actions: 'Use CI/CD.'
+    impacts: 'Without CI/CD process every deploy requires a lot of time because it requires fully manual actions (git pull, composer install, drush commands). With automated processes we’ll have possibility to run codesniffer check and run drush and composer commands that are needed for deployment more quickly and efficiently.'
+    fail: 'There is no CI/CD on project'
+    success: 'Project is uses CI/CD.'
+    help: 'Check if CI/CD exists.'
