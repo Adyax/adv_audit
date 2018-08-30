@@ -4,8 +4,14 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\State\StateInterface;
 
 /**
  * Trusted Host Check plugin class.
@@ -19,7 +25,92 @@ use Drupal\field\Entity\FieldStorageConfig;
  *   severity = "high"
  * )
  */
-class DangerousTagsCheck extends AdvAuditCheckBase {
+class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+  /**
+   * The state service object.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('state')
+    );
+  }
+
+  /**
+   * Build key string for access to stored value from config.
+   *
+   * @return string
+   *   The generated key.
+   */
+  protected function buildStateConfigKey() {
+    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function configForm() {
+    $settings = $this->getPerformSettings();
+
+    $form['formats'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['text_with_summary', 'text_long'],
+      '#default_value' => $settings['formats'],
+    ];
+    $form['tags'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Dangerous tags'),
+      '#default_value' => $settings['tags'],
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function configFormSubmit($form, FormStateInterface $form_state) {
+    $value = $form_state->getValue('additional-settings');
+    $this->state->set($this->buildStateConfigKey(), $value);
+  }
+
+  /**
+   * Get settings for perform task.
+   */
+  protected function getPerformSettings() {
+    $settings = $this->state->get($this->buildStateConfigKey());
+    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
+  }
+
+  /**
+   * Get default settings.
+   */
+  protected function getDefaultPerformSettings() {
+    return [
+      'formats' => [
+        'text_with_summary',
+        'text_long',
+      ],
+      'tags' => 'script,?php',
+    ];
+  }
 
   /**
    * {@inheritdoc}
