@@ -54,7 +54,7 @@ class UltimateCronCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
    */
   public function perform() {
     if (!$this->moduleHandler->moduleExists('ultimate_cron')) {
-      return $this->fail('', []);
+      return $this->fail('');
     }
 
     return $this->success();
