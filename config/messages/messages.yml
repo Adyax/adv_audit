@@ -11,7 +11,7 @@ plugins:
     description: 'Check current status of config files via configuration manager and provide the status.'
     actions: 'Review and update configurations'
     impacts: 'There are should not be any changes in config files because next deployment may revert all that changes. All the configuration changes on the site should be immediately imported into the configuration files through the config manager and must be updated in the project code.'
-    fail: 'There are differences between configurations stored in database and files.'
+    fail: 'There are differences between configurations stored in database and files. Please check your %link'
     success: 'All config files are actual.'
     help: 'Check non-security updates for modules.'
   drupal_core:
