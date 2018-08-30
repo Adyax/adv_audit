@@ -8,7 +8,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
  * Check if the project uses composer.
  *
  * @AdvAuditCheck(
- *   id = "composer_usage",
+ *   id = "composer_usage_check",
  *   label = @Translation("Check if composer is used on the project."),
  *   category = "architecture_analysis",
  *   severity = "high",

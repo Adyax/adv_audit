@@ -276,6 +276,6 @@ plugins:
     description: 'It is the best practice to use composer for manage Drupal dependencies.'
     actions: 'Need to install and use composer.'
     impacts: 'It is difficult to manage project and all dependencies.'
-    fail: 'The project do not uses composer.'
+    fail: 'composer.json OR composer.lock file not found. The project do not uses composer.'
     success: 'The project uses composer for manage dependencies.'
     help: 'Check if the project uses composer.'
