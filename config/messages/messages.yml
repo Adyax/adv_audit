@@ -271,6 +271,13 @@ plugins:
     fail: 'Unsafe file extensions are allowed in uploads.'
     success: 'Only safe extensions are allowed for uploaded files and images.'
     help: 'Only safe extensions are allowed for uploaded files and images.'
+  ultimate_cron:
+   description: 'Checks if Ultimate cron module is enabled.'
+   actions: 'Install Ultimate cron module.'
+   impacts: 'Ultimate cron module can improve site''s cron system as it runs cron jobs individually in parallel using configurable rules, pool management and load balancing.'
+   fail: 'Ultimate cron modules is disabled.'
+   success: 'Ultimate cron module is enabled.'
+   help: 'Checks if Ultimate cron module is enabled.'
   composer_usage_check:
     description: 'It is the best practice to use composer for manage Drupal dependencies.'
     actions: 'Need to install and use composer.'
