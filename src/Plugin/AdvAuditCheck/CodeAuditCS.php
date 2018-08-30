@@ -208,11 +208,12 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
 
     $phpcs_cmd = "php {$phpcs} --standard=Drupal --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
+    $this->fileSystem->chmod($filepath, 0744);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
-      $url = $wrapper->getExternalUrl() . '/' . $file_rel_path;
+      $url = $wrapper->getExternalUrl() . $file_rel_path;
       $drupal_link = $this->t('<a href="@url" download>Drupal</a>', ['@url' => $url]);
     }
 
@@ -221,11 +222,12 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
 
     $phpcs_cmd = "php {$phpcs} --standard=DrupalPractice --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
+    $this->fileSystem->chmod($filepath, 0744);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
-      $url = $wrapper->getExternalUrl() . '/' . $file_rel_path;
+      $url = $wrapper->getExternalUrl() . $file_rel_path;
       $drupal_practice_link = $this->t('<a href="@url" download>DrupalPractice</a>', ['@url' => $url]);
     }
 
