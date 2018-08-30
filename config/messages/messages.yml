@@ -272,6 +272,13 @@ plugins:
     fail: 'Unsafe file extensions are allowed in uploads.'
     success: 'Only safe extensions are allowed for uploaded files and images.'
     help: 'Only safe extensions are allowed for uploaded files and images.'
+  composer_usage_check:
+    description: 'It is the best practice to use composer for manage Drupal dependencies.'
+    actions: 'Need to install and use composer.'
+    impacts: 'It is difficult to manage project and all dependencies.'
+    fail: 'composer.json OR composer.lock file not found. The project do not uses composer.'
+    success: 'The project uses composer for manage dependencies.'
+    help: 'Check if the project uses composer.'
   ci_cd_check:
     description: 'Continuous Integration is a software development practice in which you build and test software every time a developer pushes code to the application.'
     actions: 'Use CI/CD.'
