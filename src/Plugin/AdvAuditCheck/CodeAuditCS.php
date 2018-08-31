@@ -136,7 +136,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $form['exts'] = [
       '#type' => 'textarea',
       '#title' => $this->t('File extensions should be checked'),
-      '#description' => t('Place one extension per line.'),
+      '#description' => $this->t('Place one extension per line.'),
       '#default_value' => $default_value,
     ];
 
@@ -145,7 +145,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $form['ignores'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Ignored subdirectories'),
-      '#description' => t('Place one directory per line.'),
+      '#description' => $this->t('Place one directory per line.'),
       '#default_value' => $default_value,
     ];
 
@@ -154,7 +154,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $form['output'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Output directory'),
-      '#description' => t('Subdirectory in public:// for storing results.'),
+      '#description' => $this->t('Subdirectory in public:// for storing results.'),
       '#default_value' => $default_value,
     ];
 
@@ -268,26 +268,6 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       'ignores' => 'adv_audit.plugin.' . $this->id() . '.config.ignores',
       'output' => 'adv_audit.plugin.' . $this->id() . '.config.output',
     ];
-  }
-
-  /**
-   * Parses textarea lines into array.
-   *
-   * @param string $lines
-   *   Textarea content.
-   *
-   * @return array
-   *   The textarea lines.
-   */
-  private function parseLines($lines) {
-    $lines = explode("\n", $lines);
-
-    if (!count($lines)) {
-      return [];
-    }
-    $lines = array_filter($lines, 'trim');
-
-    return str_replace("\r", "", $lines);
   }
 
   /**
