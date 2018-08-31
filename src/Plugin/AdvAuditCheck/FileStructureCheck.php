@@ -2,7 +2,11 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Check files structure on project.
@@ -16,7 +20,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
  *   enabled = TRUE,
  * )
  */
-class FileStructureCheck extends AdvAuditCheckBase {
+class FileStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   const MODULES_BASE = DRUPAL_ROOT . '/modules/';
 
@@ -96,6 +100,101 @@ class FileStructureCheck extends AdvAuditCheckBase {
     }
 
     return $folders;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function auditReportRender(AuditReason $reason, $type) {
+    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      $folders = $reason->getArguments();
+      $items = [];
+
+      foreach ($folders as $folder => $list) {
+        if ($folder === 'modules_in_base') {
+          $items[] = $this->getModulesItem($list);
+        }
+
+        if ($folder === 'themes_in_base') {
+          $items[] = $this->getThemesItem($list);
+        }
+
+        if ($folder === 'multisites') {
+          $items[] = $this->getMultiSites($list);
+        }
+      }
+      $build['folders_fail'] = [
+        '#theme' => 'item_list',
+        '#title' => $this->t('Failed folders'),
+        '#list_type' => 'ul',
+        '#items' => $items,
+      ];
+      return $build;
+    }
+    return [];
+  }
+
+  /**
+   * Get item for auditReportRender if base modules folder failed.
+   *
+   * @param array $list
+   *   List of failed modules.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   TranslatableMarkup.
+   */
+  protected function getModulesItem(array $list): TranslatableMarkup {
+    foreach ($list as $key => $value) {
+      if ($key === 'contrib_exists') {
+        $base_module_contrib = 'contrib folder exists';
+        break;
+      }
+    }
+    return $base_module_contrib ?
+      $this->t('Base module folder contains modules (contrib folder exists):') :
+      $this->t("Base module folder contains modules (contrib folder doesn't exists):");
+  }
+
+  /**
+   * Get item for auditReportRender if base themes folder failed.
+   *
+   * @param array $list
+   *   List of failed themes.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   TranslatableMarkup.
+   */
+  protected function getThemesItem(array $list) : TranslatableMarkup {
+    foreach ($list as $key => $value) {
+      if ($key === 'contrib_exists') {
+        $base_theme_contrib = 'contrib folder exists';
+        break;
+      }
+    }
+    return $base_theme_contrib ?
+      $this->t('Base theme folder contains themes (contrib folder exists):') :
+      $this->t("Base theme folder contains themes (contrib folder doesn't exists):");
+  }
+
+  /**
+   * Get item if files structure failed in sites folder for multisite.
+   *
+   * @param array $list
+   *   List of failed sites.
+   *
+   * @return array
+   *   List of failed sites.
+   */
+  protected function getMultiSites(array $list) {
+    foreach ($list as $key => $value) {
+      $sites_list[] = $key;
+    }
+    return [
+      '#theme' => 'item_list',
+      '#title' => $this->t('Multisite folders:'),
+      '#list_type' => 'ul',
+      '#items' => $sites_list,
+    ];
   }
 
 }
