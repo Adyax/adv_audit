@@ -12,7 +12,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * Check files structure on project.
  *
  * @AdvAuditCheck(
- *   id = "file_structure_check",
+ *   id = "files_structure_check",
  *   label = @Translation("Check files structure on project."),
  *   category = "architecture_analysis",
  *   severity = "normal",
@@ -20,7 +20,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   enabled = TRUE,
  * )
  */
-class FileStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
+class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   const MODULES_BASE = DRUPAL_ROOT . '/modules/';
 
