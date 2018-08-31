@@ -299,3 +299,10 @@ plugins:
     fail: 'There is no GITlab CI/CD on project'
     success: 'Project is uses GITlab CI/CD.'
     help: 'Check if GITlab CI/CD exists.'
+  file_structure_check:
+    description: 'Drupal files structure has well-defined requirements.'
+    actions: 'Need to organize files as recommended by Drupal documentation.'
+    impacts: 'Ignoring of files structure requirements complicates site support. '
+    fail: 'There are some issues in files structure.'
+    success: 'The filesytem is well-organized.'
+    help: 'Check filesystem structure.'
