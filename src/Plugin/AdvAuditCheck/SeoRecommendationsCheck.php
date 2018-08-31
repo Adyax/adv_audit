@@ -142,10 +142,6 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
       $params['robots_txt_unavailable'] = TRUE;
     }
 
-    if (strpos($host, '://www.') !== FALSE) {
-      $params['domain_has_www'] = TRUE;
-    }
-
     if (!empty($params)) {
       return $this->fail('', $params);
     }
@@ -181,11 +177,6 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
     if (!empty($issue_details['robots_txt_unavailable'])) {
       $items[] = $this->t('robots.txt file is not available.');
     }
-
-    if (!empty($issue_details['domain_has_www'])) {
-      $items[] = $this->t('Domain name contains www.');
-    }
-
     return [
       '#type' => 'container',
       'msg' => [
