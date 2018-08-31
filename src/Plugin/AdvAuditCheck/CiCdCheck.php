@@ -23,7 +23,7 @@ class CiCdCheck extends AdvAuditCheckBase {
    */
   public function perform() {
 
-    if (file_exists(DRUPAL_ROOT . '/.gitlab-ci.yml')) {
+    if (file_exists(DRUPAL_ROOT . '/.gitlab-ci.yml') || file_exists(DRUPAL_ROOT . '/../.gitlab-ci.yml')) {
 
       return $this->success();
     }
