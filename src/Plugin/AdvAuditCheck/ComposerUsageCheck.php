@@ -23,8 +23,7 @@ class ComposerUsageCheck extends AdvAuditCheckBase {
    */
   public function perform() {
 
-    if ((file_exists(DRUPAL_ROOT . '/composer.json') && file_exists(DRUPAL_ROOT . '/composer.lock'))
-      || (file_exists(DRUPAL_ROOT . '/../composer.json') && file_exists(DRUPAL_ROOT . '/../composer.lock'))) {
+    if (file_exists(DRUPAL_ROOT . '/../composer.json') && file_exists(DRUPAL_ROOT . '/../composer.lock')) {
 
       return $this->success();
     }
