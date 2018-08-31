@@ -148,12 +148,12 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
   protected function getItems(array $list, $folder): TranslatableMarkup {
     foreach ($list as $key => $value) {
       if ($key === 'contrib_exists') {
-        $base_contrib = 'contrib folder exists';
+        $contrib = TRUE;
         break;
       }
     }
     $placeholder = ['%folder' => $folder];
-    return $base_contrib ?
+    return $contrib ?
       $this->t('Base "%folder" folder contains %folder (contrib folder exists):', $placeholder) :
       $this->t("Base \"%folder\" folder contains %folder (contrib folder doesn't exists):", $placeholder);
   }
