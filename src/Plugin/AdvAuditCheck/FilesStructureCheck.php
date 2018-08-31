@@ -120,7 +120,7 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
         }
 
         if ($folder === 'multisites') {
-          $items[] = $this->getMultiSites($list);
+          $items[] = $this->getItemsMultiSitesFailed($list);
         }
       }
       $build['folders_fail'] = [
@@ -167,7 +167,7 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * @return array
    *   List of failed sites.
    */
-  protected function getMultiSites(array $list) {
+  protected function getItemsMultiSitesFailed(array $list) {
     foreach ($list as $key => $value) {
       $sites_list[] = $key;
     }
