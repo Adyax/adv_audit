@@ -112,15 +112,15 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
 
       foreach ($folders as $folder => $list) {
         if ($folder === 'modules_in_base') {
-          $items[] = $this->getItem($list, 'modules');
+          $items[] = $this->getItems($list, 'modules');
         }
 
         if ($folder === 'themes_in_base') {
-          $items[] = $this->getItem($list, 'themes');
+          $items[] = $this->getItems($list, 'themes');
         }
 
         if ($folder === 'multisites') {
-          $items[] = $this->getMultiSitesFailed($list);
+          $items[] = $this->getMultiSites($list);
         }
       }
       $build['folders_fail'] = [
@@ -145,7 +145,7 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   TranslatableMarkup.
    */
-  protected function getItem(array $list, $folder): TranslatableMarkup {
+  protected function getItems(array $list, $folder): TranslatableMarkup {
     foreach ($list as $key => $value) {
       if ($key === 'contrib_exists') {
         $base_contrib = 'contrib folder exists';
@@ -167,7 +167,7 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * @return array
    *   List of failed sites.
    */
-  protected function getMultiSitesFailed(array $list) {
+  protected function getMultiSites(array $list) {
     foreach ($list as $key => $value) {
       $sites_list[] = $key;
     }
