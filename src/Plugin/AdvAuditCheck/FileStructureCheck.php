@@ -112,11 +112,11 @@ class FileStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
 
       foreach ($folders as $folder => $list) {
         if ($folder === 'modules_in_base') {
-          $items[] = $this->getModulesItem($list);
+          $items[] = $this->getItem($list, 'modules');
         }
 
         if ($folder === 'themes_in_base') {
-          $items[] = $this->getThemesItem($list);
+          $items[] = $this->getItem($list, 'themes');
         }
 
         if ($folder === 'multisites') {
@@ -135,45 +135,27 @@ class FileStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
   }
 
   /**
-   * Get item for auditReportRender if base modules folder failed.
+   * Get items for auditReportRender if base files structure failed.
    *
    * @param array $list
    *   List of failed modules.
+   * @param string $folder
+   *   Folder in which test was failed.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   TranslatableMarkup.
    */
-  protected function getModulesItem(array $list): TranslatableMarkup {
+  protected function getItem(array $list, $folder): TranslatableMarkup {
     foreach ($list as $key => $value) {
       if ($key === 'contrib_exists') {
-        $base_module_contrib = 'contrib folder exists';
+        $base_contrib = 'contrib folder exists';
         break;
       }
     }
-    return $base_module_contrib ?
-      $this->t('Base module folder contains modules (contrib folder exists):') :
-      $this->t("Base module folder contains modules (contrib folder doesn't exists):");
-  }
-
-  /**
-   * Get item for auditReportRender if base themes folder failed.
-   *
-   * @param array $list
-   *   List of failed themes.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
-   *   TranslatableMarkup.
-   */
-  protected function getThemesItem(array $list) : TranslatableMarkup {
-    foreach ($list as $key => $value) {
-      if ($key === 'contrib_exists') {
-        $base_theme_contrib = 'contrib folder exists';
-        break;
-      }
-    }
-    return $base_theme_contrib ?
-      $this->t('Base theme folder contains themes (contrib folder exists):') :
-      $this->t("Base theme folder contains themes (contrib folder doesn't exists):");
+    $placeholder = ['%folder' => $folder];
+    return $base_contrib ?
+      $this->t('Base "%folder" folder contains %folder (contrib folder exists):', $placeholder) :
+      $this->t("Base \"%folder\" folder contains %folder (contrib folder doesn't exists):", $placeholder);
   }
 
   /**
