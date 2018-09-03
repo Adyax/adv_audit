@@ -11,6 +11,8 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
+use Drupal\Core\Entity\Entity;
 use Drupal\Core\State\StateInterface;
 
 /**
@@ -69,13 +71,13 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
   public function configForm() {
     $settings = $this->getPerformSettings();
 
-    $form['formats'] = [
+    $form['field_types'] = [
       '#type' => 'checkboxes',
       '#options' => [
         'text_with_summary' => 'text_with_summary',
         'text_long' => 'text_long',
       ],
-      '#default_value' => $settings['formats'],
+      '#default_value' => $settings['field_types'],
     ];
     $form['tags'] = [
       '#type' => 'textarea',
@@ -92,9 +94,9 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
-    foreach ($value['plugin_config']['formats'] as $key => $format) {
+    foreach ($value['plugin_config']['field_types'] as $key => $format) {
       if (!$format) {
-        unset($value['plugin_config']['formats'][$key]);
+        unset($value['plugin_config']['field_types'][$key]);
       }
     }
     $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
@@ -113,7 +115,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
    */
   protected function getDefaultPerformSettings() {
     return [
-      'formats' => [
+      'field_types' => [
         'text_with_summary', 'text_long',
       ],
       'tags' => 'script,?php',
@@ -126,9 +128,8 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
   public function perform() {
     $params = [];
     $results = [];
-
     $settings = $this->getPerformSettings();
-    $field_types = $settings['formats'];
+    $field_types = $settings['field_types'];
     $tags = explode(',', $settings['tags']);
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = \Drupal::service('entity_type.manager');
@@ -158,17 +159,8 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
           ->fields('t')
           ->execute()
           ->fetchAll();
-        foreach ($rows as $row) {
-          foreach (array_keys($field_storage_definition->getSchema()['columns']) as $column) {
-            $column_name = $field_name . $separator . $column;
-            foreach ($tags as $vulnerability => $tag) {
-              if (strpos($row->{$column_name}, '<' . $tag) !== FALSE) {
-                // Vulnerability found.
-                $results[$entity_type_id][$row->{$id}][$field_name][] = $vulnerability;
-              }
-            }
-          }
-        }
+        $columns = array_keys($field_storage_definition->getSchema()['columns']);
+        $results += $this->getVulnerabilities($rows, $columns, $field_name, $separator, $tags, $entity_type_id, $id);
       }
     }
 
@@ -178,6 +170,78 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
     }
 
     return $this->success();
+  }
+
+  /**
+   * Get Vulnerabilities in content.
+   *
+   * Falls back on a string with entity type id and id if no good link can
+   * be found.
+   *
+   * @param array $rows
+   *   The rows.
+   * @param array $columns
+   *   The columns.
+   * @param string $field_name
+   *   The field name.
+   * @param string $separator
+   *   The separator.
+   * @param array $tags
+   *   The tags array.
+   * @param string $entity_type_id
+   *   The entity type id.
+   * @param int $id
+   *   The entity id.
+   *
+   * @return array
+   *   The Vulnerabilities array.
+   */
+  protected function getVulnerabilities(array $rows, array $columns, $field_name, $separator, array $tags, $entity_type_id, $id) {
+    $content = [];
+    foreach ($rows as $row) {
+      foreach ($columns as $column) {
+        $column_name = $field_name . $separator . $column;
+        foreach ($tags as $tag) {
+          if (strpos($row->{$column_name}, '<' . $tag) !== FALSE) {
+            // Vulnerability found.
+            $content[$entity_type_id][$row->{$id}][$field_name][] = $tag;
+          }
+        }
+      }
+    }
+
+    return $content;
+  }
+
+  /**
+   * Get link for the entity.
+   *
+   * Falls back on a string with entity type id and id if the link can
+   * be found.
+   *
+   * @param \Drupal\Core\Entity\Entity $entity
+   *   The entity.
+   *
+   * @return string
+   *   The Entity URL.
+   */
+  protected function getEntityLink(Entity $entity) {
+    try {
+      $url = $entity->toUrl('edit-form');
+    }
+    catch (UndefinedLinkTemplateException $e) {
+      $url = NULL;
+    }
+    if ($url === NULL) {
+      try {
+        $url = $entity->toUrl();
+      }
+      catch (UndefinedLinkTemplateException $e) {
+        $url = NULL;
+      }
+    }
+
+    return $url !== NULL ? $url->toString() : ($entity->getEntityTypeId() . ':' . $entity->id());
   }
 
   /**
@@ -193,7 +257,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
       $items = [];
       foreach ($arguments['fields'] as $entity_type_id => $entities) {
         foreach ($entities as $entity_id => $fields) {
-          $entity = $this->entityManager()
+          $entity = \Drupal::entityTypeManager()
             ->getStorage($entity_type_id)
             ->load($entity_id);
 
