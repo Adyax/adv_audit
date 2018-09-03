@@ -119,7 +119,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $value = $form_state->getValue(array_merge($base, ['urls']));
     $this->state->set($this->buildStateConfigKeys()['urls'], $value);
@@ -131,7 +131,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configFormValidate($form, FormStateInterface $form_state) {
+  public function configFormValidate(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $urls = $this->parseLines($form_state->getValue(array_merge($base, ['urls'])));
 

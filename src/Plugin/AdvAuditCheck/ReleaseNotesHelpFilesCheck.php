@@ -92,7 +92,7 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $value = $form_state->getValue(array_merge($base, ['files']));
     $this->state->set($this->buildStateConfigKey(), $value);

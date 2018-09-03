@@ -17,7 +17,7 @@ use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Checks Seo recommedations: contrib modules, robots.txt and www domain.
+ * Checks Seo recommedations: contrib modules, robots.txt.
  *
  * @AdvAuditCheck(
  *   id = "seo_recommendations",
@@ -114,7 +114,7 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $name = ['additional_settings', 'plugin_config', 'modules'];
     $value = $form_state->getValue($name);
     $this->state->set($this->buildStateConfigKey(), $value);

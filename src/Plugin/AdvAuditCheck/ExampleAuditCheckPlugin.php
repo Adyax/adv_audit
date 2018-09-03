@@ -3,15 +3,14 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * This example of plugin.
@@ -42,17 +41,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
 
   /**
+   * Drupal\Core\Extension\ModuleHandlerInterface definition.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a new ExampleAuditCheckPlugin object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
    *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
+   * @param array $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   Module handler.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -62,7 +71,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition
+      $plugin_definition,
+      $container->get('module_handler')
     );
   }
 
@@ -100,10 +110,15 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    *
    * Method is optional.
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
     // In this place we can save our value from config form.
-    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'check_should_passed'], 0);
+    $value = $form_state->getValue([
+      'additional_settings',
+      'plugin_config',
+      'check_should_passed',
+    ], 0);
+    $value;
   }
 
   /**
@@ -113,7 +128,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
    */
   public function checkRequirements() {
     // Please be careful.
-    // Before extend check Requirements method you should call parent method before.
+    // Before extend check Requirements method you should call
+    // parent method before.
     parent::checkRequirements();
     // Check our custom requirements for plugin.
     if (rand(0, 10) < 2) {
@@ -134,7 +150,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
   public function auditReportRender(AuditReason $reason, $type) {
     switch ($type) {
       // Override messages fail output.
-      // In this case, we will not use messages from messages.yml file and directly will render what you return.
+      // In this case, we will not use messages from messages.yml file and
+      // directly will render what you return.
       case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
         $build = [
           '#type' => 'container',
@@ -145,7 +162,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
         break;
 
       // Override messages success output.
-      // At this moment you have fully control what how will build success messages.
+      // At this moment you have fully control what how will build
+      // success messages.
       case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
         $build = [
           '#type' => 'container',
@@ -157,7 +175,8 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
 
       default:
         // Return empty array.
-        // In this case all other messages will be displayed from messages.yml file for you plugin.
+        // In this case all other messages will be displayed from messages.yml
+        // file for you plugin.
         $build = [];
         break;
     }

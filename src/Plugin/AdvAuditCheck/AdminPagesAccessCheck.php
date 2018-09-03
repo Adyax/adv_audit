@@ -120,7 +120,7 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   /**
    * {@inheritdoc}
    */
-  public function configFormValidate($form, FormStateInterface $form_state) {
+  public function configFormValidate(array $form, FormStateInterface $form_state) {
     $value_name = ['additional_settings', 'plugin_config', 'urls'];
     $urls = $this->parseLines($form_state->getValue($value_name));
 
@@ -143,7 +143,7 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value_name = ['additional_settings', 'plugin_config', 'urls'];
     $value = $form_state->getValue($value_name);
     $this->state->set($this->buildStateConfigKey(), $value);
