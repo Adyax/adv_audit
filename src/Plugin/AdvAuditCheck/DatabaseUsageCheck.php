@@ -199,7 +199,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
     $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
   }
