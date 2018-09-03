@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
@@ -101,7 +100,6 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
    * Process checkpoint review.
    */
   public function perform() {
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $params = [];
 
     $query = $this->serverStorage->getQuery();
@@ -114,31 +112,30 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
     }
 
     if (!empty($this->notFullyIndexed)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['not_fully_indexed'] = $this->notFullyIndexed;
     }
 
     if (!empty($this->unavailableServers)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['unavailable_servers'] = $this->unavailableServers;
     }
 
     if (!empty($this->unavailableServers)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['unavailable_servers'] = $this->unavailableServers;
     }
 
     if (!empty($this->noIndexesServers)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['no_indexes_servers'] = $this->noIndexesServers;
     }
 
     if (!empty($this->noActiveIndexesServers)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params['no_active_indexes_servers'] = $this->noActiveIndexesServers;
     }
 
-    return new AuditReason($this->id(), $status, NULL, $params);
+    if (!empty($params)) {
+      return $this->fail('', $params);
+    }
+
+    return $this->success();
   }
 
   /**
@@ -166,7 +163,7 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
       }
     }
     else {
-      $this->noIndexesServers[] = $server;
+      $this->noIndexesServers[] = $server_id;
     }
   }
 
@@ -206,34 +203,35 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
       return [];
     }
 
-    $arguments = $reason->getArguments();
-    if (empty($arguments)) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details)) {
       return [];
     }
 
-    $markup_key = '#markup';
     $message = [
       '#type' => 'container',
       '#attributes' => [
         'class' => ['actions-message'],
       ],
+      '#markup' => $this->t('Fix the following issues.'),
     ];
-    $message['msg'][$markup_key] = $this->t('There are number of issues.')->__toString();
 
-    $list = [
-      '#theme' => 'item_list',
-    ];
     $items = [];
-    foreach ($arguments as $issue => $entities) {
-      $item[$markup_key] = $issue;
-      $item['children'] = ['#theme' => 'item_list'];
-      foreach ($entities as $entity) {
-        $item['children']['#items'][] = [$markup_key => $entity];
-      }
+    foreach ($issue_details as $issue => $entities) {
+      $item = [
+        '#markup' => $issue,
+        'children' => [
+          '#theme' => 'item_list',
+          '#items' => $entities,
+        ],
+      ];
 
       $items[] = $item;
     }
-    $list['#items'] = $items;
+    $list = [
+      '#theme' => 'item_list',
+      '#items' => $items,
+    ];
 
     return [$message, $list];
   }

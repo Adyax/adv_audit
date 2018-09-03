@@ -2,6 +2,10 @@ adv_audit_settings:
   type: config_object
   label: 'Advanced auditor config'
   categories:
+    global_info:
+      label: Global info
+      status: 0
+      weight: 0
     core_and_modules:
       label: Drupal core and contributed modules
       status: 1

@@ -28,7 +28,7 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditChe
   /**
    * Backend cache list.
    */
-  const BACKEND_CACHE = [
+  const RECOMMENDED_BACKEND_CACHE = [
     'cache.backend.memcache',
     'cache.backend.redis',
   ];
@@ -77,12 +77,11 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditChe
     $cache_default = isset($cache_settings['default']) ? $cache_settings['default'] : 'cache.backend.database';
 
     $status = AuditResultResponseInterface::RESULT_FAIL;
-    if (in_array($cache_default, self::BACKEND_CACHE)) {
+    if (in_array($cache_default, self::RECOMMENDED_BACKEND_CACHE)) {
       $status = AuditResultResponseInterface::RESULT_PASS;
     }
 
     return new AuditReason($this->id(), $status);
-
   }
 
 }
