@@ -1,17 +1,22 @@
+# Audit Result entity list
+adv_audit:
+  route_name: adv_audit
+  title: 'Reports'
+  base_route: adv_audit
 adv_audit.run_tab:
   route_name: adv_audit.run
-  base_route: adv_audit.list
+  base_route: adv_audit
   title: Run audit
 # Audit Result entity routing definition
 adv_audit.list_tab:
   route_name: adv_audit.list
   title: 'Overview'
-  base_route: adv_audit.list
+  base_route: adv_audit
 
 adv_audit.preset_collection:
   route_name: entity.adv_audit_preset_entity.collection
   title: 'Preset'
-  base_route: adv_audit.list
+  base_route: adv_audit
 
 entity.adv_audit.canonical:
   route_name: entity.adv_audit.canonical
