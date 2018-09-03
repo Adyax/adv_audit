@@ -71,13 +71,17 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
 
     $form['formats'] = [
       '#type' => 'checkboxes',
-      '#options' => ['text_with_summary', 'text_long'],
+      '#options' => [
+        'text_with_summary' => 'text_with_summary',
+        'text_long' => 'text_long',
+      ],
       '#default_value' => $settings['formats'],
     ];
     $form['tags'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Dangerous tags'),
       '#default_value' => $settings['tags'],
+      '#description' => $this->t('List of dangerous tags, separated with coma without spaces.'),
     ];
 
     return $form;
@@ -87,8 +91,13 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
    * {@inheritdoc}
    */
   public function configFormSubmit($form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional-settings');
-    $this->state->set($this->buildStateConfigKey(), $value);
+    $value = $form_state->getValue('additional_settings');
+    foreach ($value['plugin_config']['formats'] as $key => $format) {
+      if (!$format) {
+        unset($value['plugin_config']['formats'][$key]);
+      }
+    }
+    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
   }
 
   /**
@@ -105,8 +114,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
   protected function getDefaultPerformSettings() {
     return [
       'formats' => [
-        'text_with_summary',
-        'text_long',
+        'text_with_summary', 'text_long',
       ],
       'tags' => 'script,?php',
     ];
@@ -119,15 +127,9 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
     $params = [];
     $results = [];
 
-    $field_types = [
-      'text_with_summary',
-      'text_long',
-    ];
-    $tags = [
-      'Javascript' => 'script',
-      'PHP' => '?php',
-    ];
-
+    $settings = $this->getPerformSettings();
+    $field_types = $settings['formats'];
+    $tags = explode(',', $settings['tags']);
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = \Drupal::service('entity_type.manager');
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
@@ -139,29 +141,30 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
           continue;
         }
         $field_storage_definition = $field_storage_definitions[$field_name];
-        if (in_array($field_storage_definition->getType(), $field_types)) {
-          if ($field_storage_definition instanceof FieldStorageConfig) {
-            $table = $entity_type_id . '__' . $field_name;
-            $separator = '_';
-            $id = 'entity_id';
-          }
-          else {
-            $table = $entity_type_id . '_field_data';
-            $separator = '__';
-            $id = $entity_type_manager->getDefinition($entity_type_id)->getKey('id');
-          }
-          $rows = \Drupal::database()->select($table, 't')
-            ->fields('t')
-            ->execute()
-            ->fetchAll();
-          foreach ($rows as $row) {
-            foreach (array_keys($field_storage_definition->getSchema()['columns']) as $column) {
-              $column_name = $field_name . $separator . $column;
-              foreach ($tags as $vulnerability => $tag) {
-                if (strpos($row->{$column_name}, '<' . $tag) !== FALSE) {
-                  // Vulnerability found.
-                  $results[$entity_type_id][$row->{$id}][$field_name][] = $vulnerability;
-                }
+        if (!in_array($field_storage_definition->getType(), $field_types)) {
+          continue;
+        }
+
+        $table = $entity_type_id . '_field_data';
+        $separator = '__';
+        $id = $entity_type_manager->getDefinition($entity_type_id)->getKey('id');
+        if ($field_storage_definition instanceof FieldStorageConfig) {
+          $table = $entity_type_id . '__' . $field_name;
+          $separator = '_';
+          $id = 'entity_id';
+        }
+
+        $rows = \Drupal::database()->select($table, 't')
+          ->fields('t')
+          ->execute()
+          ->fetchAll();
+        foreach ($rows as $row) {
+          foreach (array_keys($field_storage_definition->getSchema()['columns']) as $column) {
+            $column_name = $field_name . $separator . $column;
+            foreach ($tags as $vulnerability => $tag) {
+              if (strpos($row->{$column_name}, '<' . $tag) !== FALSE) {
+                // Vulnerability found.
+                $results[$entity_type_id][$row->{$id}][$field_name][] = $vulnerability;
               }
             }
           }
