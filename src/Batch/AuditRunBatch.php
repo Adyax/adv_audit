@@ -13,7 +13,7 @@ use InvalidArgumentException;
 /**
  * Runs a single test batch.
  */
-class AuditRunTestBatch {
+class AuditRunBatch {
   /**
    * Maximum number of previous messages to display.
    */
