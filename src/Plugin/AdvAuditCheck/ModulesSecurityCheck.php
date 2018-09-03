@@ -21,7 +21,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "critical"
  * )
  */
-class ModulesSecurityCheck extends AdvAuditModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ModulesSecurityCheck extends ModulesCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
