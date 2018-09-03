@@ -166,7 +166,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
 
     if (!empty($results)) {
       $params = ['fields' => $results];
-      return $this->fail('Dangerous tags were found in submitted content (fields).', $params);
+      return $this->fail($this->t('Dangerous tags were found in submitted content (fields).'), $params);
     }
 
     return $this->success();
