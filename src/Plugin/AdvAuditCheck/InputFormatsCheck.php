@@ -188,7 +188,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRende
 
     if (!empty($results)) {
       $params = ['results' => $results];
-      return $this->fail('Untrusted users are allowed to input dangerous HTML tags.', $params);
+      return $this->fail($this->t('Untrusted users are allowed to input dangerous HTML tags.'), $params);
     }
 
     return $this->success();
