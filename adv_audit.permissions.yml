@@ -32,6 +32,9 @@ delete all audit result entity revisions:
 access auditor list:
   title: 'Access auditor list'
 
+edit auditor categories:
+  title: 'Edit auditor categories'
+
 permission_callbacks:
   - \Drupal\adv_audit\AdvAuditPermissions::auditPermissions
 add audit issue entities:

@@ -448,4 +448,24 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
+  /**
+   * Parses textarea lines into array.
+   *
+   * @param string $lines
+   *   Textarea content.
+   *
+   * @return array
+   *   The textarea lines.
+   */
+  protected function parseLines($lines) {
+    $lines = explode("\n", $lines);
+
+    if (!count($lines)) {
+      return [];
+    }
+    $lines = array_filter($lines, 'trim');
+
+    return str_replace("\r", "", $lines);
+  }
+
 }

@@ -78,6 +78,23 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * @param string $plugin_definition
    *   The plugin implementation definition.
    */
+
+  /**
+   * Constructs a new PerformanceViewsCheck object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param string $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Config factory instance.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   State interface.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   Entity type manager instance.
+   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, StateInterface $state, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
@@ -149,8 +166,12 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
-    $value = $form_state->getValue(['additional_settings', 'plugin_config', 'minimum_cache_lifetime'], self::ALLOWED_LIFETIME);
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
+    $value = $form_state->getValue([
+      'additional_settings',
+      'plugin_config',
+      'minimum_cache_lifetime',
+    ], self::ALLOWED_LIFETIME);
     $this->state->set($this->buildStateConfigKey(), $value);
   }
 
@@ -160,7 +181,8 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * @param array $cache
    *   Display cache options.
    *
-   * @return integer Minimum cache lifetime.
+   * @return int
+   *   Minimum cache lifetime.
    */
   protected function getMinimumCacheTime(array $cache) {
     if (!empty($cache['options'])) {

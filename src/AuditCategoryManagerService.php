@@ -86,7 +86,7 @@ class AuditCategoryManagerService {
   }
 
   /**
-   * Handler callback for page '/admin/config/adv-audit'.
+   * Handler callback for page '/admin/reports/adv-audit'.
    */
   public function buildCategoriesOverview() {
     $build = [

@@ -299,3 +299,10 @@ plugins:
     fail: 'There is no GITlab CI/CD on project'
     success: 'Project is uses GITlab CI/CD.'
     help: 'Check if GITlab CI/CD exists.'
+  seo_recommendations:
+    description: 'Checks Seo recommedations: contrib modules and robots.txt.'
+    actions: 'Fix listed issues.'
+    impacts: 'These issues can decrease search engine rates of the site.'
+    fail: 'There are number of issues.'
+    success: 'SEO recommedations fullfilled.'
+    help: 'Check if GITlab CI/CD exists.'
