@@ -67,6 +67,29 @@ class AuditReason {
     $this->testId = $plugin_id;
     $this->reason = $reason;
     $this->arguments = $arguments;
+    $this->issues = [];
+  }
+
+  /**
+   * Magic methods on serialize.
+   */
+  public function __sleep () {
+    // Cleanup, `issues` are removed.
+    return [
+      'status',
+      'testId',
+      'reason',
+      'arguments',
+    ];
+  }
+
+
+  /**
+   * Magic methods on unserialize.
+   */
+  public function __wakeup () {
+    // Cleanup, the issues should be loaded from DB.
+    $this->issues = [];
   }
 
   /**
@@ -146,9 +169,46 @@ class AuditReason {
       return [];
     }
 
-//    if (!empty($this->issues)) {
-//      return $this->issues;
-//    }
+    if (!empty($this->issues)) {
+      return $this->issues;
+    }
+
+    $details = $this->getArguments();
+    if (empty($details['issues'])) {
+      return [];
+    }
+
+    // Create/Load issues.
+    $this->issues = [];
+    foreach($details['issues'] as $issue_name => $details) {
+      $this->issues[] = IssueEntity::loadByName($this->getPluginId() . '.' . $issue_name);
+    }
+
+    return $this->issues;
+  }
+
+  /**
+   * Get list of Issue entities with Open status.
+   */
+  public function getOpenIssues() {
+    $all_issues = $this->getIssues();
+    $open_issues = [];
+    foreach ($all_issues as $issue) {
+      if ($issue->isOpen()) {
+        $open_issues[] = $issue;
+      }
+    }
+
+    return $open_issues;
+  }
+
+  /**
+   * Get list of saved Issue entities.
+   */
+  public function reportIssues(): array {
+    if ($this->isPass()) {
+      return [];
+    }
 
     $details = $this->getArguments();
     if (empty($details['issues'])) {
@@ -175,29 +235,13 @@ class AuditReason {
         if ($issue->isStatus(IssueEntity::STATUS_FIXED)) {
           $issue->setStatus(IssueEntity::STATUS_OPEN);
         }
-
-        $issue->save();
       }
+      $issue->save();
 
       $this->issues[] = $issue;
     }
 
     return $this->issues;
-  }
-
-  /**
-   * Get list of Issue entities with Open status.
-   */
-  public function getOpenIssues() {
-    $issues = $this->getIssues();
-    $open_issues = [];
-    foreach ($issues as $issue) {
-      if ($issue->isOpen()) {
-        $open_issues[] = $issue;
-      }
-    }
-
-    return $open_issues;
   }
 
 }

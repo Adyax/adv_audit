@@ -192,7 +192,7 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
     $issues = [];
 
     foreach ($audit_reasons as $audit_reason) {
-      $plugin_issues = $audit_reason->getIssues();
+      $plugin_issues = $audit_reason->reportIssues();
       $issues += $plugin_issues;
     }
 
@@ -200,6 +200,7 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       $this->set('issues', $issues);
     }
 
+    // And set Audit_results.
     $this->set('audit_results', serialize($result));
     return $this;
   }

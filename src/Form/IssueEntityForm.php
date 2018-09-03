@@ -28,8 +28,6 @@ class IssueEntityForm extends ContentEntityForm {
       ];
     }
 
-    $entity = $this->entity;
-
     return $form;
   }
 

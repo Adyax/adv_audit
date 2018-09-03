@@ -21,8 +21,7 @@ use Drupal\Core\Render\Element;
  */
 function template_preprocess_adv_audit_issue(array &$variables) {
   // Fetch IssueEntity Entity Object.
-  $adv_audit_issue = $variables['elements']['#adv_audit_issue'];
-
+  // $adv_audit_issue = $variables['elements']['#adv_audit_issue'];
   // Helpful $content variable for templates.
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];

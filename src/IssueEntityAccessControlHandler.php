@@ -31,10 +31,11 @@ class IssueEntityAccessControlHandler extends EntityAccessControlHandler {
 
       case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'delete audit issue entities');
-    }
 
-    // Unknown operation, no opinion.
-    return AccessResult::neutral();
+      default:
+        // Unknown operation, no opinion.
+        return AccessResult::neutral();
+    }
   }
 
   /**

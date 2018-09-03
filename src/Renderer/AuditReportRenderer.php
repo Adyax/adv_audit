@@ -247,7 +247,7 @@ class AuditReportRenderer implements RenderableInterface {
         // Check reported issues.
         $reported_issues = $audit_reason->getOpenIssues();
         if (empty($reported_issues)) {
-          $build['result_attributes']->addClass('status-passed');
+          $build['result_attributes']->addClass('status-ignored');
         }
         else {
           $build['result_attributes']->addClass('status-failed');
@@ -322,28 +322,47 @@ class AuditReportRenderer implements RenderableInterface {
     $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
     $message = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $details);
 
-    $issues = $audit_reason->getOpenIssues();
-    if (empty($issues)) {
+    $all_issues = $audit_reason->getIssues();
+    if (empty($all_issues)) {
       return [];
     }
 
-    $rows = [];
-    foreach ($issues as $issue) {
-      $rows[] = [
-        (string) $issue,
-        Link::fromTextAndUrl('edit', $issue->toUrl('edit-form')),
-      ];
+    $active_rows = [];
+    $ignored_rows= [];
+    foreach ($all_issues as $issue) {
+      if ($issue->isOpen()) {
+        $active_rows[] = [
+          (string) $issue,
+          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+        ];
+      }
+      else {
+        $ignored_rows[] = [
+          (string) $issue,
+          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+        ];
+      }
     }
 
     return [
       '#markup' => $message,
-      'table' => [
+      'active_issues' => [
         '#theme' => 'table',
+        '#caption' => $this->t('Active issues'),
         '#header' => [
-          $this->t('Issue'),
-          $this->t('Edit'),
+          ['data' => $this->t('Issue')],
+          ['data' => $this->t('Edit'), 'width' => '10%'],
         ],
-        '#rows' => $rows,
+        '#rows' => $active_rows,
+      ],
+      'ignored_issues' => [
+        '#theme' => 'table',
+        '#caption' => $this->t('Ignored issues'),
+        '#header' => [
+          ['data' => $this->t('Issue')],
+          ['data' => $this->t('Edit'), 'width' => '10%'],
+        ],
+        '#rows' => $ignored_rows,
       ],
     ];
   }
