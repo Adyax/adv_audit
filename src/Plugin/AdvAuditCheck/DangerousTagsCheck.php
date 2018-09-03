@@ -16,7 +16,7 @@ use Drupal\Core\Entity\Entity;
 use Drupal\Core\State\StateInterface;
 
 /**
- * Trusted Host Check plugin class.
+ * Dangerous Tags Check plugin class.
  *
  * @AdvAuditCheck(
  *   id = "dangerous_tags_check",
