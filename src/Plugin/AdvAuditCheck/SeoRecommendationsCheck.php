@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @AdvAuditCheck(
  *   id = "seo_recommendations",
- *   label = @Translation("Checks Seo recommedations: contrib modules, robots.txt and www domain."),
+ *   label = @Translation("Checks Seo recommedations: contrib modules and robots.txt."),
  *   category = "other",
  *   requirements = {},
  *   enabled = true,
