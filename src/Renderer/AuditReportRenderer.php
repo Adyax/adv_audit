@@ -13,6 +13,7 @@ use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Link;
 
 /**
  * Class Renderer to build audit response object.
@@ -243,8 +244,15 @@ class AuditReportRenderer implements RenderableInterface {
         break;
 
       case AuditResultResponseInterface::RESULT_FAIL:
-        $build['result_attributes']->addClass('status-failed');
-        $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+        // Check reported issues.
+        $reported_issues = $audit_reason->getOpenIssues();
+        if (empty($reported_issues)) {
+          $build['result_attributes']->addClass('status-passed');
+        }
+        else {
+          $build['result_attributes']->addClass('status-failed');
+        }
+        $build['result'] = $this->doRenderIssues($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $build['reason'] = $audit_reason->getReason();
         break;
 
@@ -286,9 +294,58 @@ class AuditReportRenderer implements RenderableInterface {
     }
     // Get needed message from yml config file.
     // Replace dynamic variables.
-    $arguments = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
-    $msg_string = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $arguments);
-    return ['#markup' => $msg_string];
+    $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
+    $msg_string = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $details);
+    return [
+      '#markup' => $msg_string,
+    ];
+  }
+
+  /**
+   * Render output messages.
+   *
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance
+   *   The audit plugin instance.
+   * @param \Drupal\adv_audit\AuditReason $audit_reason
+   *   The Audit reason object.
+   * @param string $msg_type
+   *   The type of builded message.
+   *
+   * @return array
+   *   The builded message.
+   *
+   * @throws \Exception
+   */
+  protected function doRenderIssues(AdvAuditCheckBase $plugin_instance, AuditReason $audit_reason, $msg_type) {
+    // Get needed message from yml config file.
+    // And Replace dynamic variables.
+    $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
+    $message = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $details);
+
+    $issues = $audit_reason->getOpenIssues();
+    if (empty($issues)) {
+      return [];
+    }
+
+    $rows = [];
+    foreach ($issues as $issue) {
+      $rows[] = [
+        (string) $issue,
+        Link::fromTextAndUrl('edit', $issue->toUrl('edit-form')),
+      ];
+    }
+
+    return [
+      '#markup' => $message,
+      'table' => [
+        '#theme' => 'table',
+        '#header' => [
+          $this->t('Issue'),
+          $this->t('Edit'),
+        ],
+        '#rows' => $rows,
+      ],
+    ];
   }
 
 }

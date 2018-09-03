@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
@@ -147,7 +148,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * {@inheritdoc}
    */
   public function setTitle($name) {
-    $this->set('Title', $name);
+    $this->set('title', $name);
     return $this;
   }
 
@@ -189,6 +190,13 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    */
   public function isStatus($state) {
     return $this->getStatus() == $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isOpen() {
+    return $this->getStatus() == static::STATUS_OPEN;
   }
 
   /**
@@ -244,7 +252,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * {@inheritdoc}
    */
   public function getDetails() {
-    return $this->get('details')->value;
+    return $this->get('details')->getValue()[0];
   }
 
   /**
@@ -289,7 +297,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       ->setDescription(t('The name of the Audit Issue entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'max_length' => 50,
+        'max_length' => 256,
         'text_processing' => 0,
       ])
       ->setDefaultValue('')
@@ -380,6 +388,10 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       $values['title'] = $values['name'];
     }
 
+    if (empty($values['status'])) {
+      $values['status'] = static::STATUS_OPEN;
+    }
+
     return parent::create($values);
   }
 
@@ -392,6 +404,14 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
   public static function loadByName($name) {
     $entities = \Drupal::entityTypeManager()->getStorage('adv_audit_issue')->loadByProperties(['name' => $name]);
     return empty($entities) ? NULL : reset($entities);
+  }
+
+  /**
+   * Get printable Issue for report.
+   */
+  public function __toString() {
+    $markup = new FormattableMarkup($this->getTitle(), $this->getDetails());
+    return (string) $markup;
   }
 
 }

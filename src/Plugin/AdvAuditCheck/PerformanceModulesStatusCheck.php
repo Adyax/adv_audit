@@ -23,7 +23,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  enabled = true,
  * )
  */
-class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * List of modules to check.
@@ -75,35 +75,21 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements Contain
    * {@inheritdoc}
    */
   public function perform() {
-    $enabled_modules = [];
+    $issues = [];
     foreach (self::PERFORMANCE_MODULES as $module_name) {
       if ($this->moduleHandler->moduleExists($module_name)) {
         $module_info = system_get_info('module', $module_name);
-        $enabled_modules[$module_name] = $module_info['name'];
+        $issues[$module_name] = [
+          '@issue_title' => $module_info['name'],
+        ];
       }
     }
 
-    if (!empty($enabled_modules)) {
-      return $this->fail(NULL, ['issues' => $enabled_modules]);
+    if (!empty($issues)) {
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    $build = [];
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $build['enabled_performance_modules'] = [
-        '#theme' => 'item_list',
-        '#title' => $this->t('These modules should be disabled on PROD.'),
-        '#list_type' => 'ol',
-        '#items' => $reason->getArguments(),
-      ];
-    }
-    return $build;
   }
 
 }

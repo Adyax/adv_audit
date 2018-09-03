@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit;
 
+use Drupal\adv_audit\Entity\IssueEntity;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
@@ -40,6 +41,13 @@ class AuditReason {
    * @var array
    */
   protected $arguments;
+
+  /**
+   * An array of reported issues.
+   *
+   * @var array
+   */
+  protected $issues;
 
   /**
    * AuditReason constructor.
@@ -133,17 +141,63 @@ class AuditReason {
   /**
    * Get list of saved Issue entities.
    */
-  public function getIssues() {
+  public function getIssues(): array {
     if ($this->isPass()) {
       return [];
     }
+
+//    if (!empty($this->issues)) {
+//      return $this->issues;
+//    }
 
     $details = $this->getArguments();
     if (empty($details['issues'])) {
       return [];
     }
 
-    return $details['issues'];
+    // Create/Load issues.
+    $this->issues = [];
+    foreach($details['issues'] as $issue_name => $details) {
+      $issue_title = empty($details['@issue_title']) ? $issue_name : $details['@issue_title'];
+      $issue = IssueEntity::create([
+        'name' => $this->getPluginId() . '.' . $issue_name,
+        'title' => $issue_title,
+        'plugin' => $this->getPluginId(),
+        'details' => serialize($details),
+      ]);
+
+      if (!$issue->isNew()) {
+        // Update all details.
+        $issue->setTitle($issue_title);
+        $issue->setDetails(serialize($details));
+
+        // Reopen the issue if it is fixed.
+        if ($issue->isStatus(IssueEntity::STATUS_FIXED)) {
+          $issue->setStatus(IssueEntity::STATUS_OPEN);
+        }
+
+        $issue->save();
+      }
+
+      $this->issues[] = $issue;
+    }
+
+    return $this->issues;
+  }
+
+  /**
+   * Get list of Issue entities with Open status.
+   */
+  public function getOpenIssues() {
+    $issues = $this->getIssues();
+    $open_issues = [];
+    foreach ($issues as $issue) {
+      if ($issue->isOpen()) {
+        $open_issues[] = $issue;
+      }
+    }
+
+    return $open_issues;
   }
 
 }

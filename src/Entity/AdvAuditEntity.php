@@ -191,16 +191,9 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
     $audit_reasons = $result->getAuditResults();
     $issues = [];
 
-    foreach($audit_reasons as $audit_reason) {
+    foreach ($audit_reasons as $audit_reason) {
       $plugin_issues = $audit_reason->getIssues();
-      foreach($plugin_issues as $issue_name => $details) {
-        $issue = IssueEntity::create([
-          'name' => 'test' . $issue_name,
-          'plugin' => $audit_reason->getPluginId(),
-          'details' => serialize($details),
-        ]);
-        $issues[] = $issue;
-      }
+      $issues += $plugin_issues;
     }
 
     if (!empty($issues)) {
@@ -208,9 +201,10 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
     }
 
     $this->set('audit_results', serialize($result));
+    return $this;
   }
 
-    /**
+  /**
    * {@inheritdoc}
    */
   public static function generateEntityName() {
