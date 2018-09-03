@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
 use Drupal\Core\Entity\Entity;
 use Drupal\Core\State\StateInterface;
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 
 /**
  * Dangerous Tags Check plugin class.
@@ -29,6 +31,20 @@ use Drupal\Core\State\StateInterface;
  */
 class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
   /**
+   * Entity Type Manager container.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
    * The state service object.
    *
    * @var \Drupal\Core\State\StateInterface
@@ -38,9 +54,11 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, EntityTypeManager $entity_type_manager, EntityFieldManagerInterface $entity_field_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->state = $state;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->entityFieldManager = $entity_field_manager;
   }
 
   /**
@@ -51,7 +69,9 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state')
+      $container->get('state'),
+      $container->get('entity_type.manager'),
+      $container->get('entity_field.manager')
     );
   }
 
@@ -131,12 +151,9 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
     $settings = $this->getPerformSettings();
     $field_types = $settings['field_types'];
     $tags = explode(',', $settings['tags']);
-    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
-    $entity_type_manager = \Drupal::service('entity_type.manager');
-    /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
-    $field_manager = \Drupal::service('entity_field.manager');
-    foreach ($field_manager->getFieldMap() as $entity_type_id => $fields) {
-      $field_storage_definitions = $field_manager->getFieldStorageDefinitions($entity_type_id);
+
+    foreach ($this->entityFieldManager->getFieldMap() as $entity_type_id => $fields) {
+      $field_storage_definitions = $this->entityFieldManager->getFieldStorageDefinitions($entity_type_id);
       foreach ($fields as $field_name => $field) {
         if (!isset($field_storage_definitions[$field_name])) {
           continue;
@@ -148,7 +165,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
 
         $table = $entity_type_id . '_field_data';
         $separator = '__';
-        $id = $entity_type_manager->getDefinition($entity_type_id)->getKey('id');
+        $id = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('id');
         if ($field_storage_definition instanceof FieldStorageConfig) {
           $table = $entity_type_id . '__' . $field_name;
           $separator = '_';
