@@ -2,6 +2,8 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\adv_audit\AuditResultResponse;
+
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
@@ -183,6 +185,32 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
   }
 
   /**
+   * Set Issues if any.
+   */
+  public function setIssues(AuditResultResponse $result) {
+    $audit_reasons = $result->getAuditResults();
+    $issues = [];
+
+    foreach($audit_reasons as $audit_reason) {
+      $plugin_issues = $audit_reason->getIssues();
+      foreach($plugin_issues as $issue_name => $details) {
+        $issue = IssueEntity::create([
+          'name' => 'test' . $issue_name,
+          'plugin' => $audit_reason->getPluginId(),
+          'details' => serialize($details),
+        ]);
+        $issues[] = $issue;
+      }
+    }
+
+    if (!empty($issues)) {
+      $this->set('issues', $issues);
+    }
+
+    $this->set('audit_results', serialize($result));
+  }
+
+    /**
    * {@inheritdoc}
    */
   public static function generateEntityName() {

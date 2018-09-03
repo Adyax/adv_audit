@@ -6,6 +6,7 @@ use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
+
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use InvalidArgumentException;
@@ -143,7 +144,7 @@ class AuditRunBatch {
         $audit_result_response->setOverviewInfo($resultsGlobal);
       }
 
-      $entity->set('audit_results', serialize($audit_result_response));
+      $entity->setIssues($audit_result_response);
       $entity->save();
 
       drupal_set_message(t('The Audit result was saved. View audit %link', ['%link' => $entity->link('Report')]));

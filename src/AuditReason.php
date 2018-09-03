@@ -130,4 +130,20 @@ class AuditReason {
     return $this->testId;
   }
 
+  /**
+   * Get list of saved Issue entities.
+   */
+  public function getIssues() {
+    if ($this->isPass()) {
+      return [];
+    }
+
+    $details = $this->getArguments();
+    if (empty($details['issues'])) {
+      return [];
+    }
+
+    return $details['issues'];
+  }
+
 }

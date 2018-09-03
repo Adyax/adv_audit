@@ -243,6 +243,20 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
   /**
    * {@inheritdoc}
    */
+  public function getDetails() {
+    return $this->get('details')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDetails($details) {
+    return $this->details = $details;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
@@ -360,6 +374,10 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       if (!empty($issue)) {
         return $issue;
       }
+    }
+
+    if (empty($values['title'])) {
+      $values['title'] = $values['name'];
     }
 
     return parent::create($values);

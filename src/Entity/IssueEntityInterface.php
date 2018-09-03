@@ -14,8 +14,6 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface IssueEntityInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
-
   /**
    * Gets the Audit Issue name.
    *
@@ -68,7 +66,8 @@ interface IssueEntityInterface extends ContentEntityInterface, RevisionLogInterf
    * Sets the published status of a Audit Issue.
    *
    * @param bool $published
-   *   TRUE to set this Audit Issue to published, FALSE to set it to unpublished.
+   *   TRUE to set this Audit Issue to published,
+   *   FALSE to set it to unpublished.
    *
    * @return \Drupal\adv_audit\Entity\IssueEntityInterface
    *   The called Audit Issue entity.
@@ -112,5 +111,15 @@ interface IssueEntityInterface extends ContentEntityInterface, RevisionLogInterf
    *   The called Audit Issue entity.
    */
   public function setRevisionUserId($uid);
+
+  /**
+   * Get the Audit Issue details.
+   */
+  public function getDetails();
+
+  /**
+   * Set the Audit Issue details.
+   */
+  public function setDetails($details);
 
 }

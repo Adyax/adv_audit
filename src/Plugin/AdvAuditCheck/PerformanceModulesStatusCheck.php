@@ -84,7 +84,7 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements Contain
     }
 
     if (!empty($enabled_modules)) {
-      return $this->fail(NULL, $enabled_modules);
+      return $this->fail(NULL, ['issues' => $enabled_modules]);
     }
 
     return $this->success();
@@ -98,7 +98,7 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements Contain
     if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
       $build['enabled_performance_modules'] = [
         '#theme' => 'item_list',
-        '#title' => $this->t('Listed modules should be disabled:'),
+        '#title' => $this->t('These modules should be disabled on PROD.'),
         '#list_type' => 'ol',
         '#items' => $reason->getArguments(),
       ];
