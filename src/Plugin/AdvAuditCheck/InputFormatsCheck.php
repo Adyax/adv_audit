@@ -4,77 +4,151 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
+use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Trusted Host Check plugin class.
+ * Input Formats Check plugin class.
  *
  * @AdvAuditCheck(
  *   id = "input_formats_check",
- *   label = @Translation("Dangerous Tags"),
+ *   label = @Translation("Allowed HTML tags in text formats"),
  *   category = "security",
  *   requirements = {},
  *   enabled = true,
  *   severity = "high"
  * )
  */
-class InputFormatsCheck extends AdvAuditCheckBase {
+class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+  /**
+   * The state service object.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * Interface for working with drupal module system.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, ModuleHandlerInterface $module_handler) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->state = $state;
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('state'),
+      $container->get('module_handler')
+    );
+  }
+
+  /**
+   * Build key string for access to stored value from config.
+   *
+   * @return string
+   *   The generated key.
+   */
+  protected function buildStateConfigKey() {
+    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function configForm() {
+    $form = [];
+    $settings = $this->getPerformSettings();
+
+    // Get the user roles.
+    $roles = user_roles();
+    $options = [];
+    foreach ($roles as $rid => $role) {
+      $options[$rid] = $role->label();
+    }
+
+    $form['untrusted_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Untrusted roles.'),
+      '#default_value' => $settings['untrusted_roles'],
+      '#options' => $options,
+    ];
+    $form['unsafe_tags'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Unsafe tags'),
+      '#default_value' => $settings['unsafe_tags'],
+      '#description' => $this->t('List of unsafe HTML tags, separated with coma without spaces.'),
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function configFormSubmit($form, FormStateInterface $form_state) {
+    $value = $form_state->getValue('additional_settings');
+    foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
+      if (!$untrusted_role) {
+        unset($value['plugin_config']['untrusted_roles'][$key]);
+      }
+    }
+    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
+  }
+
+  /**
+   * Get settings for perform task.
+   */
+  protected function getPerformSettings() {
+    $settings = $this->state->get($this->buildStateConfigKey());
+    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
+  }
+
+  /**
+   * Get default settings.
+   */
+  protected function getDefaultPerformSettings() {
+    return [
+      'untrusted_roles' => ['anonymous', 'authenticated'],
+      'unsafe_tags' => 'applet,area,audio,base,basefont,body,button,comment,embed,eval,form,frame,frameset,head,html,iframe,image,img,input,isindex,label,link,map,math,meta,noframes,noscript,object,optgroup,option,param,script,select,style,svg,table,td,textarea,title,video,vmlframe',
+    ];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function perform() {
+    // If filter is not enabled return with INFO.
+    if (!$this->moduleHandler->moduleExists('filter')) {
+      return $this->skip($this->t('Module filter is not enabled.'));
+    }
+
     $params = [];
-    $reason = NULL;
-    $status = AuditResultResponseInterface::RESULT_PASS;
     $results = [];
+
     $formats = filter_formats();
-    $untrusted_roles = [AccountInterface::ANONYMOUS_ROLE];
-    $unsafe_tags = [
-      'applet',
-      'area',
-      'audio',
-      'base',
-      'basefont',
-      'body',
-      'button',
-      'comment',
-      'embed',
-      'eval',
-      'form',
-      'frame',
-      'frameset',
-      'head',
-      'html',
-      'iframe',
-      'image',
-      'img',
-      'input',
-      'isindex',
-      'label',
-      'link',
-      'map',
-      'math',
-      'meta',
-      'noframes',
-      'noscript',
-      'object',
-      'optgroup',
-      'option',
-      'param',
-      'script',
-      'select',
-      'style',
-      'svg',
-      'table',
-      'td',
-      'textarea',
-      'title',
-      'video',
-      'vmlframe',
-    ];
+    $settings = $this->getPerformSettings();
+    $untrusted_roles = $settings['untrusted_roles'];
+    $unsafe_tags = explode(',', $settings['unsafe_tags']);
 
     foreach ($formats as $format) {
       $format_roles = array_keys(filter_get_roles_by_format($format));
@@ -113,11 +187,11 @@ class InputFormatsCheck extends AdvAuditCheckBase {
     }
 
     if (!empty($results)) {
-      $status = AuditResultResponseInterface::RESULT_FAIL;
       $params = ['results' => $results];
+      return $this->fail('Untrusted users are allowed to input dangerous HTML tags.', $params);
     }
 
-    return new AuditReason($this->id(), $status, $reason, $params);
+    return $this->success();
   }
 
   /**
