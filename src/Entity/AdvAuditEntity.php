@@ -8,6 +8,7 @@ use Drupal\Core\Entity\RevisionableContentEntityBase;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -214,6 +215,31 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE)
       ->setRequired(TRUE);
+
+    // Issues.
+    $fields['issues'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(new TranslatableMarkup('Issues'))
+      ->setDescription(new TranslatableMarkup('The issues that were found in the audit.'))
+      ->setRevisionable(TRUE)
+      ->setSetting('target_type', 'adv_audit_issue')
+      ->setSetting('handler', 'default')
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 5,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ],
+      ]);
 
     // Field for storing of Audit Results.
     $fields['audit_results'] = BaseFieldDefinition::create('audit_result')

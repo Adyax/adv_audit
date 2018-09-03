@@ -43,8 +43,10 @@ use Drupal\user\UserInterface;
  *   entity_keys = {
  *     "id" = "id",
  *     "revision" = "vid",
+ *     "plugin" = "plugin",
  *     "name" = "name",
  *     "label" = "title",
+ *     "details" = "details",
  *     "uuid" = "uuid",
  *     "langcode" = "langcode",
  *     "status" = "status",
@@ -245,6 +247,29 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // Field for unique Audit Issue identifier.
+    $fields['plugin'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Plugin'))
+      ->setDescription(t('The plugin raising the Audit Issue'))
+      ->setRevisionable(FALSE)
+      ->setSettings([
+        'max_length' => 128,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -4,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setRequired(TRUE);
+
+    // Field for unique Audit Issue identifier.
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Audit Issue entity.'))
@@ -292,6 +317,27 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
         'type' => 'string',
         'weight' => -4,
       ]);
+
+    // Field for storing of Audit Results.
+    $fields['details'] = BaseFieldDefinition::create('audit_result')
+      ->setLabel(t('Issue Details'))
+      ->setDescription(t('Audit issue details.'))
+      ->setDefaultValue(NULL)
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'audit_report_formatter',
+        'weight' => -6,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'audit_report_widget',
+        'settings' => [
+          'rows' => 10,
+        ],
+        'weight' => 25,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
