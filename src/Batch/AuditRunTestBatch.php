@@ -33,10 +33,10 @@ class AuditRunTestBatch {
    *   The full set of Audit test IDs to perform.
    * @param array $config
    *   An array of additional configuration from the form.
-   * @param array $context
+   * @param object $context
    *   The batch context.
    */
-  public static function run(array $initial_ids, array $config, array &$context) {
+  public static function run(array $initial_ids, array $config, &$context) {
     if (!isset($context['sandbox']['test_ids'])) {
       $context['sandbox']['max'] = count($initial_ids);
       $context['sandbox']['current'] = 1;
