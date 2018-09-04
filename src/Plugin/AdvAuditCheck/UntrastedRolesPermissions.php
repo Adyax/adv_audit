@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -212,7 +211,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
     foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
       if (!$untrusted_role) {
@@ -257,6 +256,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
           $build[$key] = [
             '#theme' => 'item_list',
             '#weight' => 1,
+            // @codingStandardsIgnoreLine
             '#title' => $this->t($key),
             '#items' => $permissions,
           ];
