@@ -306,3 +306,10 @@ plugins:
     fail: 'There are some issues in files structure.'
     success: 'The filesytem is well-organized.'
     help: 'Check filesystem structure.'
+  seo_recommendations:
+    description: 'Checks Seo recommedations: contrib modules and robots.txt.'
+    actions: 'Fix listed issues.'
+    impacts: 'These issues can decrease search engine rates of the site.'
+    fail: 'There are number of issues.'
+    success: 'SEO recommendations fullfilled.'
+    help: 'Check SEO recommendations.'
