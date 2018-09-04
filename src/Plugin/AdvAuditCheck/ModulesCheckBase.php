@@ -6,11 +6,13 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Base class for Advances audit modules updates check plugins.
  */
-abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
+abstract class ModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
 
   /**
    * Store modules list.
@@ -43,6 +45,53 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
   protected $moduleHandler;
 
   /**
+   * Defines whether to check For Security updates or not.
+   *
+   * @var bool
+   */
+  const CHECK_FOR_SECURITY_UPDATES = FALSE;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function perform() {
+    $projects = update_get_available(TRUE);
+    $this->moduleHandler->loadInclude('update', 'inc', 'update.compare');
+    $projects = update_calculate_project_data($projects);
+
+    $manager = $this->updateManager;
+
+    foreach ($projects as $project) {
+      if ($project['status'] == $manager::CURRENT || $project['project_type'] != 'module') {
+        continue;
+      }
+
+      if (!static::CHECK_FOR_SECURITY_UPDATES && !empty($project['security updates'])) {
+        continue;
+      }
+      if (static::CHECK_FOR_SECURITY_UPDATES && empty($project['security updates'])) {
+        continue;
+      }
+
+      $this->updates[] = [
+        'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
+        'current_v' => $project['existing_version'],
+        'recommended_v' => $project['recommended'],
+      ];
+    }
+
+    if (empty($this->updates)) {
+      return $this->success();
+    }
+
+    $params = [
+      'list' => $this->updates,
+    ];
+
+    return $this->fail(NULL, $params);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
@@ -50,8 +99,8 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
       return [];
     }
 
-    $arguments = $reason->getArguments();
-    if (empty($arguments)) {
+    $issue_details = $reason->getArguments();
+    if (empty($issue_details)) {
       return [];
     }
 
@@ -63,7 +112,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
     ];
     $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
 
-    if (!empty($arguments['list'])) {
+    if (!empty($issue_details['list'])) {
       $render_list = [
         '#type' => 'table',
         '#header' => [
@@ -71,7 +120,7 @@ abstract class AdvAuditModulesCheckBase extends AdvAuditCheckBase implements Adv
           $this->t('Installed version'),
           $this->t('Recommended version'),
         ],
-        '#rows' => $arguments['list'],
+        '#rows' => $issue_details['list'],
       ];
     }
     else {

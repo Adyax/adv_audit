@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -11,7 +9,6 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use GuzzleHttp\Client;
@@ -124,7 +121,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    */
   public function perform() {
     if ($this->state->get($this->buildStateConfigKeys()['check_should_passed']) == 1) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+      return $this->success();
     }
 
     $predefined_domain = $this->state->get($this->buildStateConfigKeys()['domain'], FALSE);
@@ -146,7 +143,8 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     }
     // Wait until report will be ready.
     if (!in_array($result->status, ['READY', 'ERROR'])) {
-      sleep(10); //NOSONAR
+      // NOSONAR.
+      sleep(10);
       return $this->perform();
     }
     $report_options = [
@@ -154,18 +152,18 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'd' => $current_domain,
       ],
     ];
-    $report_url = Url::fromUri(self::REPORT_URL, $report_options);
+    $report_link = Link::fromTextAndUrl($this->t('link'), Url::fromUri(self::REPORT_URL, $report_options))->toString();
 
     if ($result->status == 'ERROR') {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed with ERROR. For more details please visit %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+      return $this->skip($this->t('Check of SSL is failed with ERROR. Status message:') . ' ' . $result->statusMessage);
     }
 
     foreach ($result->endpoints as $endpoint) {
       if (!in_array($endpoint->grade, ['A', 'A+'])) {
-        return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL, 'Check of SSL is failed. For more details please visit %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+        return $this->fail($this->t('Check of SSL is failed. For more details please visit %link'), ['%link' => $report_link]);
       }
     }
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS, 'Check of SSL is passed. Please check %link', ['%link' => Link::fromTextAndUrl($this->t('link'), $report_url)]);
+    return $this->success(['%link' => $report_link]);
   }
 
   /**
@@ -190,7 +188,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
     $check_should_passed = $form_state->getValue([
       'additional_settings',

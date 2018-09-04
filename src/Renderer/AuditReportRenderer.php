@@ -13,6 +13,7 @@ use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Link;
 
 /**
  * Class Renderer to build audit response object.
@@ -99,7 +100,7 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
-    $build = [
+    return [
       '#theme' => 'adv_audit_report_object',
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
@@ -112,7 +113,6 @@ class AuditReportRenderer implements RenderableInterface {
       ],
     ];
 
-    return $build;
   }
 
   /**
@@ -239,21 +239,26 @@ class AuditReportRenderer implements RenderableInterface {
       case AuditResultResponseInterface::RESULT_PASS:
         $build['result_attributes']->addClass('status-passed');
         $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_SUCCESS);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
+        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
 
       case AuditResultResponseInterface::RESULT_FAIL:
-        $build['result_attributes']->addClass('status-failed');
-        $build['result'] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
+        // Check reported issues.
+        $reported_issues = $audit_reason->getOpenIssues();
+        if (empty($reported_issues)) {
+          $build['result_attributes']->addClass('status-ignored');
+        }
+        else {
+          $build['result_attributes']->addClass('status-failed');
+        }
+        $build['result'] = $this->doRenderIssues($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
         $build['reason'] = $audit_reason->getReason();
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
 
       default:
         $build['result_attributes']->addClass('status-skipped');
         $build['reason'] = $audit_reason->getReason();
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_ACTIONS]);
-        unset($build[AuditMessagesStorageInterface::MSG_TYPE_IMPACTS]);
         break;
     }
 
@@ -289,8 +294,77 @@ class AuditReportRenderer implements RenderableInterface {
     }
     // Get needed message from yml config file.
     // Replace dynamic variables.
-    $msg_string = @$this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $audit_reason->getArguments());
-    return ['#markup' => $msg_string];
+    $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
+    $msg_string = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $details);
+    return [
+      '#markup' => $msg_string,
+    ];
+  }
+
+  /**
+   * Render output messages.
+   *
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance
+   *   The audit plugin instance.
+   * @param \Drupal\adv_audit\AuditReason $audit_reason
+   *   The Audit reason object.
+   * @param string $msg_type
+   *   The type of builded message.
+   *
+   * @return array
+   *   The builded message.
+   *
+   * @throws \Exception
+   */
+  protected function doRenderIssues(AdvAuditCheckBase $plugin_instance, AuditReason $audit_reason, $msg_type) {
+    // Get needed message from yml config file.
+    // And Replace dynamic variables.
+    $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
+    $message = $this->advAuditMessages->replacePlaceholder($plugin_instance->id(), $msg_type, $details);
+
+    $all_issues = $audit_reason->getIssues();
+    if (empty($all_issues)) {
+      return [];
+    }
+
+    $active_rows = [];
+    $ignored_rows= [];
+    foreach ($all_issues as $issue) {
+      if ($issue->isOpen()) {
+        $active_rows[] = [
+          (string) $issue,
+          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+        ];
+      }
+      else {
+        $ignored_rows[] = [
+          (string) $issue,
+          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+        ];
+      }
+    }
+
+    return [
+      '#markup' => $message,
+      'active_issues' => [
+        '#theme' => 'table',
+        '#caption' => $this->t('Active issues'),
+        '#header' => [
+          ['data' => $this->t('Issue')],
+          ['data' => $this->t('Edit'), 'width' => '10%'],
+        ],
+        '#rows' => $active_rows,
+      ],
+      'ignored_issues' => [
+        '#theme' => 'table',
+        '#caption' => $this->t('Ignored issues'),
+        '#header' => [
+          ['data' => $this->t('Issue')],
+          ['data' => $this->t('Edit'), 'width' => '10%'],
+        ],
+        '#rows' => $ignored_rows,
+      ],
+    ];
   }
 
 }

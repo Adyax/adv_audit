@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -14,7 +13,7 @@ use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Database\Connection;
 
 /**
- * Provide checkpoint for database usage.
+ * Check Database usage.
  *
  * @AdvAuditCheck(
  *  id = "database_usage",
@@ -97,28 +96,29 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
 
     try {
       $tables = $this->getTables();
-      $status = AuditResultResponseInterface::RESULT_PASS;
+      $oversized_tables = [];
+
       if (count($tables)) {
-        foreach ($tables as $key => &$table) {
+        foreach ($tables as $table) {
           // We can't compare calculated value in sql query.
           // So, we have to check this condition here.
           if ($table->data_length > $max_length) {
-            $status = AuditResultResponseInterface::RESULT_FAIL;
             // Prepare argument to render.
-            $table = [
+            $oversized_tables[] = [
               'name' => $table->relname,
               'size' => round($table->data_length / 1024 / 1024, 2),
             ];
           }
-          else {
-            unset($tables[$key]);
-          }
         }
       }
-      return new AuditReason($this->id(), $status, NULL, ['rows' => $tables]);
+      if (empty($oversized_tables)) {
+        return $this->success();
+      }
+
+      return $this->fail(NULL, ['rows' => $oversized_tables]);
     }
     catch (Exception $e) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_SKIP);
+      return $this->skip($e->getMessage());
     }
   }
 
@@ -127,11 +127,13 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    */
   protected function getTables() {
     $settings = $this->getPerformSettings();
-    // Don't check some tables (ex. node).
+
+    // Exclude some tables (ex. node).
     $excluded_tables = trim($settings['excluded_tables']);
     $excluded_tables = explode(',', $excluded_tables);
     $db_type = $this->database->databaseType();
     $tb_name_key = 'relname';
+
     if ($db_type == 'pgsql') {
       $query = $this->database->select('pg_catalog.pg_statio_user_tables', 'ist');
       $query->fields('ist', [$tb_name_key]);
@@ -143,7 +145,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       $result = $query->execute();
       $tables = $result->fetchAllAssoc($tb_name_key);
     }
-    else {
+    elseif ($db_type == 'mysql') {
       $query = $this->database->select('information_schema.TABLES', 'ist');
       $query->fields('ist', ['TABLE_NAME']);
       $query->addExpression('DATA_LENGTH', 'data_length');
@@ -197,7 +199,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
     $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
   }
@@ -224,34 +226,34 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function auditReportRender(AuditReason $reason, $type) {
-    $build = [];
+    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
+      return [];
+    }
 
-    if ($type === AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      $build = [
-        '#type' => 'container',
-      ];
+    $arguments = $reason->getArguments();
+    $build = [
+      '#type' => 'container',
+    ];
 
-      // Render tables.
-      if (isset($arguments['rows'])) {
-        $build['list'] = [
-          '#type' => 'table',
-          '#weight' => 1,
-          '#header' => [
-            $this->t('Name'),
-            $this->t('Size (Mb)'),
-          ],
-          '#rows' => $arguments['rows'],
-        ];
-        unset($arguments['rows']);
-      }
-
-      // Get default fail message.
-      $build['message'] = [
-        '#weight' => 0,
-        '#markup' => $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL),
+    // Render tables.
+    if (isset($arguments['rows'])) {
+      $build['list'] = [
+        '#type' => 'table',
+        '#weight' => 1,
+        '#header' => [
+          $this->t('Name'),
+          $this->t('Size (Mb)'),
+        ],
+        '#rows' => $arguments['rows'],
       ];
     }
+
+    // Get default fail message.
+    $build['message'] = [
+      '#weight' => 0,
+      '#markup' => $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL),
+    ];
+
     return $build;
   }
 

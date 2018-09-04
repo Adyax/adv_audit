@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Config\CachedStorage;
@@ -12,10 +10,13 @@ use Drupal\Core\Config\DatabaseStorage;
 use Drupal\Core\Config\StorageComparer;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Link;
 use Drupal\update\UpdateManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Check if configuration is overridden.
+ *
  * @AdvAuditCheck(
  *   id = "configuration_manager_status",
  *   label = @Translation("Configuration Manager"),
@@ -78,18 +79,19 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
    * {@inheritdoc}
    */
   public function perform() {
-    $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
-    $is_overriden = $storage_comparer->createChangelist()->hasChanges();
 
-    if ($is_overriden) {
-      return new AuditReason(
-        $this->id(),
-        AuditResultResponseInterface::RESULT_FAIL
-      );
+    $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
+    $source_list = $this->syncStorage->listAll();
+    $ovveriden = $storage_comparer->createChangelist()->hasChanges();
+    if (empty($source_list) || !$ovveriden) {
+      return $this->success();
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
-
+    // Configuration is overridden.
+    return $this->fail("Configuration is overridden.", [
+      '%link' => Link::createFromRoute($this->t('configuration synchronization'), 'config.sync')
+        ->toString(),
+    ]);
   }
 
 }
