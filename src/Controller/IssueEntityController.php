@@ -79,74 +79,77 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
       $revision = $adv_audit_issue_storage->loadRevision($vid);
       // Only show revisions that are affected by the language that is being
       // displayed.
-      if ($revision->hasTranslation($langcode) && $revision->getTranslation($langcode)->isRevisionTranslationAffected()) {
-        $username = [
-          '#theme' => 'username',
-          '#account' => $revision->getRevisionUser(),
-        ];
+      if (!$revision->hasTranslation($langcode) || !($revision->getTranslation($langcode)->isRevisionTranslationAffected())) {
+        // Skip others.
+        continue;
+      }
 
-        // Use revision link to link to revisions that are not active.
-        $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
-        if ($vid != $adv_audit_issue->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.adv_audit_issue.revision', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]));
-        }
-        else {
-          $link = $adv_audit_issue->link($date);
-        }
+      $username = [
+        '#theme' => 'username',
+        '#account' => $revision->getRevisionUser(),
+      ];
 
-        $row = [];
-        $column = [
+      // Use revision link to link to revisions that are not active.
+      $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+      if ($vid != $adv_audit_issue->getRevisionId()) {
+        $link = $this->l($date, new Url('entity.adv_audit_issue.revision', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]));
+      }
+      else {
+        $link = $adv_audit_issue->link($date);
+      }
+
+      $row = [];
+      $column = [
+        'data' => [
+          '#type' => 'inline_template',
+          '#template' => '{% trans %}{{ date }} by {{ username }}{% endtrans %}{% if message %}<p class="revision-log">{{ message }}</p>{% endif %}',
+          '#context' => [
+            'date' => $link,
+            'username' => \Drupal::service('renderer')->renderPlain($username),
+            'message' => ['#markup' => $revision->getRevisionLogMessage(), '#allowed_tags' => Xss::getHtmlTagList()],
+          ],
+        ],
+      ];
+      $row[] = $column;
+
+      if ($latest_revision) {
+        $row[] = [
           'data' => [
-            '#type' => 'inline_template',
-            '#template' => '{% trans %}{{ date }} by {{ username }}{% endtrans %}{% if message %}<p class="revision-log">{{ message }}</p>{% endif %}',
-            '#context' => [
-              'date' => $link,
-              'username' => \Drupal::service('renderer')->renderPlain($username),
-              'message' => ['#markup' => $revision->getRevisionLogMessage(), '#allowed_tags' => Xss::getHtmlTagList()],
-            ],
+            '#prefix' => '<em>',
+            '#markup' => $this->t('Current revision'),
+            '#suffix' => '</em>',
           ],
         ];
-        $row[] = $column;
-
-        if ($latest_revision) {
-          $row[] = [
-            'data' => [
-              '#prefix' => '<em>',
-              '#markup' => $this->t('Current revision'),
-              '#suffix' => '</em>',
-            ],
-          ];
-          foreach ($row as &$current) {
-            $current['class'] = ['revision-current'];
-          }
-          $latest_revision = FALSE;
+        foreach ($row as &$current) {
+          $current['class'] = ['revision-current'];
         }
-        else {
-          $links = [];
-          if ($revert_permission) {
-            $links['revert'] = [
-              'title' => $this->t('Revert'),
-              'url' => Url::fromRoute('entity.adv_audit_issue.revision_revert', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]),
-            ];
-          }
-
-          if ($delete_permission) {
-            $links['delete'] = [
-              'title' => $this->t('Delete'),
-              'url' => Url::fromRoute('entity.adv_audit_issue.revision_delete', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]),
-            ];
-          }
-
-          $row[] = [
-            'data' => [
-              '#type' => 'operations',
-              '#links' => $links,
-            ],
-          ];
-        }
-
-        $rows[] = $row;
+        $latest_revision = FALSE;
       }
+      else {
+        $links = [];
+        if ($revert_permission) {
+          $links['revert'] = [
+            'title' => $this->t('Revert'),
+            'url' => Url::fromRoute('entity.adv_audit_issue.revision_revert', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]),
+          ];
+        }
+
+        if ($delete_permission) {
+          $links['delete'] = [
+            'title' => $this->t('Delete'),
+            'url' => Url::fromRoute('entity.adv_audit_issue.revision_delete', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]),
+          ];
+        }
+
+        $row[] = [
+          'data' => [
+            '#type' => 'operations',
+            '#links' => $links,
+          ],
+        ];
+      }
+
+      $rows[] = $row;
     }
 
     $build['adv_audit_issue_revisions_table'] = [
