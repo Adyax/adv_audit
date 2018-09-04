@@ -26,7 +26,7 @@ use Drupal\Core\State\StateInterface;
  *  enabled = true,
  * )
  */
-class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Length of the day in seconds.
@@ -135,7 +135,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     }
 
     if (count($this->withoutCache)) {
-      return $this->fail(NULL, $this->withoutCache);
+      return $this->fail(NULL, ['issues' => $this->withoutCache]);
     }
     return $this->success();
   }
@@ -200,49 +200,22 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     $cache = $display->getOption('cache');
 
     if (empty($cache) || $cache['type'] == 'none') {
-      $this->withoutCache[] = [
-        $view->id(),
-        $display_name,
-        $this->t('Display @display_name of view @view_id has wrong cache settings.', [
-          '@display_name' => $display_name,
-          '@view_id' => $view->id(),
-        ]),
+      $this->withoutCache[$view->id() . '.' . $display_name] = [
+        '@issue_title' =>'Display @display_name of view @view_id has wrong cache settings.',
+        '@view_id' => $view->id(),
+        '@display_name' => $display_name,
       ];
     }
     elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
       $minimum = $this->getMinimumCacheTime($cache);
       if ($minimum < $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME)) {
-        $this->withoutCache[] = [
-          $view->id(),
-          $display_name,
-          $this->t('Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed', [
-            '@display_name' => $display_name,
-            '@view_id' => $view->id(),
-            '@allowed' => $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME),
-          ]),
+        $this->withoutCache[$view->id() . '.' . $display_name] = [
+          '@issue_title' =>'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed',
+          '@view_id' => $view->id(),
+          '@display_name' => $display_name,
         ];
       }
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $build['performance_views_fails'] = [
-      '#theme' => 'table',
-      '#header' => [
-        $this->t('View Id'),
-        $this->t('Display'),
-        $this->t('Reason'),
-      ],
-      '#rows' => $reason->getArguments(),
-    ];
-    return $build;
   }
 
 }

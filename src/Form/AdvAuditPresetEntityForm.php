@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\AuditCategoryManagerService;
-use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Component\Utility\SortArray;
@@ -165,12 +165,12 @@ class AdvAuditPresetEntityForm extends EntityForm {
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
       'operations' => [
         [
-          [AuditRunTestBatch::class, 'run'],
+          [AuditRunBatch::class, 'run'],
           [array_keys(array_filter($values)), []],
         ],
       ],
       'finished' => [
-        AuditRunTestBatch::class, 'finished',
+        AuditRunBatch::class, 'finished',
       ],
     ];
     batch_set($batch);

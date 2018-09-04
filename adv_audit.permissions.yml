@@ -37,3 +37,33 @@ edit auditor categories:
 
 permission_callbacks:
   - \Drupal\adv_audit\AdvAuditPermissions::auditPermissions
+add audit issue entities:
+  title: 'Create new Audit Issue entities'
+
+administer audit issue entities:
+  title: 'Administer Audit Issue entities'
+  description: 'Allow to access the administration form to configure Audit Issue entities.'
+  restrict access: true
+
+delete audit issue entities:
+  title: 'Delete Audit Issue entities'
+
+edit audit issue entities:
+  title: 'Edit Audit Issue entities'
+
+view published audit issue entities:
+  title: 'View published Audit Issue entities'
+
+view unpublished audit issue entities:
+  title: 'View unpublished Audit Issue entities'
+
+view all audit issue revisions:
+  title: 'View all Audit Issue revisions'
+
+revert all audit issue revisions:
+  title: 'Revert all Audit Issue revisions'
+  description: 'Role requires permission <em>view Audit Issue revisions</em> and <em>edit rights</em> for audit issue entities in question or <em>administer audit issue entities</em>.'
+
+delete all audit issue revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Audit Issue revisions</em> and <em>delete rights</em> for audit issue entities in question or <em>administer audit issue entities</em>.'

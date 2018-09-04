@@ -6,6 +6,7 @@ use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
+
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use InvalidArgumentException;
@@ -13,7 +14,7 @@ use InvalidArgumentException;
 /**
  * Runs a single test batch.
  */
-class AuditRunTestBatch {
+class AuditRunBatch {
   /**
    * Maximum number of previous messages to display.
    */
@@ -143,7 +144,7 @@ class AuditRunTestBatch {
         $audit_result_response->setOverviewInfo($resultsGlobal);
       }
 
-      $entity->set('audit_results', serialize($audit_result_response));
+      $entity->setIssues($audit_result_response);
       $entity->save();
 
       drupal_set_message(t('The Audit result was saved. View audit %link', ['%link' => $entity->link('Report')]));
@@ -157,7 +158,7 @@ class AuditRunTestBatch {
       drupal_set_message(t("Can't save audit result to the entity due to exception with msg: @message", ['@msg' => $e->getMessage()]), 'error');
     }
     catch (InvalidArgumentException $e) {
-      drupal_set_message(t('The specified audit_results field does not exist.'), 'error');
+      drupal_set_message($e->getMessage(), 'error');
     }
   }
 

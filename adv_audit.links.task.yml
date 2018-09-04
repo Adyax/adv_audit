@@ -33,3 +33,30 @@ entity.adv_audit.delete_form:
   base_route:  entity.adv_audit.canonical
   title: Delete
   weight: 10
+# Audit Issue routing definition
+adv_audit_issue.settings_tab:
+  route_name: adv_audit_issue.settings
+  title: 'Settings'
+  base_route: adv_audit_issue.settings
+
+entity.adv_audit_issue.canonical:
+  route_name: entity.adv_audit_issue.canonical
+  base_route: entity.adv_audit_issue.canonical
+  title: 'View'
+
+entity.adv_audit_issue.edit_form:
+  route_name: entity.adv_audit_issue.edit_form
+  base_route: entity.adv_audit_issue.canonical
+  title: 'Edit'
+
+entity.adv_audit_issue.version_history:
+  route_name: entity.adv_audit_issue.version_history
+  base_route: entity.adv_audit_issue.canonical
+  title: 'Revisions'
+
+entity.adv_audit_issue.delete_form:
+  route_name:  entity.adv_audit_issue.delete_form
+  base_route:  entity.adv_audit_issue.canonical
+  title: Delete
+  weight: 10
+
