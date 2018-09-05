@@ -23,12 +23,12 @@ class ComposerUsageCheck extends AdvAuditCheckBase {
    */
   public function perform() {
 
-    if (file_exists(DRUPAL_ROOT . '/composer.json') && file_exists(DRUPAL_ROOT . '/composer.lock')) {
+    if (file_exists(DRUPAL_ROOT . '/../composer.json') && file_exists(DRUPAL_ROOT . '/../composer.lock')) {
 
       return $this->success();
     }
 
-    return $this->fail(NULL);
+    return $this->fail('There is no one of composer files in ROOT directory of DrupalProject.');
   }
 
 }

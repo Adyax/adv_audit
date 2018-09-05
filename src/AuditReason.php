@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit;
 
+use Drupal\adv_audit\Entity\IssueEntity;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
@@ -42,6 +43,13 @@ class AuditReason {
   protected $arguments;
 
   /**
+   * An array of reported issues.
+   *
+   * @var array
+   */
+  protected $issues;
+
+  /**
    * AuditReason constructor.
    *
    * @param string $plugin_id
@@ -59,6 +67,29 @@ class AuditReason {
     $this->testId = $plugin_id;
     $this->reason = $reason;
     $this->arguments = $arguments;
+    $this->issues = [];
+  }
+
+  /**
+   * Magic methods on serialize.
+   */
+  public function __sleep () {
+    // Cleanup, `issues` are removed.
+    return [
+      'status',
+      'testId',
+      'reason',
+      'arguments',
+    ];
+  }
+
+
+  /**
+   * Magic methods on unserialize.
+   */
+  public function __wakeup () {
+    // Cleanup, the issues should be loaded from DB.
+    $this->issues = [];
   }
 
   /**
@@ -128,6 +159,89 @@ class AuditReason {
    */
   public function getPluginId() {
     return $this->testId;
+  }
+
+  /**
+   * Get list of saved Issue entities.
+   */
+  public function getIssues(): array {
+    if ($this->isPass()) {
+      return [];
+    }
+
+    if (!empty($this->issues)) {
+      return $this->issues;
+    }
+
+    $details = $this->getArguments();
+    if (empty($details['issues'])) {
+      return [];
+    }
+
+    // Create/Load issues.
+    $this->issues = [];
+    foreach($details['issues'] as $issue_name => $details) {
+      $this->issues[] = IssueEntity::loadByName($this->getPluginId() . '.' . $issue_name);
+    }
+
+    return $this->issues;
+  }
+
+  /**
+   * Get list of Issue entities with Open status.
+   */
+  public function getOpenIssues() {
+    $all_issues = $this->getIssues();
+    $open_issues = [];
+    foreach ($all_issues as $issue) {
+      if ($issue->isOpen()) {
+        $open_issues[] = $issue;
+      }
+    }
+
+    return $open_issues;
+  }
+
+  /**
+   * Get list of saved Issue entities.
+   */
+  public function reportIssues(): array {
+    if ($this->isPass()) {
+      return [];
+    }
+
+    $details = $this->getArguments();
+    if (empty($details['issues'])) {
+      return [];
+    }
+
+    // Create/Load issues.
+    $this->issues = [];
+    foreach($details['issues'] as $issue_name => $details) {
+      $issue_title = empty($details['@issue_title']) ? $issue_name : $details['@issue_title'];
+      $issue = IssueEntity::create([
+        'name' => $this->getPluginId() . '.' . $issue_name,
+        'title' => $issue_title,
+        'plugin' => $this->getPluginId(),
+        'details' => serialize($details),
+      ]);
+
+      if (!$issue->isNew()) {
+        // Update all details.
+        $issue->setTitle($issue_title);
+        $issue->setDetails(serialize($details));
+
+        // Reopen the issue if it is fixed.
+        if ($issue->isStatus(IssueEntity::STATUS_FIXED)) {
+          $issue->setStatus(IssueEntity::STATUS_OPEN);
+        }
+      }
+      $issue->save();
+
+      $this->issues[] = $issue;
+    }
+
+    return $this->issues;
   }
 
 }

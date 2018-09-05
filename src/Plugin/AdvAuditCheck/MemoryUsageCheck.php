@@ -94,7 +94,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $type_key = '#type';
     $form['urls'] = [
       '#title' => $this->t('URLs for memory usage checking'),
-      '#description' => t('Place one URL(relative) per line as relative with preceding slash. i.e /path/to/page'),
+      '#description' => $this->t('Place one URL(relative) per line as relative with preceding slash. i.e /path/to/page'),
       '#default_value' => $this->state->get($this->buildStateConfigKeys()['urls']),
       '#required' => TRUE,
     ];
@@ -103,7 +103,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $current_limit = ini_get('memory_limit');
     $form['mem'] = [
       '#title' => $this->t('Memory treshold for fail'),
-      '#description' => t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15.
+      '#description' => $this->t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15.
         If one of the listed URLs consumes more than given treshold check will be cosidered as failed.
         Current limit is @limit', ['@limit' => $current_limit]),
       '#default_value' => $this->state->get($this->buildStateConfigKeys()['mem']),
@@ -119,7 +119,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $value = $form_state->getValue(array_merge($base, ['urls']));
     $this->state->set($this->buildStateConfigKeys()['urls'], $value);
@@ -131,7 +131,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configFormValidate($form, FormStateInterface $form_state) {
+  public function configFormValidate(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $urls = $this->parseLines($form_state->getValue(array_merge($base, ['urls'])));
 
@@ -162,7 +162,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     $total_memory = intval(ini_get('memory_limit'));
 
     if ($total_memory <= 0) {
-      $reason = t('Memory limit has value @value. Looks like server is not correctly configured.',
+      $reason = $this->t('Memory limit has value @value. Looks like server is not correctly configured.',
         ['@value' => $total_memory]);
       return $this->skip($reason);
     }
@@ -217,26 +217,6 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
         '#items' => $issue_details['failed_urls'],
       ],
     ];
-  }
-
-  /**
-   * Parses textarea lines into array.
-   *
-   * @param string $lines
-   *   Textarea content.
-   *
-   * @return array
-   *   The textarea lines.
-   */
-  private function parseLines($lines) {
-    $lines = explode("\n", $lines);
-
-    if (!count($lines)) {
-      return [];
-    }
-    $lines = array_filter($lines, 'trim');
-
-    return str_replace("\r", "", $lines);
   }
 
 }

@@ -112,34 +112,30 @@
                   </div>
                   <div class="report-content">
                     <div class="content-panel">
-                      <p><em>{{ report.description }}</em></p>
+                      {{ report.description }}
                     </div>
                     {% if report.result is not empty %}
                     <div class="content-panel">
-                      <p>
                         <strong>{{ 'Results: '|t }}</strong>
-                        <em>{{ report.result|raw }}</em>
-                      </p>
+                        {{ report.result }}
                     </div>
                     {% endif %}
                       {% if report.severity is not empty %}
                     <div class="content-panel">
                         <strong>{{ 'Importance: '|t }}</strong>
-                        <em>{{ report.severity }}</em>
+                        {{ report.severity }}
                     </div>
                       {% endif %}
                       {% if report.actions is not empty %}
                     <div class="content-panel">
                         <strong>{{ 'Actions to be done: '|t }}</strong>
-                        <em>{{ report.actions }}</em>
+                        {{ report.actions }}
                     </div>
                       {% endif %}
                       {% if report.impacts is not empty %}
                     <div class="content-panel">
-                      <p>
-                        <strong>{{ 'Impacts: '|t }}</strong>
-                        <em>{{ report.impacts }}</em>
-                      </p>
+                      <strong>{{ 'Impacts: '|t }}</strong>
+                      {{ report.impacts }}
                     </div>
                       {% endif %}
                     {# Should be moved to preprocess function #}

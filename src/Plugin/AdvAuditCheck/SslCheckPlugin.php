@@ -188,7 +188,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
     $check_should_passed = $form_state->getValue([
       'additional_settings',
