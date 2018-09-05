@@ -4,7 +4,7 @@ namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountProxy;
@@ -96,12 +96,12 @@ class AdvAuditEntityForm extends ContentEntityForm {
         'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
         'operations' => [
           [
-            [AuditRunTestBatch::class, 'run'],
+            [AuditRunBatch::class, 'run'],
             [$test_ids, []],
           ],
         ],
         'finished' => [
-          AuditRunTestBatch::class, 'finished',
+          AuditRunBatch::class, 'finished',
         ],
       ];
       batch_set($batch);

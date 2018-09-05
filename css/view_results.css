@@ -66,7 +66,7 @@
   background: #b0e164 url('../css/check.svg') no-repeat 20px 50%;
 }
 
-.status-skipped .report-title {
+.status-skipped .report-title, .status-ignored .report-title {
   background: #ccc url('../css/questionmark-disc.svg') no-repeat 20px 50%;
 }
 

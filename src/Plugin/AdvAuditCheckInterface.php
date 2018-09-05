@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use \Drupal\adv_audit\AuditReason;
 
 /**
  * Defines an interface for Advances audit check plugins.
