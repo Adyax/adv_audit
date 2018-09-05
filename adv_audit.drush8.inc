@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Drush command for adv_audit.
+ * Drush command for Drush 8 for adv_audit.
  */
 
-use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Batch\AuditRunBatch;
 
 /**
- * Implements hook_drush_command().
+ * Implements hook_drush_command() for Audit Batch run.
  */
 function adv_audit_drush_command() {
 
@@ -24,7 +24,7 @@ function adv_audit_drush_command() {
 }
 
 /**
- * Logic of drush command.
+ * Logic of drush command adv-audit-run.
  */
 function drush_adv_audit_run() {
   // Run AuditChecks implemented via plugins.
@@ -36,16 +36,15 @@ function drush_adv_audit_run() {
     'error_message' => 'An error occurred. Rerun the process or consult the logs.',
     'operations' => [
       [
-        [AuditRunTestBatch::class, 'run'],
+        [AuditRunBatch::class, 'run'],
         [array_keys($tests), []],
       ],
     ],
     'finished' => [
-      AuditRunTestBatch::class, 'finished',
+      AuditRunBatch::class, 'finished',
     ],
   ];
   batch_set($batch);
   drush_backend_batch_process();
 
-  drush_print(dt('Batch was running.'));
 }
