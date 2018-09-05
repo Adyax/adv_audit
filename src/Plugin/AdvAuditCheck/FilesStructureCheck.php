@@ -2,11 +2,11 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\DrupalKernel;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Check files structure on project.
@@ -20,23 +20,57 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   enabled = TRUE,
  * )
  */
-class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
+class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
-  const MODULES_BASE = DRUPAL_ROOT . '/modules/';
+  /**
+   * Kernel container.
+   *
+   * @var \Drupal\Core\DrupalKernel
+   */
+  protected $kernel;
 
-  const THEMES_BASE = DRUPAL_ROOT . '/themes/';
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, DrupalKernel $kernel) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->kernel = $kernel;
+  }
 
-  const MULTISITE = DRUPAL_ROOT . '/sites/';
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('kernel')
+    );
+  }
+
+  const MODULES_BASE = DRUPAL_ROOT . '/modules';
+
+  const THEMES_BASE = DRUPAL_ROOT . '/themes';
 
   /**
    * {@inheritdoc}
    */
   public function perform() {
     $issue_details = [];
+    $modules_in_base_failed = $this->scanFolder(self::MODULES_BASE);
+    $themes_in_base_failed = $this->scanFolder(self::THEMES_BASE);
+    $sites_folder_failed = $this->scanSitesFolder();
 
-    $issue_details['modules_in_base'] = $this->scanFolder(self::MODULES_BASE);
-    $issue_details['themes_in_base'] = $this->scanFolder(self::THEMES_BASE);
-    $issue_details['multisites'] = $this->scanMultisiteFolders();
+    if (!empty($modules_in_base_failed)) {
+      $issue_details['modules_in_base'] = $modules_in_base_failed;
+    }
+    if (!empty($themes_in_base_failed)) {
+      $issue_details['themes_in_base'] = $themes_in_base_failed;
+    }
+    if (!empty($sites_folder_failed)) {
+      $issue_details[$this->kernel->getSitePath()] = $this->scanSitesFolder();
+    }
 
     if (!empty($issue_details)) {
       return $this->fail($this->t('There are some issues'), $issue_details);
@@ -48,7 +82,7 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
    * Check if project's modules folder doesn't contain modules folders directly.
    *
    * @return array
-   *   Folders which are exist in modules folder directly.
+   *   Modules which are exist in "modules" folder directly.
    */
   protected function scanFolder($path) {
     $folders = [];
@@ -56,13 +90,13 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
 
     $needle = '.info.yml';
     foreach ($modules_dir_list as $dir) {
-      if (($dir !== '.' && $dir !== '..') && is_dir($path . $dir)) {
+      if (($dir !== '.' && $dir !== '..') && is_dir($path . '/' . $dir)) {
 
         if ($dir === 'contrib') {
           $folders['contrib_exists'] = TRUE;
         }
 
-        $internal_dirs = scandir($path . $dir);
+        $internal_dirs = scandir($path . '/' . $dir);
         foreach ($internal_dirs as $item) {
 
           if (strpos($item, $needle)) {
@@ -76,62 +110,30 @@ class FilesStructureCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
   }
 
   /**
-   * Scan multisite's project dirs.
+   * Check in site folder in {docroot}/sites/{sitefolder}.
+   *
+   * If folders "modules" or "themes" are exist scan them.
    *
    * @return array
-   *   Sites and failed modules and themes lists.
+   *   List of fails if they are exist.
    */
-  protected function scanMultisiteFolders() {
+  protected function scanSitesFolder() {
     $folders = [];
+    $site_path = $this->kernel->getSitePath();
+    $site_dirs = scandir(DRUPAL_ROOT . '/' . $site_path);
 
-    $sites_dirs = scandir(self::MULTISITE);
-
-    foreach ($sites_dirs as $site_dir) {
-      if (($site_dir !== '.' && $site_dir !== '..') && is_dir(self::MULTISITE . $site_dir)) {
-        $site_modules_fails_list = $this->scanFolder(self::MULTISITE . $site_dir . '/modules/');
-        if (!empty($site_modules_fails_list)) {
-          $folders[$site_dir]['modules_in_base'] = $site_modules_fails_list;
-        }
-        $site_themes_fails_list = $this->scanFolder(self::MULTISITE . $site_dir . '/themes/');
-        if (!empty($site_themes_fails_list)) {
-          $folders[$site_dir]['themes_in_base'] = $site_themes_fails_list;
-        }
+    foreach ($site_dirs as $dir) {
+      if ($dir === 'modules') {
+        $sites_modules = $this->scanFolder(DRUPAL_ROOT . '/' . $site_path . '/' . $dir);
+        $folders[$dir] = $sites_modules;
+      }
+      if ($dir === 'themes') {
+        $sites_themes = $this->scanFolder(DRUPAL_ROOT . '/' . $site_path . '/' . $dir);
+        $folders[$dir] = $sites_themes;
       }
     }
 
     return $folders;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $folders = $reason->getArguments();
-      $items = [];
-
-      foreach ($folders as $folder => $list) {
-        if ($folder === 'modules_in_base') {
-          $items[] = $this->getItems($list, 'modules');
-        }
-
-        if ($folder === 'themes_in_base') {
-          $items[] = $this->getItems($list, 'themes');
-        }
-
-        if ($folder === 'multisites') {
-          $items[] = $this->getItemsMultiSitesFailed($list);
-        }
-      }
-      $build['folders_fail'] = [
-        '#theme' => 'item_list',
-        '#title' => $this->t('Failed folders'),
-        '#list_type' => 'ul',
-        '#items' => $items,
-      ];
-      return $build;
-    }
-    return [];
   }
 
   /**
