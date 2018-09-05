@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -108,12 +108,12 @@ class RunForm extends FormBase {
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
       'operations' => [
         [
-          [AuditRunTestBatch::class, 'run'],
+          [AuditRunBatch::class, 'run'],
           [array_keys($tests), []],
         ],
       ],
       'finished' => [
-        AuditRunTestBatch::class, 'finished',
+        AuditRunBatch::class, 'finished',
       ],
     ];
     batch_set($batch);

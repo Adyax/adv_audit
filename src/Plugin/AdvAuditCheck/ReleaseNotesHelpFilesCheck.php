@@ -92,7 +92,7 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $base = ['additional_settings', 'plugin_config'];
     $value = $form_state->getValue(array_merge($base, ['files']));
     $this->state->set($this->buildStateConfigKey(), $value);
@@ -155,26 +155,6 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
    */
   private function buildStateConfigKey() {
     return 'adv_audit.plugin.' . $this->id() . '.config.files';
-  }
-
-  /**
-   * Parses textarea lines into array.
-   *
-   * @param string $lines
-   *   Textarea content.
-   *
-   * @return array
-   *   The textarea lines.
-   */
-  private function parseLines($lines) {
-    $lines = explode("\n", $lines);
-
-    if (!count($lines)) {
-      return [];
-    }
-    $lines = array_filter($lines, 'trim');
-
-    return str_replace("\r", "", $lines);
   }
 
 }

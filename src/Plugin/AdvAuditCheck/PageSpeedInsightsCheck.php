@@ -213,7 +213,7 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
     $values = ['additional_settings', 'plugin_config', 'gi_key'];
     $value = $form_state->getValue($values, 0);
