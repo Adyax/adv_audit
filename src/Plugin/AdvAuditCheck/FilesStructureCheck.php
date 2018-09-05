@@ -119,16 +119,17 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
    */
   protected function scanSitesFolder() {
     $folders = [];
-    $site_path = $this->kernel->getSitePath();
-    $site_dirs = scandir(DRUPAL_ROOT . '/' . $site_path);
+    $sites = $this->kernel->getSitePath();
+    $sites_path = DRUPAL_ROOT . '/' . $sites . '/';
+    $site_dirs = scandir($sites_path);
 
     foreach ($site_dirs as $dir) {
       if ($dir === 'modules') {
-        $sites_modules = $this->scanFolder(DRUPAL_ROOT . '/' . $site_path . '/' . $dir);
+        $sites_modules = $this->scanFolder($sites_path . $dir);
         $folders[$dir] = $sites_modules;
       }
       if ($dir === 'themes') {
-        $sites_themes = $this->scanFolder(DRUPAL_ROOT . '/' . $site_path . '/' . $dir);
+        $sites_themes = $this->scanFolder($sites_path . $dir);
         $folders[$dir] = $sites_themes;
       }
     }
