@@ -3,10 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,7 +21,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "high"
  * )
  */
-class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
   /**
    * The state service object.
    *
@@ -39,6 +35,13 @@ class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRende
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
+
+  /**
+   * Array of issues with input format settings.
+   *
+   * @var array
+   */
+  protected $issues;
 
   /**
    * {@inheritdoc}
@@ -142,9 +145,6 @@ class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRende
       return $this->skip($this->t('Module filter is not enabled.'));
     }
 
-    $params = [];
-    $results = [];
-
     $formats = filter_formats();
     $settings = $this->getPerformSettings();
     $untrusted_roles = $settings['untrusted_roles'];
@@ -155,73 +155,56 @@ class InputFormatsCheck extends AdvAuditCheckBase implements AdvAuditReasonRende
       $intersect = array_intersect($format_roles, $untrusted_roles);
 
       if (!empty($intersect)) {
-        // Untrusted users can use this format.
-        // Check format for enabled HTML filter.
-        $filter_html_enabled = FALSE;
-        if ($format->filters()->has('filter_html')) {
-          $filter_html_enabled = $format->filters('filter_html')
-            ->getConfiguration()['status'];
-        }
-        $filter_html_escape_enabled = FALSE;
-        if ($format->filters()->has('filter_html_escape')) {
-          $filter_html_escape_enabled = $format->filters('filter_html_escape')
-            ->getConfiguration()['status'];
-        }
-
-        if ($filter_html_enabled) {
-          $filter = $format->filters('filter_html');
-
-          // Check for unsafe tags in allowed tags.
-          $allowed_tags = array_keys($filter->getHTMLRestrictions()['allowed']);
-          foreach (array_intersect($allowed_tags, $unsafe_tags) as $tag) {
-            // Found an unsafe tag.
-            $results['tags'][$format->id()] = $tag;
-          }
-        }
-        elseif (!$filter_html_escape_enabled) {
-          // Format is usable by untrusted users but does not contain the HTML
-          // Filter or the HTML escape.
-          $results['formats'][$format->id()] = $format->label();
-        }
+        $this->auditInputFormats($format, $unsafe_tags);
       }
     }
 
-    if (!empty($results)) {
-      $params = ['results' => $results];
-      return $this->fail($this->t('Untrusted users are allowed to input dangerous HTML tags.'), $params);
+    if (count($this->issues)) {
+      return $this->fail(NULL, ['issues' => $this->issues]);
     }
-
     return $this->success();
+
   }
 
   /**
-   * {@inheritdoc}
+   * Audit view input formats.
    */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      if (!empty($arguments['results'])) {
-        if (!empty($arguments['results']['tags'])) {
-          $build['tags'] = [
-            '#theme' => 'item_list',
-            '#title' => $this->t('It is recommended you remove the following tags from roles accessible by untrusted users.:'),
-            '#list_type' => 'ul',
-            '#items' => $arguments['results']['tags'],
-          ];
-        }
-        if (!empty($arguments['results']['formats'])) {
-          $build['formats'] = [
-            '#theme' => 'item_list',
-            '#title' => $this->t('The following formats are usable by untrusted roles and do not filter or escape allowed HTML tags:'),
-            '#list_type' => 'ul',
-            '#items' => $arguments['results']['formats'],
-          ];
-        }
-        return $build;
-      }
+  public function auditInputFormats($format, $unsafe_tags) {
+    // Untrusted users can use this format.
+    // Check format for enabled HTML filter.
+    $filter_html_enabled = FALSE;
+    if ($format->filters()->has('filter_html')) {
+      $filter_html_enabled = $format->filters('filter_html')
+        ->getConfiguration()['status'];
+    }
+    $filter_html_escape_enabled = FALSE;
+    if ($format->filters()->has('filter_html_escape')) {
+      $filter_html_escape_enabled = $format->filters('filter_html_escape')
+        ->getConfiguration()['status'];
     }
 
-    return [];
+    if ($filter_html_enabled) {
+      $filter = $format->filters('filter_html');
+
+      // Check for unsafe tags in allowed tags.
+      $allowed_tags = array_keys($filter->getHTMLRestrictions()['allowed']);
+      foreach (array_intersect($allowed_tags, $unsafe_tags) as $tag) {
+        // Found an unsafe tag.
+        $this->issues[$format->id() . '.' . $format->label()] = [
+          '@issue_title' => "It is recommended you remove the @tag tag from @format format for untrusted roles.",
+          '@tag' => $tag,
+          '@format' => $format->label(),
+        ];
+      }
+    }
+    elseif (!$filter_html_escape_enabled) {
+      // Format is usable by untrusted users but does not contain the HTML
+      // Filter or the HTML escape.
+      $this->issues[$format->id() . '.' . $format->label()] = [
+        '@issue_title' => '@format format is usable by untrusted roles and do not filter or escape allowed HTML tags.',
+        '@format' => $format->label(),
+      ];
+    }
   }
 
 }
