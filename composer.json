@@ -11,8 +11,10 @@
     }
   ],
   "require": {
-    "drupal/coder": "8.2.12",
-    "mikehaertl/phpwkhtmltopdf": "2.3.1"
+    "mikehaertl/phpwkhtmltopdf": "2.3.1",
+    "spirit-dev/php-sonarqube-api": "^0.0.4",
+    "kriswallsmith/buzz": "^0.16",
+    "blocktrail/cryptojs-aes-php": "^0.1.0"
   },
   "scripts": {
     "post-install-cmd": [
