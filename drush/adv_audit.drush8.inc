@@ -44,6 +44,7 @@ function drush_adv_audit_run() {
       AuditRunBatch::class, 'finished',
     ],
   ];
+
   batch_set($batch);
   drush_backend_batch_process();
 
