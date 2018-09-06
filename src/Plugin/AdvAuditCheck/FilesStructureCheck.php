@@ -124,13 +124,9 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
     $site_dirs = scandir($sites_path);
 
     foreach ($site_dirs as $dir) {
-      if ($dir === 'modules') {
+      if ($dir === 'modules' || $dir === 'themes') {
         $sites_modules = $this->scanFolder($sites_path . $dir);
         $folders[$dir] = $sites_modules;
-      }
-      if ($dir === 'themes') {
-        $sites_themes = $this->scanFolder($sites_path . $dir);
-        $folders[$dir] = $sites_themes;
       }
     }
 
