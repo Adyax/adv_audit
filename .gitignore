@@ -9,7 +9,7 @@ index.html
 
 # Ignore Composer-managed dependencies.
 ## Other
-drush
+#drush
 vendor
 
 ## OS specific mess.
