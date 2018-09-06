@@ -73,13 +73,15 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
     }
 
     if (!empty($this->issues)) {
-      return $this->fail($this->t('There are some issues'), ['issues' => $this->issues]);
+      return $this->fail(NULL, ['issues' => $this->issues]);
     }
     return $this->success();
   }
 
   /**
    * Check if project's modules folder contain contrib or custom folders.
+   *
+   * And then scan issues.
    */
   protected function scanFolder($path) {
 
@@ -111,7 +113,10 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
   }
 
   /**
-   * Check if project's modules folder doesn't contain modules folders directly.
+   * Check project's "modules" or "themes" folders.
+   *
+   * It is an issue if there are modules or themes installed directly
+   * in this folder.
    */
   public function scanIssues($path, $dir) {
     $internal_dirs = scandir(DRUPAL_ROOT . '/' . $path . '/' . $dir);
@@ -125,7 +130,6 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
           '@dir_name' => $dir,
         ];
       }
-
     }
   }
 
