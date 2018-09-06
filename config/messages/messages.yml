@@ -313,3 +313,10 @@ plugins:
     fail: 'There are number of issues.'
     success: 'SEO recommedations fullfilled.'
     help: 'Check if GITlab CI/CD exists.'
+  security_code_review:
+    description: 'Checks vendor vulnerabilities.'
+    actions: 'Update dependencies.'
+    impacts: 'Without security updates your web-site isn''t protected against attacts.'
+    fail: 'Some of dependencies have security updates.'
+    success: 'Every dependencies are secure.'
+    help: 'Check dependencies security vulnerabilities.'
