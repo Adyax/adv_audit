@@ -30,6 +30,10 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
 
   protected $issues;
 
+  const MODULES_BASE = 'modules';
+
+  const THEMES_BASE = 'themes';
+
   /**
    * {@inheritdoc}
    */
@@ -50,10 +54,6 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
       $container->get('kernel')
     );
   }
-
-  const MODULES_BASE = 'modules';
-
-  const THEMES_BASE = 'themes';
 
   /**
    * {@inheritdoc}
