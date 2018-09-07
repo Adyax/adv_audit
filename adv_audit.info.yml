@@ -2,7 +2,7 @@ name: Advanced Audit
 description: Advanced Drupal static site analysis platform that generates reports with actionable best practice recommendations.
 package: Adyax
 type: module
-version: '8.x-1.x-dev'
+#version: '8.x-1.x-dev'
 core: 8.x
 dependencies:
-  - update
+  - drupal:update

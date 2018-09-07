@@ -5,14 +5,10 @@
  * Main module file.
  */
 
+use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Render\Element;
-use Drupal\adv_audit\Plugin\AdvAuditCheckpointInterface;
-use Drupal\adv_audit\Renderer\ToJson;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\Core\Url;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Routing\RouteMatchInterface;
-
+require_once __DIR__ . '/vendor/autoload.php';
 /**
  * Implements hook_theme().
  */
@@ -25,10 +21,20 @@ function adv_audit_theme() {
       'variables' => ['categories' => NULL],
       'template' => 'adv-audit-process-item',
     ],
-    'adv_audit_html_results' => [
-      'variables' => ['category' => NULL, 'reports' => NULL],
-      'template' => 'adv-audit-html-results',
+    'adv_audit_report' => [
+      'variables' => ['report' => NULL],
+      'template' => 'adv-audit-report',
     ],
+    'adv_audit_report_object' => [
+      'variables' => [
+        'title' => NULL,
+        'score_point' => NULL,
+        'categories' => NULL,
+        'global_info' => NULL,
+      ],
+      'template' => 'adv-audit-report-object',
+    ],
+
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
@@ -53,6 +59,43 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
+  // Build score history table.
+  $entity = $variables['elements']['#adv_audit'];
+  $variables['content']['score_history'] = [
+    '#type' => 'table',
+    '#caption' => t('Score history'),
+    '#empty' => t('No score history to display.'),
+    '#header' => [
+      'id' => t('ID'),
+      'score' => t('Score'),
+      'date' => t('Date'),
+      'operations' => t('Operations'),
+    ],
+  ];
+  $adv_storage = \Drupal::service('entity_type.manager')->getStorage('adv_audit');
+  $vids = $adv_storage->revisionIds($entity);
+  foreach ($vids as $rev_id) {
+    if ($rev_id == $entity->id()) {
+      continue;
+    }
+    /** @var \Drupal\Core\Entity\EntityInterface $rev_entity */
+    $rev_entity = $adv_storage->loadRevision($rev_id);
+    $result = $rev_entity->get('audit_results')->first()->getValue();
+    $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
+    $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
+    $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
+    $variables['content']['score_history'][$rev_id]['operations'] = \Drupal\Core\Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
+  }
+}
+
+/**
+ * Prepares variables for templates.
+ */
+function adv_audit_preprocess_adv_audit_report(&$variables) {
+  /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
+  $render = \Drupal::service('adv_audit.renderer');
+  // Wrap to renderer object.
+  $variables['report'] = $render->setAuditResult($variables['report']);
 }
 
 /**
@@ -71,5 +114,18 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
 
     default:
       return $output;
+  }
+}
+
+/**
+ *
+ * @param $definition
+ */
+function adv_audit_adv_audit_check_info_alter(&$definitions) {
+  foreach ($definitions as $plugin_id => &$definition) {
+    $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
+    if ($overridden_config) {
+      $definition = \Drupal\Component\Utility\NestedArray::mergeDeep($definition, $overridden_config);
+    }
   }
 }

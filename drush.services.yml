@@ -1,0 +1,6 @@
+services:
+  adv_audit.commands:
+    class: Drupal\adv_audit\Commands\AuditCommands
+    arguments: ['@plugin.manager.adv_audit_check']
+    tags:
+      -  { name: drush.command }

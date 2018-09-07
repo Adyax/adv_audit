@@ -2,12 +2,16 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\adv_audit\AuditResultResponse;
+
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -47,15 +51,15 @@ use Drupal\user\UserInterface;
  *     "uuid" = "uuid",
  *   },
  *   links = {
- *     "canonical" = "/adv_audit_results/adv_audit/{adv_audit}",
- *     "add-form" = "/adv_audit_results/adv_audit/add",
- *     "edit-form" = "/adv_audit_results/adv_audit/{adv_audit}/edit",
- *     "delete-form" = "/adv_audit_results/adv_audit/{adv_audit}/delete",
- *     "version-history" = "/adv_audit_results/adv_audit/{adv_audit}/revisions",
- *     "revision" = "/adv_audit_results/adv_audit/{adv_audit}/revisions/{adv_audit_revision}/view",
- *     "revision_revert" = "/adv_audit_results/adv_audit/{adv_audit}/revisions/{adv_audit_revision}/revert",
- *     "revision_delete" = "/adv_audit_results/adv_audit/{adv_audit}/revisions/{adv_audit_revision}/delete",
- *     "collection" = "/adv_audit_results/adv_audit",
+ *     "canonical" = "/admin/reports/adv-audit/{adv_audit}",
+ *     "add-form" = "/admin/reports/adv-audit/add",
+ *     "edit-form" = "/admin/reports/adv-audit/{adv_audit}/edit",
+ *     "delete-form" = "/admin/reports/adv-audit/{adv_audit}/delete",
+ *     "version-history" = "/admin/reports/adv-audit/{adv_audit}/revisions",
+ *     "revision" = "/admin/reports/adv-audit/{adv_audit}/revisions/{adv_audit_revision}/view",
+ *     "revision_revert" = "/admin/reports/adv-audit/{adv_audit}/revisions/{adv_audit_revision}/revert",
+ *     "revision_delete" = "/admin/reports/adv-audit/{adv_audit}/revisions/{adv_audit_revision}/delete",
+ *     "collection" = "/admin/reports/adv-audit",
  *   },
  *   field_ui_base_route = "adv_audit.settings"
  * )
@@ -79,12 +83,10 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-    if ($this instanceof RevisionableInterface) {
-      if ($rel === 'revision_revert' || $rel === 'revision_revert') {
-        $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
-      }
-    }
 
+    if ($this instanceof RevisionableInterface && in_array($rel, ['revision_revert', 'revision_delete'])) {
+      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+    }
     return $uri_route_parameters;
   }
 
@@ -183,6 +185,27 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
   }
 
   /**
+   * Set Issues if any.
+   */
+  public function setIssues(AuditResultResponse $result) {
+    $audit_reasons = $result->getAuditResults();
+    $issues = [];
+
+    foreach ($audit_reasons as $audit_reason) {
+      $plugin_issues = $audit_reason->reportIssues();
+      $issues += $plugin_issues;
+    }
+
+    if (!empty($issues)) {
+      $this->set('issues', $issues);
+    }
+
+    // And set Audit_results.
+    $this->set('audit_results', serialize($result));
+    return $this;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function generateEntityName() {
@@ -217,18 +240,44 @@ class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEn
       ->setDisplayConfigurable('view', TRUE)
       ->setRequired(TRUE);
 
+    // Issues.
+    $fields['issues'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(new TranslatableMarkup('Issues'))
+      ->setDescription(new TranslatableMarkup('The issues that were found in the audit.'))
+      ->setRevisionable(TRUE)
+      ->setSetting('target_type', 'adv_audit_issue')
+      ->setSetting('handler', 'default')
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 5,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ],
+      ]);
+
     // Field for storing of Audit Results.
-    $fields['audit_results'] = BaseFieldDefinition::create('string_long')
+    $fields['audit_results'] = BaseFieldDefinition::create('audit_result')
       ->setLabel(t('Audit Results'))
-      ->setDescription(t('Ready HTML of audit results.'))
+      ->setDescription(t('Output results of audit.'))
       ->setDefaultValue(NULL)
+      ->setRevisionable(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'type' => 'string',
+        'type' => 'audit_report_formatter',
         'weight' => -6,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textarea',
+        'type' => 'audit_report_widget',
         'settings' => [
           'rows' => 10,
         ],

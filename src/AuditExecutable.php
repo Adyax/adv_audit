@@ -3,28 +3,49 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Exception\AuditSkipTestException;
-use Drupal\adv_audit\Exception\AuditTestException;
-use Drupal\adv_audit\Message\AuditMessage;
+use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessageInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Defines a migrate executable class.
+ * Defines a audit executable class.
  */
 class AuditExecutable {
   use StringTranslationTrait;
 
   /**
-   * List of test for performs.
+   * Defines a value for designating the usage context.
+   *
+   * Use this flag when you try to create instance plugin for determining
+   * the action to run audit scenarios.
+   *
+   * @see \Drupal\adv_audit\AuditExecutable::performTest().
+   */
+  const AUDIT_EXECUTE_RUN = 'audit_execute';
+
+  /**
+   * The test instance to perform.
    *
    * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
    */
   protected $test;
+
+  /**
+   * The test ID.
+   *
+   * @var string
+   */
+  protected $testId;
+
+  /**
+   * The configuration for initialize instance.
+   *
+   * @var array
+   */
+  protected $configuration;
 
   /**
    * The event dispatcher.
@@ -34,28 +55,43 @@ class AuditExecutable {
   protected $eventDispatcher;
 
   /**
-   * Migration audit service.
-   *
-   * @todo Make this protected.
+   * Audit messages.
    *
    * @var \Drupal\adv_audit\Message\AuditMessageInterface
    */
   public $message;
 
   /**
-   * Constructs a MigrateExecutable and verifies and sets the memory limit.
+   * Constructs a AuditExecutable and verifies.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
-   *   The test plugin instance.
+   * @param string $test_id
+   *   The test plugin id.
+   * @param array $configuration
+   *   The plugin configuration.
    * @param \Drupal\adv_audit\Message\AuditMessageInterface $message
    *   (optional) The audit message service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   (optional) The event dispatcher.
    */
-  public function __construct(AdvAuditCheckInterface $test, AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
-    $this->test = $test;
-    $this->message = $message ?: new AuditMessage();
+  public function __construct($test_id, array $configuration = [], AuditMessageInterface $message = NULL, EventDispatcherInterface $event_dispatcher = NULL) {
+    $this->testId = $test_id;
+    $this->configuration = $configuration;
+    $this->message = $message ?: new AuditMessageCapture();
     $this->eventDispatcher = $event_dispatcher;
+  }
+
+  /**
+   * Runs given $test_id.
+   *
+   * @return array
+   *   Array with 2 elements:
+   *   - Drupal\adv_audit\AuditReason.
+   *   - and array of messages.
+   */
+  public static function run($test_id) {
+    $executable = new AuditExecutable($test_id);
+
+    return [$executable->performTest(), $executable->message->getMessages()];
   }
 
   /**
@@ -75,52 +111,54 @@ class AuditExecutable {
    * {@inheritdoc}
    */
   public function performTest() {
-    // Send event before perform the test.
-    // $this->getEventDispatcher()->dispatch(AdvAuditEvents::PRE_PERFORM, new AuditEvent($this->test, $this->message));
-
-    // Knock off test if the requirements haven't been met.
     try {
+      // Set where we try to create plugin instance.
+      $this->configuration[self::AUDIT_EXECUTE_RUN] = TRUE;
+
+      // Init the audit plugin instance.
+      $this->test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
+      // Knock off test if the requirements haven't been met.
       $this->test->checkRequirements();
+      // Run audit checkpoint perform.
+      $result = $this->test->perform();
+      // Check what plugin return correct response.
+      if (!($result instanceof AuditReason)) {
+        $result_type = get_class($result);
+        if (empty($result_type)) {
+          $result_type = gettype($result);
+        }
+        // Mark Result as Skipped.
+        $msg = $this->t('AuditPlugin @id returned an invalid result. Expected instance of "AuditReason" but @type was found', [
+          '@id' => $this->testId,
+          '@type' => $result_type,
+        ]);
+        $this->message->display($msg, 'status');
+
+        return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
+      }
+
+      return $result;
     }
     catch (RequirementsException $e) {
-      $this->message->display(
-        $this->t(
-          'Test @id did not meet the requirements. @message @requirements',
-          [
-            '@id' => $this->test->id(),
-            '@message' => $e->getMessage(),
-            '@requirements' => $e->getRequirementsString(),
-          ]
-        ),
-        'error'
-      );
-      return AuditResultResponseInterface::RESULT_WARN;
-    }
+      $msg = $this->t('Audit `@id` did not meet the requirements. @message', [
+        '@id' => $this->testId,
+        '@message' => $e->getMessage(),
+      ]);
 
-    try {
-      $return = $this->test->perform();
-    } catch (AuditSkipTestException $e) {
-      if ($message = trim($e->getMessage())) {
-        // Skip test and save log record.
-        $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_SKIP, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
-        $this->message->display(
-          $this->t(
-            'Test @id was skipped. @message',
-            [
-              '@id' => $this->test->id(),
-              '@message' => $e->getMessage(),
-            ]
-          ),
-          'status');
-      }
+      return $this->handleExecutionException($e, $msg);
     }
-    catch (AuditTestException $e) {
-      $return = AuditReason::create($this->test->id(), AuditResultResponseInterface::RESULT_FAIL, AuditMessagesStorageInterface::MSG_TYPE_FAIL);
-      $this->handleException($e);
-    }
+    catch (AuditSkipTestException $e) {
+      $msg = $this->t('Audit `@id` was skipped due to missing requirements: @message', [
+        '@id' => $this->testId,
+        '@message' => $e->getMessage(),
+      ]);
 
-    // this->getEventDispatcher()->dispatch(AdvAuditEvents::POST_PERFORM, new AuditEvent($this->test, $this->message));
-    return $return;
+      return $this->handleExecutionException($e, $msg);
+    }
+    catch (\Exception $e) {
+      // We should handle all exceptions occurred during Audit execution.
+      return $this->handleExecutionException($e);
+    }
   }
 
   /**
@@ -130,11 +168,34 @@ class AuditExecutable {
    *
    * @param \Exception $exception
    *   Object representing the exception.
+   * @param string $msg
+   *   The error message.
+   * @param string $msg_type
+   *   The type of message.
+   *
+   * @return \Drupal\adv_audit\AuditReason
+   *   The AuditReason object.
    */
-  protected function handleException(\Exception $exception) {
+  protected function handleExecutionException(\Exception $exception, $msg = '', $msg_type = 'status') {
     $result = Error::decodeException($exception);
-    $message = $result['@message'] . ' (' . $result['%file'] . ':' . $result['%line'] . ')';
-    $this->message->display($message, 'error');
+
+    $handle_message = $this->t('Audit Check @id was skipped due to exception $msg in @file, line:@line)', [
+      '@id' => $this->testId,
+      '@message' => $exception->getMessage(),
+      '@file' => $result['%file'],
+      '@line' => $result['%line'],
+    ]);
+
+    \Drupal::logger('adv_audit_batch')->error($handle_message);
+
+    if (empty($msg)) {
+      $msg = $handle_message;
+    }
+    // Display Status Message.
+    $this->message->display($msg, $msg_type);
+
+    // Mark Result as Skipped.
+    return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
   }
 
 }

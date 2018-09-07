@@ -7,28 +7,45 @@ adv_audit.run:
   route_name: adv_audit.run
   title: Run audit
   description: 'Perform a full audit of your site.'
-  parent: adv_audit.settings
-adv_audit.settings:
-  route_name: adv_audit.settings
+  parent: adv_audit.list
+adv_audit.list:
+  route_name: adv_audit.list
   title: 'Advanced Audit'
-  description: 'Choose which roles are untrusted, set logging, skip or enable audit checks and modify check-specific settings.'
-  parent: system.admin_config_system
-adv_audit.custom_admin_path:
-  title: Audit Results List
-  description: 'List of Audit Results Entities'
-  route_name: adv_audit.admin_path
-  parent: system.admin
+  description: 'View available plugins for audit.'
+  parent: adv_audit
 
 # Audit Result entity menu items definition
 entity.adv_audit.collection:
   title: 'Audit Result entity list'
   route_name: entity.adv_audit.collection
   description: 'List Audit Result entity entities'
-  parent: system.admin_structure
+  parent: adv_audit
   weight: 100
 
 adv_audit.admin.structure.settings:
   title: 'Audit Result entity settings'
   description: 'Configure Audit Result entity entities'
-  route_name: adv_audit.settings
+  route_name: adv_audit.list
+  parent: adv_audit
+
+# Adv audit preset entity menu items definition
+entity.adv_audit_preset_entity.collection:
+  title: 'Adv audit preset entity'
+  route_name: entity.adv_audit_preset_entity.collection
+  description: 'List Adv audit preset entity (bundles)'
+  parent: adv_audit
+  weight: 99
+
+# Audit Issue menu items definition
+entity.adv_audit_issue.collection:
+  title: 'Audit Issue list'
+  route_name: entity.adv_audit_issue.collection
+  description: 'List Audit Issue entities'
+  parent: system.admin_structure
+  weight: 100
+
+adv_audit_issue.admin.structure.settings:
+  title: 'Audit Issue settings'
+  description: 'Configure Audit Issue entities'
+  route_name: adv_audit_issue.settings
   parent: system.admin_structure

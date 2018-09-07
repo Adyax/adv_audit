@@ -2,15 +2,12 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponse;
-use Drupal\adv_audit\Batch\AuditRunTestBatch;
+use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Render\Renderer;
 
 /**
  * Provides implementation for the Run form.
@@ -102,6 +99,7 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Run AuditChecks implemented via plugins.
     $tests = $this->auditTestManager->getDefinitions();
     $batch = [
       'title' => $this->t('Running process audit'),
@@ -110,12 +108,12 @@ class RunForm extends FormBase {
       'error_message' => $this->t('An error occurred. Rerun the process or consult the logs.'),
       'operations' => [
         [
-          [AuditRunTestBatch::class, 'run'],
+          [AuditRunBatch::class, 'run'],
           [array_keys($tests), []],
         ],
       ],
       'finished' => [
-        AuditRunTestBatch::class, 'finished',
+        AuditRunBatch::class, 'finished',
       ],
     ];
     batch_set($batch);
