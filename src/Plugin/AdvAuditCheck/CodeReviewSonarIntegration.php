@@ -2,15 +2,14 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Buzz\Client\Curl;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\Core\DrupalKernel;
-use Drupal\Core\Executable\ExecutableException;
+use Drupal\adv_audit\Sonar\SonarClient;
+use Drupal\adv_audit\Sonar\SonarHttpClient;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\State\StateInterface;
-use Http\Client\Exception\RequestException;
-use SonarQube\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Blocktrail\CryptoJSAES\CryptoJSAES;
 
@@ -44,7 +43,15 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->state = $state;
-    $this->login();
+    $settings = $this->getPerformSettings();
+    $this->sonar = new SonarClient($settings['entry_point'], $settings['login'], $settings['password']);
+//    $client
+    $httpClient = new SonarHttpClient($this->baseUrl, $this->$this->sonar, );
+    $this->init();
+    if ($this->logged['valid']) {
+//      $measures = $this->sonar->api('dashboard');
+      $i = 0;
+    }
   }
 
   /**
@@ -66,18 +73,11 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
     );
   }
 
-  protected function login($settings = FALSE) {
-    if (!$settings) {
-      $settings = $this->getPerformSettings();
-    }
+  protected function init() {
+    $settings = $this->getPerformSettings();
     $settings['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
-    try {
-      $this->sonar = new \SonarQube\Client($settings['entry_point'], $settings['login'], $settings['password']);
-      $this->logged = $this->sonar->api('authentication')->validate();
-    } catch (InvalidArgumentException $e) {
-$i=0;
-    }
-
+    $settings['entry_point'] = trim($settings['entry_point'], '/') . '/api/';
+//    $this->logged = $this->sonar->api('authentication')->validate();
   }
 
   /**
@@ -85,7 +85,7 @@ $i=0;
    */
   public function configForm() {
     $settings = $this->getPerformSettings();
-    if ($this->logged) {
+    if ($this->logged['valid']) {
       $projects = $this->sonar->api('projects')->search();
       $options = [];
       foreach ($projects as $project) {
@@ -114,12 +114,10 @@ $i=0;
     $form['password'] = [
       '#type' => 'password',
       '#title' => $this->t('password'),
-      '#default_value' => $settings['password'],
     ];
 
     return $form;
   }
-
 
   /**
    * {@inheritdoc}
@@ -161,13 +159,16 @@ $i=0;
   public function configFormValidate(array $form, FormStateInterface $form_state) {
     $settings = $this->getPerformSettings();
     $value = $form_state->getValue('additional_settings')['plugin_config'];
-    if (!$value['password'] || $value['password'] == $settings['password']) {
-      $value['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
+    if (empty($value['password'])) {
+      $value['password'] = $settings['password'];
     }
-    $this->login($value);
-    if (!$this->logged['valid']) {
-      $form_state->setError($form, 'Wrong connect data');
+    else {
+      $value['password'] = CryptoJSAES::encrypt($value['password'], Settings::getHashSalt());
     }
+//    $this->login($value);
+//    if (!$this->logged['valid']) {
+//      $form_state->setError($form, 'Wrong connect data');
+//    }
   }
 
   /**
