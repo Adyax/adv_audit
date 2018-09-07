@@ -7,6 +7,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\Core\Url;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use GuzzleHttp\Client;
 
@@ -91,7 +92,7 @@ class ExecuteFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
       }
     }
     catch (RequestException $e) {
-      // Access was denied to the file.
+      return $this->success($arguments);
     }
     return $this->success($arguments);
   }
