@@ -5,10 +5,9 @@
  * Main module file.
  */
 
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
-require_once __DIR__ . '/vendor/autoload.php';
+
 /**
  * Implements hook_theme().
  */
