@@ -2,12 +2,10 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\image\Entity\ImageStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -25,7 +23,7 @@ use Drupal\Core\Url;
  *  requirements = {},
  * )
  */
-class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * The audit messages storage service.
@@ -104,7 +102,6 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
 
     // Check if every image_style uses some pipeline.
     $styles = ImageStyle::loadMultiple();
-    $style_names = [];
     foreach ($styles as $style) {
       // Get pipeline for image style.
       // @see Drupal\imageapi_optimize\Entity\ImageStyleWithPipeline::getPipeline().
@@ -112,47 +109,18 @@ class ImageAPICheck extends AdvAuditCheckBase implements ContainerFactoryPluginI
 
       // Check if image_style's pipeline exist.
       if (!isset($pipelines[$pipeline])) {
-        $style_names[] = $style->get('label');
+        $arguments['issues'][$style->get('label')] = [
+          '@issue_title' => 'Image optimize isn\'t configured for @style_name image style',
+          '@style_name' => $style->get('label'),
+        ];
       }
     }
-    if (count($style_names)) {
-      $arguments['list'] = $style_names;
+    if (count($arguments['issues'])) {
       $message = $this->t('ImageApi is installed, some image styles are not configured:');
       return $this->fail($message, $arguments);
     }
 
     return $this->success($arguments);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    $build = [];
-    if ($type === AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      $build = [
-        '#type' => 'container',
-      ];
-
-      // Render image_style list.
-      if (isset($arguments['list'])) {
-        $build['list'] = [
-          '#theme' => 'item_list',
-          '#items' => $arguments['list'],
-          '#weight' => 1,
-        ];
-        unset($arguments['list']);
-      }
-
-      $build['message'] = [
-        '#weight' => 0,
-        '#markup' => $reason->getReason(),
-      ];
-
-    }
-
-    return $build;
   }
 
 }

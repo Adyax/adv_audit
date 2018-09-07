@@ -198,7 +198,7 @@ plugins:
   temporary_files:
     description: "Some file editors create temporary copies of a file that can be left on the file system. A copy of a sensitive file like Drupal's settings.php may be readable by a malicious user who could use that information to further attack a site."
     impacts: 'If any sensitive temporary files were founds it means that users can use them for further attack a site.'
-    fail: 'Sensitive temporary files were found: %files'
+    fail: 'Sensitive temporary files were found:'
     success: 'Sensitive temporary files were not found.'
     help: 'Check sensitive temporary files.'
   execute_files:
@@ -226,7 +226,7 @@ plugins:
     description: 'Check if anonymous users can create, delete or update some entity.'
     actions: 'Check permissions for anonymous.'
     impacts: 'all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code'
-    fail: 'Anonymous user have some unsecure permissions: %list .'
+    fail: 'Anonymous user have some unsecure permissions:'
     success: 'Permissions for anonymous users are correct.'
     help: 'Check anonymous permissions.'
   views_access_controlled:
@@ -320,3 +320,10 @@ plugins:
     fail: 'There are number of issues.'
     success: 'SEO recommendations fullfilled.'
     help: 'Check SEO recommendations.'
+  security_code_review:
+    description: 'Checks vendor vulnerabilities.'
+    actions: 'Update dependencies.'
+    impacts: 'Without security updates your web-site isn''t protected against attacts.'
+    fail: 'Some of dependencies have security updates.'
+    success: 'Every dependencies are secure.'
+    help: 'Check dependencies security vulnerabilities.'

@@ -2,13 +2,11 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Database\Connection;
 
@@ -24,7 +22,7 @@ use Drupal\Core\Database\Connection;
  *  enabled = true,
  * )
  */
-class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * The State API service.
@@ -93,29 +91,28 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
 
     // Transform Mb into bytes.
     $max_length = $settings['max_table_size'] * 1024 * 1024;
-
+    $arguments = [];
     try {
       $tables = $this->getTables();
-      $oversized_tables = [];
-
       if (count($tables)) {
         foreach ($tables as $table) {
           // We can't compare calculated value in sql query.
           // So, we have to check this condition here.
           if ($table->data_length > $max_length) {
             // Prepare argument to render.
-            $oversized_tables[] = [
-              'name' => $table->relname,
-              'size' => round($table->data_length / 1024 / 1024, 2),
+            $arguments['issues'][$table->relname] = [
+              '@issue_title' => '@table_name (@table_size Mb)',
+              '@table_name' => $table->relname,
+              '@table_size' => round($table->data_length / 1024 / 1024, 2),
             ];
           }
         }
       }
-      if (empty($oversized_tables)) {
+      if (!isset($arguments['issues']) || empty($arguments['issues'])) {
         return $this->success();
       }
 
-      return $this->fail(NULL, ['rows' => $oversized_tables]);
+      return $this->fail(NULL, $arguments);
     }
     catch (Exception $e) {
       return $this->skip($e->getMessage());
@@ -220,41 +217,6 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       'max_table_size' => 512,
       'excluded_tables' => '',
     ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $arguments = $reason->getArguments();
-    $build = [
-      '#type' => 'container',
-    ];
-
-    // Render tables.
-    if (isset($arguments['rows'])) {
-      $build['list'] = [
-        '#type' => 'table',
-        '#weight' => 1,
-        '#header' => [
-          $this->t('Name'),
-          $this->t('Size (Mb)'),
-        ],
-        '#rows' => $arguments['rows'],
-      ];
-    }
-
-    // Get default fail message.
-    $build['message'] = [
-      '#weight' => 0,
-      '#markup' => $this->messagesStorage->get($this->id(), AuditMessagesStorageInterface::MSG_TYPE_FAIL),
-    ];
-
-    return $build;
   }
 
 }

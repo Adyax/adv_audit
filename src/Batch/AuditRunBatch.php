@@ -34,10 +34,10 @@ class AuditRunBatch {
    *   The full set of Audit test IDs to perform.
    * @param array $config
    *   An array of additional configuration from the form.
-   * @param array $context
+   * @param object $context
    *   The batch context.
    */
-  public static function run(array $initial_ids, array $config, array &$context) {
+  public static function run(array $initial_ids, array $config, &$context) {
     if (!isset($context['sandbox']['test_ids'])) {
       $context['sandbox']['max'] = count($initial_ids);
       $context['sandbox']['current'] = 1;
@@ -147,12 +147,19 @@ class AuditRunBatch {
       $entity->setIssues($audit_result_response);
       $entity->save();
 
-      drupal_set_message(t('The Audit result was saved. View audit %link', ['%link' => $entity->link('Report')]));
-
-      // Display all Audit messages.
-      foreach ($results['messages'] as $audit_msg) {
-        drupal_set_message($audit_msg);
+      if (PHP_SAPI === 'cli') {
+        $test = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+        // Do stuff.
+        drush_print(dt('Batch is completed. View audit @url', ['@url' => $test]));
       }
+      else {
+        drupal_set_message(t('The Audit result was saved. View audit report: %link', ['%link' => $entity->link('Report')]));
+        // Display all Audit messages.
+        foreach ($results['messages'] as $audit_msg) {
+          drupal_set_message($audit_msg);
+        }
+      }
+
     }
     catch (EntityStorageException $e) {
       drupal_set_message(t("Can't save audit result to the entity due to exception with msg: @message", ['@msg' => $e->getMessage()]), 'error');
