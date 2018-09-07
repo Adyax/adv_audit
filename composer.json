@@ -1,18 +1,16 @@
 {
-  "name": "adyax/adv_audit",
-  "homepage": "https://code.adyax.com/Auditor/adv_audit",
+  "name": "drupal/adv_audit",
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "keywords": ["Drupal", "audit"],
   "prefer-stable": true,
   "repositories": [
     {
-      "type": "git",
-      "url": "https://code.adyax.com/Auditor/adv_audit.git"
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
     }
   ],
   "require": {
-    "vendor/adv_audit": "dev-master",
     "drupal/coder": "8.2.12",
     "mikehaertl/phpwkhtmltopdf": "2.3.1",
     "roave/security-advisories": "dev-master",
@@ -22,5 +20,15 @@
     "post-install-cmd": [
       "sh ./scripts/tools/setup.sh"
     ]
+  },
+  "config": {
+    "bin-dir": "bin/"
+  },
+  "extra": {
+    "scripts-dev": {
+      "post-install-cmd": [
+        "sh ./scripts/tools/setup.sh"
+      ]
+    }
   }
 }
