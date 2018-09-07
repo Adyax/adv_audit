@@ -109,7 +109,8 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonR
    * {@inheritdoc}
    */
   public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('unsafe_extensions');
+    $value_name = ['additional_settings', 'plugin_config', 'unsafe_extensions'];
+    $value = $form_state->getValue($value_name);
     $this->state->set($this->buildStateConfigKey(), $value);
   }
 
