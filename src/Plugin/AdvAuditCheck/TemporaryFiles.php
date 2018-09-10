@@ -87,21 +87,15 @@ class TemporaryFiles extends AdvAuditCheckBase implements ContainerFactoryPlugin
     }
 
     // Analyze the files' names.
-    $findings = [];
     foreach ($files as $path) {
       $matches = [];
       if (file_exists($path) && preg_match('/.*(~|\.sw[op]|\.bak|\.orig|\.save)$/', $path, $matches) !== FALSE && !empty($matches)) {
         // Found a temporary file.
-        $findings[] = $path;
+        $arguments['issues'][$path] = $path;
       }
     }
 
-    if (count($findings)) {
-      $render_array = [
-        '#theme' => 'item_list',
-        '#items' => $findings,
-      ];
-      $arguments['%files'] = $this->renderer->render($render_array);
+    if (isset($arguments['issues']) && count($arguments['issues'])) {
       return $this->fail(NULL, $arguments);
     }
 
