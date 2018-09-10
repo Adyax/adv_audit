@@ -3,9 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Form\FormStateInterface;
@@ -29,7 +26,7 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
  *   severity = "high"
  * )
  */
-class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
   /**
    * Entity Type Manager container.
    *
@@ -146,8 +143,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
    * {@inheritdoc}
    */
   public function perform() {
-    $params = [];
-    $results = [];
+    $issues = [];
     $settings = $this->getPerformSettings();
     $field_types = $settings['field_types'];
     $tags = explode(',', $settings['tags']);
@@ -177,13 +173,12 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
           ->execute()
           ->fetchAll();
         $columns = array_keys($field_storage_definition->getSchema()['columns']);
-        $results += $this->getVulnerabilities($rows, $columns, $field_name, $separator, $tags, $entity_type_id, $id);
+        $issues += $this->getVulnerabilities($rows, $columns, $field_name, $separator, $tags, $entity_type_id, $id);
       }
     }
 
-    if (!empty($results)) {
-      $params = ['fields' => $results];
-      return $this->fail($this->t('Dangerous tags were found in submitted content (fields).'), $params);
+    if (!empty($issues)) {
+      return $this->fail($this->t('Dangerous tags were found in submitted content (fields).'), ['issues' => $issues]);
     }
 
     return $this->success();
@@ -214,7 +209,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
    *   The Vulnerabilities array.
    */
   protected function getVulnerabilities(array $rows, array $columns, $field_name, $separator, array $tags, $entity_type_id, $id) {
-    $content = [];
+    $content = $issues = [];
     foreach ($rows as $row) {
       foreach ($columns as $column) {
         $column_name = $field_name . $separator . $column;
@@ -226,8 +221,25 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
         }
       }
     }
+    foreach ($content as $entity_type_id => $entities) {
+      foreach ($entities as $entity_id => $fields) {
+        $entity = $this->entityTypeManager
+          ->getStorage($entity_type_id)
+          ->load($entity_id);
 
-    return $content;
+        foreach ($fields as $field => $finding) {
+          $issues[$entity_type_id . '.' . $entity_id . '.' . $field] =
+          [
+            '@issue_title' => '"@vulnerabilities" found in "@field" field of  "@label" - url: :url',
+            '@vulnerabilities' => implode(' and ', $finding),
+            '@field' => $field,
+            '@label' => $entity->label(),
+            ':url' => $this->getEntityLink($entity),
+          ];
+        }
+      }
+    }
+    return $issues;
   }
 
   /**
@@ -259,48 +271,6 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements AdvAuditReasonRend
     }
 
     return $url !== NULL ? $url->toString() : ($entity->getEntityTypeId() . ':' . $entity->id());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments['fields'])) {
-        return [];
-      }
-
-      $items = [];
-      foreach ($arguments['fields'] as $entity_type_id => $entities) {
-        foreach ($entities as $entity_id => $fields) {
-          $entity = \Drupal::entityTypeManager()
-            ->getStorage($entity_type_id)
-            ->load($entity_id);
-
-          foreach ($fields as $field => $finding) {
-            $items[] = $this->t(
-              '@vulnerabilities found in <em>@field</em> field of <a href=":url">@label</a>',
-              [
-                '@vulnerabilities' => implode(' and ', $finding),
-                '@field' => $field,
-                '@label' => $entity->label(),
-                ':url' => $this->getEntityLink($entity),
-              ]
-            );
-          }
-        }
-      }
-
-      return [
-        '#theme' => 'item_list',
-        '#title' => $this->t('The following items potentially have dangerous tags:'),
-        '#list_type' => 'ol',
-        '#items' => $items,
-      ];
-    }
-
-    return [];
   }
 
 }
