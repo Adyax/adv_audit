@@ -314,13 +314,20 @@ plugins:
     fail: 'There is no GITlab CI/CD on project'
     success: 'Project is uses GITlab CI/CD.'
     help: 'Check if GITlab CI/CD exists.'
+  files_structure_check:
+    description: 'Drupal files structure has well-defined requirements.'
+    actions: 'Need to organize files as recommended by Drupal documentation.'
+    impacts: 'Ignoring of files structure requirements complicates site support. '
+    fail: 'There are some issues in files structure.'
+    success: 'The filesytem is well-organized.'
+    help: 'Check filesystem structure.'
   seo_recommendations:
     description: 'Checks Seo recommedations: contrib modules and robots.txt.'
     actions: 'Fix listed issues.'
     impacts: 'These issues can decrease search engine rates of the site.'
     fail: 'There are number of issues.'
-    success: 'SEO recommedations fullfilled.'
-    help: 'Check if GITlab CI/CD exists.'
+    success: 'SEO recommendations fullfilled.'
+    help: 'Check SEO recommendations.'
   security_code_review:
     description: 'Checks vendor vulnerabilities.'
     actions: 'Update dependencies.'
