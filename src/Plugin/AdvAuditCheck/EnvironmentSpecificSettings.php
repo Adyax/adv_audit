@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
 /**
- * Check files structure on project.
+ * Check environment settings.
  *
  * @AdvAuditCheck(
  *   id = "environment_specific_settings",
@@ -22,14 +22,14 @@ class EnvironmentSpecificSettings extends AdvAuditCheckBase {
   protected $issues = [];
 
   /**
-   * Define path to environments folder.
+   * Define the path to environments folder.
    *
    * @var string
    */
   protected $envFolder = DRUPAL_ROOT . '/../environments/';
 
   /**
-   * Define list of specific environments folders.
+   * Define a list of specific environments folders.
    *
    * @var array
    */
@@ -56,7 +56,7 @@ class EnvironmentSpecificSettings extends AdvAuditCheckBase {
   }
 
   /**
-   * Scans "environment" folder.
+   * Scans "environments" folder.
    *
    * There are issue if one of the $this->envs doesn't exists.
    */
