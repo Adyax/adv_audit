@@ -85,12 +85,12 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
    */
   protected function scanFolder($path) {
 
-    $this->issues[$path . 'contrib_exists'] = [
+    $this->issues[$path . 'no_contrib'] = [
       '@issue_title' => 'Folder contrib does not exist in @path',
       '@path' => $path,
     ];
 
-    $this->issues[$path . 'custom_exists'] = [
+    $this->issues[$path . 'no_custom'] = [
       '@issue_title' => 'Folder custom does not exist in @path',
       '@path' => $path,
     ];
@@ -101,10 +101,10 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
       if (($dir !== '.' && $dir !== '..') && is_dir(DRUPAL_ROOT . '/' . $path . '/' . $dir)) {
 
         if ($dir === 'contrib') {
-          unset($this->issues[$path . 'contrib_exists']);
+          unset($this->issues[$path . 'no_contrib']);
         }
         if ($dir === 'custom') {
-          unset($this->issues[$path . 'custom_exists']);
+          unset($this->issues[$path . 'no_custom']);
         }
 
         $this->scanIssues($path, $dir);
