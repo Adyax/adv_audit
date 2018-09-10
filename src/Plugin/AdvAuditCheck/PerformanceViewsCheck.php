@@ -2,10 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -128,6 +125,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
       $executable = $view->getExecutable();
       $executable->initDisplay();
       foreach ($executable->displayHandlers as $display_name => $display) {
+
         if ($display->isEnabled()) {
           $this->auditDisplayCache($display, $display_name, $view);
         }
@@ -197,11 +195,15 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
    * Audit view display cache.
    */
   protected function auditDisplayCache($display, $display_name, $view) {
-    $cache = $display->getOption('cache');
+    // Exclude views with admin path.
+    if (isset($display->options['path']) && strpos($display->options['path'], 'admin/') !== FALSE) {
+      return;
+    }
 
+    $cache = $display->getOption('cache');
     if (empty($cache) || $cache['type'] == 'none') {
       $this->withoutCache[$view->id() . '.' . $display_name] = [
-        '@issue_title' =>'Display @display_name of view @view_id has wrong cache settings.',
+        '@issue_title' => 'Display @display_name of view @view_id has wrong cache settings.',
         '@view_id' => $view->id(),
         '@display_name' => $display_name,
       ];
@@ -210,7 +212,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
       $minimum = $this->getMinimumCacheTime($cache);
       if ($minimum < $this->state->get($this->buildStateConfigKey(), self::ALLOWED_LIFETIME)) {
         $this->withoutCache[$view->id() . '.' . $display_name] = [
-          '@issue_title' =>'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed',
+          '@issue_title' => 'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed',
           '@view_id' => $view->id(),
           '@display_name' => $display_name,
         ];
