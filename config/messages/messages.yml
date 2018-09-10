@@ -335,3 +335,10 @@ plugins:
     fail: 'Some of dependencies have security updates.'
     success: 'Every dependencies are secure.'
     help: 'Check dependencies security vulnerabilities.'
+  environment_specific_settings:
+    description: 'Every environment uses different settings (Solr, memcache, varnish, database connection and etc.) and it’s very important to have these settings in separate files that will be used only on particular environment. With environment specific settings files it’s more understandable and easily to manage environment settings.'
+    actions: 'Need to configure environment settings.'
+    impacts: 'Without environment specific settings there is always a threat that, for any mistake, an incorrect configuration can get into the production environment during the deployment.'
+    fail: 'There are some issues in environment specific settings.'
+    success: 'Environment specific settings are correct.'
+    help: 'Check environment specific settings.'
