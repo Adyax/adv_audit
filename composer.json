@@ -16,19 +16,7 @@
     "roave/security-advisories": "dev-master",
     "sensiolabs/security-checker": "4.0.*"
   },
-  "scripts": {
-    "post-install-cmd": [
-      "sh ./scripts/tools/setup.sh"
-    ]
-  },
   "config": {
     "bin-dir": "bin/"
-  },
-  "extra": {
-    "scripts-dev": {
-      "post-install-cmd": [
-        "sh ./scripts/tools/setup.sh"
-      ]
-    }
   }
 }
