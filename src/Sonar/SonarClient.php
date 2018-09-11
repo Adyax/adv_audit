@@ -5,33 +5,26 @@
 
 namespace Drupal\adv_audit\Sonar;
 
-use Buzz\Client\Curl;
 use Buzz\Exception\RequestException;
-use Drupal\Core\Url;
+use Buzz\Message\Request;
+use Buzz\Message\Response;
 use \SonarQube\Client;
-use SonarQube\Exception\RuntimeException;
-use SonarQube\HttpClient\Listener\AuthListener;
+use  Drupal\adv_audit\Sonar\Api;
 
 
 class SonarClient extends Client {
 
-
-  const AUTH_BASIC_TOKEN = 'basic_token';
-
-  private $options = [
-    'user-agent' => 'php-sonarqube-api (http://github.com/spirit-dev/php-sonarqube-api)',
-    'timeout' => 60,
-  ];
+  public $dashboard;
 
   private $project;
+
+  public function setProject($key) {
+    $this->project = $key;
+  }
 
   protected function methodUrl($method) {
     // Prevent concat issues.
     return trim($this->getBaseUrl(), '/') . '/' . $method;
-  }
-
-  public function setProject($data) {
-    $this->project = $data;
   }
 
   public function getProject() {
@@ -39,32 +32,48 @@ class SonarClient extends Client {
   }
 
   protected function extend_api($method, $parameters) {
-    $url = Url::fromUri($this->methodUrl($method), $parameters)->toString();
-    try {
-      //      $client = $this->httpClient->call($url);
-    } catch (RuntimeException $exception) {
+    $response = $this->call($method, $parameters);
+    return $response;
+  }
 
-      $i = 0;
-    }
+  protected function call($path, array $parameters = [], array $headers = []) {
+    return $this->getHttpClient()
+      ->get($path, $parameters, $headers);
   }
 
   public function api($api_name) {
-    $method = FALSE;
-    $options = [];
     switch ($api_name) {
-      //      case 'dashboard':
-      //        $method = 'metrics/domains';
-      //        $options = [];
-      //        $components = $this->extend_api($method, $options);
-      //        $i=0;
-      //        break;
+      case 'dashboard':
+        $this->dashboard = new Api\Dashboard($this);
+        $method = 'measures/component';
+        $options = [
+          'component' => $this->project ? $this->project : '',
+          'metricKeys' => implode(',', $this->dashboard->metrics),
+        ];
+        break;
+      case 'authentication':
+        return new Api\Authentication($this);
+        break;
       default:
         return parent::api($api_name);
         break;
     }
-    if ($method) {
-      return $this->extend_api($method, $options);
-    }
-    return $api;
+    return $this->extend_api($method, $options);
   }
+
+  public function validateRequest($path, $data) {
+    $request = new Request('GET');
+    $request->fromUrl($path);
+    if (isset($data['login']) && isset($data['password'])) {
+      $request->addHeader('Authorization: Basic ' . base64_encode($data['login'] . ':' . $data['password']));
+    }
+    $response = new Response();
+    try{
+      $this->getHttpClient()->client->send($request, $response);
+    }catch (RequestException $e){
+      $response->setContent($e->getMessage());
+    }
+    return $response;
+  }
+
 }

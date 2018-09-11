@@ -2,10 +2,8 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Buzz\Client\Curl;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Sonar\SonarClient;
-use Drupal\adv_audit\Sonar\SonarHttpClient;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Site\Settings;
@@ -15,18 +13,21 @@ use Blocktrail\CryptoJSAES\CryptoJSAES;
 
 
 /**
- * Check Database usage.
+ * Code review. Integration with sonar..
  *
  * @AdvAuditCheck(
  *  id = "sonar_integration",
  *  label = @Translation("Auditing code smells, code complexity. Code metrics
- *   and potential problems"),
+and potential problems"),
  *  category = "code_review",
- *   severity = "normal",
- *   requirements = {}, enabled = true,
+ *  severity = "normal",
+ *  requirements = {},
+ *  enabled = true,
  * )
  */
 class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+
+  public $sonar;
 
   /**
    * Constructs a new PerformanceViewsCheck object.
@@ -43,22 +44,33 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->state = $state;
-    $settings = $this->getPerformSettings();
-    $this->sonar = new SonarClient($settings['entry_point'], $settings['login'], $settings['password']);
-//    $client
-    $httpClient = new SonarHttpClient($this->baseUrl, $this->$this->sonar, );
     $this->init();
-    if ($this->logged['valid']) {
-//      $measures = $this->sonar->api('dashboard');
-      $i = 0;
-    }
   }
 
   /**
-   * {@inheritdoc}
+   *
    */
-  public function perform() {
-
+  protected function parseIssues() {
+    $issues = FALSE;
+    if ($this->logged['valid'] && !is_null($this->sonar->getProject())) {
+      $response = $this->sonar->api('dashboard');
+      if ($response->getStatusCode() === 200) {
+        $issues = [];
+        $data = $response->getContent();
+        if (isset($data['component']['measures']) && is_array($data['component']['measures'])) {
+          foreach ($data['component']['measures'] as $item) {
+            if ($item['value'] > 0) {
+              $issues[$item['metric']] = [
+                '@issue_title' => '"@name" - @value',
+                '@name' => str_replace('_', ' ', $item['metric']),
+                '@value' => $item['value'],
+              ];
+            }
+          }
+        }
+      }
+    }
+    return $issues;
   }
 
   /**
@@ -73,11 +85,25 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
     );
   }
 
+  /**
+   * Authorization to sonar.
+   */
   protected function init() {
     $settings = $this->getPerformSettings();
     $settings['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
-    $settings['entry_point'] = trim($settings['entry_point'], '/') . '/api/';
-//    $this->logged = $this->sonar->api('authentication')->validate();
+    $this->sonar = new SonarClient($settings['entry_point'], $settings['login'], $settings['password']);
+    if (isset($settings['project']) && $settings['project']) {
+      $this->sonar->setProject($settings['project']);
+    }
+
+    // Check if data valid, without it we can get fatal error.
+    $base_url_validate = $this->sonar->validateRequest($settings['entry_point'], $settings);
+    if ($base_url_validate->getStatusCode() === 200) {
+      $this->logged = $this->sonar->api('authentication')->validate();
+    }
+    else {
+      drupal_set_message($this->t('Invalid connect data.'));
+    }
   }
 
   /**
@@ -89,7 +115,7 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
       $projects = $this->sonar->api('projects')->search();
       $options = [];
       foreach ($projects as $project) {
-        $options[$project['id']] = $project['nm'];
+        $options[$project['k']] = $project['nm'];
       }
       $form['project'] = [
         '#type' => 'select',
@@ -123,7 +149,6 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    * {@inheritdoc}
    */
   public function configFormSubmit(array $form, FormStateInterface $form_state) {
-
     $value = $form_state->getValue('additional_settings')['plugin_config'];
     $settings = $this->getPerformSettings();
     if (!$value['password']) {
@@ -132,6 +157,7 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
     elseif ($value['password'] != $settings['password']) {
       $value['password'] = CryptoJSAES::encrypt($value['password'], Settings::getHashSalt());
     }
+    $value['entry_point'] = trim($value['entry_point'], '/') . '/';
     $this->state->set($this->buildStateConfigKey(), $value);
   }
 
@@ -140,17 +166,7 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    */
   protected function getPerformSettings() {
     $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
-  }
-
-  /**
-   * Get default settings.
-   */
-  protected function getDefaultPerformSettings() {
-    return [
-      'max_table_size' => 512,
-      'excluded_tables' => '',
-    ];
+    return !is_null($settings) ? $settings : FALSE;
   }
 
   /**
@@ -160,15 +176,21 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
     $settings = $this->getPerformSettings();
     $value = $form_state->getValue('additional_settings')['plugin_config'];
     if (empty($value['password'])) {
-      $value['password'] = $settings['password'];
+      $value['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
     }
-    else {
-      $value['password'] = CryptoJSAES::encrypt($value['password'], Settings::getHashSalt());
+    $base_url_validate = $this->sonar->validateRequest($value['entry_point'], $value);
+    if ($base_url_validate->getStatusCode() !== 200) {
+      $data = $base_url_validate->getContent();
+      if (!is_null(json_decode($data))) {
+        $data = json_decode($data);
+        foreach ($data->errors as $error) {
+          $form_state->setError($form, $error->msg);
+        }
+      }
+      else {
+        $form_state->setError($form, $data);
+      }
     }
-//    $this->login($value);
-//    if (!$this->logged['valid']) {
-//      $form_state->setError($form, 'Wrong connect data');
-//    }
   }
 
   /**
@@ -179,6 +201,25 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    */
   protected function buildStateConfigKey() {
     return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function perform() {
+
+    $issues = $this->parseIssues();
+    if (!is_array($issues)) {
+      $this->skip('Problems with connect to sonar.');
+    }
+
+    if (is_array($issues) && empty($issues)) {
+      return $this->success();
+    }
+    else {
+      return $this->fail(NULL, ['issues' => $issues]);
+    }
+
   }
 
 }

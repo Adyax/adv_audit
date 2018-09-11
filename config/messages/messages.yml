@@ -314,9 +314,14 @@ plugins:
     success: 'SEO recommedations fullfilled.'
     help: 'Check if GITlab CI/CD exists.'
   sonar_integration:
-    description: 'Checks Seo recommedations: contrib modules and robots.txt.'
-    actions: 'Fix listed issues.'
-    impacts: 'These issues can decrease search engine rates of the site.'
-    fail: 'There are number of issues.'
-    success: 'SEO recommedations fullfilled.'
-    help: 'Check if GITlab CI/CD exists.'
+    description: 'Auditing code smells, code complexity. Code metrics and potential problems.'
+    actions: 'Blocker and critical issues must be fixed ASAP. Other issues need to review and also provide fixes. '
+    impacts: 'Code smell: A maintainability-related issue in the code. Leaving it as-is means that at best maintainers will have a harder time than they should making changes to the code. At worst, they''ll be so confused by the state of the code that they''ll introduce additional errors as they make changes.
+              Metric: A type of measurement. Metrics can have varying values, or measures, over time. Examples: number of lines of code, complexity, etc.
+              A metric may be either:
+               - qualitative: gives a quality indication on the component (ex: density of duplicated lines, line coverage by tests, etc.)
+               - or quantitative: does not give a quality indication on the component (ex: number of lines of code, complexity, etc.).
+              Ignoring these problems leads to unreadable code that will be difficult to maintain'
+    fail: 'There are sonar issues.'
+    success: 'There are not sonar issues.'
+    help: 'Auditing code smells, code complexity. Code metrics and potential problems.'
