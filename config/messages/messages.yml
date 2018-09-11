@@ -276,7 +276,7 @@ plugins:
     description: 'Checking Drupal code quality by CodeSniffer.'
     actions: 'Fix all issues from generated files to improve code quality.'
     impacts: 'Code with issues can be harder to support.'
-    fail: 'There are issues in code. Results can be downloaded using links: @drupal @drupal_practice'
+    fail: 'There are issues in code. Please review issues provided below'
     success: 'No code issues.'
     help: 'Checking Drupal code quality by CodeSniffer.'
   account_settings:
