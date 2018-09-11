@@ -183,11 +183,11 @@ plugins:
     success: 'Grade is A or A+ which is OK. For more info please visit %link.'
     help: 'Please check server SSL settings.'
   admin_name_check:
-    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
-    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
-    impacts: ''
+    description: 'Ideally the admin''s username should not contain the word admin or any part of the current domain. The current admin username is %name.'
+    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary.'
+    impacts: 'It is not secure when admin''s username contains any simple accessible parts. '
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
-    success: 'Admin username is secure'
+    success: 'Admin username is secure.'
     help: 'Check admin username'
   database_tables_engine:
     description: 'All of the tables in your application should be using the InnoDB table engine. The main advantage to InnoDB is row level locking. While MyISAM can sometime be faster for reads in older version of MySQL, InnoDB will always out perform MyISAM if there is even a low level of writes to the tables. The other major problem with MyISAM is that it places a lock on the entire table when performing a mysqldump which is used for backups. This effectively renders the site unusable while the database backup is being made. In the most recent version of MySQL, InnoDB outperforms MyISAM in all metrics.'

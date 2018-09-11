@@ -76,8 +76,7 @@ class AccountSettingsCheck extends AdvAuditCheckBase implements ContainerFactory
 
     $issues = [
       'account_settings' => [
-        '@issue_title' => 'Account setting is "@current".',
-        '@current' => $placeholders['current'],
+        '@issue_title' => 'Visitors can register without administrator\'s approval.',
       ],
     ];
 
