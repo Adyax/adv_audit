@@ -240,12 +240,10 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements ContainerFactor
    */
   private function getIssues(array $params) {
     $issues = [];
-    foreach ($params['failed_urls'] as $failed_url) {
-      $issues = [
-        $failed_url => [
-          '@issue_title' => 'Url "@url" should not be available for anonymous user',
-          '@url' => $failed_url,
-        ],
+    foreach ($params as $failed_url) {
+      $issues[$failed_url] = [
+        '@issue_title' => 'Url "@url" should not be available for anonymous user',
+        '@url' => $failed_url,
       ];
     }
 
