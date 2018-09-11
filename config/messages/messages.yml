@@ -167,7 +167,6 @@ plugins:
      impacts: 'Access to this pages for anonymous user can impact site security.'
      fail: 'There are pages that should not be accessed by anonymous user.'
      success: 'All pages are secured.'
-     success: 'All pages are secured.'
      help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
   memory_usage:
     description: 'Checks given URLs for abnormal big memory usage.'
