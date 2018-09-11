@@ -48,24 +48,21 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   }
 
   /**
-   *
+   * Create issues from sonar data.
    */
   protected function parseIssues() {
-    $issues = FALSE;
-    if ($this->logged['valid'] && !is_null($this->sonar->getProject())) {
-      $response = $this->sonar->api('dashboard');
-      if ($response->getStatusCode() === 200) {
-        $issues = [];
-        $data = $response->getContent();
-        if (isset($data['component']['measures']) && is_array($data['component']['measures'])) {
-          foreach ($data['component']['measures'] as $item) {
-            if ($item['value'] > 0) {
-              $issues[$item['metric']] = [
-                '@issue_title' => '"@name" - @value',
-                '@name' => str_replace('_', ' ', $item['metric']),
-                '@value' => $item['value'],
-              ];
-            }
+    $response = $this->sonar->api('dashboard');
+    $issues = [];
+    if ($response->getStatusCode() === 200) {
+      $data = $response->getContent();
+      if (isset($data['component']['measures']) && is_array($data['component']['measures'])) {
+        foreach ($data['component']['measures'] as $item) {
+          if ($item['value'] > 0) {
+            $issues[$item['metric']] = [
+              '@issue_title' => '"@name" - @value',
+              '@name' => str_replace('_', ' ', $item['metric']),
+              '@value' => $item['value'],
+            ];
           }
         }
       }
@@ -207,17 +204,15 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    * {@inheritdoc}
    */
   public function perform() {
+    if ($this->logged['valid'] && !is_null($this->sonar->getProject())) {
 
-    $issues = $this->parseIssues();
-    if (!is_array($issues)) {
-      $this->skip('Problems with connect to sonar.');
-    }
-
-    if (is_array($issues) && empty($issues)) {
-      return $this->success();
-    }
-    else {
-      return $this->fail(NULL, ['issues' => $issues]);
+      $issues = $this->parseIssues();
+      if (empty($issues)) {
+        return $this->success();
+      }
+      else {
+        return $this->fail(NULL, ['issues' => $issues]);
+      }
     }
 
   }
