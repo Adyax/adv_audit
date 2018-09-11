@@ -165,7 +165,8 @@ plugins:
      description: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
      actions: 'Limit access to the listed pages for anonymous user.'
      impacts: 'Access to this pages for anonymous user can impact site security.'
-     fail: 'There are pages that should not be aceesed by anonimous user.'
+     fail: 'There are pages that should not be accessed by anonymous user.'
+     success: 'All pages are secured.'
      success: 'All pages are secured.'
      help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
   memory_usage:
