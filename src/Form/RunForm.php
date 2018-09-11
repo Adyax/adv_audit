@@ -16,7 +16,10 @@ class RunForm extends FormBase {
 
   /**
    * The adv_audit.checklist service.
+   *
+   * @var \Drupal\adv_audit\Checklist
    */
+
   protected $auditTestManager = [];
 
   protected $configCategories;
@@ -28,10 +31,8 @@ class RunForm extends FormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckListManager $manager
+   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $manager
    *   Use DI to work with services.
-   * @param \Drupal\Core\Render\Renderer $renderer
-   *   Use DI to render.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $manager) {
     $this->configCategories = $config_factory->get('adv_audit.config');
@@ -84,6 +85,10 @@ class RunForm extends FormBase {
       $items[$category_id]['title'] = $categories[$category_id]['label'];
       $items[$category_id]['items'] = [];
       foreach ($plugins as $plugin_id => $plugin_definition) {
+        $plugin_instance = $this->auditTestManager->createInstance($plugin_id);
+        if (!$plugin_instance->getStatus()) {
+          continue;
+        }
         $items[$category_id]['items'][$plugin_id]['label'] = $plugin_definition['label']->__toString();
         $items[$category_id]['items'][$plugin_id]['id'] = $plugin_definition['id'];
       }
@@ -101,6 +106,13 @@ class RunForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Run AuditChecks implemented via plugins.
     $tests = $this->auditTestManager->getDefinitions();
+    foreach ($tests as $key => $test) {
+      $plugin_instance = $this->auditTestManager->createInstance($test['id']);
+      // Remove disabled plugins from audit.
+      if (!$plugin_instance->getStatus()) {
+        unset($tests[$key]);
+      }
+    }
     $batch = [
       'title' => $this->t('Running process audit'),
       'init_message' => $this->t('Prepare to process.'),
