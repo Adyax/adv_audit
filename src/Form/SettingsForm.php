@@ -62,14 +62,6 @@ class SettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Get untrasted roles.
-   */
-  protected function untrustedRoles() {
-    return $this->config->getEditable('adv_audit.config')
-      ->get('untrusted_roles');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
