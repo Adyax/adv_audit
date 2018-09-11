@@ -12,6 +12,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Checs code quality by using Code Sniffer.
@@ -185,6 +187,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $scheme = $this->configFactory()->get('system.file')->get('default_scheme') . '://';
     $drupal_failed = FALSE;
     $drupal_practice_failed = FALSE;
+    $result = [];
 
     $state_keys = $this->buildStateConfigKeys();
 
@@ -214,7 +217,11 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_link = $this->t('<a href="@url" download>Drupal</a>', ['@url' => $url]);
+      $drupal_link = Link::fromTextAndUrl($this->t('Drupal'), URL::fromUri($url))->toString();
+      $result['issues']['drupal_standard'] = [
+        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link @link',
+        '@link' => $drupal_link
+      ];
     }
 
     $file_rel_path = $output . '/' . md5('phpcs_DP_' . time()) . '.txt';
@@ -225,17 +232,18 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $this->fileSystem->chmod($filepath, 0744);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
-      $drupal_failed = TRUE;
+      $drupal_practice_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_practice_link = $this->t('<a href="@url" download>DrupalPractice</a>', ['@url' => $url]);
+      $drupal_practice_link = Link::fromTextAndUrl($this->t('DrupalPractice'), URL::fromUri($url))->toString();
+      $result['issues']['drupal_best_practice'] = [
+        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by @link',
+        '@link' => $drupal_practice_link
+      ];
     }
 
     if ($drupal_failed || $drupal_practice_failed) {
-      return $this->fail($this->t('There are code sniffer issues.'), [
-        '@drupal' => $drupal_link,
-        '@drupal_practice' => $drupal_practice_link,
-      ]);
+      return $this->fail($this->t('There are code sniffer issues.'), $result);
     }
 
     return $this->success();
@@ -250,7 +258,7 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     if (!file_exists($this->getCsDir())) {
       throw new RequirementsException(
         $this->t('CodeSniffer is not installed'),
-        $this->pluginDefinition['requirements']['module']
+        [$this->pluginDefinition['requirements']['module']]
       );
     }
   }
@@ -277,10 +285,10 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
    *   Path to phpcs script.
    */
   private function getCsDir() {
-    $moduel_path = $this->fileSystem->realpath($this->moduleHandler->getModule('adv_audit')->getPath());
-    $phpcs_path = 'vendor/squizlabs/php_codesniffer/scripts/phpcs';
+    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
+    $phpcs_path = $vendor_dir . '/squizlabs/php_codesniffer/scripts/phpcs';
 
-    return $moduel_path . '/' . $phpcs_path;
+    return $phpcs_path;
   }
 
 }

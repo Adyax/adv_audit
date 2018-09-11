@@ -418,8 +418,15 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * Get printable Issue for report.
    */
   public function __toString() {
+    return (string) $this->getMarkup();
+  }
+
+  /**
+   * Get printable Issue for report as FormattableMarkup.
+   */
+  public function getMarkup() {
     $markup = new FormattableMarkup($this->getTitle(), $this->getDetails());
-    return (string) $markup;
+    return $markup;
   }
 
 }

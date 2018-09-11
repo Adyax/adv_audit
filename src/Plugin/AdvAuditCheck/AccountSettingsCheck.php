@@ -68,15 +68,30 @@ class AccountSettingsCheck extends AdvAuditCheckBase implements ContainerFactory
     ];
 
     $current = $this->configFactory->get('user.settings')->get('register');
-    $issue_details['%current'] = $this->options[$current];
 
-    $link = Link::createFromRoute($this->t('settings'), 'entity.user.admin_form')->toString();
-    $issue_details['%link'] = $link;
+    $link = Link::createFromRoute($this->t('settings'), 'entity.user.admin_form', [], ['absolute' => TRUE])->toString();
 
-    if ($current == USER_REGISTER_VISITORS) {
-      return $this->fail(NULL, $issue_details);
+    $placeholders['link'] = $link;
+    $placeholders['current'] = $this->options[$current];
+
+    $issues = [
+      'account_settings' => [
+        '@issue_title' => 'Account setting is "@current".',
+        '@current' => $placeholders['current'],
+      ],
+    ];
+
+    if ($current === USER_REGISTER_VISITORS) {
+      return $this->fail(NULL, [
+        'issues' => $issues,
+        '%link' => $placeholders['link'],
+        '%current' => $placeholders['current'],
+      ]);
     }
-    return $this->success($issue_details);
+    return $this->success([
+      '%link' => $placeholders['link'],
+      '%current' => $placeholders['current'],
+    ]);
   }
 
 }
