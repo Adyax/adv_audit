@@ -22,25 +22,39 @@ class SonarClient extends Client {
     $this->project = $key;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected function methodUrl($method) {
     // Prevent concat issues.
     return trim($this->getBaseUrl(), '/') . '/' . $method;
   }
 
+  /**
+   * @inheritdoc
+   */
   public function getProject() {
     return $this->project;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected function extend_api($method, $parameters) {
     $response = $this->call($method, $parameters);
     return $response;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected function call($path, array $parameters = [], array $headers = []) {
-    return $this->getHttpClient()
-      ->get($path, $parameters, $headers);
+    return $this->getHttpClient()->get($path, $parameters, $headers);
   }
 
+  /**
+   * @inheritdoc
+   */
   public function api($api_name) {
     switch ($api_name) {
       case 'dashboard':
@@ -61,6 +75,9 @@ class SonarClient extends Client {
     return $this->extend_api($method, $options);
   }
 
+  /**
+   * @inheritdoc
+   */
   public function validateRequest($path, $data) {
     $request = new Request('GET');
     $request->fromUrl($path);
@@ -68,9 +85,9 @@ class SonarClient extends Client {
       $request->addHeader('Authorization: Basic ' . base64_encode($data['login'] . ':' . $data['password']));
     }
     $response = new Response();
-    try{
+    try {
       $this->getHttpClient()->client->send($request, $response);
-    }catch (RequestException $e){
+    } catch (RequestException $e) {
       $response->setContent($e->getMessage());
     }
     return $response;

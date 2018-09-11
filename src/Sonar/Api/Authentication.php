@@ -18,7 +18,6 @@ class Authentication extends AbstractApi implements AuthenticationInterface {
    * @inheritDoc
    */
   public function validate() {
-    $this->client->listeners = [];
     return $this->get('authentication/validate');
   }
 

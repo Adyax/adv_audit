@@ -2,14 +2,12 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\user\PermissionHandler;
 
@@ -25,7 +23,7 @@ use Drupal\user\PermissionHandler;
  *  enabled = true,
  * )
  */
-class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * The State API service.
@@ -90,24 +88,25 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    */
   public function perform() {
     $settings = $this->getPerformSettings();
-    $unsafe_permissions = [];
     $all_permissions = $this->userPermission->getPermissions();
     $all_permission_strings = array_keys($all_permissions);
     $untrusted_permissions = $this->rolePermissions($settings['untrusted_roles'], TRUE);
+    $arguments = [];
     foreach ($untrusted_permissions as $rid => $permissions) {
       $intersect = array_intersect($all_permission_strings, $permissions);
       foreach ($intersect as $permission) {
         if (isset($all_permissions[$permission]['restrict access'])) {
-          $unsafe_permissions[$rid][] = $permission;
+          $arguments['issues'][$rid . ' ' . $permissions] = [
+            '@issue_title' => '@role has permission "@permission"',
+            '@role' => $rid,
+            '@permission' => $permission,
+          ];
         }
       }
     }
 
-    $message = NULL;
-    $arguments = [];
-    if (!empty($unsafe_permissions)) {
-      $arguments['permission'] = $unsafe_permissions;
-      return $this->fail($message, $arguments);
+    if (isset($arguments['issues']) && !empty($arguments['issues'])) {
+      return $this->fail(NULL, $arguments);
     }
     return $this->success();
   }
@@ -236,41 +235,6 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
     return [
       'untrusted_roles' => ['anonymous', 'authenticated'],
     ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    $build = [];
-
-    if ($type === AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      $build = [
-        '#type' => 'container',
-      ];
-
-      // Render permissions.
-      if (isset($arguments['permission'])) {
-        foreach ($arguments['permission'] as $key => $permissions) {
-          $build[$key] = [
-            '#theme' => 'item_list',
-            '#weight' => 1,
-            // @codingStandardsIgnoreLine
-            '#title' => $this->t($key),
-            '#items' => $permissions,
-          ];
-        }
-        unset($arguments['permission']);
-      }
-
-      // Get default fail message.
-      $build['message'] = [
-        '#weight' => 0,
-        '#markup' => $this->messagesStorage->get($this->id(), $type),
-      ];
-    }
-    return $build;
   }
 
 }

@@ -23,21 +23,19 @@ class SonarHttpClient extends HttpClient {
     }
 
     $response = new Response();
-
     $this->client->send($request, $response);
-    $i=0;
   }
 
   /**
    * @param $httpMethod
    * @param $url
+   *
    * @return Request
    */
   private function createRequest($httpMethod, $url) {
     $request = new Request($httpMethod);
     $request->setHeaders($this->headers);
     $request->fromUrl($url);
-
     return $request;
   }
 
