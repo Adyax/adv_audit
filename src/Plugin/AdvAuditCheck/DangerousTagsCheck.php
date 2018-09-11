@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
+use Drupal\Core\Link;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -230,11 +231,11 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
         foreach ($fields as $field => $finding) {
           $issues[$entity_type_id . '.' . $entity_id . '.' . $field] =
           [
-            '@issue_title' => '"@vulnerabilities" found in "@field" field of  "@label" - url: :url',
+            '@issue_title' => "<b><em>@vulnerabilities</em></b> tag(s) found in <b><em>@field</em></b> field of  <b><em>@label</em></b> entity - @url",
             '@vulnerabilities' => implode(' and ', $finding),
             '@field' => $field,
             '@label' => $entity->label(),
-            ':url' => $this->getEntityLink($entity),
+            '@url' => $this->getEntityLink($entity),
           ];
         }
       }
@@ -270,7 +271,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       }
     }
 
-    return $url !== NULL ? $url->toString() : ($entity->getEntityTypeId() . ':' . $entity->id());
+    return $url !== NULL ? Link::fromTextAndUrl($this->t('Url'), $url)->toString() : ($entity->getEntityTypeId() . ':' . $entity->id());
   }
 
 }
