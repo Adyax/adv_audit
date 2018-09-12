@@ -25,7 +25,7 @@ class OpcacheCheck extends AdvAuditCheckBase {
    */
   public function perform() {
     $opcache_enabled = OpCodeCache::isEnabled();
-    if (!$opcache_enabled) {
+    if ($opcache_enabled) {
       return $this->success();
     }
 
