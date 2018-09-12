@@ -35,7 +35,7 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with redirect destination.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination) {
-    $this->configCategories = $config_factory->get('adv_audit.config');
+    $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
     $this->config = $config_factory;
@@ -136,7 +136,7 @@ class SettingsForm extends ConfigFormBase {
    *   Array categories.
    */
   protected function getCategories() {
-    return $this->configCategories->get('adv_audit_settings')['categories'];
+    return $this->configCategories->get('categories');
   }
 
   /**
@@ -150,7 +150,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['adv_audit_settings'];
+    return ['adv_audit.settings'];
   }
 
   /**
@@ -176,14 +176,13 @@ class SettingsForm extends ConfigFormBase {
     }
 
     // Save categories status.
-    $config = $this->config->getEditable('adv_audit.config');
-    $config_categories = $config->get('adv_audit_settings');
-
-    foreach ($config_categories['categories'] as $key => &$category) {
+    $config = $this->config->getEditable('adv_audit.settings');
+    $config_categories = $config->get('categories');
+    foreach ($config_categories as $key => &$category) {
       $category['status'] = $values['categories'][$key][$key . '_status'];
     }
 
-    $config->set('adv_audit_settings', $config_categories);
+    $config->set('categories', $config_categories);
     $config->save();
   }
 

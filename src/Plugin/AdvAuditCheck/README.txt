@@ -38,7 +38,7 @@ Description for plugin anataion
 
 id - The plugin ID.
 label - The human readable name. We will use this in listing of availabled test on pahes
-category - The plugin category id. All availabled category described in adv_audit.config.yml
+category - The plugin category id. All availabled category described in adv_audit.settings.yml
 severity - The default level of severity. Can be overridden via plugin settings form.
 requirements - The array of requirements needed for plugin. Like list of modules, user, configs. If requirements are not met, the test will mark as failed !!!!
 enabled - Status of the plugin. Can be overriden by config form.
@@ -53,21 +53,21 @@ With needed information about current result of testing like:
  - Status of the test result passed/failled
  - (optional) Short reason about why this test is failed. If you have much what one reason, you can use array. SHOULD NOT CONTAIN ANY DYNAMIC VALUES.
  - Arguments: Use for store dynamic values for placeholder replacement.
- 
+
  For Example (Plugin: drupal_core)
  When tes is failed!
  We should return next object like:
  $drupal_current_version = '8.2.3'
  \Drupal\adv_audit\AuditReason($plugin_id, AuditResultResponseInterface::RESULT_FAIL, $this->t('Version of core are outdated'), ['@version' => $drupal_current_version]);
- 
+
  If in message.yml file you have this string
- 
+
  plugins:
   drupal_core:
    // ......
    fail: "Current Drupal core version is outdated - @version"
    // ......
-   
+
 You can see what message have dynamic variable.
 In the time when we will build result output, we should replace this placeholder from reason object.
 

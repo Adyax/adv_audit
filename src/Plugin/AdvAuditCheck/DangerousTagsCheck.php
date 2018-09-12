@@ -110,7 +110,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
     foreach ($value['plugin_config']['field_types'] as $key => $format) {
       if (!$format) {
