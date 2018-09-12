@@ -3,9 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -23,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   severity = "low"
  * )
  */
-class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Database\Connection definition.
@@ -65,36 +62,21 @@ class DatabaseTablesEngineCheck extends AdvAuditCheckBase implements AdvAuditRea
 
     if (!empty($result['count'])) {
       $params['info'] = $result;
-      return $this->fail($this->t('There are tables with MyISAM engine.'), $params);
+
+      foreach ($params['info']['tables'] as $table) {
+        $issues['database_tables_engine_' . $table] = [
+          '@issue_title' => 'There is table with MyISAM engine: @table',
+          '@table' => $table,
+        ];
+      }
+
+      return $this->fail($this->t(''), [
+        'issues' => $issues,
+        '%count' => $params['info']['count'],
+      ]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $arguments = $reason->getArguments();
-    if (empty($arguments)) {
-      return [];
-    }
-
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('There are number of MyISAM tables: @count',
-          ['@count' => $arguments['info']['count']]),
-      ],
-      'list' => [
-        '#theme' => 'item_list',
-        '#items' => $arguments['info']['tables'],
-      ],
-    ];
   }
 
   /**
