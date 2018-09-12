@@ -38,7 +38,7 @@ plugins:
     description: 'Check database state.'
     actions: 'Apply all pending database updates.'
     impacts: 'This point is very important and if do not apply all pending database updates for all modules it can lead to unstable work of project and finally can broke website at all.'
-    fail: 'Database need to be updated.'
+    fail: 'Database needs to be updated.'
     success: 'Up to date.'
     help: 'Check database state.'
   modules_update_check:
@@ -193,7 +193,7 @@ plugins:
     description: 'All of the tables in your application should be using the InnoDB table engine. The main advantage to InnoDB is row level locking. While MyISAM can sometime be faster for reads in older version of MySQL, InnoDB will always out perform MyISAM if there is even a low level of writes to the tables. The other major problem with MyISAM is that it places a lock on the entire table when performing a mysqldump which is used for backups. This effectively renders the site unusable while the database backup is being made. In the most recent version of MySQL, InnoDB outperforms MyISAM in all metrics.'
     actions: 'Check site''s MyISAM table for ability to convert them to InnoDB.'
     impacts: 'MyISAM tables can decrease site performacne.'
-    fail: 'Database contains MyISAM tables.'
+    fail: 'Database contains %count MyISAM tables.'
     success: 'Database doesn''t contain MyISAM tables.'
     help: 'Check does the database contain MyISAM tables'
   release_notes_help_files:

@@ -29,7 +29,13 @@ class ErrorsDisplay extends AdvAuditCheckBase {
     $display = $config->get('error_level');
 
     if ($display != 'hide') {
-      $this->fail(NULL);
+      return $this->fail(NULL, [
+        'issues' => [
+          'errors_display' => [
+            '@issue_title' => 'Errors are displayed!',
+          ],
+        ],
+      ]);
     }
 
     return $this->success();
