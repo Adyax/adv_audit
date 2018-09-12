@@ -101,10 +101,16 @@ class PageCachingPerformanceCheck extends AdvAuditCheckBase implements Container
     if (((!empty($response_header) && strpos($response_header, 'HIT') !== FALSE)
       || (!empty($varnish_hits) && $varnish_hits > 0))
       && $cache_lifetime['max_age'] > 0) {
-      return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_PASS);
+      return $this->success();
     }
 
-    return new AuditReason($this->id(), AuditResultResponseInterface::RESULT_FAIL);
+    return $this->fail(NULL, [
+      'issues' => [
+        'page_caching_performance' => [
+          '@issue_title' => 'Need to check and fix cache settings.'
+        ],
+      ],
+    ]);
   }
 
 }
