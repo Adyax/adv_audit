@@ -108,41 +108,40 @@
               {% for report in category.reports %}
                 <div {{ report.result_attributes }}>
                   <div class="report-title">
-                    <h3>{{ report.name }}</h3>
+                    <strong>{{ report.name }}</strong>
                   </div>
                   <div class="report-content">
+                    {% if report.severity is not empty %}
+                      <div class="content-panel">
+                        <h5 class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</h5>
+                      </div>
+                    {% endif %}
                     <div class="content-panel">
                       {{ report.description }}
                     </div>
                     {% if report.result is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Results: '|t }}</strong>
+                      <div class="content-panel">
+                        <h5>{{ 'Results: '|t }}</h5>
                         {{ report.result }}
-                    </div>
+                      </div>
                     {% endif %}
-                      {% if report.severity is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Importance: '|t }}</strong>
-                        {{ report.severity }}
-                    </div>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Actions to be done: '|t }}</strong>
+                    {% if report.actions is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Actions to be done: '|t }}</h5>
                         {{ report.actions }}
-                    </div>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                    <div class="content-panel">
-                      <strong>{{ 'Impacts: '|t }}</strong>
-                      {{ report.impacts }}
-                    </div>
-                      {% endif %}
+                      </div>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Impacts: '|t }}</h5>
+                        {{ report.impacts }}
+                      </div>
+                    {% endif %}
                     {# Should be moved to preprocess function #}
                     {% if report.reason is not empty %}
                       <div class="content-panel">
-                          <strong>{{ 'Why this check is failed: '|t }}</strong>
-                          {{ report.reason }}
+                        <h5>{{ 'Why this check is failed: '|t }}</h5>
+                        {{ report.reason }}
                       </div>
                     {% endif %}
                   </div>
