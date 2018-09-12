@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\State;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 
@@ -78,12 +79,13 @@ class SettingsForm extends ConfigFormBase {
     foreach ($categories as $category_id => $category) {
       $form['categories'][$category_id] = [
         '#type' => 'fieldset',
-        '#title' => $category['label'],
+        '#title' => Link::createFromRoute($category['label'], 'adv_audit.category.settings_form', ['category_id' => $category_id])->toString(),
         $category_id . '_status' => [
           '#type' => 'checkbox',
           '#default_value' => $category['status'],
           '#attributes' => [
             'class' => ['category-status'],
+            'title' => 'Disable the whole category',
           ],
         ],
         '#attributes' => [
