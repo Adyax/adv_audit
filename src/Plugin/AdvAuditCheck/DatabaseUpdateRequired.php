@@ -61,7 +61,7 @@ class DatabaseUpdateRequired extends AdvAuditCheckBase implements AdvAuditCheckI
    */
   public function perform() {
     $requirements = $this->systemManager->listRequirements();
-    if (empty($requirements['update']['severity'])) {
+    if (!empty($requirements['update']['severity'])) {
       return $this->fail(NULL, [
         'issues' => [
           'database_update_required' => [
