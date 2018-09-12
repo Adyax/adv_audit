@@ -28,7 +28,13 @@ class ComposerUsageCheck extends AdvAuditCheckBase {
       return $this->success();
     }
 
-    return $this->fail('There is no one of composer files in ROOT directory of DrupalProject.');
+    return $this->fail(NULL, [
+      'issues' => [
+        'composer_usage_check' => [
+          '@issue_title' => 'There is no composer files in ROOT directory of DrupalProject.',
+        ],
+      ],
+    ]);
   }
 
 }
