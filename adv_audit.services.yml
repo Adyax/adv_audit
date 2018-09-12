@@ -14,9 +14,9 @@ services:
   adv_audit.manager.category:
     class: Drupal\adv_audit\AuditCategoryManagerService
     arguments: ['@config.factory', '@plugin.manager.adv_audit_check']
-  adv_adit.plugin.config:
-    class: Drupal\adv_audit\AdvAuditPluginConfigStorageService
-    arguments: ['@state']
+  adv_audit.plugin.config:
+    class: Drupal\adv_audit\Service\CheckPluginConfigStorageService
+    arguments: ['@config.factory']
     scope: prototype
   adv_audit.route_subscriber:
     class: Drupal\adv_audit\Routing\RouteSubscriber

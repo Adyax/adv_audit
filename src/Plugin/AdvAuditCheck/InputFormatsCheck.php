@@ -80,7 +80,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
    */
   public function configForm() {
     $form = [];
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
 
     // Get the user roles.
     $roles = user_roles();
@@ -121,7 +121,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
   /**
    * Get settings for perform task.
    */
-  protected function getPerformSettings() {
+  protected function getSettings() {
     $settings = $this->state->get($this->buildStateConfigKey());
     return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
   }
@@ -146,7 +146,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
     }
 
     $formats = filter_formats();
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
     $untrusted_roles = $settings['untrusted_roles'];
     $unsafe_tags = explode(',', $settings['unsafe_tags']);
 

@@ -7,6 +7,8 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -28,7 +30,10 @@ use Drupal\Component\Utility\Bytes;
  *   severity = "high"
  * )
  */
-class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
+
   /**
    * Symfony\Component\HttpKernel\HttpKernelInterface definition.
    *
@@ -90,12 +95,13 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+    $settings = $this->getSettings();
     $type_key = '#type';
     $form['urls'] = [
       '#title' => $this->t('URLs for memory usage checking'),
       '#description' => $this->t('Place one URL(relative) per line as relative with preceding slash. i.e /path/to/page'),
-      '#default_value' => $this->state->get($this->buildStateConfigKeys()['urls']),
+      '#default_value' => $settings['urls'],
       '#required' => TRUE,
     ];
     $form['urls'][$type_key] = 'textarea';
@@ -106,7 +112,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
       '#description' => $this->t('Set value(without % symbol) that indicates part(in percents) of total memory limit, i.e 15.
         If one of the listed URLs consumes more than given treshold check will be cosidered as failed.
         Current limit is @limit', ['@limit' => $current_limit]),
-      '#default_value' => $this->state->get($this->buildStateConfigKeys()['mem']),
+      '#default_value' => $settings['mem'],
       '#field_suffix' => '%',
       '#required' => TRUE,
       '#size' => 10,
@@ -119,21 +125,10 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $base = ['additional_settings', 'plugin_config'];
-    $value = $form_state->getValue(array_merge($base, ['urls']));
-    $this->state->set($this->buildStateConfigKeys()['urls'], $value);
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
 
-    $value = $form_state->getValue(array_merge($base, ['mem']));
-    $this->state->set($this->buildStateConfigKeys()['mem'], $value);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function configFormValidate(array $form, FormStateInterface $form_state) {
-    $base = ['additional_settings', 'plugin_config'];
-    $urls = $this->parseLines($form_state->getValue(array_merge($base, ['urls'])));
+    $values = $form_state->getValues();
+    $urls = $this->parseLines($values['urls']);
 
     foreach ($urls as $url) {
       if (!UrlHelper::isValid($url) || substr($url, 0, 1) !== '/') {
@@ -142,8 +137,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
       }
     }
 
-    $value = $form_state->getValue(array_merge($base, ['mem']));
-    if (!is_numeric($value) || $value <= 0) {
+    if (!is_numeric($values['mem']) || $values['mem'] <= 0) {
       $form_state->setErrorByName(
         'additional_settings][plugin_config][mem',
         $this->t('Memory treshold should be positive numeric.')
@@ -156,6 +150,7 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
    */
   public function perform() {
     $params = [];
+    $settings = $this->getSettings();
     $urls = $this->parseLines($this->state->get($this->buildStateConfigKeys()['urls']));
 
     $memory_treshold = $this->state->get($this->buildStateConfigKeys()['mem']) / 100;

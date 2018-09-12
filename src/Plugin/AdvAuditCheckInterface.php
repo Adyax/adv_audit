@@ -3,13 +3,12 @@
 namespace Drupal\adv_audit\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use \Drupal\adv_audit\AuditReason;
+use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines an interface for Advances audit check plugins.
  */
 interface AdvAuditCheckInterface extends PluginInspectionInterface, RequirementsInterface {
-
 
   /**
    * Test error.

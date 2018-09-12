@@ -87,7 +87,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function configForm() {
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
 
     $form['field_types'] = [
       '#type' => 'checkboxes',
@@ -123,7 +123,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * Get settings for perform task.
    */
-  protected function getPerformSettings() {
+  protected function getSettings() {
     $settings = $this->state->get($this->buildStateConfigKey());
     return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
   }
@@ -145,7 +145,7 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    */
   public function perform() {
     $issues = [];
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
     $field_types = $settings['field_types'];
     $tags = explode(',', $settings['tags']);
 

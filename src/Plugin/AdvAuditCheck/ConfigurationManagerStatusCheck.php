@@ -11,6 +11,7 @@ use Drupal\Core\Config\StorageComparer;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Site\Settings;
 use Drupal\update\UpdateManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

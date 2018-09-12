@@ -25,13 +25,6 @@ use Drupal\Core\Database\Connection;
 class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The State API service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * Database connection.
    *
    * @var \Drupal\Core\Database\Connection
@@ -55,16 +48,13 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   Access to state service.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
    * @param \Drupal\Core\Database\Connection $database
    *   Database connection.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, Connection $database) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AuditMessagesStorageInterface $messages_storage, Connection $database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
     $this->messagesStorage = $messages_storage;
     $this->database = $database;
   }
@@ -77,7 +67,6 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
       $container->get('adv_audit.messages'),
       $container->get('database')
     );
@@ -87,7 +76,7 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function perform() {
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
 
     // Transform Mb into bytes.
     $max_length = $settings['max_table_size'] * 1024 * 1024;
@@ -123,8 +112,8 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
    * Get database tables.
    */
   protected function getTables() {
-    $settings = $this->getPerformSettings();
-
+    $settings = $this->getSettings();
+    $tables = [];
     // Exclude some tables (ex. node).
     $excluded_tables = trim($settings['excluded_tables']);
     $excluded_tables = explode(',', $excluded_tables);
@@ -158,65 +147,19 @@ class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   }
 
   /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
+   * @inheritdoc
    */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
-  }
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function configForm() {
-
-    $form = [];
-    $settings = $this->getPerformSettings();
-
+    $settings = $this->getSettings();
     $form['max_table_size'] = [
       '#type' => 'number',
       '#title' => $this->t('Max size of table'),
       '#description' => $this->t('Enter max size (Mb).'),
       '#default_value' => $settings['max_table_size'],
     ];
-
-    // Take possibility don't check some tables.
-    $form['excluded_tables'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Excluded tables'),
-      '#defauln_value' => $settings['excluded_tables'],
-      '#description' => $this->t('List of tables, separated with coma without spaces.'),
-    ];
-
     return $form;
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional_settings');
-    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
-  }
-
-  /**
-   * Get settings for perform task.
-   */
-  protected function getPerformSettings() {
-    $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
-  }
-
-  /**
-   * Get default settings.
-   */
-  protected function getDefaultPerformSettings() {
-    return [
-      'max_table_size' => 512,
-      'excluded_tables' => '',
-    ];
   }
 
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Service;
 
 /**
  * Interface AdvAuditPluginConfigStorageServiceInterface.
  */
-interface AdvAuditPluginConfigStorageServiceInterface {
+interface CheckPluginConfigStorageServiceInterface {
 
   /**
    * Get value from config storage.

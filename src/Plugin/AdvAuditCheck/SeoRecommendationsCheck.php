@@ -2,15 +2,16 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Form\FormStateInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -28,17 +29,9 @@ use Symfony\Component\HttpFoundation\Request;
  *   severity = "high"
  * )
  */
-class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface, PluginFormInterface {
 
-  /**
-   * List of seo modules to check.
-   */
-  const SEO_MODULES = [
-    'google_analytics',
-    'metatag',
-    'pathauto',
-    'xmlsitemap',
-  ];
+  use AuditPluginSubform;
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.
@@ -46,13 +39,6 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
-
-  /**
-   * The state service object.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
 
   /**
    * Returns the default http client.
@@ -72,10 +58,9 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, StateInterface $state, Client $client, Request $request) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, Client $client, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->moduleHandler = $module_handler;
-    $this->state = $state;
     $this->httpClient = $client;
     $this->request = $request;
   }
@@ -89,7 +74,6 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
       $plugin_id,
       $plugin_definition,
       $container->get('module_handler'),
-      $container->get('state'),
       $container->get('http_client'),
       $container->get('request_stack')->getCurrentRequest()
     );
@@ -98,14 +82,13 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
-    $default_value = !empty($this->state->get($this->buildStateConfigKey())) ?
-      $this->state->get($this->buildStateConfigKey()) : implode("\r\n", self::SEO_MODULES);
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $default_value = $this->getSettings();
     $form['modules'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Modules to check'),
       '#description' => $this->t('Place one module per line.'),
-      '#default_value' => $default_value,
+      '#default_value' => $default_value['modules'],
     ];
 
     return $form;
@@ -114,20 +97,9 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $name = ['additional_settings', 'plugin_config', 'modules'];
-    $value = $form_state->getValue($name);
-    $this->state->set($this->buildStateConfigKey(), $value);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function perform() {
     $params = [];
-
-    $modules = !empty($this->state->get($this->buildStateConfigKey())) ?
-      $this->parseLines($this->buildStateConfigKey()) : self::SEO_MODULES;
+    $modules = $this->parseLines($default_value = $this->getSettings()['modules']);
     foreach ($modules as $module) {
       if (!$this->moduleHandler->moduleExists($module)) {
         $params['missed_modules'][] = $module;
@@ -187,16 +159,6 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
         '#items' => $items,
       ],
     ];
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  private function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.modules';
   }
 
 }

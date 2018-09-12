@@ -39,7 +39,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   /**
    * The plugin config storage service.
    *
-   * @var \Drupal\adv_audit\AdvAuditPluginConfigStorageServiceInterface
+   * @var \Drupal\adv_audit\CheckPluginConfigStorageServiceInterface
    */
   protected $pluginSettingsStorage;
 
@@ -56,7 +56,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginSettingsStorage = $this->container()
-      ->get('adv_adit.plugin.config')
+      ->get('adv_audit.plugin.config')
       ->setPluginId($plugin_id);
   }
 
@@ -135,7 +135,8 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function getCategoryLabel() {
     // TODO: Not best implementation of getting config value.
     // We should re-write this.
-    return $this->config('adv_audit.config')->get('adv_audit_settings.categories' . $this->getCategoryName() . '.label');
+    return $this->config('adv_audit.config')
+      ->get('adv_audit_settings.categories' . $this->getCategoryName() . '.label');
   }
 
   /**
@@ -466,6 +467,34 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     $lines = array_filter($lines, 'trim');
 
     return str_replace("\r", "", $lines);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function getConfiguration() {
+
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function setConfiguration(array $configuration) {
+
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function defaultConfiguration() {
+
+  }
+
+  /**
+   * Get settings for perform task.
+   */
+  protected function getSettings() {
+    return $this->pluginSettingsStorage->get();
   }
 
 }
