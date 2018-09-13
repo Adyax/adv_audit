@@ -52,18 +52,19 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    */
   protected function parseIssues() {
     $response = $this->sonar->api('dashboard');
-    $issues = [];
     if ($response->getStatusCode() === 200) {
-      $data = $response->getContent();
-      if (isset($data['component']['measures']) && is_array($data['component']['measures'])) {
-        foreach ($data['component']['measures'] as $item) {
-          if ($item['value'] > 0) {
-            $issues[$item['metric']] = [
-              '@issue_title' => '"@name" - @value',
-              '@name' => str_replace('_', ' ', $item['metric']),
-              '@value' => $item['value'],
-            ];
-          }
+      return [];
+    }
+    $issues = [];
+    $data = $response->getContent();
+    if (isset($data['component']['measures']) && is_array($data['component']['measures'])) {
+      foreach ($data['component']['measures'] as $item) {
+        if ($item['value'] > 0) {
+          $issues[$item['metric']] = [
+            '@issue_title' => '"@name" - @value',
+            '@name' => str_replace('_', ' ', $item['metric']),
+            '@value' => $item['value'],
+          ];
         }
       }
     }
