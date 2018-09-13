@@ -63,7 +63,7 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function perform() {
-    $anonymous_permissions = $this->rolePermissions(self::ANONYMOUS_ID);
+    $anonymous_permissions = $this->rolePermissions(static::ANONYMOUS_ID);
     $arguments = [];
     foreach ($anonymous_permissions as $permission) {
       if (preg_match('/(\baccess\sall\b|\badd\b|\badminister\b|\bchange\b|\bclear\b|\bcreate\b|\bdelete\b|\bedit\b|\brevert\b|\bsave\b|\bsend\smail\b|\bset\svariable\b|\bupdate\b|\bupload\b|\bPHP\b|\bdevel\b)/i', $permission)) {

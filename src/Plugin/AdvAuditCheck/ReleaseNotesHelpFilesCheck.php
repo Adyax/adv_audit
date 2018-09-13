@@ -49,7 +49,7 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements AdvAuditRe
     $params = [];
     $settings = $this->getSettings();
     $config_files = $this->parseLines($settings['files']);
-    $config_files = !empty($config_files) ? $config_files : self::DEFAULT_FILES;
+    $config_files = !empty($config_files) ? $config_files : static::DEFAULT_FILES;
 
     $remaining_files = [];
     foreach ($config_files as $file) {

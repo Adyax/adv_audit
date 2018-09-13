@@ -99,7 +99,7 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
    */
   public function perform() {
     $params = [];
-    $modules = $this->parseLines($default_value = $this->getSettings()['modules']);
+    $modules = $this->parseLines($this->getSettings()['modules']);
     foreach ($modules as $module) {
       if (!$this->moduleHandler->moduleExists($module)) {
         $params['missed_modules'][] = $module;

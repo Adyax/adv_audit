@@ -63,7 +63,7 @@ class AuditPluginConfigStorageService implements AuditPluginConfigStorageService
   /**
    * {@inheritdoc}
    */
-  public function set($key = NULL, $value) {
+  public function set($key = NULL, $value = []) {
     $configs = $this->configFactory->getEditable($this->getConfigKey());
     $data = $configs->getRawData();
     if (is_null($key)) {

@@ -133,7 +133,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'maxAge' => 1,
       ],
     ];
-    $ssllab_analyze_url = Url::fromUri(self::SSLLAB_API_URL . self::ANALYZE_API_CALL, $options)
+    $ssllab_analyze_url = Url::fromUri(static::SSLLAB_API_URL . static::ANALYZE_API_CALL, $options)
       ->toString();
     try {
       $response = $this->httpClient->request('GET', $ssllab_analyze_url);
@@ -152,7 +152,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'd' => $current_domain,
       ],
     ];
-    $report_link = Link::fromTextAndUrl($this->t('link'), Url::fromUri(self::REPORT_URL, $report_options))
+    $report_link = Link::fromTextAndUrl($this->t('link'), Url::fromUri(static::REPORT_URL, $report_options))
       ->toString();
 
     if ($result->status == 'ERROR') {
@@ -188,7 +188,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     parent::checkRequirements();
     // Just check that we are able to send requests to SslLabs.
     try {
-      $this->httpClient->request('GET', self::SSLLAB_API_URL . self::INFO_API_CALL);
+      $this->httpClient->request('GET', static::SSLLAB_API_URL . static::INFO_API_CALL);
     }
     catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);

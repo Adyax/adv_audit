@@ -127,7 +127,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     $form['minimum_cache_lifetime'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Cache minimum age allowed in seconds'),
-      '#default_value' => isset($settings['minimum_cache_lifetime']) ? $settings['minimum_cache_lifetime'] : self::ALLOWED_LIFETIME,
+      '#default_value' => isset($settings['minimum_cache_lifetime']) ? $settings['minimum_cache_lifetime'] : static::ALLOWED_LIFETIME,
     ];
 
     return $form;
@@ -171,7 +171,7 @@ class PerformanceViewsCheck extends AdvAuditCheckBase implements ContainerFactor
     elseif (in_array($cache['type'], ['time', 'search_api_time'])) {
       $minimum = $this->getMinimumCacheTime($cache);
       $settings_minimum = $this->getSettings();
-      $settings_minimum = isset($settings_minimum['minimum_cache_lifetime']) ? $settings_minimum['minimum_cache_lifetime'] : self::ALLOWED_LIFETIME;
+      $settings_minimum = isset($settings_minimum['minimum_cache_lifetime']) ? $settings_minimum['minimum_cache_lifetime'] : static::ALLOWED_LIFETIME;
       if ($minimum < $settings_minimum) {
         $this->withoutCache[$view->id() . '.' . $display_name] = [
           '@issue_title' => 'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed',

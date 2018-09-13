@@ -62,8 +62,8 @@ class FilesStructureCheck extends AdvAuditCheckBase implements ContainerFactoryP
 
     $site_dir = $this->kernel->getSitePath();
     $scan_dirs = [
-      self::MODULES_BASE,
-      self::THEMES_BASE,
+      static::MODULES_BASE,
+      static::THEMES_BASE,
       $site_dir . '/modules',
       $site_dir . '/themes',
     ];
