@@ -25,16 +25,20 @@ class JsCssAgregationCheck extends AdvAuditCheckBase {
     $css_preprocess = $this->configFactory()->get('system.performance')->get('css.preprocess');
     $js_preprocess = $this->configFactory()->get('system.performance')->get('js.preprocess');
 
-    $issue_details = [];
+    $issues = [];
     if (!$css_preprocess) {
-      $issue_details['css_aggregation_disabled'] = TRUE;
+      $issues['css_aggregation_disabled'] = [
+        '@issue_title' => 'CSS aggregation disabled.'
+      ];
     }
     if (!$js_preprocess) {
-      $issue_details['js_aggregation_disabled'] = TRUE;
+      $issues['js_aggregation_disabled'] = [
+        '@issue_title' => 'Javascript aggregation disabled.'
+      ];
     }
 
-    if (!empty($issue_details)) {
-      return $this->fail(NULL, $issue_details);
+    if (!empty($issues)) {
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();

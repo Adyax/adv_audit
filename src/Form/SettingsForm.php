@@ -7,7 +7,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\State;
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 
@@ -34,7 +35,7 @@ class SettingsForm extends ConfigFormBase {
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Use DI to work with redirect destination.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination) {
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, StateInterface $state, RedirectDestinationInterface $redirect_destination) {
     $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
@@ -78,12 +79,13 @@ class SettingsForm extends ConfigFormBase {
     foreach ($categories as $category_id => $category) {
       $form['categories'][$category_id] = [
         '#type' => 'fieldset',
-        '#title' => $category['label'],
+        '#title' => Link::createFromRoute($category['label'], 'adv_audit.category.settings_form', ['category_id' => $category_id])->toString(),
         $category_id . '_status' => [
           '#type' => 'checkbox',
           '#default_value' => $category['status'],
           '#attributes' => [
             'class' => ['category-status'],
+            'title' => 'Disable the whole category',
           ],
         ],
         '#attributes' => [
