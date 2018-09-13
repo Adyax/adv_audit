@@ -3,11 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -30,7 +25,7 @@ use Drupal\search_api\Entity\Index;
  *   severity = "high"
  * )
  */
-class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class SolrUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * The search server storage.
@@ -100,7 +95,7 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
    * Process checkpoint review.
    */
   public function perform() {
-    $params = [];
+    $issues = [];
 
     $query = $this->serverStorage->getQuery();
     $server_ids = $query->execute();
@@ -112,27 +107,44 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
     }
 
     if (!empty($this->notFullyIndexed)) {
-      $params['not_fully_indexed'] = $this->notFullyIndexed;
+      foreach ($this->notFullyIndexed as $not_fully_indexed) {
+        $issues[] = [
+          '@issue_title' => 'Not fully indexed: @not_indexed',
+          '@not_indexed' => $not_fully_indexed,
+        ];
+      }
     }
 
     if (!empty($this->unavailableServers)) {
-      $params['unavailable_servers'] = $this->unavailableServers;
-    }
-
-    if (!empty($this->unavailableServers)) {
-      $params['unavailable_servers'] = $this->unavailableServers;
+      foreach ($this->unavailableServers as $unavailable_server) {
+        $issues[] = [
+          '@issue_title' => 'Unavailable server: @unavailable_server',
+          '@unavailable_server' => $unavailable_server,
+        ];
+      }
     }
 
     if (!empty($this->noIndexesServers)) {
-      $params['no_indexes_servers'] = $this->noIndexesServers;
+      foreach ($this->noIndexesServers as $no_indexes_server) {
+        $issues[] = [
+          '@issue_title' => 'No indexes server: @no_indexes_server',
+          '@no_indexes_server' => $no_indexes_server,
+        ];
+      }
     }
 
     if (!empty($this->noActiveIndexesServers)) {
       $params['no_active_indexes_servers'] = $this->noActiveIndexesServers;
+      foreach ($this->noActiveIndexesServers as $no_active_indexes_server) {
+        $issues[] = [
+          '@issue_title' => 'No active indexes server: @no_active_indexes_server',
+          '@no_active_indexes_server' => $no_active_indexes_server,
+        ];
+      }
     }
 
-    if (!empty($params)) {
-      return $this->fail('', $params);
+    if (!empty($issues)) {
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
@@ -195,45 +207,4 @@ class SolrUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderab
     }
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_ACTIONS) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details)) {
-      return [];
-    }
-
-    $message = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['actions-message'],
-      ],
-      '#markup' => $this->t('Fix the following issues.'),
-    ];
-
-    $items = [];
-    foreach ($issue_details as $issue => $entities) {
-      $item = [
-        '#markup' => $issue,
-        'children' => [
-          '#theme' => 'item_list',
-          '#items' => $entities,
-        ],
-      ];
-
-      $items[] = $item;
-    }
-    $list = [
-      '#theme' => 'item_list',
-      '#items' => $items,
-    ];
-
-    return [$message, $list];
-  }
-
-}
+ }
