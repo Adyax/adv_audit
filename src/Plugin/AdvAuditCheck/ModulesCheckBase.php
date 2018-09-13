@@ -2,17 +2,14 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
  * Base class for Advances audit modules updates check plugins.
  */
-abstract class ModulesCheckBase extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface {
+abstract class ModulesCheckBase extends AdvAuditCheckBase {
 
   /**
    * Store modules list.
@@ -80,54 +77,21 @@ abstract class ModulesCheckBase extends AdvAuditCheckBase implements AdvAuditRea
       ];
     }
 
-    if (empty($this->updates)) {
-      return $this->success();
+    if (!empty($this->updates)) {
+      $issues = [];
+      foreach ($this->updates as $item) {
+        $issues[] = [
+          '@issue_title' => "Module's @label current version is @current_v. Recommended: @recommended_v",
+          '@label' => $item['label'],
+          '@current_v' => $item['current_v'],
+          '@recommended_v' => $item['recommended_v'],
+        ];
+      }
+
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
-    $params = [
-      'list' => $this->updates,
-    ];
-
-    return $this->fail(NULL, $params);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details)) {
-      return [];
-    }
-
-    $message = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['fail-message'],
-      ],
-    ];
-    $message['msg']['#markup'] = $this->t('There are outdated modules with updates.');
-
-    if (!empty($issue_details['list'])) {
-      $render_list = [
-        '#type' => 'table',
-        '#header' => [
-          $this->t('Name'),
-          $this->t('Installed version'),
-          $this->t('Recommended version'),
-        ],
-        '#rows' => $issue_details['list'],
-      ];
-    }
-    else {
-      $render_list = [];
-    }
-
-    return [$message, $render_list];
+    return $this->success();
   }
 
 }

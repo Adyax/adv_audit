@@ -3,10 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -28,7 +24,7 @@ use Drupal\Component\Utility\Bytes;
  *   severity = "high"
  * )
  */
-class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class MemoryUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
   /**
    * Symfony\Component\HttpKernel\HttpKernelInterface definition.
    *
@@ -184,39 +180,19 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
     }
 
     if (!empty($params)) {
-      return $this->fail('', $params);
+      $issues = [];
+      foreach ($params['failed_urls'] as $failed_url => $failed_url_memory) {
+        $issues['memory_usage' . $failed_url] = [
+          '@issue_title' => 'There is a page "@page" with big memory usage: @memory',
+          '@page' => $failed_url,
+          '@memory' => $failed_url_memory,
+        ];
+      }
+
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['failed_urls'])) {
-      return [];
-    }
-
-    array_walk($issue_details['failed_urls'], function (&$value, &$key) {
-      $value = $key . ': ' . $value;
-    });
-
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('There are URLs with big memory usage.'),
-      ],
-      'list' => [
-        '#theme' => 'item_list',
-        '#items' => $issue_details['failed_urls'],
-      ],
-    ];
   }
 
 }
