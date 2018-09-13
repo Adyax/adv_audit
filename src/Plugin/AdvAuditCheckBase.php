@@ -135,7 +135,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function getCategoryLabel() {
     // TODO: Not best implementation of getting config value.
     // We should re-write this.
-    return $this->config('adv_audit.config')->get('adv_audit_settings.categories' . $this->getCategoryName() . '.label');
+    return $this->config('adv_audit.settings')->get('categories' . $this->getCategoryName() . '.label');
   }
 
   /**
