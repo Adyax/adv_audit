@@ -79,7 +79,7 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
   public function perform() {
     $issues = [];
 
-    if ($this->moduleHandler->moduleExists('dblog')) {
+    if (!$this->moduleHandler->moduleExists('dblog')) {
       return $this->skip($this->t('Module DBLog is not enabled.'));
     }
 
