@@ -1,0 +1,13 @@
+settings:
+  enabled: 1
+  severity: high
+  status: 1
+  unsafe_extensions: 'swf,exe,html,htm,php,phtml,py,js,vb,vbe,vbs'
+messages:
+  description: "<p>Only safe extensions are allowed for uploaded files and images.</p>\r\n"
+  actions: "<p>The following extensions are considered unsafe and should be removed or limited from use.</p>\r\n"
+  impacts: "<p>File and image fields allow for uploaded files. Some extensions are considered dangerous because the files can be evaluated and then executed in the browser. A malicious user could use this opening to gain control of your site.</p>\r\n"
+  fail: "<p>Unsafe file extensions are allowed in uploads.</p>\r\n"
+  success: "<p>Only safe extensions are allowed for uploaded files and images.</p>\r\n"
+_core:
+  default_config_hash: kji8neXKNJDo8gxHj1DNeY75odUiT5cTrlAc3_ueF9s

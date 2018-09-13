@@ -1,0 +1,11 @@
+messages:
+  description: "<p>Checks vendor vulnerabilities.</p>\r\n"
+  actions: "<p>Update dependencies.</p>\r\n"
+  impacts: "<p>Without security updates your web-site isn't protected against attacts.</p>\r\n"
+  fail: "<p>Some of dependencies have security updates.</p>\r\n"
+  success: "<p>Every dependencies are secure.</p>\r\n"
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: V4808thJy0KVO0ysKfsctvibV6LmjcRWxnH0yw8E6-o

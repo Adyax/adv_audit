@@ -1,0 +1,11 @@
+messages:
+  description: "<p>Check the Drupal core version and its actuality.</p>\r\n"
+  actions: "<p>Update Drupal core to the lastest stable release. Check Drupal %link.</p>\r\n"
+  impacts: "<p>If you don't monitor for new versions and ignore core updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. Also each new version of the Drupal core contains bug fixes, which increases the stability of the entire platform.</p>\r\n"
+  fail: "<p>Current Drupal core version is outdated - @version</p>\r\n"
+  success: "<p>Current Drupal core version is up to date - @version</p>\r\n"
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: P3gLGqNBc-2Xa3H4nVnX4OyGxzdVbyDNBhTeeT10jl8

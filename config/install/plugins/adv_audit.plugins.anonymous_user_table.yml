@@ -1,9 +1,0 @@
-messages:
-  description: "<p>The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table.</p>\r\n"
-  actions: "<p>Need to create user with uid 0 if not exists.</p>\r\n"
-  impacts: "<p>Table \"users\" must contain User ID 0 for security reasons.</p>\r\n"
-  fail: "<p>The table \"users\" does not contain user with uid = 0.</p>\r\n"
-  success: "<p>The table \"users\" contain anonymous user.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

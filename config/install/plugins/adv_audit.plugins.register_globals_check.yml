@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Checks if the register_globals is disabled.</p>\r\n"
-  actions: "<p>Drupal requires register_globals to be disabled.</p>\r\n"
-  impacts: "<p>register_globals is enabled. Drupal requires this configuration directive to be disabled. Your site may not be secure when register_globals is enabled.</p>\r\n"
-  fail: "<p>register_globals is enabled.</p>\r\n"
-  success: "<p>register_globals is disabled.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

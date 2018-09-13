@@ -1,0 +1,11 @@
+messages:
+  description: "<p>Check PHP version.</p>\r\n"
+  actions: "<p>Please upgrade to PHP version %recommended or higher for the best ongoing support.</p>\r\n"
+  impacts: "<p>Upgrade to PHP version %recommended or higher to ensure your site can receive updates and remain secure.</p>\r\n"
+  fail: "<p>It is recommended to upgrade to PHP version %recommended or higher for the best ongoing support.</p>\r\n"
+  success: "<p>PHP version correct.</p>\r\n"
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: 4zwAb6MPqpTkAo2fCb5TM4egnI8-TcmOhUdv7lUvP9s

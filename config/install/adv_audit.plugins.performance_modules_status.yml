@@ -1,0 +1,11 @@
+messages:
+  description: ''
+  actions: "<p>Disable listed modules.</p>\r\n"
+  impacts: "<p>Development and UI modules negatively affect the performance of the site (especially dblog and devel).</p>\r\n"
+  fail: ''
+  success: ''
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: rCaCEX2SvY-ebcnDWKX0uter-Is5vSi3AyB4KaWWZds

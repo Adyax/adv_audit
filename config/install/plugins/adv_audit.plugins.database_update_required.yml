@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Check database state.</p>\r\n"
-  actions: "<p>Apply all pending database updates.</p>\r\n"
-  impacts: "<p>This point is very important and if do not apply all pending database updates for all modules it can lead to unstable work of project and finally can broke website at all.</p>\r\n"
-  fail: "<p>Database need to be updated.</p>\r\n"
-  success: "<p>Up to date.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

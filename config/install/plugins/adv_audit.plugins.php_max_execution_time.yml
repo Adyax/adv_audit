@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.</p>\r\n"
-  actions: "<p>Set the max_execution_time setting value to 00 or less in php.ini.</p>\r\n"
-  impacts: "<p>The best practices is to set a limit of no more than 300 (5 minutes), since greater values can cause PHP processes to linger and slow your web server.</p>\r\n"
-  fail: "<p>max_execution_time is greater than 300</p>\r\n"
-  success: "<p>max_execution_time is less or equal than 300</p>\r\n"
-settings:
-  enabled: null
-  severity: null

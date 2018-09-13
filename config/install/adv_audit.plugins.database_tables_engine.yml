@@ -1,0 +1,11 @@
+messages:
+  description: "<p>All of the tables in your application should be using the InnoDB table engine. The main advantage to InnoDB is row level locking. While MyISAM can sometime be faster for reads in older version of MySQL, InnoDB will always out perform MyISAM if there is even a low level of writes to the tables. The other major problem with MyISAM is that it places a lock on the entire table when performing a mysqldump which is used for backups. This effectively renders the site unusable while the database backup is being made. In the most recent version of MySQL, InnoDB outperforms MyISAM in all metrics.</p>\r\n"
+  actions: "<p>Check site's MyISAM table for ability to convert them to InnoDB.</p>\r\n"
+  impacts: "<p>MyISAM tables can decrease site performacne.</p>\r\n"
+  fail: "<p>Database contains MyISAM tables.</p>\r\n"
+  success: "<p>Database doesn't contain MyISAM tables.</p>\r\n"
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: HTCSsY8Sz6Emq8R9TIw9z4Wb6plXM7BAfLvg18hu9js

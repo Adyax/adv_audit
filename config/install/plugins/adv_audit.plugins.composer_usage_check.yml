@@ -1,9 +1,0 @@
-messages:
-  description: "<p>It is the best practice to use composer for manage Drupal dependencies.</p>\r\n"
-  actions: "<p>Need to install and use composer.</p>\r\n"
-  impacts: "<p>It is difficult to manage project and all dependencies.</p>\r\n"
-  fail: "<p>composer.json OR composer.lock file not found. The project do not uses composer.</p>\r\n"
-  success: "<p>The project uses composer for manage dependencies.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

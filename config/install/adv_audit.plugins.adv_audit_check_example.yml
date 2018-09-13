@@ -1,0 +1,13 @@
+messages:
+  description: "<p>Fake audit check plugin. Describe all features on Plugin sub-system.</p>\r\n"
+  actions: "<p>This url %link should be correct formatted</p>\r\n"
+  impacts: ''
+  fail: "<p>Failed message test with dynamic value @hash - %link</p>\r\n"
+  success: "<p>Success messages with dynamic random value @random - %link</p>\r\n"
+settings:
+  status: 0
+  severity: low
+  check_should_passed: 0
+  enabled: 0
+_core:
+  default_config_hash: qdKC0ZkamSd3ozarla41DXkbzA6S5KQURQAQHyOoLMQ

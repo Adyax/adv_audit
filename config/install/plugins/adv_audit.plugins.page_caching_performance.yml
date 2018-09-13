@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Varnish Cache is an open source, front end accelerator also known as a caching HTTP reverse proxy. Varnish can be used to cache both dynamic and static content and has shown to dramatically increase website speed and server performance.</p>\r\n"
-  actions: "<p>Install and configure Varnish or CDN. Update Drupal cache settings.</p>\r\n"
-  impacts: "<p>If project do not use caching it leads to increasing of the load on your origin server that means that content can be delivered more slowly to end users. Also with the increase of the number of users the server load will increase also, which ultimately can lead to the origin server's inability to process all incoming requests and the site will simply not be loaded.</p>\r\n"
-  fail: "<p>There is an issue with cache settings.</p>\r\n"
-  success: "<p>All caching layers enabled.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

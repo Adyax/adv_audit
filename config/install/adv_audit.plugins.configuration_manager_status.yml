@@ -1,0 +1,11 @@
+messages:
+  description: "<p>Check current status of config files via configuration manager and provide the status.</p>\r\n"
+  actions: "<p>Review and update configurations</p>\r\n"
+  impacts: "<p>There are should not be any changes in config files because next deployment may revert all that changes. All the configuration changes on the site should be immediately imported into the configuration files through the config manager and must be updated in the project code.</p>\r\n"
+  fail: "<p>There are differences between configurations stored in database and files. Please check your %link</p>\r\n"
+  success: "<p>All config files are actual.</p>\r\n"
+settings:
+  enabled: 1
+  severity: null
+_core:
+  default_config_hash: '-Ka_9M9YyPpuRC6kXL_UOG7shWSYZJons0xKDjFjyrY'

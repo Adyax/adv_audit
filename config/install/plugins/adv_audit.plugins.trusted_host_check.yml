@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Check Trusted Host Settings.</p>\r\n"
-  actions: "<p>Please configure trusted_host_patterns setting in settings.php.</p>\r\n"
-  impacts: "<p>The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities.</p>\r\n"
-  fail: "<p>The trusted_host_patterns setting is not configured in settings.php. This can lead to security vulnerabilities. It is highly recommended that you configure this.</p>\r\n"
-  success: "<p>The trusted_host_patterns setting is set to allow %trusted_host_patterns.</p>\r\n"
-settings:
-  enabled: null
-  severity: null

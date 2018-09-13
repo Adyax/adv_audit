@@ -1,9 +1,0 @@
-messages:
-  description: "<p>Check if anonymous users can create, delete or update some entity.</p>\r\n"
-  actions: "<p>Check permissions for anonymous.</p>\r\n"
-  impacts: "<p>all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code</p>\r\n"
-  fail: "<p>Anonymous user have some unsecure permissions: %list .</p>\r\n"
-  success: "<p>Permissions for anonymous users are correct.</p>\r\n"
-settings:
-  enabled: null
-  severity: null
