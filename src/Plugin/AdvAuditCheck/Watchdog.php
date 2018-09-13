@@ -5,6 +5,9 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
  * Provide watchdog analyze.
@@ -18,7 +21,42 @@ use Drupal\Core\Logger\RfcLogLevel;
  *  requirements = {},
  * )
  */
-class Watchdog extends AdvAuditCheckBase {
+class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+  /**
+   * Interface for working with drupal module system.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Constructs a new ImageAPICheck object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   Interface for working with drupal module system.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * The actual procedure of carrying out the check.
@@ -50,7 +88,7 @@ class Watchdog extends AdvAuditCheckBase {
     }
 
     if (!empty($issues)) {
-      $this->fail(NULL, ['issues' => $issues]);
+      return $this->fail(NULL, ['issues' => $issues]);
     }
     return $this->success();
   }
@@ -126,17 +164,17 @@ class Watchdog extends AdvAuditCheckBase {
     // If two different days...
     if (date('Y-m-d', $old) != date('Y-m-d', $new)) {
       return [
-        '@issue_title' => "From @from to @to (@days days)",
-        '@from' => date('r', $old),
-        '@to' => date('r', $new),
+        '@issue_title' => "Age of messages: From @from to @to (@days days)",
+        '@from' => date('Y-m-d', $old),
+        '@to' => date('Y-m-d', $new),
         '@days' => round(($new - $old) / 86400, 2),
       ];
     }
     // Same day; don't calculate number of days.
     return [
-      '@issue_title' => "From @from to @to",
-      '@from' => date('r', $old),
-      '@to' => date('r', $new),
+      '@issue_title' => "Age of messages: From @from to @to",
+      '@from' => date('Y-m-d', $old),
+      '@to' => date('Y-m-d', $new),
     ];
   }
 
@@ -182,7 +220,8 @@ class Watchdog extends AdvAuditCheckBase {
       foreach ($php_messages as $key => $count) {
         $issue[] = $severity_types[$key] . ':' . $count;
       }
-      $text = implode(', ', $issue);
+      $text = 'PHP messages: ';
+      $text .= implode(', ', $issue);
       $text .= ' - total ' . $php_percent . '%';
       return [
         '@issue_title' => '@message',
