@@ -38,7 +38,7 @@ plugins:
     description: 'Check database state.'
     actions: 'Apply all pending database updates.'
     impacts: 'This point is very important and if do not apply all pending database updates for all modules it can lead to unstable work of project and finally can broke website at all.'
-    fail: 'Database need to be updated.'
+    fail: 'Database needs to be updated.'
     success: 'Up to date.'
     help: 'Check database state.'
   modules_update_check:
@@ -165,7 +165,7 @@ plugins:
      description: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
      actions: 'Limit access to the listed pages for anonymous user.'
      impacts: 'Access to this pages for anonymous user can impact site security.'
-     fail: 'There are pages that should not be aceesed by anonimous user.'
+     fail: 'There are pages that should not be accessed by anonymous user.'
      success: 'All pages are secured.'
      help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
   memory_usage:
@@ -183,17 +183,17 @@ plugins:
     success: 'Grade is A or A+ which is OK. For more info please visit %link.'
     help: 'Please check server SSL settings.'
   admin_name_check:
-    description: 'Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.'
-    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary'
-    impacts: ''
+    description: 'Ideally the admin''s username should not contain the word admin or any part of the current domain. The current admin username is %name.'
+    actions: 'Check admin username if it consists "admin" part or parts of host name and change one if it is necessary.'
+    impacts: 'It is not secure when admin''s username contains any simple accessible parts. '
     fail: 'There are one or more reasons why admin''s name is not secured. See bellow. The current admin username is %name.'
-    success: 'Admin username is secure'
+    success: 'Admin username is secure.'
     help: 'Check admin username'
   database_tables_engine:
     description: 'All of the tables in your application should be using the InnoDB table engine. The main advantage to InnoDB is row level locking. While MyISAM can sometime be faster for reads in older version of MySQL, InnoDB will always out perform MyISAM if there is even a low level of writes to the tables. The other major problem with MyISAM is that it places a lock on the entire table when performing a mysqldump which is used for backups. This effectively renders the site unusable while the database backup is being made. In the most recent version of MySQL, InnoDB outperforms MyISAM in all metrics.'
     actions: 'Check site''s MyISAM table for ability to convert them to InnoDB.'
     impacts: 'MyISAM tables can decrease site performacne.'
-    fail: 'Database contains MyISAM tables.'
+    fail: 'Database contains %count MyISAM tables.'
     success: 'Database doesn''t contain MyISAM tables.'
     help: 'Check does the database contain MyISAM tables'
   release_notes_help_files:
@@ -225,7 +225,7 @@ plugins:
     help: 'Check permissions for untrusted roles. '
   must_have_modules:
     description: ''
-    actions: 'Inpspect disabled modules list and install them if needed: @disabled_modules'
+    actions: 'Inpspect disabled modules list and install them if needed.'
     impacts: 'If one or more modules are not installed site''s security can be in danger.'
     fail: 'There is one or more recommeded modules disabled.'
     success: 'All recommeded modules are enabled.'
@@ -265,6 +265,13 @@ plugins:
     fail: 'Opcache extension disabled.'
     success: 'Opcache extension enabled.'
     help: 'Checks if PHP Opcache extension is enabled.'
+  dangerous_tags_check:
+    description: 'Checks content (fields) on dangerous tags.'
+    actions: 'Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content. It is recommended you remove such contents.'
+    impacts: 'Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content.'
+    fail: 'Dangerous tags were found in submitted content (fields).'
+    success: 'Dangerous tags were not found in any submitted content (fields).'
+    help: 'Script and PHP code in content does not align with Drupal best practices.'
   input_formats_check:
     description: 'Certain HTML tags can allow an attacker to take control of your site. Drupal''s input format system makes use of a set filters to run on incoming text.'
     actions: 'The ''HTML Filter'' strips out harmful tags and Javascript events and should be used on all formats accessible by untrusted users.'
@@ -276,7 +283,7 @@ plugins:
     description: 'Checking Drupal code quality by CodeSniffer.'
     actions: 'Fix all issues from generated files to improve code quality.'
     impacts: 'Code with issues can be harder to support.'
-    fail: 'There are issues in code. Results can be downloaded using links: @drupal @drupal_practice'
+    fail: 'There are issues in code. Please review issues provided below'
     success: 'No code issues.'
     help: 'Checking Drupal code quality by CodeSniffer.'
   account_settings:

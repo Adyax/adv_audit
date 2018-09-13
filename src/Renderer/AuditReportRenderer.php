@@ -328,17 +328,17 @@ class AuditReportRenderer implements RenderableInterface {
     }
 
     $active_rows = [];
-    $ignored_rows= [];
+    $ignored_rows = [];
     foreach ($all_issues as $issue) {
       if ($issue->isOpen()) {
         $active_rows[] = [
-          (string) $issue,
+          $issue->getMarkup(),
           Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
         ];
       }
       else {
         $ignored_rows[] = [
-          (string) $issue,
+          $issue->getMarkup(),
           Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
         ];
       }

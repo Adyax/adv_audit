@@ -18,7 +18,7 @@ adv_audit.help:
 adv_audit.list:
   path: 'admin/reports/adv-audit/list'
   defaults:
-    _controller: 'adv_audit.manager.category:buildCategoriesOverview'
+    _form: '\Drupal\adv_audit\Form\SettingsForm'
     _title: 'Advanced Audit'
   requirements:
     _permission: 'access auditor list'

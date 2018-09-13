@@ -128,3 +128,10 @@ function adv_audit_adv_audit_check_info_alter(&$definitions) {
     }
   }
 }
+
+/**
+ * Implements hook_config_ignore_settings_alter().
+ */
+function adv_audit_config_ignore_settings_alter(array &$settings) {
+  $settings[] = 'adv_audit.*';
+}

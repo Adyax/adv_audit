@@ -3,9 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -28,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   severity = "high"
  * )
  */
-class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class AdminPagesAccessCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Predefined URLs list.
@@ -183,35 +180,10 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
     }
 
     if (!empty($params['failed_urls'])) {
-      return $this->fail(NULL, $params);
+      $issues = $this->getIssues($params['failed_urls']);
+      return $this->fail(NULL, ['issues' => $issues]);
     }
-
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['failed_urls'])) {
-      return [];
-    }
-
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('There are URLs that should not be available for anonymous user.'),
-      ],
-      'list' => [
-        '#theme' => 'item_list',
-        '#items' => $issue_details['failed_urls'],
-      ],
-    ];
   }
 
   /**
@@ -232,6 +204,11 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
    *
    * @return string
    *   Processed URL.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the entity type doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the storage handler couldn't be loaded.
    */
   private function replaceEntityPlaceholder($url) {
     preg_match_all('/{entity:(.*?)}/', $url, $entity_type);
@@ -250,6 +227,27 @@ class AdminPagesAccessCheck extends AdvAuditCheckBase implements AdvAuditReasonR
     }
 
     return preg_replace('/{entity:.*?}/', $entity_id, $url);
+  }
+
+  /**
+   * Get list of issues.
+   *
+   * @param array $params
+   *   List failed URLs.
+   *
+   * @return array
+   *   List of issues.
+   */
+  private function getIssues(array $params) {
+    $issues = [];
+    foreach ($params as $failed_url) {
+      $issues[$failed_url] = [
+        '@issue_title' => 'Url "@url" should not be available for anonymous user',
+        '@url' => $failed_url,
+      ];
+    }
+
+    return $issues;
   }
 
 }
