@@ -151,7 +151,7 @@ plugins:
     description: 'PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved. Basic auth not supported. Public URLs acceptable only.'
     actions: 'Check results and apply corresponding fixes.'
     impacts: 'The listed recommendations must be fulfilled. It will increase the overall site performance.'
-    fail: 'Your optimization is low'
+    fail: 'Your optimization is low. %link'
     success: 'Your optimization is good'
     help: ''
   solr_usage:
