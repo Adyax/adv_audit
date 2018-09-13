@@ -68,23 +68,19 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
     $issues = [];
 
     if ($this->moduleHandler->moduleExists('dblog')) {
-      $total = $this->getRowCount();
-      if ($total) {
-        $issues['total'] = $total;
-        if ($not_found = $this->getNotFoundCount()) {
-          $issues['page_not_found'] = $not_found;
-        }
-        $issues['age'] = $this->getAge();
-        if ($php = $this->getCountPhpErrors()) {
-          $issues['php'] = $php;
-        }
-      }
-
+      return $this->skip($this->t('Module DBLog is not enabled.'));
     }
-    if (!$this->moduleHandler->moduleExists('syslog')) {
-      $issues['syslog'] = [
-        '@issue_title' => "Module Syslog is not enabled",
-      ];
+
+    $total = $this->getRowCount();
+    if ($total) {
+      $issues['total'] = $total;
+      if ($not_found = $this->getNotFoundCount()) {
+        $issues['page_not_found'] = $not_found;
+      }
+      $issues['age'] = $this->getAge();
+      if ($php = $this->getCountPhpErrors()) {
+        $issues['php'] = $php;
+      }
     }
 
     if (!empty($issues)) {
