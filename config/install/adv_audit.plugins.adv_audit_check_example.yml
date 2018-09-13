@@ -9,5 +9,3 @@ settings:
   severity: low
   check_should_passed: 0
   enabled: 0
-_core:
-  default_config_hash: qdKC0ZkamSd3ozarla41DXkbzA6S5KQURQAQHyOoLMQ

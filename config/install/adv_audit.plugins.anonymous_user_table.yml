@@ -6,6 +6,4 @@ messages:
   success: "<p>The table \"users\" contain anonymous user.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: efT-F7O5JK-uh6Np598B3GaX2W_9xeKQiYeoeCXPs3U
+  severity: high

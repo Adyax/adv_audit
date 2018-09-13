@@ -6,6 +6,4 @@ messages:
   success: "<p>Errors display is disabled on production environment.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: J0ruvPP5dwIV4F3_Mght-xmjDKxBOwhCY-a-IodPl1E
+  severity: normal

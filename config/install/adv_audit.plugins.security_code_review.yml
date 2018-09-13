@@ -6,6 +6,4 @@ messages:
   success: "<p>Every dependencies are secure.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: V4808thJy0KVO0ysKfsctvibV6LmjcRWxnH0yw8E6-o
+  severity: critical

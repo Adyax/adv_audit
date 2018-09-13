@@ -6,6 +6,4 @@ messages:
   success: "<p>Up to date.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: W3B5Pi5limbr51VgrH9_ol2jPyV_J7A4ves8iVlcKMk
+  severity: critical

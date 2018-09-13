@@ -1,6 +1,6 @@
 settings:
   status: 1
-  severity: critical
+  severity: high
   urls: "/node\r\n/node/add\r\n/taxonomy/term/{entity:taxonomy_term}\r\n/admin/structure/taxonomy/add\r\n/admin/structure/taxonomy/manage/{entity:taxonomy_vocabulary}/add\r\n/admin/people/create"
   enabled: 1
 messages:
@@ -9,5 +9,3 @@ messages:
   impacts: "<p>Access to this pages for anonymous user can impact site security.</p>\r\n"
   fail: "<p>There are pages that should not be aceesed by anonimous user.</p>\r\n"
   success: "<p>All pages are secured.</p>\r\n"
-_core:
-  default_config_hash: xb95q9TG-wFQynZDhwN-5ZiVlWOE4AodMzvcJdA-1zU

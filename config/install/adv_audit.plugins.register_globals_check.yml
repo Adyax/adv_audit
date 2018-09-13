@@ -6,6 +6,4 @@ messages:
   success: "<p>register_globals is disabled.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: po59M7qyQkbZ-55xtlTQZeVSnAjRxNsZhjNOjM99Q7g
+  severity: high

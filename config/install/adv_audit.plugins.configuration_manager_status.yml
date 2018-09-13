@@ -6,6 +6,4 @@ messages:
   success: "<p>All config files are actual.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: '-Ka_9M9YyPpuRC6kXL_UOG7shWSYZJons0xKDjFjyrY'
+  severity: high

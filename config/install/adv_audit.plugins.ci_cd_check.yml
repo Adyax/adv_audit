@@ -6,6 +6,4 @@ messages:
   success: "<p>Project is uses GITlab CI/CD.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: dp6lvT5DWbiGRvjyptmNdAG3UsMWi_nCCb-J1UQSF1E
+  severity: normal

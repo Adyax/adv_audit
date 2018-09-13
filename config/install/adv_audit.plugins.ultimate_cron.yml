@@ -1,11 +1,9 @@
 settings:
   enabled: 1
-  severity: null
+  severity: high
 messages:
   description: "<p>Checks if Ultimate cron module is enabled.</p>\r\n"
   actions: "<p>Install Ultimate cron module.</p>\r\n"
   impacts: "<p>Ultimate cron module can improve site's cron system as it runs cron jobs individually in parallel using configurable rules, pool management and load balancing.</p>\r\n"
   fail: "<p>Ultimate cron modules is disabled.</p>\r\n"
   success: "<p>Ultimate cron module is enabled.</p>\r\n"
-_core:
-  default_config_hash: mN7MWXDGsx_zotBvqyaPxAUiJmHf7KdiilNDJXPX2qA

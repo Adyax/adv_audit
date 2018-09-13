@@ -6,6 +6,4 @@ messages:
   success: "<p>The filesytem is well-organized.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: XNUD5GgJC-APQfdOqJ6w6aT-p0Llh81YzaFCcMF-2MA
+  severity: normal

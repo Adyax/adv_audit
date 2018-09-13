@@ -6,6 +6,4 @@ messages:
   success: "<p>Opcache extension enabled.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: SP8ZAii2_KUK64d7hcWpKY0FGsd-N03vYp5vVqcmpT0
+  severity: high

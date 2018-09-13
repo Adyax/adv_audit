@@ -6,6 +6,4 @@ messages:
   success: "<p>All Features are actual.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: w088tktNs-colJ1T_nF2qWwDlUhHPpn1IejCUuRtKUU
+  severity: low

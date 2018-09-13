@@ -6,6 +6,4 @@ messages:
   success: "<p>Module %link is installed.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: ml3lcKzCOlj8NjHz3GHGLfM9F_DWewULcPIvQjubmiU
+  severity: low

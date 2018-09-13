@@ -6,6 +6,4 @@ messages:
   success: "<p>max_execution_time is less or equal than 300</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: 7-o2GR3C7mRa95yflBAl0KGC7BPnKljOz7urxlLNq_8
+  severity: high

@@ -12,5 +12,3 @@ messages:
   impacts: "<p>Code with issues can be harder to support.</p>\r\n"
   fail: "<p>There are issues in code. Results can be downloaded using links: @drupal @drupal_practice</p>\r\n"
   success: "<p>No code issues.</p>\r\n"
-_core:
-  default_config_hash: vA77euR6cmRMZy_2TeLboO01PP4cWUB4P5xlIO0poS8

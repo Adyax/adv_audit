@@ -13,5 +13,3 @@ messages:
   impacts: "<p>Certain HTML tags can allow an attacker to take control of your site.</p>\r\n"
   fail: "<p>Untrusted users are allowed to input dangerous HTML tags.</p>\r\n"
   success: "<p>Untrusted users are not allowed to input dangerous HTML tags.</p>\r\n"
-_core:
-  default_config_hash: 1MgafFDs3vRGCYzYS5hrM1HGbWXxaFD-74B6qajOcv0

@@ -6,6 +6,4 @@ messages:
   success: "<p>Sensitive temporary files were not found.</p>\r\n"
 settings:
   enabled: 1
-  severity: null
-_core:
-  default_config_hash: NxYfZqa4Vsf3pnx6bslPFIqK47PyvXpOQtHUdyQUwXE
+  severity: normal
