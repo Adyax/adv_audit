@@ -5,7 +5,7 @@ namespace Drupal\Tests\adv_audit\Unit;
 use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Plugin\AuditPluginsBase;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Tests\UnitTestCase;
@@ -46,7 +46,7 @@ class AuditExecutableTest extends UnitTestCase {
     $moc_plugin->expects($this->any())
       ->method('perform')
       ->willReturn('');
-    $checkManager = $this->getMockBuilder('Drupal\adv_audit\Plugin\AdvAuditCheckManager')
+    $checkManager = $this->getMockBuilder('Drupal\adv_audit\Plugin\AuditPluginsManager')
       ->disableOriginalConstructor()
       ->getMock();
     $checkManager->expects($this->any())
