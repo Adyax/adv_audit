@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * Responsible for handling the toggle links on the Run & Review page.
  */
-class AdvAuditToggleController extends ControllerBase {
+class AuditToggleController extends ControllerBase {
 
   /**
    * The CSRF Token generator.

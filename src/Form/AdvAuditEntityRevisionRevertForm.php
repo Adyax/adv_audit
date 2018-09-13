@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Drupal\adv_audit\Entity\AuditEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,7 +21,7 @@ class AdvAuditEntityRevisionRevertForm extends ConfirmFormBase {
   /**
    * The Audit Result entity revision.
    *
-   * @var \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @var \Drupal\adv_audit\Entity\AuditEntityInterface
    */
   protected $revision;
 
@@ -130,15 +130,15 @@ class AdvAuditEntityRevisionRevertForm extends ConfirmFormBase {
   /**
    * Prepares a revision to be reverted.
    *
-   * @param \Drupal\adv_audit\Entity\AdvAuditEntityInterface $revision
+   * @param \Drupal\adv_audit\Entity\AuditEntityInterface $revision
    *   The revision to be reverted.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The prepared revision ready to be stored.
    */
-  protected function prepareRevertedRevision(AdvAuditEntityInterface $revision, FormStateInterface $form_state) {
+  protected function prepareRevertedRevision(AuditEntityInterface $revision, FormStateInterface $form_state) {
     $revision->setNewRevision();
     $revision->isDefaultRevision(TRUE);
     $revision->setRevisionCreationTime(REQUEST_TIME);

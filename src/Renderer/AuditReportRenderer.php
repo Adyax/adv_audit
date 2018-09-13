@@ -30,7 +30,7 @@ class AuditReportRenderer implements RenderableInterface {
   protected $renderer;
 
   /**
-   * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
+   * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
    *
    * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */

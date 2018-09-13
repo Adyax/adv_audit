@@ -20,7 +20,7 @@ use Drupal\Component\Utility\Bytes;
 /**
  * Checks memory usage for pre-defined pages.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "memory_usage",
  *   label = @Translation("Memory usage check"),
  *   category = "performance",
@@ -30,7 +30,7 @@ use Drupal\Component\Utility\Bytes;
  * )
  */
 
-class PerformanceMemoryUsage extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class PerformanceMemoryUsagePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

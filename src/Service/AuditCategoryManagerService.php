@@ -25,7 +25,7 @@ class AuditCategoryManagerService {
   protected $configFactory;
 
   /**
-   * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
+   * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
    *
    * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */

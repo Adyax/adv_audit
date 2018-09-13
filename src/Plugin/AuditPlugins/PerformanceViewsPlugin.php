@@ -15,7 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Check Views cache settings.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "performance_views",
  *  label = @Translation("Views performance settings"),
  *  category = "performance",

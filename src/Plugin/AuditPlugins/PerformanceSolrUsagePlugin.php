@@ -15,7 +15,7 @@ use Drupal\search_api\Entity\Index;
 /**
  * Checks Search API solr indexes and servers status.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "solr_usage",
  *   label = @Translation("Solr usage"),
  *   category = "performance",
@@ -29,7 +29,7 @@ use Drupal\search_api\Entity\Index;
  *   severity = "high"
  * )
  */
-class PerformanceSolrUsage extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class PerformanceSolrUsagePlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
 
   /**
    * The search server storage.

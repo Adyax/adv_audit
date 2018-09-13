@@ -10,14 +10,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides dynamic permissions for the adv_audit module.
  */
-class AdvAuditPermissions implements ContainerInjectionInterface {
+class AuditPermissions implements ContainerInjectionInterface {
 
   use StringTranslationTrait;
 
   protected $config;
 
   /**
-   * Constructs a new AdvAuditPermissions object.
+   * Constructs a new AuditPermissions object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with config.

@@ -14,7 +14,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Plugin for cron settings check.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "cron_settings",
  *  label = @Translation("Cron settings"),
  *  category = "performance",
@@ -23,7 +23,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  enabled = true,
  * )
  */
-class PerformanceCronSettings extends AuditBasePlugin implements AuditPluginInterface, ContainerFactoryPluginInterface {
+class PerformanceCronSettingsPlugin extends AuditBasePlugin implements AuditPluginInterface, ContainerFactoryPluginInterface {
 
   /**
    * The config factory.

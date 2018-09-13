@@ -14,7 +14,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Performance modules status plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "performance_modules_status",
  *  label = @Translation("Performance modules status"),
  *  category = "performance",

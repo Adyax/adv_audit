@@ -8,7 +8,7 @@ use Drupal\Component\Utility\OpCodeCache;
 /**
  * Checks Opcache enabled.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "opcache_check",
  *   label = @Translation("Check Opcache"),
  *   category = "server_configuration",
@@ -17,7 +17,7 @@ use Drupal\Component\Utility\OpCodeCache;
  *   severity = "high"
  * )
  */
-class ServerOPCache extends AuditBasePlugin {
+class ServerOPCachePlugin extends AuditBasePlugin {
 
   /**
    * {@inheritdoc}

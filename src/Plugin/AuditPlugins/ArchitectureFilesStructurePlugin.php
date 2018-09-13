@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check files structure on project.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "files_structure_check",
  *   label = @Translation("Check files structure on project."),
  *   category = "architecture_analysis",
@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class ArchitectureFilesStructure extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Kernel container.

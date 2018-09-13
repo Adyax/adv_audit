@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check PHP `max_execution_time`.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "php_max_execution_time",
  *   label = @Translation("Checking php max_execution_time setting"),
  *   category = "performance",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   severity = "high"
  * )
  */
-class PerformanceMaxExecutionTime extends AuditBasePlugin {
+class PerformanceMaxExecutionTimePlugin extends AuditBasePlugin {
 
   /**
    * Process checkpoint review.

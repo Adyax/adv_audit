@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Provides a listing of Adv audit preset entity entities.
  */
-class AdvAuditPresetEntityListBuilder extends ConfigEntityListBuilder {
+class AuditPresetEntityListBuilder extends ConfigEntityListBuilder {
 
   /**
    * {@inheritdoc}

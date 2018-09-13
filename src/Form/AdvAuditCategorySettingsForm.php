@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class AdvAuditCategorySettingsForm extends FormBase {
 
   /**
-   * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
+   * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
    *
    * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */

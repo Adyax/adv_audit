@@ -13,7 +13,7 @@ use Drupal\update\UpdateManagerInterface;
 /**
  * Check the Drupal core version and its actuality.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "drupal_core",
  *  label = @Translation("Drupal core"),
  *  category = "core_and_modules",
@@ -22,7 +22,7 @@ use Drupal\update\UpdateManagerInterface;
  *  enabled = true,
  * )
  */
-class ContribDrupalCore extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class ContribDrupalCorePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
   /**
    * Project name.
    */

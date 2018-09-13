@@ -15,7 +15,7 @@ use Drupal\user\PermissionHandler;
 /**
  * Check permission of untrusted roles.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "untrusted_roles_permission",
  *  label = @Translation("Untrusted role's permission"),
  *  category = "security",
@@ -24,7 +24,7 @@ use Drupal\user\PermissionHandler;
  *  enabled = true,
  * )
  */
-class SecurityUntrastedRolesPermissions extends AuditBasePlugin implements ContainerFactoryPluginInterface , PluginFormInterface {
+class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface , PluginFormInterface {
 
   use AuditPluginSubform;
   /**

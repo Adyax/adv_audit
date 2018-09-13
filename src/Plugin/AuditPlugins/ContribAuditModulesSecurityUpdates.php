@@ -11,7 +11,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Check modules for security updates.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "modules_security_check",
  *   label = @Translation("Modules security updates"),
  *   category = "core_and_modules",

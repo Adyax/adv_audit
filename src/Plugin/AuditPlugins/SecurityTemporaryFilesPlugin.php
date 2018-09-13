@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check if php files can be executed from public directory.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "temporary_files",
  *  label = @Translation("No sensitive temporary files were found."),
  *  category = "security",
@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  enabled = true,
  * )
  */
-class SecurityTemporaryFiles extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityTemporaryFilesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal's kernel.

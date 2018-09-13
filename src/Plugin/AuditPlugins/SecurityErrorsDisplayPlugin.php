@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Provide errors display check.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "errors_display",
  *  label = @Translation("Error are written to the screen."),
  *  category = "security",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *  requirements = {},
  * )
  */
-class SecurityErrorsDisplay extends AuditBasePlugin {
+class SecurityErrorsDisplayPlugin extends AuditBasePlugin {
 
   /**
    * The actual procedure of carrying out the check.

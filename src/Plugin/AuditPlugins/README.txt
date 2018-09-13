@@ -27,7 +27,7 @@ like:
 
 Description for plugin annotation
 
-  @AdvAuditCheck(
+  @AuditPlugin(
    id = "cron_settings",
    label = @Translation("Cron settings"),
    category = "performance",

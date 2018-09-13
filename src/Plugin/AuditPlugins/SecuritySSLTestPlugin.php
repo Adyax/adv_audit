@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * SSL test plugin based on SSLLabs API.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "ssllab_check",
  *  label = @Translation("SSL test"),
  *  category = "security",
@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *  enabled = true,
  * )
  */
-class SecuritySSLTest extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class SecuritySSLTestPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

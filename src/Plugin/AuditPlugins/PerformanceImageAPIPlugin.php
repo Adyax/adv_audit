@@ -14,7 +14,7 @@ use Drupal\Core\Url;
 /**
  * Provide imageApi optimize check.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "imageapi_optimize_check",
  *  label = @Translation("ImageAPI Optimize"),
  *  category = "performance",
@@ -23,7 +23,7 @@ use Drupal\Core\Url;
  *  requirements = {},
  * )
  */
-class PerformanceImageAPI extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class PerformanceImageAPIPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * The audit messages storage service.

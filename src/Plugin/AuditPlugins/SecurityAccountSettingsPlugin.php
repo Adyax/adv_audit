@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check if Account settings are OK for production.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "account_settings",
  *   label = @Translation("Check Account settings"),
  *   category = "security",
@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class SecurityAccountSettings extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityAccountSettingsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Configuration container.

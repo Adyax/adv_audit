@@ -1,18 +1,18 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 
 /**
- * Provides routes for Audit Issue entities.
+ * Provides routes for Audit Result entity entities.
  *
  * @see \Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see \Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider
  */
-class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
+class AuditEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
 
   /**
    * {@inheritdoc}
@@ -60,9 +60,9 @@ class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route
         ->setDefaults([
           '_title' => "{$entity_type->getLabel()} revisions",
-          '_controller' => '\Drupal\adv_audit\Controller\IssueEntityController::revisionOverview',
+          '_controller' => '\Drupal\adv_audit\Controller\AdvAuditEntityController::revisionOverview',
         ])
-        ->setRequirement('_permission', 'access audit issue revisions')
+        ->setRequirement('_permission', 'access audit result entity revisions')
         ->setOption('_admin_route', TRUE);
 
       return $route;
@@ -83,10 +83,10 @@ class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('revision'));
       $route
         ->setDefaults([
-          '_controller' => '\Drupal\adv_audit\Controller\IssueEntityController::revisionShow',
-          '_title_callback' => '\Drupal\adv_audit\Controller\IssueEntityController::revisionPageTitle',
+          '_controller' => '\Drupal\adv_audit\Controller\AdvAuditEntityController::revisionShow',
+          '_title_callback' => '\Drupal\adv_audit\Controller\AdvAuditEntityController::revisionPageTitle',
         ])
-        ->setRequirement('_permission', 'access audit issue revisions')
+        ->setRequirement('_permission', 'access audit result entity revisions')
         ->setOption('_admin_route', TRUE);
 
       return $route;
@@ -107,10 +107,10 @@ class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('revision_revert'));
       $route
         ->setDefaults([
-          '_form' => '\Drupal\adv_audit\Form\IssueEntityRevisionRevertForm',
+          '_form' => '\Drupal\adv_audit\Form\AdvAuditEntityRevisionRevertForm',
           '_title' => 'Revert to earlier revision',
         ])
-        ->setRequirement('_permission', 'revert all audit issue revisions')
+        ->setRequirement('_permission', 'revert all audit result entity revisions')
         ->setOption('_admin_route', TRUE);
 
       return $route;
@@ -131,10 +131,10 @@ class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('revision_delete'));
       $route
         ->setDefaults([
-          '_form' => '\Drupal\adv_audit\Form\IssueEntityRevisionDeleteForm',
+          '_form' => '\Drupal\adv_audit\Form\AdvAuditEntityRevisionDeleteForm',
           '_title' => 'Delete earlier revision',
         ])
-        ->setRequirement('_permission', 'delete all audit issue revisions')
+        ->setRequirement('_permission', 'delete all audit result entity revisions')
         ->setOption('_admin_route', TRUE);
 
       return $route;
@@ -155,7 +155,7 @@ class IssueEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route = new Route("/admin/structure/{$entity_type->id()}/settings");
       $route
         ->setDefaults([
-          '_form' => 'Drupal\adv_audit\Form\IssueEntitySettingsForm',
+          '_form' => 'Drupal\adv_audit\Form\AdvAuditEntitySettingsForm',
           '_title' => "{$entity_type->getLabel()} settings",
         ])
         ->setRequirement('_permission', $entity_type->getAdminPermission())

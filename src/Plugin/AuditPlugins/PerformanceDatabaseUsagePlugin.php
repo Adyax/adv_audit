@@ -15,7 +15,7 @@ use Drupal\Core\Database\Connection;
 /**
  * Check Database usage.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "database_usage",
  *  label = @Translation("Database usage"),
  *  category = "performance",

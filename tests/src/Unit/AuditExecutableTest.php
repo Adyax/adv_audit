@@ -32,7 +32,7 @@ class AuditExecutableTest extends UnitTestCase {
     $logger->expects($this->any())
       ->method('get')
       ->willReturn($channel);
-    $plugin = $this->createMock(AdvAuditCheckBase::class);
+    $plugin = $this->createMock(AuditBasePlugin::class);
     $plugin->expects($this->any())
       ->method('checkRequirements')
       ->willReturn(TRUE);
@@ -42,7 +42,7 @@ class AuditExecutableTest extends UnitTestCase {
         return new AuditReason('test', AuditResultResponseInterface::RESULT_PASS);
       });
 
-    $moc_plugin = $this->createMock(AdvAuditCheckBase::class);
+    $moc_plugin = $this->createMock(AuditBasePlugin::class);
     $moc_plugin->expects($this->any())
       ->method('perform')
       ->willReturn('');

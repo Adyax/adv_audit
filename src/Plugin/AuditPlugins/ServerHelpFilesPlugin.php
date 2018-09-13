@@ -10,7 +10,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
 /**
  * Release notes & help files.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "release_notes_help_files",
  *   label = @Translation("Release notes & help files"),
  *   category = "server_configuration",
@@ -19,7 +19,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
  *   severity = "critical"
  * )
  */
-class ServerHelpFiles extends AuditBasePlugin implements PluginFormInterface {
+class ServerHelpFilesPlugin extends AuditBasePlugin implements PluginFormInterface {
 
   use AuditPluginSubform;
 

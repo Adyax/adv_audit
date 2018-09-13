@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Checks if access to admin pages is forbidden for anonymous users.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "admin_pages_access",
  *   label = @Translation("Admin pages access check"),
  *   category = "security",
@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   severity = "high"
  * )
  */
-class SecurityAdminPagesAccess extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

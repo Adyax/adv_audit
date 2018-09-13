@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check does the database contain MyISAM tables.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "database_tables_engine",
  *   label = @Translation("Database tables engine check."),
  *   requirements = {},
@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   severity = "low"
  * )
  */
-class OtherDatabaseTablesEngine extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class OtherDatabaseTablesEnginePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Database\Connection definition.

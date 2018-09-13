@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * The class of the Help pages' controller.
  */
-class AdvAuditHelpController extends ControllerBase {
+class AuditHelpController extends ControllerBase {
 
   /**
    * The date.formatter service.

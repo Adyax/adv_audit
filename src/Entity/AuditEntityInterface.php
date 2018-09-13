@@ -12,7 +12,7 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup adv_audit
  */
-interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
+interface AuditEntityInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
   // Add get/set methods for your configuration properties here.
 
@@ -30,7 +30,7 @@ interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInt
    * @param string $name
    *   The Audit Result entity name.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.
    */
   public function setName($name);
@@ -49,7 +49,7 @@ interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInt
    * @param int $timestamp
    *   The Audit Result entity creation timestamp.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.
    */
   public function setCreatedTime($timestamp);
@@ -70,7 +70,7 @@ interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInt
    * @param bool $published
    *   TRUE to set this Audit Result entity to published, FALSE to set it to unpublished.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.
    */
   public function setPublished($published);
@@ -89,7 +89,7 @@ interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInt
    * @param int $timestamp
    *   The UNIX timestamp of when this revision was created.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.
    */
   public function setRevisionCreationTime($timestamp);
@@ -108,7 +108,7 @@ interface AdvAuditEntityInterface extends ContentEntityInterface, RevisionLogInt
    * @param int $uid
    *   The user ID of the revision author.
    *
-   * @return \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.
    */
   public function setRevisionUserId($uid);

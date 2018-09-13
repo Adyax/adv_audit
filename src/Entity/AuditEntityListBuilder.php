@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -11,7 +11,7 @@ use Drupal\Core\Link;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityListBuilder extends EntityListBuilder {
+class AuditEntityListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
@@ -27,7 +27,7 @@ class AdvAuditEntityListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\adv_audit\Entity\AdvAuditEntity */
+    /* @var $entity \Drupal\adv_audit\Entity\AuditEntity */
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),

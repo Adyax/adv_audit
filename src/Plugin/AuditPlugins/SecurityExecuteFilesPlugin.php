@@ -14,7 +14,7 @@ use GuzzleHttp\Client;
 /**
  * Check if php files can be executed from public directory.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "execute_files",
  *  label = @Translation("PHP files in public directory cannot be executed."),
  *  category = "security",
@@ -23,7 +23,7 @@ use GuzzleHttp\Client;
  *  enabled = true,
  * )
  */
-class SecurityExecuteFiles extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityExecuteFilesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal's HTTP Client.

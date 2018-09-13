@@ -20,7 +20,7 @@ class AdvAuditEntityRevisionDeleteForm extends ConfirmFormBase {
   /**
    * The Audit Result entity revision.
    *
-   * @var \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @var \Drupal\adv_audit\Entity\AuditEntityInterface
    */
   protected $revision;
 

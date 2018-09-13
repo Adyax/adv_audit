@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check if CI/CD exists on the project.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "ci_cd_check",
  *   label = @Translation("Check if CI/CD exists on the project"),
  *   category = "architecture_analysis",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   enabled = TRUE,
  * )
  */
-class ArchitectureCICD extends AuditBasePlugin {
+class ArchitectureCICDPlugin extends AuditBasePlugin {
 
   /**
    * {@inheritdoc}

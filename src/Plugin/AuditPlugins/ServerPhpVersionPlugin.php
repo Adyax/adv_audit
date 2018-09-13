@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * PHP Version Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "php_version_check",
  *   label = @Translation("PHP Version"),
  *   category = "server_configuration",

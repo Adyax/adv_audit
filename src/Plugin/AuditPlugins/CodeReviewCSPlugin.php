@@ -19,7 +19,7 @@ use Drupal\Core\Url;
 /**
  * Checs code quality by using Code Sniffer.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "code_audit_cs",
  *   label = @Translation("Code audit by CodeSniffer"),
  *   category = "code_review",
@@ -28,7 +28,7 @@ use Drupal\Core\Url;
  *   severity = "high"
  * )
  */
-class CodeReviewCS extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

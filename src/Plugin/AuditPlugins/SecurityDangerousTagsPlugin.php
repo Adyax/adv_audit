@@ -18,7 +18,7 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 /**
  * Dangerous Tags Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "dangerous_tags_check",
  *   label = @Translation("Dangerous Tags"),
  *   category = "security",
@@ -27,7 +27,7 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
  *   severity = "high"
  * )
  */
-class SecurityDangerousTags extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class SecurityDangerousTagsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

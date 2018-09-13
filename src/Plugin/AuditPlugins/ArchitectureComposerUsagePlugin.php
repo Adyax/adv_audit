@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check if the project uses composer.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "composer_usage_check",
  *   label = @Translation("Check if composer is used on the project."),
  *   category = "architecture_analysis",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   enabled = TRUE,
  * )
  */
-class ArchitectureComposerUsage extends AuditBasePlugin {
+class ArchitectureComposerUsagePlugin extends AuditBasePlugin {
 
   /**
    * {@inheritdoc}

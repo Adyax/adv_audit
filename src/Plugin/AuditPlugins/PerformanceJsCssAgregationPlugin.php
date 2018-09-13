@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check if CSS/JS aggregation is enabled.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "js_css_agregation",
  *   label = @Translation("Javascript & CSS aggregation"),
  *   category = "performance",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   severity = "high"
  * )
  */
-class PerformanceJsCssAgregation extends AuditBasePlugin {
+class PerformanceJsCssAgregationPlugin extends AuditBasePlugin {
 
   /**
    * Process checkpoint review.

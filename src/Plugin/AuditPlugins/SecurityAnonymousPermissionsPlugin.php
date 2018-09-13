@@ -10,7 +10,7 @@ use Drupal\user\PermissionHandler;
 /**
  * Check permission for anonymous.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "anonymous_user_permission",
  *  label = @Translation("Anonymous user rights"),
  *  category = "security",
@@ -19,7 +19,7 @@ use Drupal\user\PermissionHandler;
  *  enabled = true,
  * )
  */
-class SecurityAnonymousPermissions extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityAnonymousPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   const ANONYMOUS_ID = 'anonymous';
 

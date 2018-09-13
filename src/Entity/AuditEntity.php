@@ -24,10 +24,10 @@ use Drupal\user\UserInterface;
  *   id = "adv_audit",
  *   label = @Translation("Audit Result entity"),
  *   handlers = {
- *     "storage" = "Drupal\adv_audit\AdvAuditEntityStorage",
+ *     "storage" = "Drupal\adv_audit\Entity\AuditEntityStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\adv_audit\AdvAuditEntityListBuilder",
- *     "views_data" = "Drupal\adv_audit\Entity\AdvAuditEntityViewsData",
+ *     "list_builder" = "Drupal\adv_audit\Entity\AuditEntityListBuilder",
+ *     "views_data" = "Drupal\adv_audit\Entity\AuditEntityViewsData",
  *
  *     "form" = {
  *       "default" = "Drupal\adv_audit\Form\AdvAuditEntityForm",
@@ -35,9 +35,9 @@ use Drupal\user\UserInterface;
  *       "edit" = "Drupal\adv_audit\Form\AdvAuditEntityForm",
  *       "delete" = "Drupal\adv_audit\Form\AdvAuditEntityDeleteForm",
  *     },
- *     "access" = "Drupal\adv_audit\AdvAuditEntityAccessControlHandler",
+ *     "access" = "Drupal\adv_audit\AuditEntityAccessControlHandler",
  *     "route_provider" = {
- *       "html" = "Drupal\adv_audit\AdvAuditEntityHtmlRouteProvider",
+ *       "html" = "Drupal\adv_audit\AuditEntityHtmlRouteProvider",
  *     },
  *   },
  *   base_table = "adv_audit",
@@ -64,7 +64,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "adv_audit.settings"
  * )
  */
-class AdvAuditEntity extends RevisionableContentEntityBase implements AdvAuditEntityInterface {
+class AuditEntity extends RevisionableContentEntityBase implements AuditEntityInterface {
 
   use EntityChangedTrait;
 

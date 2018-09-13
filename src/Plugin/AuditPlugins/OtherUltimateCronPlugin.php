@@ -11,7 +11,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 /**
  * Checks Ultimate cron module enabled.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "ultimate_cron",
  *   label = @Translation("Check Ultimate cron module"),
  *   category = "other",
@@ -20,7 +20,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *   severity = "high"
  * )
  */
-class OtherUltimateCron extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class OtherUltimateCronPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.

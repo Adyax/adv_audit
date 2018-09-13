@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check if configuration is overridden.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "configuration_manager_status",
  *   label = @Translation("Configuration Manager"),
  *   category = "core_and_modules",

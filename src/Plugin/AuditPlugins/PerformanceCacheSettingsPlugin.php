@@ -10,7 +10,7 @@ use Drupal\Core\Site\Settings;
 /**
  * Backend Cache Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "backend_cache_settings",
  *  label = @Translation("Memcache/Redis settings"),
  *  category = "performance",
@@ -19,7 +19,7 @@ use Drupal\Core\Site\Settings;
  *  enabled = true,
  * )
  */
-class PerformanceCacheSettings extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class PerformanceCacheSettingsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Backend cache list.

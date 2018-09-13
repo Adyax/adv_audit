@@ -22,7 +22,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  * Implementation PluginFormInterface is required only in case
  * if your plugin need some specific settings.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "adv_audit_check_example",
  *  label = @Translation("Example plugin"),
  *  category = "other",
@@ -43,7 +43,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  },
  * )
  */
-class OtherExampleAuditPluginPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class OtherExampleAuditPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 
@@ -55,7 +55,7 @@ class OtherExampleAuditPluginPlugin extends AuditBasePlugin implements Container
   protected $moduleHandler;
 
   /**
-   * Constructs a new OtherExampleAuditPluginPlugin object.
+   * Constructs a new OtherExampleAuditPlugin object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

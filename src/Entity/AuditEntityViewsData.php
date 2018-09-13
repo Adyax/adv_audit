@@ -7,7 +7,7 @@ use Drupal\views\EntityViewsData;
 /**
  * Provides Views data for Audit Result entity entities.
  */
-class AdvAuditEntityViewsData extends EntityViewsData {
+class AuditEntityViewsData extends EntityViewsData {
 
   /**
    * {@inheritdoc}

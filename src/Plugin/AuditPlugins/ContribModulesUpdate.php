@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
-use Drupal\adv_audit\Plugin\AuditPluginInterface;
+use Drupal\adv_audit\Plugin\AuditModulesBasePlugin;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -12,7 +12,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Check modules for non-security updates.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "modules_update_check",
  *   label = @Translation("Modules non-security updates"),
  *   category = "core_and_modules",
@@ -21,7 +21,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "high"
  * )
  */
-class ContribModulesUpdate extends ModulesBasePlugin implements AuditPluginInterface, ContainerFactoryPluginInterface {
+class ContribModulesUpdate extends AuditModulesBasePlugin implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */

@@ -6,17 +6,17 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
-use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Drupal\adv_audit\Entity\AuditEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Render\Renderer;
 
 /**
- * Class AdvAuditEntityController.
+ * Class AuditEntityController.
  *
  *  Returns responses for Audit Result entity routes.
  */
-class AdvAuditEntityController extends ControllerBase implements ContainerInjectionInterface {
+class AuditEntityController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * The date formatter.
@@ -33,7 +33,7 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
   protected $renderer;
 
   /**
-   * Constructs an AdvAuditEntityController object for use DI.
+   * Constructs an AuditEntityController object for use DI.
    */
   public function __construct(DateFormatter $formatDate, Renderer $renderer) {
     $this->formatDate = $formatDate;
@@ -94,7 +94,7 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
   /**
    * Generates an overview table of older revisions of a Audit Result entity .
    *
-   * @param \Drupal\adv_audit\Entity\AdvAuditEntityInterface $adv_audit
+   * @param \Drupal\adv_audit\Entity\AuditEntityInterface $adv_audit
    *   A Audit Result entity  object.
    *
    * @return array
@@ -102,7 +102,7 @@ class AdvAuditEntityController extends ControllerBase implements ContainerInject
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function revisionOverview(AdvAuditEntityInterface $adv_audit) {
+  public function revisionOverview(AuditEntityInterface $adv_audit) {
     $account = $this->currentUser();
     $langcode = $adv_audit->language()->getId();
     $langname = $adv_audit->language()->getName();

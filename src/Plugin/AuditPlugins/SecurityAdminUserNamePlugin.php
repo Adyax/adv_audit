@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Plugin for check Administrator's name.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "admin_name_check",
  *   label = @Translation("Administrator's name check"),
  *   category = "security",
@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class SecurityAdminUserName extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityAdminUserNamePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
   /**
    * Default administrator's username.
    */

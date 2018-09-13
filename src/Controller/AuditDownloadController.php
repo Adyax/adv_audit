@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Class AdvAuditDownloadController.
+ * Class AuditDownloadController.
  *
  * @package Drupal\adv_audit\Controller
  */
-class AdvAuditDownloadController extends ControllerBase {
+class AuditDownloadController extends ControllerBase {
 
   /**
    * The file system service.
@@ -31,7 +31,7 @@ class AdvAuditDownloadController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
-   * AdvAuditDownloadController constructor.
+   * AuditDownloadController constructor.
    *
    * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   The file system service.

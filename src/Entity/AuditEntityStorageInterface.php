@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Drupal\adv_audit\Entity\AuditEntityInterface;
 
 /**
  * Defines the storage handler class for Audit Result entity entities.
@@ -15,18 +15,18 @@ use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
  *
  * @ingroup adv_audit
  */
-interface AdvAuditEntityStorageInterface extends ContentEntityStorageInterface {
+interface AuditEntityStorageInterface extends ContentEntityStorageInterface {
 
   /**
    * Gets a list of Audit Result entity revision IDs for a specific Audit Result entity.
    *
-   * @param \Drupal\adv_audit\Entity\AdvAuditEntityInterface $entity
+   * @param \Drupal\adv_audit\Entity\AuditEntityInterface $entity
    *   The Audit Result entity entity.
    *
    * @return int[]
    *   Audit Result entity revision IDs (in ascending order).
    */
-  public function revisionIds(AdvAuditEntityInterface $entity);
+  public function revisionIds(AuditEntityInterface $entity);
 
   /**
    * Gets a list of revision IDs having a given user as Audit Result entity author.
@@ -42,13 +42,13 @@ interface AdvAuditEntityStorageInterface extends ContentEntityStorageInterface {
   /**
    * Counts the number of revisions in the default language.
    *
-   * @param \Drupal\adv_audit\Entity\AdvAuditEntityInterface $entity
+   * @param \Drupal\adv_audit\Entity\AuditEntityInterface $entity
    *   The Audit Result entity entity.
    *
    * @return int
    *   The number of revisions in the default language.
    */
-  public function countDefaultLanguageRevisions(AdvAuditEntityInterface $entity);
+  public function countDefaultLanguageRevisions(AuditEntityInterface $entity);
 
   /**
    * Unsets the language for all Audit Result entity with the given language.

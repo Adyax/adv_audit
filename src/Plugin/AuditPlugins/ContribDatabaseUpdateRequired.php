@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check if there is any DB update required.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "database_update_required",
  *   label = @Translation("No database updates required"),
  *   category = "core_and_modules",

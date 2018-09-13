@@ -12,14 +12,14 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("Adv audit preset entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\adv_audit\AdvAuditPresetEntityListBuilder",
+ *     "list_builder" = "Drupal\adv_audit\AuditPresetEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\adv_audit\Form\AdvAuditPresetEntityForm",
  *       "edit" = "Drupal\adv_audit\Form\AdvAuditPresetEntityForm",
  *       "delete" = "Drupal\adv_audit\Form\AdvAuditPresetEntityDeleteForm"
  *     },
  *     "route_provider" = {
- *       "html" = "Drupal\adv_audit\AdvAuditPresetEntityHtmlRouteProvider",
+ *       "html" = "Drupal\adv_audit\AuditPresetEntityHtmlRouteProvider",
  *     },
  *   },
  *   config_prefix = "preset",
@@ -38,7 +38,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class AdvAuditPresetEntity extends ConfigEntityBase implements AdvAuditPresetEntityInterface {
+class AuditPresetEntity extends ConfigEntityBase implements AuditPresetEntityInterface {
 
   /**
    * The Adv audit preset entity ID.

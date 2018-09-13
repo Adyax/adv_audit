@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check environment settings.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "environment_specific_settings",
  *   label = @Translation("Check environment settings."),
  *   category = "other",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   enabled = TRUE,
  * )
  */
-class OtherEnvironmentSpecificSettings extends AuditBasePlugin {
+class OtherEnvironmentSpecificSettingsPlugin extends AuditBasePlugin {
 
 
   protected $issues = [];

@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 class AuditPluginsManager extends DefaultPluginManager {
 
   /**
-   * Constructs a new AdvAuditCheckManager object.
+   * Constructs a new AuditPluginsManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths

@@ -4,7 +4,7 @@ namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\AuditCategoryManagerService;
 use Drupal\adv_audit\Batch\AuditRunBatch;
-use Drupal\adv_audit\Entity\AdvAuditEntity;
+use Drupal\adv_audit\Entity\AuditEntity;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityForm;

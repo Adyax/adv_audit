@@ -7,7 +7,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 /**
  * Provides an interface for defining Adv audit preset entity entities.
  */
-interface AdvAuditPresetEntityInterface extends ConfigEntityInterface {
+interface AuditPresetEntityInterface extends ConfigEntityInterface {
 
   // Add get/set methods for your configuration properties here.
 }

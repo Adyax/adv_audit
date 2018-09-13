@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * The class of the 'Run & Review' page's controller.
  */
-class AdvAuditChecklistController extends ControllerBase {
+class AuditChecklistController extends ControllerBase {
 
   /**
    * The CSRF Token generator.

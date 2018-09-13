@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check code for security issues.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "security_code_review",
  *  label = @Translation("Security Code Review"),
  *  category = "security",
@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  enabled = true,
  * )
  */
-class SecurityCodeReview extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Store plugin issues.

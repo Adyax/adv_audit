@@ -9,7 +9,7 @@ use Drupal\Core\Site\Settings;
 /**
  * Trusted Host Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "trusted_host_check",
  *   label = @Translation("Trusted Host Settings"),
  *   category = "security",
@@ -18,7 +18,7 @@ use Drupal\Core\Site\Settings;
  *   severity = "high"
  * )
  */
-class SecurityTrustedHosts extends AuditBasePlugin {
+class SecurityTrustedHostsPlugin extends AuditBasePlugin {
 
   /**
    * {@inheritdoc}

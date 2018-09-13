@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -14,7 +14,7 @@ use Drupal\Core\Entity\EntityTypeManager;
 /**
  * Get global info about project.
  */
-class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
+class AuditEntityGlobalInfo implements ContainerInjectionInterface {
   /**
    * Entity Type Manager container.
    *
@@ -90,6 +90,7 @@ class AdvAuditEntityGlobalInfo implements ContainerInjectionInterface {
    *   Users data.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getUsersInfo() {
     $renderData = [];

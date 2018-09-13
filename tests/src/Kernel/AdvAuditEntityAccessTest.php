@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\adv_audit\Kernel;
 
-use Drupal\adv_audit\Entity\AdvAuditEntity;
+use Drupal\adv_audit\Entity\AuditEntity;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
 
 /**
- * Tests for the AdvAuditEntity access control.
+ * Tests for the AuditEntity access control.
  *
  * @group adv_audit
  */
@@ -35,9 +35,9 @@ class AdvAuditEntityAccessTest extends KernelTestBase {
   protected $user2;
 
   /**
-   * The AdvAuditEntity object used in the test.
+   * The AuditEntity object used in the test.
    *
-   * @var \Drupal\adv_audit\Entity\AdvAuditEntityInterface
+   * @var \Drupal\adv_audit\Entity\AuditEntityInterface
    */
   protected $advAuditEntity;
 
@@ -62,7 +62,7 @@ class AdvAuditEntityAccessTest extends KernelTestBase {
     ]);
     $this->user2->save();
 
-    $this->advAuditEntity = AdvAuditEntity::create([
+    $this->advAuditEntity = AuditEntity::create([
       'uid' => $this->user1->id(),
       'name' => 'test',
     ]);

@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Checks Seo recommedations: contrib modules, robots.txt.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "seo_recommendations",
  *   label = @Translation("Checks Seo recommedations: contrib modules and robots.txt."),
  *   category = "other",
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   severity = "high"
  * )
  */
-class OtherSEORecommendations extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class OtherSEORecommendationsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

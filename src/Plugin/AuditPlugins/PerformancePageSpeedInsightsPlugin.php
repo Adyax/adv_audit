@@ -17,7 +17,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Class implementation.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "page_speed_insights",
  *  label = @Translation("Page speed insights"),
  *  category = "performance",
@@ -26,7 +26,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  enabled = true,
  * )
  */
-class PerformancePageSpeedInsights extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

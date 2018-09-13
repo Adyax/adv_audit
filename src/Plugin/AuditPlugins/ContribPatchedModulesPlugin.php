@@ -10,7 +10,7 @@ use Drupal\hacked\Controller\HackedController;
 /**
  * Check Contrib module and Core for patches.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "patched_modules_check",
  *   label = @Translation("Patched modules."),
  *   category = "core_and_modules",
@@ -23,7 +23,7 @@ use Drupal\hacked\Controller\HackedController;
  *   severity = "high"
  * )
  */
-class ContribPatchedModules extends AuditBasePlugin {
+class ContribPatchedModulesPlugin extends AuditBasePlugin {
 
   /**
    * Process checkpoint review.

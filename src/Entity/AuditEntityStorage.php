@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Drupal\adv_audit\Entity\AuditEntityInterface;
 
 /**
  * Defines the storage handler class for Audit Result entity entities.
@@ -15,12 +15,12 @@ use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityStorage extends SqlContentEntityStorage implements AdvAuditEntityStorageInterface {
+class AuditEntityStorage extends SqlContentEntityStorage implements AuditEntityStorageInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function revisionIds(AdvAuditEntityInterface $entity) {
+  public function revisionIds(AuditEntityInterface $entity) {
     return $this->database->query(
       'SELECT vid FROM {adv_audit_revision} WHERE id=:id ORDER BY vid',
       [':id' => $entity->id()]
@@ -40,7 +40,7 @@ class AdvAuditEntityStorage extends SqlContentEntityStorage implements AdvAuditE
   /**
    * {@inheritdoc}
    */
-  public function countDefaultLanguageRevisions(AdvAuditEntityInterface $entity) {
+  public function countDefaultLanguageRevisions(AuditEntityInterface $entity) {
     return $this->database->query('SELECT COUNT(*) FROM {adv_audit_field_revision} WHERE id = :id AND default_langcode = 1', [':id' => $entity->id()])
       ->fetchField();
   }

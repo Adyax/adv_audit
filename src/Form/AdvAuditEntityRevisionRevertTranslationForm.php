@@ -6,7 +6,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\adv_audit\Entity\AdvAuditEntityInterface;
+use Drupal\adv_audit\Entity\AuditEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -90,10 +90,10 @@ class AdvAuditEntityRevisionRevertTranslationForm extends AdvAuditEntityRevision
   /**
    * {@inheritdoc}
    */
-  protected function prepareRevertedRevision(AdvAuditEntityInterface $revision, FormStateInterface $form_state) {
+  protected function prepareRevertedRevision(AuditEntityInterface $revision, FormStateInterface $form_state) {
     $revert_untranslated_fields = $form_state->getValue('revert_untranslated_fields');
 
-    /** @var \Drupal\adv_audit\Entity\AdvAuditEntityInterface $default_revision */
+    /** @var \Drupal\adv_audit\Entity\AuditEntityInterface $default_revision */
     $latest_revision = $this->AdvAuditEntityStorage->load($revision->id());
     $latest_revision_translation = $latest_revision->getTranslation($this->langcode);
 

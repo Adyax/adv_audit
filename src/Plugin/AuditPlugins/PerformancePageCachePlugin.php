@@ -12,7 +12,7 @@ use Drupal\Core\Url;
 /**
  * Constructs a new PerformancePageCache object.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *  id = "page_caching_performance",
  *  label = @Translation("Page caching performance"),
  *  category = "performance",
@@ -21,7 +21,7 @@ use Drupal\Core\Url;
  *  enabled = true,
  * )
  */
-class PerformancePageCache extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class PerformancePageCachePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
    * Returns the default http client.

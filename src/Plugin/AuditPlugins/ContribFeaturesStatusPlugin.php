@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Check if Features are overridden.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "features_status_check",
  *   label = @Translation("Features status"),
  *   category = "core_and_modules",
@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class ContribFeaturesStatus extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+class ContribFeaturesStatusPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   protected $featuresManager;
 

@@ -15,7 +15,7 @@ use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 /**
  * Checks views are access controlled.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "views_access_controlled",
  *   label = @Translation("Checks views are access controlled."),
  *   category = "security",
@@ -24,7 +24,7 @@ use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
  *   severity = "critical"
  * )
  */
-class SecurityViewsAccessControlled extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.

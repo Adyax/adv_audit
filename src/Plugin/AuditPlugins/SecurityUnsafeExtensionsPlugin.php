@@ -15,7 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Unsafe extensions Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "unsafe_extensions_check",
  *   label = @Translation("Unsafe extensions"),
  *   category = "security",
@@ -24,7 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   severity = "high"
  * )
  */
-class SecurityUnsafeExtensions extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, PluginFormInterface {
+class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, PluginFormInterface {
 
   use AuditPluginSubform;
   /**

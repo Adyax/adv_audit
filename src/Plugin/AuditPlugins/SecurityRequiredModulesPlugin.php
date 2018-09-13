@@ -14,7 +14,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 /**
  * Check must-have modules for security reasons.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "must_have_modules",
  *   label = @Translation("Check must-have modules for security reasons"),
  *   category = "security",
@@ -23,7 +23,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *   severity = "high"
  *  )
  */
-class SecurityRequiredModules extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class SecurityRequiredModulesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

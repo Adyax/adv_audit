@@ -13,7 +13,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Input Formats Check plugin class.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "input_formats_check",
  *   label = @Translation("Allowed HTML tags in text formats"),
  *   category = "security",
@@ -22,7 +22,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "high"
  * )
  */
-class SecurityInputFormats extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
+class SecurityInputFormatsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
 

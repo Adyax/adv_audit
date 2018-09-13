@@ -12,7 +12,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @package Drupal\adv_audit
  */
-class AdvAuditAccessControlHandler extends EntityAccessControlHandler {
+class AuditAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}

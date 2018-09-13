@@ -10,15 +10,15 @@ use Drupal\Core\Access\AccessResult;
 /**
  * Access controller for the Audit Result entity entity.
  *
- * @see \Drupal\adv_audit\Entity\AdvAuditEntity.
+ * @see \Drupal\adv_audit\Entity\AuditEntity.
  */
-class AdvAuditEntityAccessControlHandler extends EntityAccessControlHandler {
+class AuditEntityAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\adv_audit\Entity\AdvAuditEntityInterface $entity */
+    /** @var \Drupal\adv_audit\Entity\AuditEntityInterface $entity */
     switch ($operation) {
       case 'view':
         if (!$entity->isPublished()) {

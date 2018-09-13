@@ -7,7 +7,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 /**
  * Check Register Globals is enabled.
  *
- * @AuditPlugins(
+ * @AuditPlugin(
  *   id = "register_globals_check",
  *   label = @Translation("PHP register globals"),
  *   category = "security",
@@ -16,7 +16,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   severity = "high"
  * )
  */
-class SecurityRegisterGlobals extends AuditBasePlugin {
+class SecurityRegisterGlobalsPlugin extends AuditBasePlugin {
 
   /**
    * {@inheritdoc}
