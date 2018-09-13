@@ -88,7 +88,14 @@ class ExecuteFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
       $response = $this->httpClient->get($base_url . '/' . $file_path);
       $response_body = $response->getBody()->getContents();
       if ($response->getStatusCode() == 200 && $message == $response_body) {
-        return $this->fail(NULL, $arguments);
+        return $this->fail(NULL, [
+          'issues' => [
+            'execute_files' => [
+              '@issue_title' => 'Files can be executed from drupal file system.',
+            ],
+          ],
+          '%risk_link' => $arguments['%risk_link'],
+        ]);
       }
     }
     catch (RequestException $e) {

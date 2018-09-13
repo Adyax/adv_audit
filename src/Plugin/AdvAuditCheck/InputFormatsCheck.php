@@ -108,7 +108,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit($form, FormStateInterface $form_state) {
+  public function configFormSubmit(array $form, FormStateInterface $form_state) {
     $value = $form_state->getValue('additional_settings');
     foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
       if (!$untrusted_role) {

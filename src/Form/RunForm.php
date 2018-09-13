@@ -35,7 +35,7 @@ class RunForm extends FormBase {
    *   Use DI to work with services.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $manager) {
-    $this->configCategories = $config_factory->get('adv_audit.config');
+    $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditTestManager = $manager;
   }
 
@@ -80,7 +80,7 @@ class RunForm extends FormBase {
   protected function buildProcessItems() {
     $items = [];
     // Get all available tests.
-    $categories = $this->configCategories->get('adv_audit_settings')['categories'];
+    $categories = $this->configCategories->get('categories');
     foreach ($this->auditTestManager->getPluginsByCategory() as $category_id => $plugins) {
       if (empty($categories[$category_id]['status'])) {
         // Skip disabled categories.
@@ -109,7 +109,7 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $categories = $this->configCategories->get('adv_audit_settings')['categories'];
+    $categories = $this->configCategories->get('categories');
     // Run AuditChecks implemented via plugins.
     $all_audit_plugins = $this->auditTestManager->getDefinitions();
     $audit_plugins_to_run = [];

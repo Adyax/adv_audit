@@ -225,7 +225,7 @@ plugins:
     help: '<p>Check permissions for untrusted roles.</p>'
   must_have_modules:
     description: ''
-    actions: '<p>Inpspect disabled modules list and install them if needed: @disabled_modules.</p>'
+    actions: '<p>Inpspect disabled modules list and install them if needed</p>'
     impacts: '<p>If one or more modules are not installed site''s security can be in danger.</p>'
     fail: '<p>There is one or more recommeded modules disabled.</p>'
     success: '<p>All recommeded modules are enabled.</p>'

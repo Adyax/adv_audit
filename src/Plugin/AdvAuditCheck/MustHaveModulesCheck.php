@@ -72,7 +72,14 @@ class MustHaveModulesCheck extends AdvAuditCheckBase implements ContainerFactory
 
     $diff = array_values(array_diff(self::SECURITY_MODULES, $enabled_modules));
     if (!empty($diff) && $diff != ['captcha'] && $diff != ['honeypot']) {
-      return $this->fail($this->t('One or more recommended modules are not installed.'), ['@disabled_modules' => implode(', ', $diff)]);
+      $issues = [];
+      foreach ($diff as $item) {
+        $issues[$item] = [
+          '@issue_title' => 'Module "@module" is not installed.',
+          '@module' => $item,
+        ];
+      }
+      return $this->fail($this->t('One or more recommended modules are not installed.'), ['issues' => $issues]);
     }
 
     return $this->success();
