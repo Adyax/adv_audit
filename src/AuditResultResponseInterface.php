@@ -25,6 +25,12 @@ interface AuditResultResponseInterface {
   const RESULT_SKIP = 'SKIPPED';
 
   /**
+   * The test was ignored.
+   */
+  const RESULT_IGNORE = 'IGNORED';
+
+
+  /**
    * Add result of the running test.
    *
    * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test

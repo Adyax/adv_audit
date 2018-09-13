@@ -133,6 +133,10 @@
   overflow: hidden;
 }
 
+.category-list .detailed-view .report-items{
+  margin-bottom: 20px;
+}
+
 .global-info-container .report-view-detailed {
   float: right;
   padding: 0.5rem 1rem;
