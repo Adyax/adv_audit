@@ -123,24 +123,12 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    */
   public function perform() {
     $gi_link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/pagespeed/insights'));
-    $key = $this->state->get($this->buildStateConfigKey());
     $target_score = $this->state->get($this->buildStateConfigScore());
-
-    // Check plugin settings.
-    if (empty($key) || empty($target_score)) {
-      return $this->fail(NULL, [
-        'issues' => [
-          'page_speed_insights_no_key' => [
-            '@issue_title' => 'Please check plugin settings and provide API key and target score.',
-          ],
-        ],
-      ]);
-    }
 
     $url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
 
     // Build request URL.
-    $options = ['absolute' => TRUE, 'query' => ['url' => ($url = 'https://www.makeupforever.com/us/en-us'), 'key' => $key]];
+    $options = ['absolute' => TRUE, 'query' => ['url' => $url]];
     $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)->toString();
 
     foreach (['desktop', 'mobile'] as $strategy) {
@@ -185,31 +173,7 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     ];
 
     if ($response->ruleGroups->SPEED->score < $target_score) {
-      $issues = [];
-
-      foreach ($arguments['%items'] as $item) {
-        if ($item['strategy'] === 'desktop') {
-          $issues[] = [
-            '@issue_title' => 'Issue for Desktop devices: @rule_name',
-            '@rule_name' => $item['rule_name'],
-          ];
-        }
-        elseif ($item['strategy'] === 'mobile') {
-          $issues[] = [
-            '@issue_title' => 'Issue for Mobile devices: @rule_name',
-            '@rule_name' => $item['rule_name'],
-          ];
-        }
-      }
-      $issues['score_0'] = [
-        '@issue_title' => 'Score for @score_0',
-        '@score_0' => $arguments['%score'][0],
-      ];
-      $issues['score_1'] = [
-        '@issue_title' => 'Score for @score_1',
-        '@score_1' => $arguments['%score'][1],
-      ];
-
+      $issues = $this->getIssues($arguments);
 
       return $this->fail(NULL, [
         'issues' => $issues,
@@ -218,6 +182,44 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     }
     return $this->success($arguments);
 
+  }
+
+  /**
+   * Get issues.
+   *
+   * @param array $arguments
+   *   Array with parameters for issues.
+   *
+   * @return array
+   *   Issues.
+   */
+  private function getIssues(array $arguments) {
+    $issues = [];
+
+    foreach ($arguments['%items'] as $item) {
+      if ($item['strategy'] === 'desktop') {
+        $issues[] = [
+          '@issue_title' => 'Issue for Desktop devices: @rule_name',
+          '@rule_name' => $item['rule_name'],
+        ];
+      }
+      elseif ($item['strategy'] === 'mobile') {
+        $issues[] = [
+          '@issue_title' => 'Issue for Mobile devices: @rule_name',
+          '@rule_name' => $item['rule_name'],
+        ];
+      }
+    }
+    $issues['score_0'] = [
+      '@issue_title' => 'Score for @score_0',
+      '@score_0' => $arguments['%score'][0],
+    ];
+    $issues['score_1'] = [
+      '@issue_title' => 'Score for @score_1',
+      '@score_1' => $arguments['%score'][1],
+    ];
+
+    return $issues;
   }
 
   /**
