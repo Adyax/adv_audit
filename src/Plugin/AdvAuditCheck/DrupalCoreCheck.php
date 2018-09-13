@@ -102,7 +102,17 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     ];
 
     if ($current_version !== $recommended_version) {
-      return $this->fail(NULL, $params);
+      $issues['drupal_core'] = [
+        '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version',
+        '@version' => $params['@version'],
+        '@recommended_version' => $params['@recommended_version'],
+      ];
+      return $this->fail(NULL, [
+        'issues' => $issues,
+        '@version' => $params['@version'],
+        '@recommended_version' => $params['@recommended_version'],
+        '%link' => $params['%link'],
+      ]);
     }
 
     return $this->success($params);

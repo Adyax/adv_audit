@@ -133,8 +133,8 @@ class AuditRunBatch {
       ]);
 
       // Include  Global Info if it enabled.
-      $global_info_status = \Drupal::config('adv_audit.config')
-        ->get('adv_audit_settings.categories');
+      $global_info_status = \Drupal::config('adv_audit.settings')
+        ->get('categories');
       if ($global_info_status['global_info']['status'] === 1) {
         // Get global info.
         $advGlobalData = \Drupal::service('adv_audit.global_info');

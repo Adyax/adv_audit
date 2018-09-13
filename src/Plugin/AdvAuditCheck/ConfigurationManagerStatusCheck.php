@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\Core\Config\CachedStorage;
 use Drupal\Core\Config\ConfigManager;
 use Drupal\Core\Config\DatabaseStorage;
@@ -27,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = true,
  * )
  */
-class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   protected $updateManager;
 
@@ -83,13 +82,18 @@ class ConfigurationManagerStatusCheck extends AdvAuditCheckBase implements AdvAu
 
     $storage_comparer = new StorageComparer($this->syncStorage, $this->activeStorage, $this->configManager);
     $source_list = $this->syncStorage->listAll();
-    $ovveriden = $storage_comparer->createChangelist()->hasChanges();
-    if (empty($source_list) || !$ovveriden) {
+    $overridden = $storage_comparer->createChangelist()->hasChanges();
+    if (empty($source_list) || !$overridden) {
       return $this->success();
     }
 
     // Configuration is overridden.
-    return $this->fail("Configuration is overridden.", [
+    return $this->fail(NULL, [
+      'issues' => [
+        'configuration_manager_status' => [
+          '@issue_title' => 'Configuration is overridden',
+        ],
+      ],
       '%link' => Link::createFromRoute($this->t('configuration synchronization'), 'config.sync')
         ->toString(),
     ]);

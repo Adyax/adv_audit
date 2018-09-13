@@ -7,7 +7,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\State;
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 
@@ -29,13 +30,13 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with config.
    * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $advAuditCheckListManager
    *   Use DI to work with services.
-   * @param \Drupal\Core\State\State $state
+   * @param \Drupal\Core\State\StateInterface $state
    *   Use DI to work with state.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Use DI to work with redirect destination.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, State $state, RedirectDestinationInterface $redirect_destination) {
-    $this->configCategories = $config_factory->get('adv_audit.config');
+  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, StateInterface $state, RedirectDestinationInterface $redirect_destination) {
+    $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
     $this->config = $config_factory;
@@ -78,12 +79,13 @@ class SettingsForm extends ConfigFormBase {
     foreach ($categories as $category_id => $category) {
       $form['categories'][$category_id] = [
         '#type' => 'fieldset',
-        '#title' => $category['label'],
+        '#title' => Link::createFromRoute($category['label'], 'adv_audit.category.settings_form', ['category_id' => $category_id])->toString(),
         $category_id . '_status' => [
           '#type' => 'checkbox',
           '#default_value' => $category['status'],
           '#attributes' => [
             'class' => ['category-status'],
+            'title' => 'Disable the whole category',
           ],
         ],
         '#attributes' => [
@@ -136,7 +138,7 @@ class SettingsForm extends ConfigFormBase {
    *   Array categories.
    */
   protected function getCategories() {
-    return $this->configCategories->get('adv_audit_settings')['categories'];
+    return $this->configCategories->get('categories');
   }
 
   /**
@@ -150,7 +152,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['adv_audit_settings'];
+    return ['adv_audit.settings'];
   }
 
   /**
@@ -176,14 +178,13 @@ class SettingsForm extends ConfigFormBase {
     }
 
     // Save categories status.
-    $config = $this->config->getEditable('adv_audit.config');
-    $config_categories = $config->get('adv_audit_settings');
-
-    foreach ($config_categories['categories'] as $key => &$category) {
+    $config = $this->config->getEditable('adv_audit.settings');
+    $config_categories = $config->get('categories');
+    foreach ($config_categories as $key => &$category) {
       $category['status'] = $values['categories'][$key][$key . '_status'];
     }
 
-    $config->set('adv_audit_settings', $config_categories);
+    $config->set('categories', $config_categories);
     $config->save();
   }
 
