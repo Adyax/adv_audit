@@ -2,11 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -24,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   severity = "critical"
  * )
  */
-class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Default files to be checked.
@@ -102,7 +98,6 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
    * {@inheritdoc}
    */
   public function perform() {
-    $params = [];
 
     $config_files = $this->parseLines($this->state->get($this->buildStateConfigKey()));
     $config_files = !empty($config_files) ? $config_files : self::DEFAULT_FILES;
@@ -115,36 +110,17 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements ContainerF
     }
 
     if (!empty($remaining_files)) {
-      $params['remaining_files'] = $remaining_files;
-      return $this->fail($this->t('There are number of help/release notes files left.'), $params);
+      $issues = [];
+      foreach ($remaining_files as $remaining_file) {
+        $issues[] = [
+          '@issue_title' => 'File on server: @file',
+          '@file' => $remaining_file,
+        ];
+      }
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['remaining_files'])) {
-      return [];
-    }
-
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('Release note & help files still present on your server.'),
-      ],
-      'list' => [
-        '#theme' => 'item_list',
-        '#items' => $issue_details['remaining_files'],
-      ],
-    ];
   }
 
   /**
