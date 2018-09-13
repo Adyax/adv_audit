@@ -8,6 +8,7 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Database\Connection;
 
 /**
  * Provide watchdog analyze.
@@ -30,6 +31,13 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
   protected $moduleHandler;
 
   /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  private $database;
+
+  /**
    * Constructs a new ImageAPICheck object.
    *
    * @param array $configuration
@@ -40,10 +48,13 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
    *   The plugin implementation definition.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   Interface for working with drupal module system.
+   * @param \Drupal\Core\Database\Connection $database
+   *   Database connection.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, Connection $database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->moduleHandler = $module_handler;
+    $this->database = $database;
   }
 
   /**
@@ -54,7 +65,8 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('database')
     );
   }
 
@@ -93,13 +105,13 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
    * Calculate Page Not Found messages.
    */
   public function getNotFoundCount() {
-    $count = db_select('watchdog', 'w')
+    $count = $this->database->select('watchdog', 'w')
       ->fields('w')
       ->condition('w.type', 'page not found')
       ->countQuery()
       ->execute()
       ->fetchField();
-    $count_rows = db_select('watchdog', 'w')
+    $count_rows = $this->database->select('watchdog', 'w')
       ->fields('w')
       ->countQuery()
       ->execute()
@@ -123,7 +135,7 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
    * Calculate total amount of messages.
    */
   public function getRowCount() {
-    $count_rows = db_select('watchdog', 'w')
+    $count_rows = $this->database->select('watchdog', 'w')
       ->fields('w')
       ->countQuery()
       ->execute()
@@ -142,7 +154,7 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
    */
   public function getAge() {
     // Age of oldest entry.
-    $old = db_select('watchdog', 'w')
+    $old = $this->database->select('watchdog', 'w')
       ->fields('w', ['timestamp'])
       ->orderBy('wid', 'ASC')
       ->range(0, 1)
@@ -150,7 +162,7 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
       ->fetchField();
 
     // Age of newest entry.
-    $new = db_select('watchdog', 'w')
+    $new = $this->database->select('watchdog', 'w')
       ->fields('w', ['timestamp'])
       ->orderBy('wid', 'DESC')
       ->range(0, 1)
@@ -185,13 +197,13 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
       return FALSE;
     }
 
-    $php_total_count = db_select('watchdog', 'w')
+    $php_total_count = $this->database->select('watchdog', 'w')
       ->fields('w')
       ->condition('w.type', 'php')
       ->countQuery()
       ->execute()
       ->fetchField();
-    $count_rows = db_select('watchdog', 'w')
+    $count_rows = $this->database->select('watchdog', 'w')
       ->fields('w')
       ->countQuery()
       ->execute()
@@ -199,7 +211,7 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
 
     $severity_types = RfcLogLevel::getLevels();
     foreach ($severity_types as $key => $label) {
-      $count_messages = db_select('watchdog', 'w')
+      $count_messages = $this->database->select('watchdog', 'w')
         ->fields('w')
         ->condition('w.severity', $key)
         ->countQuery()
