@@ -87,6 +87,12 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    */
   protected function init() {
     $settings = $this->getPerformSettings();
+
+    if (empty($settings['password'])) {
+      $this->logged['valid'] = FALSE;
+      return;
+    }
+
     $settings['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
     $this->sonar = new SonarClient($settings['entry_point'], $settings['login'], $settings['password']);
     if (isset($settings['project']) && $settings['project']) {
@@ -172,20 +178,30 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   public function configFormValidate(array $form, FormStateInterface $form_state) {
     $settings = $this->getPerformSettings();
     $value = $form_state->getValue('additional_settings')['plugin_config'];
-    if (empty($value['password'])) {
+    if (empty($value['password']) && !empty($settings['password'])) {
       $value['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
     }
+
+    if (empty($value['password'])) {
+      $form_state->setErrorByName('password', $this->t('Password is required field.'));
+      return;
+    }
+
+    if (!$this->sonar) {
+      $this->sonar = new SonarClient($value['entry_point'], $value['login'], $value['password']);
+    }
+
     $base_url_validate = $this->sonar->validateRequest($value['entry_point'], $value);
     if ($base_url_validate->getStatusCode() !== 200) {
       $data = $base_url_validate->getContent();
       if (!is_null(json_decode($data))) {
         $data = json_decode($data);
         foreach ($data->errors as $error) {
-          $form_state->setError($form, $error->msg);
+          $form_state->setErrorByName('entry_point', $error->msg);
         }
       }
       else {
-        $form_state->setError($form, $data);
+        $form_state->setErrorByName('password', !empty($data) ? $data : $base_url_validate->getReasonPhrase());
       }
     }
   }
