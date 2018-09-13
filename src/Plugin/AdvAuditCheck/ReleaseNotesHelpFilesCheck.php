@@ -3,11 +3,7 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Traits\AuditPluginSubform;
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 
@@ -23,7 +19,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
  *   severity = "critical"
  * )
  */
-class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, PluginFormInterface {
+class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements PluginFormInterface {
 
   use AuditPluginSubform;
 
@@ -46,10 +42,9 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements AdvAuditRe
    * {@inheritdoc}
    */
   public function perform() {
-    $params = [];
+
     $settings = $this->getSettings();
     $config_files = $this->parseLines($settings['files']);
-    $config_files = !empty($config_files) ? $config_files : static::DEFAULT_FILES;
 
     $remaining_files = [];
     foreach ($config_files as $file) {
@@ -59,36 +54,17 @@ class ReleaseNotesHelpFilesCheck extends AdvAuditCheckBase implements AdvAuditRe
     }
 
     if (!empty($remaining_files)) {
-      $params['remaining_files'] = $remaining_files;
-      return $this->fail($this->t('There are number of help/release notes files left.'), $params);
+      $issues = [];
+      foreach ($remaining_files as $remaining_file) {
+        $issues[] = [
+          '@issue_title' => 'File on server: @file',
+          '@file' => $remaining_file,
+        ];
+      }
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['remaining_files'])) {
-      return [];
-    }
-
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('Release note & help files still present on your server.'),
-      ],
-      'list' => [
-        '#theme' => 'item_list',
-        '#items' => $issue_details['remaining_files'],
-      ],
-    ];
   }
 
 }
