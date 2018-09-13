@@ -3,10 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -28,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   severity = "high"
  * )
  */
-class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * List of seo modules to check.
@@ -143,50 +139,24 @@ class SeoRecommendationsCheck extends AdvAuditCheckBase implements ContainerFact
     }
 
     if (!empty($params)) {
-      return $this->fail('', $params);
+      $issues = [];
+      foreach ($params['missed_modules'] as $missed_module) {
+        $issues[] = [
+          '@issue_title' => 'Missed module @module',
+          '@module' => $missed_module,
+        ];
+      }
+
+      if (isset($params['robots_txt_unavailable'])) {
+        $issues[] = [
+          '@issue_title' => 'Missed file robots.txt',
+        ];
+      }
+
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details)) {
-      return [];
-    }
-
-    $items = [];
-
-    if (!empty($issue_details['missed_modules'])) {
-      $items[] = [
-        '#markup' => $this->t('Missed recommended modules:'),
-        'children' => [
-          '#theme' => 'item_list',
-          '#items' => $issue_details['missed_modules'],
-        ],
-      ];
-    }
-
-    if (!empty($issue_details['robots_txt_unavailable'])) {
-      $items[] = $this->t('robots.txt file is not available.');
-    }
-    return [
-      '#type' => 'container',
-      'msg' => [
-        '#markup' => $this->t('There are number of issues.'),
-      ],
-      'issues' => [
-        '#theme' => 'item_list',
-        '#items' => $items,
-      ],
-    ];
   }
 
   /**

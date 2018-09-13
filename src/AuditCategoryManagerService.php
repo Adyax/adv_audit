@@ -39,7 +39,7 @@ class AuditCategoryManagerService {
   public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $plugin_manager_adv_audit_check) {
     $this->configFactory = $config_factory;
     $this->pluginManagerAdvAuditCheck = $plugin_manager_adv_audit_check;
-    $this->categoryDefinitions = $this->configFactory->get('adv_audit.config')->get('adv_audit_settings.categories');
+    $this->categoryDefinitions = $this->configFactory->get('adv_audit.settings')->get('categories');
   }
 
   /**
@@ -161,8 +161,8 @@ class AuditCategoryManagerService {
    *   New value.
    */
   public function updateCategoryDefinitionValue($category_id, $key, $value) {
-    $config = $this->configFactory->getEditable('adv_audit.config');
-    $config->set('adv_audit_settings.categories.' . $category_id . '.' . $key, $value)->save();
+    $config = $this->configFactory->getEditable('adv_audit.settings');
+    $config->set('categories.' . $category_id . '.' . $key, $value)->save();
   }
 
 }

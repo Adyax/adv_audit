@@ -59,7 +59,13 @@ class AnonymousUserTableCheck extends AdvAuditCheckBase implements ContainerFact
     $result = $query->execute()->fetchAll();
 
     if (empty($result)) {
-      return $this->fail();
+      return $this->fail(NULL, [
+        'issues' => [
+          'anonymous_user_table' => [
+            '@issue_title' => 'The table "users" does not contain user with uid = 0.',
+          ],
+        ],
+      ]);
     }
     return $this->success();
   }
