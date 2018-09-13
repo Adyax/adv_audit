@@ -104,16 +104,6 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    * @return string
    *   The generated key.
    */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.gi_key';
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
   protected function buildStateConfigScore() {
     return 'adv_audit.plugin.' . $this->id() . '.config.gi_target_score';
   }
@@ -128,7 +118,7 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     $url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
 
     // Build request URL.
-    $options = ['absolute' => TRUE, 'query' => ['url' => $url]];
+    $options = ['absolute' => TRUE, 'query' => ['url' => ($url = 'https://www.makeupforever.com/us/en-us')]];
     $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)->toString();
 
     foreach (['desktop', 'mobile'] as $strategy) {
@@ -180,7 +170,7 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
         '%link' => $arguments['%score'][2],
       ]);
     }
-    return $this->success($arguments);
+    return $this->success();
 
   }
 
@@ -226,13 +216,6 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    * {@inheritdoc}
    */
   public function configForm() {
-    $link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/docs/insights/v4/first-app'));
-    $form['gi_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Enter you API key.'),
-      '#default_value' => $this->state->get($this->buildStateConfigKey()),
-      '#description' => $this->t('You can create API key via this @link', ['@link' => $link->toString()]),
-    ];
 
     $form['gi_target_score'] = [
       '#type' => 'number',
@@ -253,10 +236,6 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    */
   public function configFormSubmit(array $form, FormStateInterface $form_state) {
     // Get value from form_state object and save it.
-    $values = ['additional_settings', 'plugin_config', 'gi_key'];
-    $value = $form_state->getValue($values, 0);
-    $this->state->set($this->buildStateConfigKey(), $value);
-
     $scores_conf = ['additional_settings', 'plugin_config', 'gi_target_score'];
     $score_conf = $form_state->getValue($scores_conf, self::TARGET_SCORE);
     $this->state->set($this->buildStateConfigScore(), $score_conf);
