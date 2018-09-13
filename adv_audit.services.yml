@@ -2,12 +2,9 @@ services:
   plugin.manager.adv_audit_check:
     class: Drupal\adv_audit\Plugin\AdvAuditCheckManager
     parent: default_plugin_manager
-  adv_audit.message.storage:
-    class: Drupal\Core\Config\FileStorage
-    factory: Drupal\adv_audit\Message\MessageStorageFactory::getMsgDir
   adv_audit.messages:
     class: Drupal\adv_audit\Message\AuditMessagesStorage
-    arguments: ['@adv_audit.message.storage', '@state', '@config.factory']
+    arguments: ['@config.factory']
   adv_audit.renderer:
     class: Drupal\adv_audit\Renderer\AuditReportRenderer
     arguments: ['@renderer', '@plugin.manager.adv_audit_check', '@adv_audit.messages', '@config.factory', '@adv_audit.manager.category']

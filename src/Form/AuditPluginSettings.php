@@ -117,7 +117,7 @@ class AuditPluginSettings extends FormBase {
       '#group' => 'settings_group',
     ];
 
-    $form['settings']['status'] = [
+    $form['settings']['enabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enabled'),
       '#default_value' => $this->pluginInstance->isEnabled(),
@@ -211,19 +211,19 @@ class AuditPluginSettings extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $messages = $form_state->getValue('messages');
-    foreach ($messages as &$message) {
+    $values = $form_state->getValues();
+
+    // Store messages via adv_audit.messages service.
+    foreach ($values['messages'] as &$message) {
       $message = $message['value'];
     }
-    $this->messageStorage->set($this->pluginId, $messages);
+    $this->messageStorage->set($this->pluginId, $values['messages']);
 
+    // Call subforms actions..
     if ($this->pluginInstance instanceof PluginFormInterface) {
       $subform_state = SubformState::createForSubform($form['settings'], $form, $form_state);
       $this->pluginInstance->submitConfigurationForm($form['settings'], $subform_state);
     }
-
-    $this->pluginInstance->setPluginStatus($form_state->getValue('status'));
-    $this->pluginInstance->setSeverityLevel($form_state->getValue('severity'));
 
   }
 

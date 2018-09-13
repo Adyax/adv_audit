@@ -7,7 +7,6 @@ use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -344,7 +343,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   Return status for plugin.
    */
   public function getStatus() {
-    return $this->pluginSettingsStorage->get('enabled', $this->pluginDefinition['enabled']);
+    return $this->pluginSettingsStorage->get('enabled');
   }
 
   /**
