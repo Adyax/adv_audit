@@ -342,3 +342,13 @@ plugins:
     fail: 'There are some issues in environment specific settings.'
     success: 'Environment specific settings are correct.'
     help: 'Check environment specific settings.'
+  watchog:
+    description: 'Analyze data in watchdog table.'
+    actions: '<ul>
+    <li>Review the full report at admin/reports/page-not-found. If self-inflicted, fix the source. If a redirect is appropriate, visit admin/config/search/path and add URL aliases.</li>
+    <li>Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.</li>
+    </ul>'
+    impacts: 'Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.'
+    fail: 'There are some issues which should be checked.'
+    success: 'There are no issues.'
+    help: 'Analyze data in watchdog table.'
