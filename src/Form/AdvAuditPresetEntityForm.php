@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Form;
 use Drupal\adv_audit\AuditCategoryManagerService;
 use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\adv_audit\Entity\AdvAuditEntity;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
@@ -31,7 +31,7 @@ class AdvAuditPresetEntityForm extends EntityForm {
     );
   }
 
-  public function __construct(AdvAuditCheckManager $adv_audit_check_manager, AuditCategoryManagerService $category_manager) {
+  public function __construct(AuditPluginsManager $adv_audit_check_manager, AuditCategoryManagerService $category_manager) {
     $this->advAuditCheckPluginManager = $adv_audit_check_manager;
     $this->categoryManagerService = $category_manager;
   }

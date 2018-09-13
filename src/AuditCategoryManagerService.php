@@ -4,7 +4,7 @@ namespace Drupal\adv_audit;
 
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RedirectDestinationTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -27,7 +27,7 @@ class AuditCategoryManagerService {
   /**
    * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckManager
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
   protected $pluginManagerAdvAuditCheck;
 
@@ -36,7 +36,7 @@ class AuditCategoryManagerService {
   /**
    * Constructs a new AduitCategoryManagerService object.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $plugin_manager_adv_audit_check) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager_adv_audit_check) {
     $this->configFactory = $config_factory;
     $this->pluginManagerAdvAuditCheck = $plugin_manager_adv_audit_check;
     $this->categoryDefinitions = $this->configFactory->get('adv_audit.settings')->get('categories');

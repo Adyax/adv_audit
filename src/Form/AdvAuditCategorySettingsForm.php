@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\adv_audit\AuditCategoryManagerService;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,7 +21,7 @@ class AdvAuditCategorySettingsForm extends FormBase {
   /**
    * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckManager
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
   protected $pluginManagerAdvAuditCheck;
   /**
@@ -48,7 +48,7 @@ class AdvAuditCategorySettingsForm extends FormBase {
    * Constructs a new AdvAuditCategorySettingsForm object.
    */
   public function __construct(
-    AdvAuditCheckManager $plugin_manager_adv_audit_check,
+    AuditPluginsManager $plugin_manager_adv_audit_check,
     AuditCategoryManagerService $adv_audit_manager_category,
     ConfigFactoryInterface $config_factory,
     RequestStack $request_stack
@@ -123,7 +123,7 @@ class AdvAuditCategorySettingsForm extends FormBase {
     ];
 
     foreach ($this->pluginManagerAdvAuditCheck->getPluginsByCategoryFilter($category_id) as $plugin_id => $plugin_definition) {
-      /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
+      /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance */
       $plugin_instance = $this->pluginManagerAdvAuditCheck->createInstance($plugin_id);
       // Mark the table row as draggable.
       $form['plugins'][$plugin_id]['#attributes']['class'][] = 'draggable';
@@ -214,7 +214,7 @@ class AdvAuditCategorySettingsForm extends FormBase {
     $this->advAuditManagerCategory->updateCategoryDefinitionValue($cat_id, 'label', $form_state->getValue(['settings', 'label']));
     $this->advAuditManagerCategory->updateCategoryDefinitionValue($cat_id, 'status', $form_state->getValue(['settings', 'status']));
     foreach ($form_state->getValue('plugins') as $plugin_id => $plugin_data) {
-      /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
+      /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance */
       $plugin_instance = $this->pluginManagerAdvAuditCheck->createInstance($plugin_id);
       $plugin_instance->setWeight($plugin_data['weight']);
     }

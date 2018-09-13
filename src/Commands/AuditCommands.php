@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Commands;
 
 use Drupal\adv_audit\Batch\AuditRunBatch;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -16,7 +16,7 @@ class AuditCommands extends DrushCommands {
   /**
    * Initialize AdvAuditCheckManager.
    */
-  public function __construct(AdvAuditCheckManager $plugin_manager_adv_audit_check) {
+  public function __construct(AuditPluginsManager $plugin_manager_adv_audit_check) {
     $this->advAuditCheck = $plugin_manager_adv_audit_check;
   }
 
