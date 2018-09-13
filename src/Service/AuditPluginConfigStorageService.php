@@ -7,7 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 /**
  * Class AdvAuditPluginConfigStorageService.
  */
-class CheckPluginConfigStorageService implements CheckPluginConfigStorageServiceInterface {
+class AuditPluginConfigStorageService implements AuditPluginConfigStorageServiceInterface {
 
   /**
    * The plugin ID.

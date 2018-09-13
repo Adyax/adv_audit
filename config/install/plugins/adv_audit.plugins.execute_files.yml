@@ -1,0 +1,9 @@
+messages:
+  description: "<p>The Drupal files directory is for user-uploaded files and by default provides some protection against a malicious user executing arbitrary PHP code against your site. Read more about the risk of PHP code execution on %risk_link.</p>\r\n"
+  actions: "<p>Check file system's permission</p>\r\n"
+  impacts: "<p>Ignoring of protecting against arbitrary code execution leads to opening of possibility to execute harmful code.</p>\r\n"
+  fail: "<p>Files can be executed from drupal file system.</p>\r\n"
+  success: "<p>Files can not be executed from drupal file system.</p>\r\n"
+settings:
+  enabled: null
+  severity: null

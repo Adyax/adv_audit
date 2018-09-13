@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Service;
 /**
  * Interface AdvAuditPluginConfigStorageServiceInterface.
  */
-interface CheckPluginConfigStorageServiceInterface {
+interface AuditPluginConfigStorageServiceInterface {
 
   /**
    * Get value from config storage.

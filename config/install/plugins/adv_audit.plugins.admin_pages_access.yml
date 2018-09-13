@@ -1,0 +1,10 @@
+settings:
+  status: 1
+  severity: high
+  urls: "/node\r\n/node/add\r\n/taxonomy/term/{entity:taxonomy_term}\r\n/admin/structure/taxonomy/add\r\n/admin/structure/taxonomy/manage/{entity:taxonomy_vocabulary}/add\r\n/admin/people/create"
+messages:
+  description: "<p>Checks if any admin pages and other unused default Drupal pages are available for anonymous users.</p>\r\n"
+  actions: "<p>Limit access to the listed pages for anonymous user.</p>\r\n"
+  impacts: "<p>Access to this pages for anonymous user can impact site security.</p>\r\n"
+  fail: "<p>There are pages that should not be aceesed by anonimous user.</p>\r\n"
+  success: "<p>All pages are secured.</p>\r\n"

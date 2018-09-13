@@ -1,0 +1,9 @@
+messages:
+  description: "<p>Allows you to improve the frontend performanceof your site.</p>\r\n"
+  actions: "<p>Enable core aggregation or use %link (that includes all latest security updates).</p>\r\n"
+  impacts: "<p>Without aggregation pages are loaded slowly as it's a lot of css/js files are requires more time for loading..</p>\r\n"
+  fail: "<p>Core aggregation disabled.</p>\r\n"
+  success: "<p>Core aggregation enabled.</p>\r\n"
+settings:
+  enabled: null
+  severity: null

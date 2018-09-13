@@ -81,7 +81,7 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
     $settings = $this->getSettings();
     $all_permissions = $this->userPermission->getPermissions();
     $all_permission_strings = array_keys($all_permissions);
-    $untrusted_permissions = $this->rolePermissions($settings['untrusted_roles'], TRUE);
+    $untrusted_permissions = $this->rolePermissions(array_filter($settings['untrusted_roles']), TRUE);
     $arguments = [];
     foreach ($untrusted_permissions as $rid => $permissions) {
       $intersect = array_intersect($all_permission_strings, $permissions);

@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Bytes;
@@ -42,13 +41,6 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   protected $httpKernel;
 
   /**
-   * The State API service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * Request object.
    *
    * @var \Symfony\Component\HttpFoundation\Request
@@ -58,10 +50,9 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, HttpKernelInterface $http_kernel, StateInterface $state, Request $request) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, HttpKernelInterface $http_kernel, Request $request) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->httpKernel = $http_kernel;
-    $this->state = $state;
     $this->request = $request;
   }
 
@@ -74,22 +65,8 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
       $plugin_id,
       $plugin_definition,
       $container->get('http_kernel'),
-      $container->get('state'),
       $container->get('request_stack')->getCurrentRequest()
     );
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return array
-   *   The generated keys.
-   */
-  protected function buildStateConfigKeys() {
-    return [
-      'urls' => 'adv_audit.plugin.' . $this->id() . '.config.urls',
-      'mem' => 'adv_audit.plugin.' . $this->id() . '.config.memory_fail_treshold',
-    ];
   }
 
   /**
@@ -132,14 +109,14 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
 
     foreach ($urls as $url) {
       if (!UrlHelper::isValid($url) || substr($url, 0, 1) !== '/') {
-        $form_state->setErrorByName('additional_settings][plugin_config][urls', $this->t('Urls should be given as relative with preceding slash.'));
+        $form_state->setErrorByName('urls', $this->t('Urls should be given as relative with preceding slash.'));
         break;
       }
     }
 
     if (!is_numeric($values['mem']) || $values['mem'] <= 0) {
       $form_state->setErrorByName(
-        'additional_settings][plugin_config][mem',
+        'mem',
         $this->t('Memory treshold should be positive numeric.')
       );
     }
@@ -151,9 +128,9 @@ class MemoryUsageCheck extends AdvAuditCheckBase implements AdvAuditReasonRender
   public function perform() {
     $params = [];
     $settings = $this->getSettings();
-    $urls = $this->parseLines($this->state->get($this->buildStateConfigKeys()['urls']));
+    $urls = $this->parseLines($settings['urls']);
 
-    $memory_treshold = $this->state->get($this->buildStateConfigKeys()['mem']) / 100;
+    $memory_treshold = $settings['mem'] / 100;
     $total_memory = intval(ini_get('memory_limit'));
 
     if ($total_memory <= 0) {

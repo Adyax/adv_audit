@@ -3,8 +3,10 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
@@ -22,7 +24,9 @@ use Drupal\Core\Database\Connection;
  *  enabled = true,
  * )
  */
-class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class DatabaseUsageCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   /**
    * Database connection.

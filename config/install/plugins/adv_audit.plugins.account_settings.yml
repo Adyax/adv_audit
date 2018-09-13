@@ -1,0 +1,9 @@
+messages:
+  description: "<p>Account %link. Current setting is \"%current\".</p>\r\n"
+  actions: "<p>Change account %link.</p>\r\n"
+  impacts: "<p>Account settings is not secure.</p>\r\n"
+  fail: "<p>Your %link are set to \"%current\". Are you sure this is what you want? With improperly setup access rights, this can be dangerous...</p>\r\n"
+  success: "<p>Account settings are secure. Current setting is \"%current\".</p>\r\n"
+settings:
+  enabled: null
+  severity: null

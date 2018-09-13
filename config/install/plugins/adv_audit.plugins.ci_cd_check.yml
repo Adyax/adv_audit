@@ -1,0 +1,9 @@
+messages:
+  description: "<p>Check if GITlab CI/CD exists. Continuous Integration is a software development practice in which you build and test software every time a developer pushes code to the application.</p>\r\n"
+  actions: "<p>Use GITlab CI/CD.</p>\r\n"
+  impacts: "<p>Without CI/CD process every deploy requires a lot of time because it requires fully manual actions (git pull, composer install, drush commands). With automated processes we’ll have possibility to run codesniffer check and run drush and composer commands that are needed for deployment more quickly and efficiently.</p>\r\n"
+  fail: "<p>There is no GITlab CI/CD on project</p>\r\n"
+  success: "<p>Project is uses GITlab CI/CD.</p>\r\n"
+settings:
+  enabled: null
+  severity: null

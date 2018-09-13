@@ -107,6 +107,9 @@ class AuditPluginSettings extends FormBase {
   }
 
   protected function prepareForm(&$form) {
+
+    $form['settings_group'] = ['#type' => 'vertical_tabs'];
+
     $form['settings'] = [
       '#type' => 'details',
       '#tree' => TRUE,
@@ -131,13 +134,12 @@ class AuditPluginSettings extends FormBase {
       '#default_value' => $this->pluginInstance->getSeverityLevel(),
     ];
 
-    $form['settings_group'] = ['#type' => 'horizontal_tabs'];
-    $form['messages_group'] = ['#type' => 'horizontal_tabs'];
     $form['messages'] = [
       '#type' => 'details',
       '#tree' => TRUE,
+      '#open' => TRUE,
       '#title' => $this->t('Messages'),
-      '#group' => 'messages_group',
+      '#group' => 'settings_group',
     ];
   }
 
@@ -148,7 +150,7 @@ class AuditPluginSettings extends FormBase {
 
     $this->prepareForm($form);
 
-    if ($this->pluginInstance instanceof PluginFormInterface){
+    if ($this->pluginInstance instanceof PluginFormInterface) {
       // Apply subform functionality.
       $subform_state = SubformState::createForSubform($form['settings'], $form, $form_state);
       $form['settings'] = $this->pluginInstance->buildConfigurationForm($form['settings'], $subform_state);
@@ -209,16 +211,20 @@ class AuditPluginSettings extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    foreach ($form_state->getValue('messages', []) as $type => $text) {
-      $this->messageStorage->set($this->pluginId, $type, $text['value']);
+    $messages = $form_state->getValue('messages');
+    foreach ($messages as &$message) {
+      $message = $message['value'];
     }
-    if ($this->pluginInstance instanceof PluginFormInterface){
+    $this->messageStorage->set($this->pluginId, $messages);
+
+    if ($this->pluginInstance instanceof PluginFormInterface) {
       $subform_state = SubformState::createForSubform($form['settings'], $form, $form_state);
       $this->pluginInstance->submitConfigurationForm($form['settings'], $subform_state);
-    }else{
-      $this->pluginInstance->setPluginStatus($form_state->getValue('status'));
-      $this->pluginInstance->setSeverityLevel($form_state->getValue('severity'));
     }
+
+    $this->pluginInstance->setPluginStatus($form_state->getValue('status'));
+    $this->pluginInstance->setSeverityLevel($form_state->getValue('severity'));
+
   }
 
   /**

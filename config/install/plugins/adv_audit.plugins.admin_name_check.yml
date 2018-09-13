@@ -1,0 +1,9 @@
+messages:
+  description: "<p>Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.</p>\r\n"
+  actions: "<p>Check admin username if it consists \"admin\" part or parts of host name and change one if it is necessary</p>\r\n"
+  impacts: ''
+  fail: "<p>There are one or more reasons why admin's name is not secured. See bellow. The current admin username is %name.</p>\r\n"
+  success: "<p>Admin username is secure</p>\r\n"
+settings:
+  enabled: null
+  severity: null

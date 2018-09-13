@@ -4,10 +4,7 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Render\Renderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\user\PermissionHandler;
 
 /**
@@ -27,32 +24,11 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
   const ANONYMOUS_ID = 'anonymous';
 
   /**
-   * The State API service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
-   * The audit messages storage service.
-   *
-   * @var \Drupal\adv_audit\Message\AuditMessagesStorageInterface
-   */
-  protected $messagesStorage;
-
-  /**
    * Provide access to user permission service.
    *
    * @var \Drupal\user\PermissionHandler
    */
   protected $userPermission;
-
-  /**
-   * Provide access to renderer service.
-   *
-   * @var \Drupal\Core\Render\Renderer
-   */
-  protected $renderer;
 
   /**
    * Constructs a new PerformanceViewsCheck object.
@@ -63,21 +39,12 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   Access to state service.
-   * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
-   *   Interface for the audit messages.
    * @param \Drupal\user\PermissionHandler $user_permission
    *   Provide access to user permissions.
-   * @param \Drupal\Core\Render\Renderer $renderer
-   *   Provide access to render service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, PermissionHandler $user_permission, Renderer $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, PermissionHandler $user_permission) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
-    $this->messagesStorage = $messages_storage;
     $this->userPermission = $user_permission;
-    $this->renderer = $renderer;
   }
 
   /**
@@ -88,10 +55,7 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
-      $container->get('adv_audit.messages'),
-      $container->get('user.permissions'),
-      $container->get('renderer')
+      $container->get('user.permissions')
     );
   }
 
@@ -129,16 +93,6 @@ class AnonymousPermission extends AdvAuditCheckBase implements ContainerFactoryP
     // Get the permissions the given roles have, grouped by roles.
     $permissions_grouped = user_role_permissions([$role_id]);
     return reset($permissions_grouped);
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
   }
 
 }
