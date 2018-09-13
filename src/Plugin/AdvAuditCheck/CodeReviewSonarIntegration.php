@@ -52,7 +52,7 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    */
   protected function parseIssues() {
     $response = $this->sonar->api('dashboard');
-    if ($response->getStatusCode() === 200) {
+    if ($response->getStatusCode() !== 200) {
       return [];
     }
     $issues = [];
