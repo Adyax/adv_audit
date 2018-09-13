@@ -118,7 +118,7 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
     $url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
 
     // Build request URL.
-    $options = ['absolute' => TRUE, 'query' => ['url' => ($url = 'https://www.makeupforever.com/us/en-us')]];
+    $options = ['absolute' => TRUE, 'query' => ['url' => $url]];
     $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)->toString();
 
     foreach (['desktop', 'mobile'] as $strategy) {
