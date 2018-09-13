@@ -3,16 +3,16 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
 use Drupal\Core\Entity\Entity;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 
 /**
@@ -27,7 +27,10 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
  *   severity = "high"
  * )
  */
-class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
+
   /**
    * Entity Type Manager container.
    *
@@ -43,18 +46,11 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   protected $entityFieldManager;
 
   /**
-   * The state service object.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager) {
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
   }
@@ -67,27 +63,17 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager')
     );
   }
 
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
-  }
 
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
-    $settings = $this->getPerformSettings();
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+    $settings = $this->getSettings();
 
     $form['field_types'] = [
       '#type' => 'checkboxes',
@@ -110,42 +96,9 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional_settings');
-    foreach ($value['plugin_config']['field_types'] as $key => $format) {
-      if (!$format) {
-        unset($value['plugin_config']['field_types'][$key]);
-      }
-    }
-    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
-  }
-
-  /**
-   * Get settings for perform task.
-   */
-  protected function getPerformSettings() {
-    $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
-  }
-
-  /**
-   * Get default settings.
-   */
-  protected function getDefaultPerformSettings() {
-    return [
-      'field_types' => [
-        'text_with_summary', 'text_long',
-      ],
-      'tags' => 'script,?php',
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function perform() {
     $issues = [];
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
     $field_types = $settings['field_types'];
     $tags = explode(',', $settings['tags']);
 

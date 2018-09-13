@@ -74,11 +74,11 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     }
 
     // Insecure admin name.
-    if ($admin_name == self::DEFAULT_ADMIN_NAME) {
+    if ($admin_name == static::DEFAULT_ADMIN_NAME) {
       $issue_details['has_default_admin_name'] = TRUE;
     }
     // The username contains "admin".
-    elseif (stripos($admin_name, self::DEFAULT_ADMIN_NAME) !== FALSE) {
+    elseif (stripos($admin_name, static::DEFAULT_ADMIN_NAME) !== FALSE) {
       $issue_details['has_admin_parts'] = TRUE;
     }
 
