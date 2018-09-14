@@ -1,0 +1,14 @@
+settings:
+  status: 1
+  severity: high
+  field_types:
+    text_with_summary: text_with_summary
+    text_long: text_long
+  tags: 'script,?php'
+  enabled: 1
+messages:
+  description: "<p>Checks content (fields) on dangerous tags.</p>\r\n"
+  actions: "<p>Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content. It is recommended you remove such contents.</p>\r\n"
+  impacts: "<p>Script and PHP code in content does not align with Drupal best practices and may be a vulnerability if an untrusted user is allowed to edit such content.</p>\r\n"
+  fail: "<p>Dangerous tags were found in submitted content (fields).</p>\r\n"
+  success: "<p>Dangerous tags were not found in any submitted content (fields).</p>\r\n"

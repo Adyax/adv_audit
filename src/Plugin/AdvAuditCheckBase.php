@@ -7,7 +7,6 @@ use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -39,7 +38,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   /**
    * The plugin config storage service.
    *
-   * @var \Drupal\adv_audit\AdvAuditPluginConfigStorageServiceInterface
+   * @var \Drupal\adv_audit\CheckPluginConfigStorageServiceInterface
    */
   protected $pluginSettingsStorage;
 
@@ -56,7 +55,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginSettingsStorage = $this->container()
-      ->get('adv_adit.plugin.config')
+      ->get('adv_audit.plugin.config')
       ->setPluginId($plugin_id);
   }
 
@@ -135,7 +134,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
   public function getCategoryLabel() {
     // TODO: Not best implementation of getting config value.
     // We should re-write this.
-    return $this->config('adv_audit.config')->get('adv_audit_settings.categories' . $this->getCategoryName() . '.label');
+    return $this->config('adv_audit.settings')->get('categories' . $this->getCategoryName() . '.label');
   }
 
   /**
@@ -167,41 +166,6 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    */
   public function setSeverityLevel($level) {
     $this->pluginSettingsStorage->set('severity', $level);
-  }
-
-  /**
-   * Additional configuration form for plugin instance.
-   *
-   * Value will be store in state storage and can be uses bu next key:
-   * - adv_audit.plugin.PLUGIN_ID.config.KEY.
-   *
-   * @return array
-   *   The form structure.
-   */
-  public function configForm() {
-    return [];
-  }
-
-  /**
-   * Config form submission handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-  }
-
-  /**
-   * Config form validate handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   */
-  public function configFormValidate(array $form, FormStateInterface $form_state) {
   }
 
   /**
@@ -379,7 +343,7 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
    *   Return status for plugin.
    */
   public function getStatus() {
-    return $this->pluginSettingsStorage->get('enabled', $this->pluginDefinition['enabled']);
+    return $this->pluginSettingsStorage->get('enabled');
   }
 
   /**
@@ -466,6 +430,13 @@ abstract class AdvAuditCheckBase extends PluginBase implements AdvAuditCheckInte
     $lines = array_filter($lines, 'trim');
 
     return str_replace("\r", "", $lines);
+  }
+
+  /**
+   * Get settings for perform task.
+   */
+  protected function getSettings() {
+    return $this->pluginSettingsStorage->get();
   }
 
 }

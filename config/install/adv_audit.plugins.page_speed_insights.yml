@@ -1,0 +1,12 @@
+messages:
+  description: "<p>PageSpeed Insights reports on the real-world performance of a page for mobile and desktop devices and provides suggestions on how that page may be improved. Basic auth not supported. Public URLs acceptable only.</p>\r\n"
+  actions: "<p>Check results and apply corresponding fixes.</p>\r\n"
+  impacts: "<p>The listed recommendations must be fulfilled. It will increase the overall site performance.</p>\r\n"
+  fail: "<p>Your optimization is low. %link</p>\r\n"
+  success: "<p>Your optimization is good</p>\r\n"
+settings:
+  status: 1
+  severity: low
+  gi_key: ''
+  gi_target_score: ''
+  enabled: 1

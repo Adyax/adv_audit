@@ -54,7 +54,13 @@ class UltimateCronCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
    */
   public function perform() {
     if (!$this->moduleHandler->moduleExists('ultimate_cron')) {
-      return $this->fail('');
+      return $this->fail(NULL, [
+        'issues' => [
+          'ultimate_cron' => [
+            '@issue_title' => 'Module Ultimate cron is not installed.'
+          ],
+        ],
+      ]);
     }
 
     return $this->success();

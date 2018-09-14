@@ -25,7 +25,13 @@ class RegisterGlobalsCheck extends AdvAuditCheckBase {
 
     $register_globals = trim(ini_get('register_globals'));
     if (!empty($register_globals) && strtolower($register_globals) != 'off') {
-      $this->fail(NULL);
+      $this->fail(NULL, [
+        'issues' => [
+          'register_globals_check' => [
+            '@issue_title' => 'register_globals is enabled.',
+          ],
+        ],
+      ]);
     }
 
     return $this->success();

@@ -72,7 +72,7 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements ContainerFa
     $cache_settings = $this->settings->get('cache');
     $cache_default = isset($cache_settings['default']) ? $cache_settings['default'] : 'cache.backend.database';
 
-    if (in_array($cache_default, self::RECOMMENDED_BACKEND_CACHE)) {
+    if (in_array($cache_default, static::RECOMMENDED_BACKEND_CACHE)) {
       return $this->success();
     }
 

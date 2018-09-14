@@ -2,12 +2,13 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\user\PermissionHandler;
 
@@ -23,15 +24,9 @@ use Drupal\user\PermissionHandler;
  *  enabled = true,
  * )
  */
-class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFactoryPluginInterface , PluginFormInterface {
 
-  /**
-   * The State API service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
+  use AuditPluginSubform;
   /**
    * The audit messages storage service.
    *
@@ -55,16 +50,13 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   Access to state service.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $messages_storage
    *   Interface for the audit messages.
    * @param \Drupal\user\PermissionHandler $user_permission
    *   Provide access to user permissions.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, AuditMessagesStorageInterface $messages_storage, PermissionHandler $user_permission) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AuditMessagesStorageInterface $messages_storage, PermissionHandler $user_permission) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
     $this->messagesStorage = $messages_storage;
     $this->userPermission = $user_permission;
   }
@@ -77,7 +69,6 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
       $container->get('adv_audit.messages'),
       $container->get('user.permissions')
     );
@@ -87,10 +78,10 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
    * {@inheritdoc}
    */
   public function perform() {
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
     $all_permissions = $this->userPermission->getPermissions();
     $all_permission_strings = array_keys($all_permissions);
-    $untrusted_permissions = $this->rolePermissions($settings['untrusted_roles'], TRUE);
+    $untrusted_permissions = $this->rolePermissions(array_filter($settings['untrusted_roles']), TRUE);
     $arguments = [];
     foreach ($untrusted_permissions as $rid => $permissions) {
       $intersect = array_intersect($all_permission_strings, $permissions);
@@ -109,40 +100,6 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
       return $this->fail(NULL, $arguments);
     }
     return $this->success();
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function configForm() {
-    $form = [];
-    $settings = $this->getPerformSettings();
-
-    // Get the user roles.
-    $roles = user_roles();
-    $options = [];
-    foreach ($roles as $rid => $role) {
-      $options[$rid] = $role->label();
-    }
-
-    $form['untrusted_roles'] = [
-      '#type' => 'checkboxes',
-      '#title' => $this->t('Untrusted roles.'),
-      '#default_value' => $settings['untrusted_roles'],
-      '#options' => $options,
-    ];
-
-    return $form;
   }
 
   /**
@@ -210,31 +167,24 @@ class UntrastedRolesPermissions extends AdvAuditCheckBase implements ContainerFa
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional_settings');
-    foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
-      if (!$untrusted_role) {
-        unset($value['plugin_config']['untrusted_roles'][$key]);
-      }
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+    $settings = $this->getSettings();
+
+    // Get the user roles.
+    $roles = user_roles();
+    $options = [];
+    foreach ($roles as $rid => $role) {
+      $options[$rid] = $role->label();
     }
-    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
-  }
 
-  /**
-   * Get settings for perform task.
-   */
-  protected function getPerformSettings() {
-    $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
-  }
-
-  /**
-   * Get default settings.
-   */
-  protected function getDefaultPerformSettings() {
-    return [
-      'untrusted_roles' => ['anonymous', 'authenticated'],
+    $form['untrusted_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Untrusted roles.'),
+      '#default_value' => $settings['untrusted_roles'],
+      '#options' => $options,
     ];
+
+    return $form;
   }
 
 }
