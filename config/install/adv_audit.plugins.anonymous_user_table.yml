@@ -1,9 +1,9 @@
 messages:
-  description: "<p>The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table.</p>\r\n"
-  actions: "<p>Need to create user with uid 0 if not exists.</p>\r\n"
-  impacts: "<p>Table \"users\" must contain User ID 0 for security reasons.</p>\r\n"
-  fail: "<p>The table \"users\" does not contain user with uid = 0.</p>\r\n"
-  success: "<p>The table \"users\" contain anonymous user.</p>\r\n"
+  description: "<p>The anonymous user record (User ID 0), which many Drupal functions and modules use, must be present in the users database table. A missing or changed User ID 0 represents a security vulnerability.</p>\r\n"
+  actions: "<p>Add a row to the users table with UID set to <code>0</code>. You don't need to populate any other columns with a value.<br>Sample MySQL query: <code>INSERT INTO users SET uid = 0</code></p>\r\n"
+  impacts: "<p>Table <code>users</code> must contain User ID 0 for security reasons.</p>\r\n"
+  fail: "<p>The table <code>users</code> does not contain user with <code>uid = 0</code>.</p>\r\n"
+  success: "<p>The table <code>users</code> contain anonymous user.</p>\r\n"
 settings:
   enabled: 1
   severity: high

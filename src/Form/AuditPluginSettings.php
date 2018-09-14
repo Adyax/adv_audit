@@ -127,9 +127,9 @@ class AuditPluginSettings extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Severity'),
       '#options' => [
-        AdvAuditCheckInterface::SEVERITY_HIGH => 'High',
-        AdvAuditCheckInterface::SEVERITY_NORMAL => 'Normal',
-        AdvAuditCheckInterface::SEVERITY_LOW => 'Low',
+        'high' => 'High',
+        'normal' => 'Normal',
+        'low' => 'Low',
       ],
       '#default_value' => $this->pluginInstance->getSeverityLevel(),
     ];

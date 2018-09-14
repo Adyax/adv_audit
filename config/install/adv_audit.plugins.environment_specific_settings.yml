@@ -1,9 +1,9 @@
 messages:
-  description: "<p>Every environment uses different settings (Solr, memcache, varnish, database connection and etc.) and it’s very important to have these settings in separate files that will be used only on particular environment. With environment specific settings files it’s more understandable and easily to manage environment settings.</p>\r\n"
+  description: "<p>Every environment uses different settings (Solr, memcache, varnish, database connection etc.) and it’s very important to have these settings in separate files that will be used only on particular environment. With environment specific settings files it’s more understandable and easily to manage environment settings.</p>\r\n"
   actions: "<p>Need to configure environment settings.</p>\r\n"
   impacts: "<p>Without environment specific settings there is always a threat that, for any mistake, an incorrect configuration can get into the production environment during the deployment.</p>\r\n"
   fail: "<p>There are some issues in environment specific settings.</p>\r\n"
-  success: "<p>Environment specific settings are correct.</p>\r\n"
+  success: "<p>Environment specific settings are exists.</p>\r\n"
 settings:
   enabled: 1
   severity: high

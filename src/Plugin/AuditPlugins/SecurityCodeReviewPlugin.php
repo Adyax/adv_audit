@@ -9,6 +9,8 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Renderer;
 use SensioLabs\Security\SecurityChecker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Check code for security issues.
@@ -104,7 +106,12 @@ class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFacto
   public function perform() {
     $this->checkComposerDependencies();
     if (count($this->issues)) {
-      return $this->fail(NULL, $this->getIssues());
+      return $this->fail(NULL, [
+        $this->getIssues(),
+        '%link' => Link::fromTextAndUrl($this->t('Check your PHP project for known security issues!'),
+          Url::fromUri('https://security.sensiolabs.org'))
+          ->toString(),
+      ]);
     }
     return $this->success();
   }

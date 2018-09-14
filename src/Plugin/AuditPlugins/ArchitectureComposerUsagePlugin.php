@@ -3,6 +3,8 @@
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Check if the project uses composer.
@@ -32,6 +34,9 @@ class ArchitectureComposerUsagePlugin extends AuditBasePlugin {
           '@issue_title' => 'There is no composer files in ROOT directory of DrupalProject.',
         ],
       ],
+      '%link' => Link::fromTextAndUrl($this->t('Using Composer with Drupal'),
+        Url::fromUri('https://www.drupal.org/docs/develop/using-composer/using-composer-with-drupal'))
+        ->toString(),
     ]);
   }
 
