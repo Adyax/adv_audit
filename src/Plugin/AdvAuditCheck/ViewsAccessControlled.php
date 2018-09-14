@@ -2,15 +2,11 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\views\Entity\View;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
 
 /**
  * Checks views are access controlled.
@@ -24,7 +20,7 @@ use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
  *   severity = "critical"
  * )
  */
-class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class ViewsAccessControlled extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.
@@ -57,7 +53,6 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
    * {@inheritdoc}
    */
   public function perform() {
-    $params = [];
 
     if (!$this->moduleHandler->moduleExists('views')) {
       return $this->success();
@@ -79,37 +74,21 @@ class ViewsAccessControlled extends AdvAuditCheckBase implements AdvAuditReasonR
     }
 
     if (!empty($findings)) {
-      $params['failed_views'] = $findings;
-      return $this->fail($this->t('There are number of views with unlimited access.'), $params);
+      $issues = [];
+
+      foreach ($findings as $view => $displays) {
+        foreach ($displays as $display) {
+          $issues[] = [
+            '@issue_title' => 'View with unlimited access. @view : @display',
+            '@view' => $view,
+            '@display' => $display,
+          ];
+        }
+      }
+      return $this->fail($this->t(''), ['issues' => $issues]);
     }
 
     return $this->success();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['failed_views'])) {
-      return [];
-    }
-
-    $items = [];
-    foreach ($issue_details['failed_views'] as $view => $displays) {
-      foreach ($displays as $display) {
-        $items[] = $view . ': ' . $display;
-      }
-    }
-
-    return [
-      '#theme' => 'item_list',
-      '#items' => $items,
-    ];
   }
 
 }
