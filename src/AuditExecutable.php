@@ -29,7 +29,7 @@ class AuditExecutable {
   /**
    * The test instance to perform.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckInterface
+   * @var \Drupal\adv_audit\Plugin\AuditPluginInterface
    */
   protected $test;
 
