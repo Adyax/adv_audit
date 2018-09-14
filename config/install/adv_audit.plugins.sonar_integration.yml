@@ -6,7 +6,7 @@ messages:
   success: "<p>There are not sonar issues.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: normal
   entry_point: 'http://sonar.adyax-dev.com/api/'
   login:
   password:
