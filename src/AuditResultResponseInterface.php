@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit;
 
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
+use Drupal\adv_audit\Plugin\AuditPluginInterface;
 
 /**
  * Interface for Response audit's results.
@@ -33,12 +33,12 @@ interface AuditResultResponseInterface {
   /**
    * Add result of the running test.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
+   * @param \Drupal\adv_audit\Plugin\AuditPluginInterface $test
    *   The test plugin instance.
    * @param int $status
    *   Execution status.
    */
-  public function addResultReport(AdvAuditCheckInterface $test, $status);
+  public function addResultReport(AuditPluginInterface $test, $status);
 
   /**
    * Calculate total score of audit.

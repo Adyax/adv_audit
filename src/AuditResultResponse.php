@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
+use Drupal\adv_audit\Plugin\AuditPluginInterface;
 use JsonSerializable;
 use Serializable;
 
@@ -54,7 +54,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   /**
    * Add result of the running test.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
+   * @param \Drupal\adv_audit\Plugin\AuditPluginInterface $test
    *   Test plugin instance.
    * @param $status
    *   Execution status.
@@ -63,7 +63,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @return void
    */
-  public function addResultReport(AdvAuditCheckInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
+  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
     $this->results->add(new AuditReason($test->id(), $status));
   }
 

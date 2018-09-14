@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Batch;
 use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Entity\AdvAuditEntity;
+use Drupal\adv_audit\Entity\AuditEntity;
 
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -128,8 +128,8 @@ class AuditRunBatch {
 
     try {
       // Create Audit report.
-      $entity = AdvAuditEntity::create([
-        'name' => AdvAuditEntity::generateEntityName(),
+      $entity = AuditEntity::create([
+        'name' => AuditEntity::generateEntityName(),
       ]);
 
       // Include  Global Info if it enabled.
