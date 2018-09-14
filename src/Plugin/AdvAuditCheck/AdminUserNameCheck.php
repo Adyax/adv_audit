@@ -2,11 +2,8 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   enabled = TRUE,
  * )
  */
-class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
   /**
    * Default administrator's username.
    */
@@ -38,7 +35,7 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -77,48 +74,44 @@ class AdminUserNameCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     }
 
     // Insecure admin name.
-    if ($admin_name == self::DEFAULT_ADMIN_NAME) {
+    if ($admin_name == static::DEFAULT_ADMIN_NAME) {
       $issue_details['has_default_admin_name'] = TRUE;
     }
     // The username contains "admin".
-    elseif (stripos($admin_name, self::DEFAULT_ADMIN_NAME) !== FALSE) {
+    elseif (stripos($admin_name, static::DEFAULT_ADMIN_NAME) !== FALSE) {
       $issue_details['has_admin_parts'] = TRUE;
     }
 
-    if (empty($issue_details)) {
-      return $this->success();
+    if (!empty($issue_details)) {
+
+      if (!empty($issue_details['has_host_parts'])) {
+        foreach ($issue_details['has_host_parts'] as $host_part) {
+          $issues[$host_part] = [
+            '@issue_title' => 'There is a host part in admin username: @part',
+            '@part' => $host_part,
+          ];
+        }
+      }
+      if ($issue_details['has_default_admin_name']) {
+        $issues['has_default_admin_name'] = [
+          '@issue_title' => 'Using default name "@admin" for superuser is highly insecure.',
+          '@admin' => $admin_name,
+        ];
+      }
+      elseif ($issue_details['has_admin_parts']) {
+        $issues['has_admin_parts'] = [
+          '@issue_title' => 'There is "admin" word in superuser name @name.',
+          '@name' => $admin_name,
+        ];
+      }
+
+      return $this->fail(NULL, [
+        'issues' => $issues,
+        '%name' => $admin_name,
+      ]);
     }
 
-    $issue_details['%name'] = $admin_name;
-    return $this->fail(NULL, $issue_details);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    $items = [];
-    if ($type != AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (!empty($issue_details['has_host_parts'])) {
-      $items[] = 'There are host parts in admin username: ' . implode(', ', $issue_details['has_host_parts']);
-    }
-    if ($issue_details['has_default_admin_name']) {
-      $items[] = "Using default name `admin` for superuser is highly insecure.";
-    }
-    elseif ($issue_details['has_admin_parts']) {
-      $items[] = 'There is "admin" word in superuser name.';
-    }
-
-    return [
-      '#theme' => 'item_list',
-      '#title' => $this->t('Current name of admin is %name', $issue_details),
-      '#list_type' => 'ol',
-      '#items' => $items,
-    ];
+    return $this->success(['%name' => $admin_name]);
   }
 
 }

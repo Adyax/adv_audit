@@ -121,11 +121,19 @@ class CronSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterf
     }
 
     if ($severity != REQUIREMENT_OK) {
+      $last_cron_launch = \Drupal::service('date.formatter')
+        ->formatTimeDiffSince($cron_last);
+
       return $this->fail(NULL, [
+        'issues' => [
+          'cron_settings' => [
+            '@issue_title' => 'There are problems with cron launch. Last run @time ago',
+            '@time' => $last_cron_launch,
+          ],
+        ],
         '%link' => Link::createFromRoute($this->t('cron settings page'), 'system.cron_settings')
           ->toString(),
-        '@time' => \Drupal::service('date.formatter')
-          ->formatTimeDiffSince($cron_last),
+        '@time' => $last_cron_launch,
       ]);
     }
     return $this->success();

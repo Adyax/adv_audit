@@ -2,11 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
-
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Site\Settings;
@@ -23,7 +19,7 @@ use Drupal\Core\Site\Settings;
  *  enabled = true,
  * )
  */
-class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditCheckInterface, ContainerFactoryPluginInterface {
+class BackendCacheSettingsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
 
   /**
    * Backend cache list.
@@ -76,12 +72,17 @@ class BackendCacheSettingsCheck extends AdvAuditCheckBase implements AdvAuditChe
     $cache_settings = $this->settings->get('cache');
     $cache_default = isset($cache_settings['default']) ? $cache_settings['default'] : 'cache.backend.database';
 
-    $status = AuditResultResponseInterface::RESULT_FAIL;
-    if (in_array($cache_default, self::RECOMMENDED_BACKEND_CACHE)) {
-      $status = AuditResultResponseInterface::RESULT_PASS;
+    if (in_array($cache_default, static::RECOMMENDED_BACKEND_CACHE)) {
+      return $this->success();
     }
 
-    return new AuditReason($this->id(), $status);
+    return $this->fail(NULL, [
+      'issues' => [
+        'no_cache_settings' => [
+          '@issue_title' => 'No memcached or redis cache used on the site.',
+        ],
+      ],
+    ]);
   }
 
 }

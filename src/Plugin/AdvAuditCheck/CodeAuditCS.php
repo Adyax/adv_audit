@@ -4,14 +4,17 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\File\FileSystem;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Checs code quality by using Code Sniffer.
@@ -25,50 +28,9 @@ use Drupal\adv_audit\Exception\RequirementsException;
  *   severity = "high"
  * )
  */
-class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
-  /**
-   * Relative path to perform CS check.
-   */
-  const PATH_TO_CHECK = 'modules';
-
-  /**
-   * File extensions should be checked.
-   */
-  const FILE_EXTS = [
-    'php',
-    'module',
-    'inc',
-    'install',
-    'test',
-    'profile',
-    'theme',
-    'js',
-    'css',
-    'info',
-    'txt',
-    'md',
-    'yml',
-  ];
-
-  /**
-   * Ignored subdirectories.
-   */
-  const IGNORES = [
-    '*/vendor/*',
-  ];
-
-  /**
-   * Subdirectory in public:// for storing results.
-   */
-  const OUTPUT_URI = 'adv_audit/cs';
-
-  /**
-   * The state service object.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
+  use AuditPluginSubform;
 
   /**
    * Stream warapper service.
@@ -94,11 +56,10 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystem $file_system, StreamWrapperManager $swm, StateInterface $state, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystem $file_system, StreamWrapperManager $swm, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->fileSystem = $file_system;
     $this->swm = $swm;
-    $this->state = $state;
     $this->moduleHandler = $module_handler;
   }
 
@@ -112,7 +73,6 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       $plugin_definition,
       $container->get('file_system'),
       $container->get('stream_wrapper_manager'),
-      $container->get('state'),
       $container->get('module_handler')
     );
   }
@@ -120,58 +80,37 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
-    $state_keys = $this->buildStateConfigKeys();
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+    $settings = $this->getSettings();
 
-    $default_value = !empty($this->state->get($state_keys['path'])) ?
-      $this->state->get($state_keys['path']) : self::PATH_TO_CHECK;
     $form['path'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Relative path to perform CS check'),
-      '#default_value' => $default_value,
+      '#default_value' => $settings['path'],
     ];
 
-    $default_value = !empty($this->state->get($state_keys['exts'])) ?
-      $this->state->get($state_keys['exts']) : implode("\r\n", self::FILE_EXTS);
     $form['exts'] = [
       '#type' => 'textarea',
       '#title' => $this->t('File extensions should be checked'),
       '#description' => $this->t('Place one extension per line.'),
-      '#default_value' => $default_value,
+      '#default_value' => $settings['exts'],
     ];
 
-    $default_value = !empty($this->state->get($state_keys['ignores'])) ?
-      $this->state->get($state_keys['ignores']) : implode("\r\n", self::IGNORES);
     $form['ignores'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Ignored subdirectories'),
       '#description' => $this->t('Place one directory per line.'),
-      '#default_value' => $default_value,
+      '#default_value' => $settings['ignores'],
     ];
 
-    $default_value = !empty($this->state->get($state_keys['output'])) ?
-      $this->state->get($state_keys['output']) : self::OUTPUT_URI;
     $form['output'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Output directory'),
       '#description' => $this->t('Subdirectory in public:// for storing results.'),
-      '#default_value' => $default_value,
+      '#default_value' => $settings['output'],
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $base = ['additional_settings', 'plugin_config'];
-    $state_keys = $this->buildStateConfigKeys();
-
-    foreach ($state_keys as $state_key => $state_value) {
-      $value = $form_state->getValue(array_merge($base, [$state_key]));
-      $this->state->set($state_value, $value);
-    }
   }
 
   /**
@@ -182,20 +121,19 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       return $this->skip($this->t('exec function is disabled.'));
     }
 
-    $scheme = $this->configFactory()->get('system.file')->get('default_scheme') . '://';
+    $scheme = $this->configFactory()
+        ->get('system.file')
+        ->get('default_scheme') . '://';
     $drupal_failed = FALSE;
     $drupal_practice_failed = FALSE;
+    $result = [];
 
-    $state_keys = $this->buildStateConfigKeys();
+    $settings = $this->getSettings();
 
-    $exts = !empty($this->state->get($state_keys['exts'])) ?
-      implode(',', $this->parseLines($this->state->get($state_keys['exts']))) : implode(',', self::FILE_EXTS);
-    $path = !empty($this->state->get($state_keys['path'])) ?
-      $this->state->get($state_keys['path']) : self::PATH_TO_CHECK;
-    $ignores = !empty($this->state->get($state_keys['ignores'])) ?
-      implode(',', $this->parseLines($this->state->get($state_keys['ignores']))) : implode(',', self::IGNORES);
-    $output = !empty($this->state->get($state_keys['output'])) ?
-      $this->state->get($state_keys['output']) : self::OUTPUT_URI;
+    $exts = implode(',',$this->parseLines($settings['exts']));
+    $path = $settings['path'];
+    $ignores = implode(',', $this->parseLines($settings['ignores']));
+    $output = $settings['output'];
 
     if (!$this->fileSystem->realpath($scheme . $output)) {
       $this->fileSystem->mkdir($scheme . $output, NULL, TRUE);
@@ -214,7 +152,12 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_link = $this->t('<a href="@url" download>Drupal</a>', ['@url' => $url]);
+      $drupal_link = Link::fromTextAndUrl($this->t('Drupal'), URL::fromUri($url))
+        ->toString();
+      $result['issues']['drupal_standard'] = [
+        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link @link',
+        '@link' => $drupal_link,
+      ];
     }
 
     $file_rel_path = $output . '/' . md5('phpcs_DP_' . time()) . '.txt';
@@ -225,17 +168,19 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     $this->fileSystem->chmod($filepath, 0744);
 
     if (file_exists($filepath) && filesize($filepath) > 0) {
-      $drupal_failed = TRUE;
+      $drupal_practice_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_practice_link = $this->t('<a href="@url" download>DrupalPractice</a>', ['@url' => $url]);
+      $drupal_practice_link = Link::fromTextAndUrl($this->t('DrupalPractice'), URL::fromUri($url))
+        ->toString();
+      $result['issues']['drupal_best_practice'] = [
+        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by @link',
+        '@link' => $drupal_practice_link,
+      ];
     }
 
     if ($drupal_failed || $drupal_practice_failed) {
-      return $this->fail($this->t('There are code sniffer issues.'), [
-        '@drupal' => $drupal_link,
-        '@drupal_practice' => $drupal_practice_link,
-      ]);
+      return $this->fail($this->t('There are code sniffer issues.'), $result);
     }
 
     return $this->success();
@@ -250,24 +195,9 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
     if (!file_exists($this->getCsDir())) {
       throw new RequirementsException(
         $this->t('CodeSniffer is not installed'),
-        $this->pluginDefinition['requirements']['module']
+        [$this->pluginDefinition['requirements']['module']]
       );
     }
-  }
-
-  /**
-   * Build keys array for access to stored values from config.
-   *
-   * @return array
-   *   The generated keys.
-   */
-  private function buildStateConfigKeys() {
-    return [
-      'path' => 'adv_audit.plugin.' . $this->id() . '.config.path',
-      'exts' => 'adv_audit.plugin.' . $this->id() . '.config.exts',
-      'ignores' => 'adv_audit.plugin.' . $this->id() . '.config.ignores',
-      'output' => 'adv_audit.plugin.' . $this->id() . '.config.output',
-    ];
   }
 
   /**
@@ -277,10 +207,10 @@ class CodeAuditCS extends AdvAuditCheckBase implements ContainerFactoryPluginInt
    *   Path to phpcs script.
    */
   private function getCsDir() {
-    $moduel_path = $this->fileSystem->realpath($this->moduleHandler->getModule('adv_audit')->getPath());
-    $phpcs_path = 'vendor/squizlabs/php_codesniffer/scripts/phpcs';
+    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
+    $phpcs_path = $vendor_dir . '/squizlabs/php_codesniffer/scripts/phpcs';
 
-    return $moduel_path . '/' . $phpcs_path;
+    return $phpcs_path;
   }
 
 }

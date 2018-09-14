@@ -1,0 +1,12 @@
+settings:
+  status: 1
+  severity: high
+  urls: /
+  mem: '15'
+  enabled: 1
+messages:
+  description: "<p>Checks given URLs for abnormal big memory usage.</p>\r\n"
+  actions: "<p>Check listed URLs and make investigation of memory usage and optimisation.</p>\r\n"
+  impacts: "<p>Pages with big memory amount usage can affect server performance.</p>\r\n"
+  fail: "<p>Some pages have abnormal big memory usage.</p>\r\n"
+  success: "<p>Memory usage is normal.</p>\r\n"

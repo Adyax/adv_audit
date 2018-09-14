@@ -83,7 +83,7 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
   public function perform() {
     // Check updates for Drupal core.
     $project = [
-      'name' => self::PROJECT_NAME,
+      'name' => static::PROJECT_NAME,
       'project_type' => 'core',
       'includes' => [],
     ];
@@ -92,8 +92,8 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
 
     // Set process status 'fail' if current version is not recommended.
     $projects_data = $this->updateManager->projectStorage('update_project_data');
-    $current_version = $projects_data[self::PROJECT_NAME]['existing_version'];
-    $recommended_version = $projects_data[self::PROJECT_NAME]['recommended'];
+    $current_version = $projects_data[static::PROJECT_NAME]['existing_version'];
+    $recommended_version = $projects_data[static::PROJECT_NAME]['recommended'];
 
     $params = [
       '@version' => $current_version,
@@ -102,7 +102,17 @@ class DrupalCoreCheck extends AdvAuditCheckBase implements AdvAuditCheckInterfac
     ];
 
     if ($current_version !== $recommended_version) {
-      return $this->fail(NULL, $params);
+      $issues['drupal_core'] = [
+        '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version',
+        '@version' => $params['@version'],
+        '@recommended_version' => $params['@recommended_version'],
+      ];
+      return $this->fail(NULL, [
+        'issues' => $issues,
+        '@version' => $params['@version'],
+        '@recommended_version' => $params['@recommended_version'],
+        '%link' => $params['%link'],
+      ]);
     }
 
     return $this->success($params);

@@ -6,9 +6,11 @@ use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
@@ -17,12 +19,15 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *
  * This plugin described all features are available for checkpoint plugins.
  *
+ * Implementation PluginFormInterface is required only in case
+ * if your plugin need some specific settings.
+ *
  * @AdvAuditCheck(
  *  id = "adv_audit_check_example",
  *  label = @Translation("Example plugin"),
  *  category = "other",
  *  severity = "low",
- *  enabled = true,
+ *  enabled = false,
  *  requirements = {
  *   "module": {
  *    "adminimal_admin_toolbar:1.0-dev",
@@ -38,7 +43,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  },
  * )
  */
-class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, AdvAuditReasonRenderableInterface {
+class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.
@@ -94,31 +101,16 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
   /**
    * {@inheritdoc}
    *
-   * Method is optional.
+   * Method is required in case if your class implements PluginFormInterface.
    */
-  public function configForm() {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+
     $form['check_should_passed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Select this if check should passed'),
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Method is optional.
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    // Get value from form_state object and save it.
-    // In this place we can save our value from config form.
-    $value = $form_state->getValue([
-      'additional_settings',
-      'plugin_config',
-      'check_should_passed',
-    ], 0);
-    $value;
   }
 
   /**
@@ -135,53 +127,6 @@ class ExampleAuditCheckPlugin extends AdvAuditCheckBase implements ContainerFact
     if (rand(0, 10) < 2) {
       throw new RequirementsException('Human readable reason message.', ['install_task']);
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Method is optional.
-   *
-   * NOTE:
-   *   This method can be implemented if you should display table or something
-   *   else like the numeric list instead of standard text message from
-   *   message.yml file
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    switch ($type) {
-      // Override messages fail output.
-      // In this case, we will not use messages from messages.yml file and
-      // directly will render what you return.
-      case AuditMessagesStorageInterface::MSG_TYPE_FAIL:
-        $build = [
-          '#type' => 'container',
-          'message' => [
-            '#markup' => 'My custom HTML markup for display MSG_TYPE_FAIL message.',
-          ],
-        ];
-        break;
-
-      // Override messages success output.
-      // At this moment you have fully control what how will build
-      // success messages.
-      case AuditMessagesStorageInterface::MSG_TYPE_SUCCESS:
-        $build = [
-          '#type' => 'container',
-          'message' => [
-            '#markup' => 'My custom HTML markup for display MSG_TYPE_SUCCESS message.',
-          ],
-        ];
-        break;
-
-      default:
-        // Return empty array.
-        // In this case all other messages will be displayed from messages.yml
-        // file for you plugin.
-        $build = [];
-        break;
-    }
-
-    return $build;
   }
 
 }
