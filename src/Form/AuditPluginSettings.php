@@ -59,7 +59,7 @@ class AuditPluginSettings extends FormBase {
   protected $pluginInstance;
 
   /**
-   * AdvAuditPluginSettings constructor.
+   * AuditPluginSettings constructor.
    *
    * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $manager
    *   Manager plugins for advanced auditor.
@@ -106,6 +106,9 @@ class AuditPluginSettings extends FormBase {
     return $this->t('Configure plugin @label form', ['@label' => $this->pluginInstance->label()]);
   }
 
+  /**
+   * Helper function to Build config form.
+   */
   protected function prepareForm(&$form) {
 
     $form['settings_group'] = ['#type' => 'vertical_tabs'];

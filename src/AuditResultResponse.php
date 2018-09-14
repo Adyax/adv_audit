@@ -42,11 +42,26 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   public function calculateScore() {
     $passed = 0;
     $total_count = $this->results->count();
-    foreach ($this->results->getIterator() as $check_result) {
-      if ($check_result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
+    foreach ($this->results->getIterator() as $audit_result) {
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
+        // Skip.
+        $total_count--;
+        continue;
+      }
+
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
         $passed++;
       }
+
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_FAIL) {
+        // Check active issues.
+        $open_issues = $audit_result->getOpenIssues();
+        if (empty($open_issues)) {
+          $passed++;
+        }
+      }
     }
+
     $score = ($passed * 100) / $total_count;
     return intval($score);
   }

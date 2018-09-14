@@ -179,7 +179,7 @@ class AuditExecutable {
   protected function handleExecutionException(\Exception $exception, $msg = '', $msg_type = 'status') {
     $result = Error::decodeException($exception);
 
-    $handle_message = $this->t('Audit Check @id was skipped due to exception $msg in @file, line:@line)', [
+    $handle_message = $this->t('Audit Check @id was skipped due to exception @message in @file, line:@line)', [
       '@id' => $this->testId,
       '@message' => $exception->getMessage(),
       '@file' => $result['%file'],

@@ -48,7 +48,6 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
@@ -68,13 +67,11 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     );
   }
 
-
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
-
     $form['field_types'] = [
       '#type' => 'checkboxes',
       '#options' => [
@@ -105,29 +102,34 @@ class DangerousTagsCheck extends AdvAuditCheckBase implements ContainerFactoryPl
     foreach ($this->entityFieldManager->getFieldMap() as $entity_type_id => $fields) {
       $field_storage_definitions = $this->entityFieldManager->getFieldStorageDefinitions($entity_type_id);
       foreach ($fields as $field_name => $field) {
-        if (!isset($field_storage_definitions[$field_name])) {
-          continue;
-        }
-        $field_storage_definition = $field_storage_definitions[$field_name];
-        if (!in_array($field_storage_definition->getType(), $field_types)) {
-          continue;
-        }
+        try {
+          if (!isset($field_storage_definitions[$field_name])) {
+            continue;
+          }
+          $field_storage_definition = $field_storage_definitions[$field_name];
+          if (!in_array($field_storage_definition->getType(), $field_types)) {
+            continue;
+          }
 
-        $table = $entity_type_id . '_field_data';
-        $separator = '__';
-        $id = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('id');
-        if ($field_storage_definition instanceof FieldStorageConfig) {
-          $table = $entity_type_id . '__' . $field_name;
-          $separator = '_';
-          $id = 'entity_id';
-        }
+          $table = $entity_type_id . '_field_data';
+          $separator = '__';
+          $id = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('id');
+          if ($field_storage_definition instanceof FieldStorageConfig) {
+            $table = $entity_type_id . '__' . $field_name;
+            $separator = '_';
+            $id = 'entity_id';
+          }
 
-        $rows = \Drupal::database()->select($table, 't')
-          ->fields('t')
-          ->execute()
-          ->fetchAll();
-        $columns = array_keys($field_storage_definition->getSchema()['columns']);
-        $issues += $this->getVulnerabilities($rows, $columns, $field_name, $separator, $tags, $entity_type_id, $id);
+          $rows = \Drupal::database()->select($table, 't')
+            ->fields('t')
+            ->execute()
+            ->fetchAll();
+          $columns = array_keys($field_storage_definition->getSchema()['columns']);
+          $issues += $this->getVulnerabilities($rows, $columns, $field_name, $separator, $tags, $entity_type_id, $id);
+        }
+        catch (\Exception $e) {
+          // Log the exceptions.
+        }
       }
     }
 
