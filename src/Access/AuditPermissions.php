@@ -38,7 +38,7 @@ class AuditPermissions implements ContainerInjectionInterface {
   /**
    * Returns an array of permissions.
    */
-  public function auditPermissions() {
+  public function permissions() {
     $audit_config = $this->config->get('adv_audit.settings');
     $categories = $audit_config->get('categories');
 
