@@ -24,8 +24,6 @@ use Drupal\Core\Url;
  *   label = @Translation("Code audit by CodeSniffer"),
  *   category = "code_review",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

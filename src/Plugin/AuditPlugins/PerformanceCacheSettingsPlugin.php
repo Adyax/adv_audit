@@ -14,9 +14,7 @@ use Drupal\Core\Site\Settings;
  *  id = "backend_cache_settings",
  *  label = @Translation("Memcache/Redis settings"),
  *  category = "performance",
- *  severity = "critical",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformanceCacheSettingsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

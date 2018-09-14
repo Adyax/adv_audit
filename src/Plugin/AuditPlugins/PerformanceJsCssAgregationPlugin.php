@@ -12,8 +12,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   label = @Translation("Javascript & CSS aggregation"),
  *   category = "performance",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class PerformanceJsCssAgregationPlugin extends AuditBasePlugin {

@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  id = "temporary_files",
  *  label = @Translation("No sensitive temporary files were found."),
  *  category = "security",
- *  severity = "normal",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class SecurityTemporaryFilesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

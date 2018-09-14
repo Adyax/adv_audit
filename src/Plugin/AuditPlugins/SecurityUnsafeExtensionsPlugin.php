@@ -16,8 +16,6 @@ use Drupal\Core\Form\FormStateInterface;
  *   label = @Translation("Unsafe extensions"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements PluginFormInterface {

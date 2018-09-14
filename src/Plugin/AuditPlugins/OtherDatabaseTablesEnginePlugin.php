@@ -16,8 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Database tables engine check."),
  *   requirements = {},
  *   category = "other",
- *   enabled = true,
- *   severity = "low"
  * )
  */
 class OtherDatabaseTablesEnginePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

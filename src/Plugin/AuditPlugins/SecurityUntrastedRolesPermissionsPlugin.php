@@ -19,9 +19,7 @@ use Drupal\user\PermissionHandler;
  *  id = "untrusted_roles_permission",
  *  label = @Translation("Untrusted role's permission"),
  *  category = "security",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface , PluginFormInterface {

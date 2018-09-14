@@ -24,8 +24,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *  id = "ssllab_check",
  *  label = @Translation("SSL test"),
  *  category = "security",
- *  severity = "high",
- *  enabled = true,
  * )
  */
 class SecuritySSLTestPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

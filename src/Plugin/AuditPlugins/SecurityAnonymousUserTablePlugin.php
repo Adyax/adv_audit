@@ -14,9 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "anonymous_user_table",
  *   label = @Translation("Check if users table contains anonymous user"),
  *   category = "security",
- *   severity = "high",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class SecurityAnonymousUserTablePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

@@ -14,9 +14,7 @@ use Drupal\user\PermissionHandler;
  *  id = "anonymous_user_permission",
  *  label = @Translation("Anonymous user rights"),
  *  category = "security",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class SecurityAnonymousPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

@@ -19,7 +19,6 @@ use Drupal\hacked\Controller\HackedController;
  *      "hacked:2.0-beta",
  *     },
  *   },
- *   enabled = true,
  *   severity = "high"
  * )
  */

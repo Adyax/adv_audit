@@ -19,9 +19,7 @@ use Drupal\Core\Database\Connection;
  *  id = "database_usage",
  *  label = @Translation("Database usage"),
  *  category = "performance",
- *  severity = "critical",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformanceDatabaseUsagePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

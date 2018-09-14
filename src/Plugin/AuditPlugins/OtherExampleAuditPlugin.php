@@ -26,8 +26,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  id = "adv_audit_check_example",
  *  label = @Translation("Example plugin"),
  *  category = "other",
- *  severity = "low",
- *  enabled = false,
  *  requirements = {
  *   "module": {
  *    "adminimal_admin_toolbar:1.0-dev",

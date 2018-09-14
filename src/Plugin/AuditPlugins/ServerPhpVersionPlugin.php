@@ -12,8 +12,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   label = @Translation("PHP Version"),
  *   category = "server_configuration",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class ServerPhpVersionPlugin extends AuditBasePlugin {

@@ -19,9 +19,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  id = "performance_views",
  *  label = @Translation("Views performance settings"),
  *  category = "performance",
- *  severity = "critical",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformanceViewsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

@@ -14,8 +14,6 @@ use Drupal\Core\Site\Settings;
  *   label = @Translation("Trusted Host Settings"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityTrustedHostsPlugin extends AuditBasePlugin {

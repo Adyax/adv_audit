@@ -18,8 +18,6 @@ use Drupal\Core\Url;
  *  id = "imageapi_optimize_check",
  *  label = @Translation("ImageAPI Optimize"),
  *  category = "performance",
- *  severity = "low",
- *  enabled = true,
  *  requirements = {},
  * )
  */

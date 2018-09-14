@@ -11,8 +11,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *  id = "errors_display",
  *  label = @Translation("Error are written to the screen."),
  *  category = "security",
- *  severity = "normal",
- *  enabled = true,
  *  requirements = {},
  * )
  */

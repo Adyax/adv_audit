@@ -20,8 +20,6 @@ use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
  *   label = @Translation("Checks views are access controlled."),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "critical"
  * )
  */
 class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements AuditReasonRenderableInterface, ContainerFactoryPluginInterface {

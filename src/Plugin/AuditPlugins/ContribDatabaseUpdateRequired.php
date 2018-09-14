@@ -14,9 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "database_update_required",
  *   label = @Translation("No database updates required"),
  *   category = "core_and_modules",
- *   severity = "critical",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class ContribDatabaseUpdateRequired extends AuditBasePlugin implements ContainerFactoryPluginInterface {
