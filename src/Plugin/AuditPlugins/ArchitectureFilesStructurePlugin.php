@@ -71,7 +71,7 @@ class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements Contai
     foreach ($scan_dirs as $dir) {
       $this->scanFolder($dir);
     }
-    https://www.drupal.org/docs/8/understanding-drupal/directory-structure
+
     if (!empty($this->issues)) {
       return $this->fail(NULL, [
         'issues' => $this->issues,
