@@ -37,6 +37,7 @@ class PatchedCore extends PatchedModulesCheck {
           '@title' => $project['title'],
           '@count' => $project['counts']['different'],
         ];
+        break;
       }
     }
 

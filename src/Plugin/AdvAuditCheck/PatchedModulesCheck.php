@@ -2,15 +2,8 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
-
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Link;
 use Drupal\hacked\Controller\HackedController;
 
@@ -30,18 +23,7 @@ use Drupal\hacked\Controller\HackedController;
  *   severity = "high"
  * )
  */
-class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRenderableInterface, AdvAuditCheckInterface, ContainerFactoryPluginInterface {
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition
-    );
-  }
+class PatchedModulesCheck extends AdvAuditCheckBase {
 
   /**
    * Process checkpoint review.
@@ -59,7 +41,18 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
     }
 
     if (!empty($issue_details['hacked_modules'])) {
-      return $this->fail('', $issue_details);
+      $issues = [];
+
+      foreach ($issue_details['hacked_modules'] as $hacked_module) {
+        $issues = [
+          'patched_modules_check_' . $hacked_module['project_name'] => [
+            '@issue_title' => 'Changed module: @changed_module',
+            '@changed_module' => $hacked_module['title']
+          ],
+        ];
+      }
+
+      return $this->fail('', ['issues' => $issues]);
     }
 
     return $this->success();
@@ -82,25 +75,6 @@ class PatchedModulesCheck extends AdvAuditCheckBase implements AdvAuditReasonRen
         $this->pluginDefinition['requirements']['module']
       );
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type !== AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      return [];
-    }
-
-    $issue_details = $reason->getArguments();
-    if (empty($issue_details['hacked_modules'])) {
-      return [];
-    }
-
-    return [
-      '#theme' => 'hacked_report',
-      '#data' => $issue_details['hacked_modules'],
-    ];
   }
 
 }

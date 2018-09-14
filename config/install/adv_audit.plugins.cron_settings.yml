@@ -1,0 +1,9 @@
+messages:
+  description: "<p>Provide the status of cron execution and how often the cron is launched.</p>\r\n"
+  actions: "<p>Please check your %link.</p>\r\n"
+  impacts: "<p>If system cron doesn't work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems.</p>\r\n"
+  fail: "<p>There are problems with cron launch. Last run @time ago</p>\r\n"
+  success: "<p>No problems detected with cron launch.</p>\r\n"
+settings:
+  enabled: 1
+  severity: critical
