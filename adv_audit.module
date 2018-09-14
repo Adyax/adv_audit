@@ -15,14 +15,28 @@ function adv_audit_theme() {
   return [
     'adv_audit' => [
       'render element' => 'elements',
+      'template' => 'adv-audit',
+      'pattern' => 'adv_audit__',
+    ],
+    'adv_audit__pdf' => [
+      'base hook' => 'adv_audit',
+      'template' => 'adv-audit--pdf',
     ],
     'adv_audit_run_process' => [
       'variables' => ['categories' => NULL],
       'template' => 'adv-audit-process-item',
     ],
     'adv_audit_report' => [
-      'variables' => ['report' => NULL],
+      'variables' => [
+        'report' => NULL,
+        'adv_audit_view_mode' => NULL,
+      ],
       'template' => 'adv-audit-report',
+      'pattern' => 'adv_audit_report__',
+    ],
+    'adv_audit_report__pdf' => [
+      'base hook' => 'adv_audit_report',
+      'template' => 'adv-audit-report--pdf',
     ],
     'adv_audit_report_object' => [
       'variables' => [
@@ -30,15 +44,40 @@ function adv_audit_theme() {
         'score_point' => NULL,
         'categories' => NULL,
         'global_info' => NULL,
+        'report_id' => NULL,
+        'adv_audit_view_mode' => NULL,
       ],
       'template' => 'adv-audit-report-object',
+      'pattern' => 'adv_audit_report_object__',
     ],
-
+    'adv_audit_report_object__pdf' => [
+      'base hook' => 'adv_audit_report_object',
+      'template' => 'adv-audit-report-object--pdf',
+    ],
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
     ],
   ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, array &$variables) {
+  $adv_audit_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  //$variables['adv_audit_mode'] = $adv_audit_view_mode;
+  $suggestions[] = 'adv_audit__' . $adv_audit_view_mode;
+}
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function adv_audit_theme_suggestions_adv_audit_report_alter(array &$suggestions, array &$variables) {
+//  dump(\Drupal::routeMatch()->getParameter('adv_audit'));
+//  die();
+  $adv_audit_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  //$variables['adv_audit_mode'] = $adv_audit_view_mode;
+  $suggestions[] = 'adv_audit_report__' . $adv_audit_view_mode;
 }
 
 /**
@@ -135,3 +174,4 @@ function adv_audit_adv_audit_check_info_alter(&$definitions) {
 function adv_audit_config_ignore_settings_alter(array &$settings) {
   $settings[] = 'adv_audit.*';
 }
+

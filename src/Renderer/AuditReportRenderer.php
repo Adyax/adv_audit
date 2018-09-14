@@ -100,12 +100,20 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
+
+    $report_id = \Drupal::routeMatch()->getParameter('adv_audit')->id();
+
     return [
+//      '#theme' => [
+//        'adv_audit_report_object__pdf',
+//        'adv_audit_report_object',
+//      ],
       '#theme' => 'adv_audit_report_object',
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
       '#categories' => $this->doBuildCategory(),
       '#global_info' => $this->auditResultResponse->getOverviewInfo(),
+      '#report_id' => $report_id,
       '#attached' => [
         'library' => [
           'adv_audit/adv_audit.report',

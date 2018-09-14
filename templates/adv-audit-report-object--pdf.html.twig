@@ -1,3 +1,4 @@
+333333333333333333
 <div class="audit-report-container">
   <header>
     <h3 class="title">{{ title }}</h3>
@@ -14,11 +15,6 @@
         {% trans %}
           Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.
         {% endtrans %}
-      </div>
-      <div class="pdf-report">
-        <a class="report-pdf-view" target="_blank" href="{{ path('adv_audit.pdf', {'adv_audit': report_id}) }}">
-          <h3>{{ 'View PDF'|t }}</h3>
-        </a>
       </div>
     </div>
     {% if global_info is not empty %}

@@ -46,3 +46,15 @@ adv_audit.category.settings_form:
     _title: 'Category settings'
   requirements:
     _permission: 'edit auditor categories'
+
+adv_audit.pdf:
+  path: 'admin/reports/adv-audit/{adv_audit}/pdf'
+  defaults:
+    _controller: '\Drupal\adv_audit\Controller\AdvAuditPdfController::printPdf'
+    _title: 'Pdf report'
+  requirements:
+    _permission: 'access auditor list'
+  options:
+    parameters:
+      adv_audit:
+        type: entity:adv_audit
