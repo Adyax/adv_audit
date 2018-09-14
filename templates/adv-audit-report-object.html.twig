@@ -141,7 +141,7 @@
                     {# Should be moved to preprocess function #}
                     {% if report.reason is not empty %}
                       <div class="content-panel">
-                          <strong>{{ 'Why this check is failed: '|t }}</strong>
+                          <strong>{{ 'Why this audit is skipped: '|t }}</strong>
                           {{ report.reason }}
                       </div>
                     {% endif %}
