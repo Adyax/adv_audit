@@ -47,8 +47,17 @@ class UnsafeExtensionsCheck extends AdvAuditCheckBase implements AdvAuditReasonR
     }
 
     if (!empty($fields)) {
-      $params = ['fields' => $fields];
-      return $this->fail('Unsafe file extensions are allowed in uploads.', $params);
+      $issues = [];
+      foreach ($fields as $field => $exts) {
+        foreach ($exts as $ext) {
+          $issues[] = [
+            '@issue_title' => 'Unsafe file extension "@ext" is allowed in field @field',
+            '@ext' => $ext,
+            '@field' => $field,
+          ];
+        }
+      }
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
