@@ -2,9 +2,12 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
@@ -20,17 +23,9 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *   severity = "high"
  *  )
  */
-class MustHaveModulesCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class MustHaveModulesCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
-  /**
-   * List of modules to check.
-   */
-  const SECURITY_MODULES = [
-    'captcha',
-    'honeypot',
-    'password_policy',
-    'username_enumeration_prevention',
-  ];
+  use AuditPluginSubform;
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.
@@ -64,13 +59,15 @@ class MustHaveModulesCheck extends AdvAuditCheckBase implements ContainerFactory
    */
   public function perform() {
     $enabled_modules = [];
-    foreach (self::SECURITY_MODULES as $module_name) {
+    $settings = $this->getSettings();
+    $required_modules = $this->parseLines($settings['modules']);
+    foreach ($required_modules as $module_name) {
       if ($this->moduleHandler->moduleExists($module_name)) {
         $enabled_modules[] = $module_name;
       }
     }
 
-    $diff = array_values(array_diff(self::SECURITY_MODULES, $enabled_modules));
+    $diff = array_values(array_diff($required_modules, $enabled_modules));
     if (!empty($diff) && $diff != ['captcha'] && $diff != ['honeypot']) {
       $issues = [];
       foreach ($diff as $item) {
@@ -83,6 +80,21 @@ class MustHaveModulesCheck extends AdvAuditCheckBase implements ContainerFactory
     }
 
     return $this->success();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+
+    $settings = $this->getSettings();
+    $form['modules'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Required modules'),
+      '#default_value' => $settings['modules'],
+    ];
+    return $form;
+
   }
 
 }

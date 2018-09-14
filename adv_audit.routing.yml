@@ -34,10 +34,10 @@ adv_audit.run:
 adv_audit.plugin.settings:
   path: 'admin/reports/adv-audit/plugin/{plugin_id}/edit'
   defaults:
-    _form: '\Drupal\adv_audit\Form\AdvAuditPluginSettings'
-    _title_callback: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::getTitle'
+    _form: '\Drupal\adv_audit\Form\AuditPluginSettings'
+    _title_callback: '\Drupal\adv_audit\Form\AuditPluginSettings::getTitle'
   requirements:
-    _custom_access: '\Drupal\adv_audit\Form\AdvAuditPluginSettings::checkAccess'
+    _custom_access: '\Drupal\adv_audit\Form\AuditPluginSettings::checkAccess'
 
 adv_audit.category.settings_form:
   path: 'admin/reports/adv-audit/category/{category_id}/edit'

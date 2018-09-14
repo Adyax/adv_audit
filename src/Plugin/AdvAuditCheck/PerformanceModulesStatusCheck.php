@@ -76,7 +76,7 @@ class PerformanceModulesStatusCheck extends AdvAuditCheckBase implements Contain
    */
   public function perform() {
     $issues = [];
-    foreach (self::PERFORMANCE_MODULES as $module_name) {
+    foreach (static::PERFORMANCE_MODULES as $module_name) {
       if ($this->moduleHandler->moduleExists($module_name)) {
         $module_info = system_get_info('module', $module_name);
         $issues[$module_name] = [

@@ -19,7 +19,7 @@ interface AuditMessagesStorageInterface {
   /**
    *
    */
-  public function set($plugin_id, $type, $string);
+  public function set($plugin_id, $value);
 
   /**
    *

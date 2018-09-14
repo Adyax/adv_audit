@@ -2,16 +2,17 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\State\StateInterface;
 
 /**
  * Class implementation.
@@ -25,19 +26,15 @@ use Drupal\Core\State\StateInterface;
  *  enabled = true,
  * )
  */
-class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   /**
    * Acceptable Insights score.
    */
   const TARGET_SCORE = 85;
 
-  /**
-   * Drupal\Core\State\StateInterface definition.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
 
   /**
    * Returns the default http client.
@@ -74,14 +71,11 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
    *   Config factory object.
    * @param \GuzzleHttp\Client $http_cient
    *   Guzzle http client.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   Defines the interface for the state system.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, Client $http_cient, StateInterface $state) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, Client $http_cient) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->httpClient = $http_cient;
-    $this->state = $state;
   }
 
   /**
@@ -93,34 +87,26 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
       $plugin_id,
       $plugin_definition,
       $container->get('config.factory'),
-      $container->get('http_client'),
-      $container->get('state')
+      $container->get('http_client')
     );
-  }
-
-  /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigScore() {
-    return 'adv_audit.plugin.' . $this->id() . '.config.gi_target_score';
   }
 
   /**
    * {@inheritdoc}
    */
   public function perform() {
-    $gi_link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/pagespeed/insights'));
-    $target_score = $this->state->get($this->buildStateConfigScore());
 
+    $settings = $this->getSettings();
+    $gi_link = Link::fromTextAndUrl('Link', Url::fromUri('https://developers.google.com/speed/pagespeed/insights'));
+    $target_score = $settings['gi_target_score'];
     $url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
 
     // Build request URL.
     $options = ['absolute' => TRUE, 'query' => ['url' => $url]];
-    $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)->toString();
+    $gi_url = Url::fromUri('https://www.googleapis.com/pagespeedonline/v4/runPagespeed', $options)
+      ->toString();
 
+    $optimization_suggestions = [];
     foreach (['desktop', 'mobile'] as $strategy) {
       // Get insights result.
       $response = NULL;
@@ -141,8 +127,6 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
       }
 
       $score[] = ucfirst($strategy) . ': ' . $response->ruleGroups->SPEED->score;
-
-      // Mark the whole run as failed if any of tests didn't pass.
 
       // Build suggestions list.
       foreach ($response->formattedResults->ruleResults as $data) {
@@ -215,30 +199,21 @@ class PageSpeedInsightsCheck extends AdvAuditCheckBase implements ContainerFacto
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
+    $settings = $this->getSettings();
     $form['gi_target_score'] = [
       '#type' => 'number',
       '#title' => $this->t('Enter desired target score.'),
-      '#default_value' => $this->state->get($this->buildStateConfigScore()),
+      '#default_value' => $settings['gi_target_score'],
       '#description' => $this->t('Here you can change target score for your tests. [1-100]'),
       '#attributes' => [
         'min' => '1',
         'max' => '100',
-      ],
+      ]
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    // Get value from form_state object and save it.
-    $scores_conf = ['additional_settings', 'plugin_config', 'gi_target_score'];
-    $score_conf = $form_state->getValue($scores_conf, self::TARGET_SCORE);
-    $this->state->set($this->buildStateConfigScore(), $score_conf);
   }
 
 }
