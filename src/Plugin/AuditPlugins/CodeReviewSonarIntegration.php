@@ -17,7 +17,7 @@ use Blocktrail\CryptoJSAES\CryptoJSAES;
 /**
  * Code review. Integration with sonar..
  *
- * @AdvAuditCheck(
+ * @AuditPlugin(
  *  id = "sonar_integration",
  *  label = @Translation("Auditing code smells, code complexity. Code metrics
 and potential problems"),
