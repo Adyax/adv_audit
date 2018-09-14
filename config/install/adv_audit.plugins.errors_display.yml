@@ -1,0 +1,9 @@
+messages:
+  description: "<p>As a form of hardening your site you should avoid information disclosure. Drupal by default prints errors to the screen and writes them to the log. Error messages disclose the full path to the file where the error occured.</p>\r\n"
+  actions: "<p>Set errors display \"None\" for production environment.</p>\r\n"
+  impacts: "<p>Real users should not see any service alerts from the site since this is not secure. Errors and notices can tell the user about the structure of files and modules since the error message will contain a full path to the problematic file - information disclosure.</p>\r\n"
+  fail: "<p>Errors display is enabled on production environment.</p>\r\n"
+  success: "<p>Errors display is disabled on production environment.</p>\r\n"
+settings:
+  enabled: 1
+  severity: normal

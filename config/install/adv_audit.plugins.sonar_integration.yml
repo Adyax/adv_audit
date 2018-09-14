@@ -1,0 +1,13 @@
+messages:
+  description: "<p>Auditing code smells, code complexity. Code metrics and potential problems.</p>\r\n"
+  actions: "<p>Blocker and critical issues must be fixed ASAP. Other issues need to review and also provide fixes.</p>\r\n"
+  impacts: "<p>Code smell: A maintainability-related issue in the code. Leaving it as-is means that at best maintainers will have a harder time than they should making changes to the code. At worst, they''ll be so confused by the state of the code that they''ll introduce additional errors as they make changes.<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Metric: A type of measurement. Metrics can have varying values, or measures, over time. Examples: number of lines of code, complexity, etc.<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A metric may be either:<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - qualitative: gives a quality indication on the component (ex: density of duplicated lines, line coverage by tests, etc.)<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - or quantitative: does not give a quality indication on the component (ex: number of lines of code, complexity, etc.).<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ignoring these problems leads to unreadable code that will be difficult to maintain</p>\r\n"
+  fail: "<p>There are sonar issues.</p>\r\n"
+  success: "<p>There are not sonar issues.</p>\r\n"
+settings:
+  enabled: 1
+  severity: critical
+  entry_point: 'http://sonar.adyax-dev.com/api/'
+  login:
+  password:
+  project:

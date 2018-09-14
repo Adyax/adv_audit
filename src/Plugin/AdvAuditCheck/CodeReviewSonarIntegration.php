@@ -4,8 +4,10 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\adv_audit\Sonar\SonarClient;
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,7 +27,9 @@ and potential problems"),
  *  enabled = true,
  * )
  */
-class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   public $sonar;
 
@@ -87,7 +91,7 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
    * Authorization to sonar.
    */
   protected function init() {
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
 
     if (empty($settings['password'])) {
       $this->logged['valid'] = FALSE;
@@ -113,8 +117,8 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   /**
    * @inheritdoc
    */
-  public function configForm() {
-    $settings = $this->getPerformSettings();
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $settings = $this->getSettings();
     if ($this->logged['valid']) {
       $projects = $this->sonar->api('projects')->search();
       $options = [];
@@ -152,47 +156,41 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional_settings')['plugin_config'];
-    $settings = $this->getPerformSettings();
-    if (!$value['password']) {
-      $value['password'] = $settings['password'];
-    }
-    elseif ($value['password'] != $settings['password']) {
-      $value['password'] = CryptoJSAES::encrypt($value['password'], Settings::getHashSalt());
-    }
-    $value['entry_point'] = trim($value['entry_point'], '/') . '/';
-    $this->state->set($this->buildStateConfigKey(), $value);
-  }
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
 
-  /**
-   * Get settings for perform task.
-   */
-  protected function getPerformSettings() {
-    $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : FALSE;
+    $values = $form_state->getValues();
+    $settings = $this->getSettings();
+    if (!$values['password']) {
+      $values['password'] = $settings['password'];
+    }
+    elseif ($values['password'] != $settings['password']) {
+      $values['password'] = CryptoJSAES::encrypt($values['password'], Settings::getHashSalt());
+    }
+    $values['entry_point'] = trim($values['entry_point'], '/') . '/';
+    $this->pluginSettingsStorage->set(NULL, $values);
+
   }
 
   /**
    * @inheritdoc
    */
-  public function configFormValidate(array $form, FormStateInterface $form_state) {
-    $settings = $this->getPerformSettings();
-    $value = $form_state->getValue('additional_settings')['plugin_config'];
-    if (empty($value['password']) && !empty($settings['password'])) {
-      $value['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $settings = $this->getSettings();
+    $values = $form_state->getValues();
+    if (empty($values['password']) && !empty($settings['password'])) {
+      $values['password'] = CryptoJSAES::decrypt($settings['password'], Settings::getHashSalt());
     }
 
-    if (empty($value['password'])) {
+    if (empty($values['password'])) {
       $form_state->setErrorByName('password', $this->t('Password is required field.'));
       return;
     }
 
     if (!$this->sonar) {
-      $this->sonar = new SonarClient($value['entry_point'], $value['login'], $value['password']);
+      $this->sonar = new SonarClient($values['entry_point'], $values['login'], $values['password']);
     }
 
-    $base_url_validate = $this->sonar->validateRequest($value['entry_point'], $value);
+    $base_url_validate = $this->sonar->validateRequest($values['entry_point'], $values);
     if ($base_url_validate->getStatusCode() !== 200) {
       $data = $base_url_validate->getContent();
       if (!is_null(json_decode($data))) {
@@ -208,21 +206,10 @@ class CodeReviewSonarIntegration extends AdvAuditCheckBase implements ContainerF
   }
 
   /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function perform() {
     if ($this->logged['valid'] && !is_null($this->sonar->getProject())) {
-
       $issues = $this->parseIssues();
       if (empty($issues)) {
         return $this->success();

@@ -4,8 +4,6 @@ namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Link;
 use Drupal\hacked\Controller\HackedController;
 
@@ -25,18 +23,7 @@ use Drupal\hacked\Controller\HackedController;
  *   severity = "high"
  * )
  */
-class PatchedModulesCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition
-    );
-  }
+class PatchedModulesCheck extends AdvAuditCheckBase {
 
   /**
    * Process checkpoint review.
