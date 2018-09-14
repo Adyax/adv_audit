@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 
 /**
- * Class MockPluginPlugin
+ * Class MockPlugin
  *
  * Used to override the original plug-in class when there is a problem with nonexistent services.
  *
@@ -13,10 +13,10 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *
  * @package Drupal\adv_audit\Plugin\AuditPlugins
  */
-class MockPluginPlugin extends AuditBasePlugin {
+class MockAuditPlugin extends AuditBasePlugin {
 
   /**
-   * Constructs a new MockPluginPlugin object.
+   * Constructs a new MockPlugin object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

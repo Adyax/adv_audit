@@ -4,7 +4,7 @@ namespace Drupal\adv_audit\Plugin;
 
 use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\Exception\RequirementsException;
-use Drupal\adv_audit\Plugin\AuditPlugins\MockPluginPlugin;
+use Drupal\adv_audit\Plugin\AuditPlugins\MockAuditPlugin;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -88,7 +88,7 @@ class AuditPluginsManager extends DefaultPluginManager {
       // Save original class for plugin instance.
       $this->definitions[$plugin_id]['original_class'] = $this->definitions[$plugin_id]['class'];
       // Override original class to mock (fake) object.
-      $this->definitions[$plugin_id]['class'] = MockPluginPlugin::class;
+      $this->definitions[$plugin_id]['class'] = MockAuditPlugin::class;
       // Try again create needed plugin instance.
       return parent::createInstance($plugin_id, $configuration);
     }
