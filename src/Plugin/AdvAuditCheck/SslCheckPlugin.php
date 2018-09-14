@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
@@ -9,6 +10,7 @@ use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use GuzzleHttp\Client;
@@ -27,7 +29,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *  enabled = true,
  * )
  */
-class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   /**
    * SslLab the main API entry point.
@@ -120,12 +124,8 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
    * {@inheritdoc}
    */
   public function perform() {
-    if ($this->state->get($this->buildStateConfigKeys()['check_should_passed']) == 1) {
-      return $this->success();
-    }
-
-    $predefined_domain = $this->state->get($this->buildStateConfigKeys()['domain'], FALSE);
-    $current_domain = $predefined_domain ? $predefined_domain : $this->request->getHost();
+    $settings = $this->getSettings();
+    $current_domain = isset($settings['domain']) ? $settings['domain'] : $this->request->getHost();
     $options = [
       'query' => [
         'host' => $current_domain,
@@ -133,12 +133,12 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'maxAge' => 1,
       ],
     ];
-    $ssllab_analyze_url = Url::fromUri(self::SSLLAB_API_URL . self::ANALYZE_API_CALL, $options)->toString();
+    $ssllab_analyze_url = Url::fromUri(static::SSLLAB_API_URL . static::ANALYZE_API_CALL, $options)
+      ->toString();
     try {
       $response = $this->httpClient->request('GET', $ssllab_analyze_url);
       $result = json_decode($response->getBody());
-    }
-    catch (RequestException $e) {
+    } catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);
     }
     // Wait until report will be ready.
@@ -152,7 +152,8 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
         'd' => $current_domain,
       ],
     ];
-    $report_link = Link::fromTextAndUrl($this->t('link'), Url::fromUri(self::REPORT_URL, $report_options))->toString();
+    $report_link = Link::fromTextAndUrl($this->t('link'), Url::fromUri(static::REPORT_URL, $report_options))
+      ->toString();
 
     if ($result->status == 'ERROR') {
       return $this->skip($this->t('Check of SSL is failed with ERROR. Status message:') . ' ' . $result->statusMessage);
@@ -176,40 +177,15 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
   /**
    * {@inheritdoc}
    */
-  public function configForm() {
-    $form['check_should_passed'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Select this if check should passed'),
-      '#default_value' => $this->state->get($this->buildStateConfigKeys()['check_should_passed']),
-    ];
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $settings = $this->getSettings();
     $form['domain'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Domain for checking'),
-      '#default_value' => $this->state->get($this->buildStateConfigKeys()['domain']),
+      '#default_value' => $settings['domain'],
       '#description' => $this->t('You could specify this value in case of you need to check specific domain. Could be used for testing purpose or if we need to test canonical domain.'),
     ];
-
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    // Get value from form_state object and save it.
-    $check_should_passed = $form_state->getValue([
-      'additional_settings',
-      'plugin_config',
-      'check_should_passed',
-    ], 0);
-    $domain = $form_state->getValue([
-      'additional_settings',
-      'plugin_config',
-      'domain',
-    ], 0);
-
-    $this->state->set($this->buildStateConfigKeys()['check_should_passed'], $check_should_passed);
-    $this->state->set($this->buildStateConfigKeys()['domain'], $domain);
   }
 
   /**
@@ -219,7 +195,7 @@ class SslCheckPlugin extends AdvAuditCheckBase implements ContainerFactoryPlugin
     parent::checkRequirements();
     // Just check that we are able to send requests to SslLabs.
     try {
-      $this->httpClient->request('GET', self::SSLLAB_API_URL . self::INFO_API_CALL);
+      $this->httpClient->request('GET', static::SSLLAB_API_URL . static::INFO_API_CALL);
     }
     catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);

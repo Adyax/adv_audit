@@ -3,10 +3,11 @@
 namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
 
 use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
@@ -21,13 +22,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   severity = "high"
  * )
  */
-class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
-  /**
-   * The state service object.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
+class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+
+  use AuditPluginSubform;
 
   /**
    * Interface for working with drupal module system.
@@ -46,9 +43,8 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->state = $state;
     $this->moduleHandler = $module_handler;
   }
 
@@ -60,27 +56,16 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('state'),
       $container->get('module_handler')
     );
   }
 
   /**
-   * Build key string for access to stored value from config.
-   *
-   * @return string
-   *   The generated key.
-   */
-  protected function buildStateConfigKey() {
-    return 'adv_audit.plugin.' . $this->id() . '.additional-settings';
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public function configForm() {
-    $form = [];
-    $settings = $this->getPerformSettings();
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+
+    $settings = $this->getSettings();
 
     // Get the user roles.
     $roles = user_roles();
@@ -95,6 +80,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
       '#default_value' => $settings['untrusted_roles'],
       '#options' => $options,
     ];
+
     $form['unsafe_tags'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Unsafe tags'),
@@ -108,37 +94,6 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
-  public function configFormSubmit(array $form, FormStateInterface $form_state) {
-    $value = $form_state->getValue('additional_settings');
-    foreach ($value['plugin_config']['untrusted_roles'] as $key => $untrusted_role) {
-      if (!$untrusted_role) {
-        unset($value['plugin_config']['untrusted_roles'][$key]);
-      }
-    }
-    $this->state->set($this->buildStateConfigKey(), $value['plugin_config']);
-  }
-
-  /**
-   * Get settings for perform task.
-   */
-  protected function getPerformSettings() {
-    $settings = $this->state->get($this->buildStateConfigKey());
-    return !is_null($settings) ? $settings : $this->getDefaultPerformSettings();
-  }
-
-  /**
-   * Get default settings.
-   */
-  protected function getDefaultPerformSettings() {
-    return [
-      'untrusted_roles' => ['anonymous', 'authenticated'],
-      'unsafe_tags' => 'applet,area,audio,base,basefont,body,button,comment,embed,eval,form,frame,frameset,head,html,iframe,image,img,input,isindex,label,link,map,math,meta,noframes,noscript,object,optgroup,option,param,script,select,style,svg,table,td,textarea,title,video,vmlframe',
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function perform() {
     // If filter is not enabled return with INFO.
     if (!$this->moduleHandler->moduleExists('filter')) {
@@ -146,7 +101,7 @@ class InputFormatsCheck extends AdvAuditCheckBase implements ContainerFactoryPlu
     }
 
     $formats = filter_formats();
-    $settings = $this->getPerformSettings();
+    $settings = $this->getSettings();
     $untrusted_roles = $settings['untrusted_roles'];
     $unsafe_tags = explode(',', $settings['unsafe_tags']);
 
