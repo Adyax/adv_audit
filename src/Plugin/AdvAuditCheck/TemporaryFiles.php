@@ -96,7 +96,15 @@ class TemporaryFiles extends AdvAuditCheckBase implements ContainerFactoryPlugin
     }
 
     if (isset($arguments['issues']) && count($arguments['issues'])) {
-      return $this->fail(NULL, $arguments);
+      $issues = [];
+
+      foreach ($arguments['issues'] as $path) {
+        $issues[] = [
+          '@issue_title' => 'Temporary file: @path',
+          '@path' => $path,
+        ];
+      }
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
