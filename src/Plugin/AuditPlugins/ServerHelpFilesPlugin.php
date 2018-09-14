@@ -15,8 +15,6 @@ use Drupal\Core\Plugin\PluginFormInterface;
  *   label = @Translation("Release notes & help files"),
  *   category = "server_configuration",
  *   requirements = {},
- *   enabled = true,
- *   severity = "critical"
  * )
  */
 class ServerHelpFilesPlugin extends AuditBasePlugin implements PluginFormInterface {

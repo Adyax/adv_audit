@@ -16,8 +16,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *   label = @Translation("Check Ultimate cron module"),
  *   category = "other",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class OtherUltimateCronPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

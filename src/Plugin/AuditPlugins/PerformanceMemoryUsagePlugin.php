@@ -25,8 +25,6 @@ use Drupal\Component\Utility\Bytes;
  *   label = @Translation("Memory usage check"),
  *   category = "performance",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 

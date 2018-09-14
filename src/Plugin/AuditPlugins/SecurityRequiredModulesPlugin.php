@@ -19,8 +19,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *   label = @Translation("Check must-have modules for security reasons"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  *  )
  */
 class SecurityRequiredModulesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

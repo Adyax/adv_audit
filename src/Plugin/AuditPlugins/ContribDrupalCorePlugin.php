@@ -17,9 +17,7 @@ use Drupal\update\UpdateManagerInterface;
  *  id = "drupal_core",
  *  label = @Translation("Drupal core"),
  *  category = "core_and_modules",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class ContribDrupalCorePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

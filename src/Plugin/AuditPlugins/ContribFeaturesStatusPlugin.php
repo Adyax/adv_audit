@@ -21,7 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *       "features",
  *     },
  *   },
- *   enabled = TRUE,
  * )
  */
 class ContribFeaturesStatusPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

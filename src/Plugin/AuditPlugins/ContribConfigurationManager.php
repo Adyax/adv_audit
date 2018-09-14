@@ -20,9 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "configuration_manager_status",
  *   label = @Translation("Configuration Manager"),
  *   category = "core_and_modules",
- *   severity = "high",
  *   requirements = {},
- *   enabled = true,
  * )
  */
 class ContribConfigurationManager extends AuditBasePlugin implements ContainerFactoryPluginInterface {

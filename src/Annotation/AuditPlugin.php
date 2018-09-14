@@ -38,24 +38,10 @@ class AuditPlugin extends Plugin {
   public $category;
 
   /**
-   * Default importance level.
-   *
-   * @var string
-   */
-  public $severity;
-
-  /**
    * Determine plugin requirements.
    *
    * @var array
    */
   public $requirements = [];
-
-  /**
-   * Default status of plugin.
-   *
-   * @var bool
-   */
-  public $enabled;
 
 }

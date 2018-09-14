@@ -14,9 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "files_structure_check",
  *   label = @Translation("Check files structure on project."),
  *   category = "architecture_analysis",
- *   severity = "normal",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

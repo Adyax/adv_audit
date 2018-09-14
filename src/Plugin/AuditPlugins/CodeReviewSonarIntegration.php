@@ -22,9 +22,7 @@ use Blocktrail\CryptoJSAES\CryptoJSAES;
  *  label = @Translation("Auditing code smells, code complexity. Code metrics
 and potential problems"),
  *  category = "code_review",
- *  severity = "normal",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

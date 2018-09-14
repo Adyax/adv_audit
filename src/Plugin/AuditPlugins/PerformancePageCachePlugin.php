@@ -16,9 +16,7 @@ use Drupal\Core\Url;
  *  id = "page_caching_performance",
  *  label = @Translation("Page caching performance"),
  *  category = "performance",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformancePageCachePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

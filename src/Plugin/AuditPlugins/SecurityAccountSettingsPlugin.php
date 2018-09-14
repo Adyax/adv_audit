@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "account_settings",
  *   label = @Translation("Check Account settings"),
  *   category = "security",
- *   severity = "normal",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class SecurityAccountSettingsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

@@ -18,8 +18,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   label = @Translation("Allowed HTML tags in text formats"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityInputFormatsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

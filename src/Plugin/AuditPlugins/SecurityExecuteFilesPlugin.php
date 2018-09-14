@@ -18,9 +18,7 @@ use GuzzleHttp\Client;
  *  id = "execute_files",
  *  label = @Translation("PHP files in public directory cannot be executed."),
  *  category = "security",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class SecurityExecuteFilesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

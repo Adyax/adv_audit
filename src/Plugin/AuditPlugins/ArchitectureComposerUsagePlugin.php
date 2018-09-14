@@ -11,9 +11,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   id = "composer_usage_check",
  *   label = @Translation("Check if composer is used on the project."),
  *   category = "architecture_analysis",
- *   severity = "high",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class ArchitectureComposerUsagePlugin extends AuditBasePlugin {
