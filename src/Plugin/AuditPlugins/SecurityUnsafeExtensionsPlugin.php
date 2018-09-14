@@ -4,10 +4,6 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\Core\Form\FormStateInterface;
@@ -24,9 +20,10 @@ use Drupal\Core\Form\FormStateInterface;
  *   severity = "high"
  * )
  */
-class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AuditReasonRenderableInterface, PluginFormInterface {
+class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements PluginFormInterface {
 
   use AuditPluginSubform;
+
   /**
    * {@inheritdoc}
    */
@@ -47,8 +44,19 @@ class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AuditRea
     }
 
     if (!empty($fields)) {
-      $params = ['fields' => $fields];
-      return $this->fail('Unsafe file extensions are allowed in uploads.', $params);
+      $issues = [];
+      foreach ($fields as $field => $exts) {
+        $entity = FieldConfig::load($field);
+        foreach ($exts as $ext) {
+          $issues[] = [
+            '@issue_title' => 'Unsafe file extension "@ext" is allowed in field @field on @bundle',
+            '@ext' => $ext,
+            '@field' => $entity->label(),
+            '@bundle' => $entity->getTargetBundle(),
+          ];
+        }
+      }
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
@@ -67,42 +75,6 @@ class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AuditRea
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function auditReportRender(AuditReason $reason, $type) {
-    if ($type == AuditMessagesStorageInterface::MSG_TYPE_FAIL) {
-      $arguments = $reason->getArguments();
-      if (empty($arguments['fields'])) {
-        return [];
-      }
-
-      $items = [];
-      foreach ($arguments['fields'] as $entity_id => $unsafe_extensions) {
-        $entity = FieldConfig::load($entity_id);
-        foreach ($unsafe_extensions as $extension) {
-          $items[] = $this->t(
-            'Review @type in "@field" field on @bundle',
-            [
-              '@type' => $extension,
-              '@field' => $entity->label(),
-              '@bundle' => $entity->getTargetBundle(),
-            ]
-          );
-        }
-      }
-
-      return [
-        '#theme' => 'item_list',
-        '#title' => $this->t('Fields with unsafe extensions:'),
-        '#list_type' => 'ol',
-        '#items' => $items,
-      ];
-    }
-
-    return [];
   }
 
 }

@@ -27,7 +27,13 @@ class SecurityTrustedHostsPlugin extends AuditBasePlugin {
     $trusted_host_patterns = Settings::get('trusted_host_patterns');
 
     if (empty($trusted_host_patterns)) {
-      return $this->fail("Trusted hosts param is empty.");
+      return $this->fail(NULL, [
+        'issues' => [
+          'trusted_host_check' => [
+            '@issue_title' => 'Trusted hosts param is empty.'
+          ],
+        ],
+      ]);
     }
 
     return $this->success();

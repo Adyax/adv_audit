@@ -160,7 +160,14 @@ class SecuritySSLTestPlugin extends AuditBasePlugin implements ContainerFactoryP
 
     foreach ($result->endpoints as $endpoint) {
       if (!in_array($endpoint->grade, ['A', 'A+'])) {
-        return $this->fail($this->t('Check of SSL is failed. For more details please visit %link'), ['%link' => $report_link]);
+        return $this->fail(NULL, [
+          'issues' => [
+            'ssllab_check' => [
+              '@issue_title' => 'SSL check is failed.',
+            ],
+          ],
+          '%link' => $report_link
+        ]);
       }
     }
     return $this->success(['%link' => $report_link]);
