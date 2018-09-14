@@ -12,8 +12,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   label = @Translation("PHP register globals"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityRegisterGlobalsPlugin extends AuditBasePlugin {

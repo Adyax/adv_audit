@@ -18,9 +18,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  id = "performance_modules_status",
  *  label = @Translation("Performance modules status"),
  *  category = "performance",
- *  severity = "high",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformanceModulesStatusPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

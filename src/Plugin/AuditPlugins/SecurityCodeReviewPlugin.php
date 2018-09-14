@@ -17,9 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  id = "security_code_review",
  *  label = @Translation("Security Code Review"),
  *  category = "security",
- *  severity = "critical",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

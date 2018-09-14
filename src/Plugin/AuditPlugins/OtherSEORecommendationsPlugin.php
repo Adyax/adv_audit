@@ -21,8 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
  *   label = @Translation("Checks Seo recommedations: contrib modules and robots.txt."),
  *   category = "other",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class OtherSEORecommendationsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

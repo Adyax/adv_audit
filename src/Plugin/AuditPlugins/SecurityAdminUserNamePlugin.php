@@ -14,9 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "admin_name_check",
  *   label = @Translation("Administrator's name check"),
  *   category = "security",
- *   severity = "normal",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class SecurityAdminUserNamePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

@@ -158,7 +158,7 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
    *   The severity level of plugin.
    */
   public function getSeverityLevel() {
-    return $this->pluginSettingsStorage->get('severity', $this->pluginDefinition['severity']);
+    return $this->pluginSettingsStorage->get('severity');
   }
 
   /**

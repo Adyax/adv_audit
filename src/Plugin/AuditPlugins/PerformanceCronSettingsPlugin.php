@@ -18,9 +18,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *  id = "cron_settings",
  *  label = @Translation("Cron settings"),
  *  category = "performance",
- *  severity = "critical",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformanceCronSettingsPlugin extends AuditBasePlugin implements AuditPluginInterface, ContainerFactoryPluginInterface {

@@ -23,8 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
  *   label = @Translation("Admin pages access check"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

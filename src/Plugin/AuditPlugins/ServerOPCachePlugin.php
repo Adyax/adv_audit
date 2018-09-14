@@ -13,8 +13,6 @@ use Drupal\Component\Utility\OpCodeCache;
  *   label = @Translation("Check Opcache"),
  *   category = "server_configuration",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class ServerOPCachePlugin extends AuditBasePlugin {

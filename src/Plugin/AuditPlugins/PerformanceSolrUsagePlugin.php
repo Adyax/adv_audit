@@ -21,8 +21,6 @@ use Drupal\search_api\Entity\Index;
  *      "search_api_solr:1.2"
  *     },
  *   },
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {

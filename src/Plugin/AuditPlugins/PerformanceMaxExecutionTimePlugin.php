@@ -12,8 +12,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   label = @Translation("Checking php max_execution_time setting"),
  *   category = "performance",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class PerformanceMaxExecutionTimePlugin extends AuditBasePlugin {

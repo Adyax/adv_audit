@@ -23,8 +23,6 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
  *   label = @Translation("Dangerous Tags"),
  *   category = "security",
  *   requirements = {},
- *   enabled = true,
- *   severity = "high"
  * )
  */
 class SecurityDangerousTagsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {

@@ -11,9 +11,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   id = "ci_cd_check",
  *   label = @Translation("Check if CI/CD exists on the project"),
  *   category = "architecture_analysis",
- *   severity = "normal",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class ArchitectureCICDPlugin extends AuditBasePlugin {

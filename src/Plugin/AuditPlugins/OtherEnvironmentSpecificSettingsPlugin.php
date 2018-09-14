@@ -13,7 +13,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   category = "other",
  *   severity = "normal",
  *   requirements = {},
- *   enabled = TRUE,
  * )
  */
 class OtherEnvironmentSpecificSettingsPlugin extends AuditBasePlugin {

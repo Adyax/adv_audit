@@ -23,7 +23,6 @@ use Drupal\Core\Form\FormStateInterface;
  *  category = "performance",
  *  severity = "low",
  *  requirements = {},
- *  enabled = true,
  * )
  */
 class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
