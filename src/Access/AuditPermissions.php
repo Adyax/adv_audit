@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Access;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;

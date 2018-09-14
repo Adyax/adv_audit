@@ -9,7 +9,7 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;

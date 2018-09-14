@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Controller;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;

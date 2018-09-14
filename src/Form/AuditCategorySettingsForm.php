@@ -9,14 +9,14 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
-use Drupal\adv_audit\AuditCategoryManagerService;
+use Drupal\adv_audit\Service\AuditCategoryManagerService;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class AdvAuditCategorySettingsForm.
+ * Class AuditCategorySettingsForm.
  */
-class AdvAuditCategorySettingsForm extends FormBase {
+class AuditCategorySettingsForm extends FormBase {
 
   /**
    * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
@@ -25,9 +25,9 @@ class AdvAuditCategorySettingsForm extends FormBase {
    */
   protected $pluginManagerAdvAuditCheck;
   /**
-   * Drupal\adv_audit\AuditCategoryManagerService definition.
+   * Drupal\adv_audit\Service\AuditCategoryManagerService definition.
    *
-   * @var \Drupal\adv_audit\AuditCategoryManagerService
+   * @var \Drupal\adv_audit\Service\AuditCategoryManagerService
    */
   protected $advAuditManagerCategory;
   /**
@@ -45,7 +45,7 @@ class AdvAuditCategorySettingsForm extends FormBase {
   protected $request;
 
   /**
-   * Constructs a new AdvAuditCategorySettingsForm object.
+   * Constructs a new AuditCategorySettingsForm object.
    */
   public function __construct(
     AuditPluginsManager $plugin_manager_adv_audit_check,

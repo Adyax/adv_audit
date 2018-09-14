@@ -9,7 +9,7 @@ use Drupal\Core\Entity\ContentEntityDeleteForm;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityDeleteForm extends ContentEntityDeleteForm {
+class AuditEntityDeleteForm extends ContentEntityDeleteForm {
 
 
 }

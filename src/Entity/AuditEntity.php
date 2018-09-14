@@ -30,14 +30,14 @@ use Drupal\user\UserInterface;
  *     "views_data" = "Drupal\adv_audit\Entity\AuditEntityViewsData",
  *
  *     "form" = {
- *       "default" = "Drupal\adv_audit\Form\AdvAuditEntityForm",
- *       "add" = "Drupal\adv_audit\Form\AdvAuditEntityForm",
- *       "edit" = "Drupal\adv_audit\Form\AdvAuditEntityForm",
- *       "delete" = "Drupal\adv_audit\Form\AdvAuditEntityDeleteForm",
+ *       "default" = "Drupal\adv_audit\Form\AuditEntityForm",
+ *       "add" = "Drupal\adv_audit\Form\AuditEntityForm",
+ *       "edit" = "Drupal\adv_audit\Form\AuditEntityForm",
+ *       "delete" = "Drupal\adv_audit\Form\AuditEntityDeleteForm",
  *     },
- *     "access" = "Drupal\adv_audit\AuditEntityAccessControlHandler",
+ *     "access" = "Drupal\adv_audit\Access\AuditEntityAccessControlHandler",
  *     "route_provider" = {
- *       "html" = "Drupal\adv_audit\AuditEntityHtmlRouteProvider",
+ *       "html" = "Drupal\adv_audit\Entity\AuditEntityHtmlRouteProvider",
  *     },
  *   },
  *   base_table = "adv_audit",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Service;
 
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Config\ConfigFactoryInterface;

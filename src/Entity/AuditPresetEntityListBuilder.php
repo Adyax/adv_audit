@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit;
+namespace Drupal\adv_audit\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;

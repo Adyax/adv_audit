@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit\Renderer;
 
-use Drupal\adv_audit\AuditCategoryManagerService;
+use Drupal\adv_audit\Service\AuditCategoryManagerService;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
@@ -67,7 +67,7 @@ class AuditReportRenderer implements RenderableInterface {
   /**
    * The category manager service.
    *
-   * @var \Drupal\adv_audit\AuditCategoryManagerService
+   * @var \Drupal\adv_audit\Service\AuditCategoryManagerService
    */
   protected $categoryManager;
 
@@ -285,7 +285,7 @@ class AuditReportRenderer implements RenderableInterface {
    */
   protected function doRenderMessages(AuditBasePlugin $plugin_instance, AuditReason $audit_reason, $msg_type) {
     // Check what we can delivery build message to plugin instance.
-    if ($plugin_instance instanceof AdvAuditReasonRenderableInterface) {
+    if ($plugin_instance instanceof AuditReasonRenderableInterface) {
       $render = $plugin_instance->auditReportRender($audit_reason, $msg_type);
       if (!empty($render)) {
         $this->renderer->render($render);

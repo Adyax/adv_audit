@@ -5,13 +5,13 @@ namespace Drupal\adv_audit\Renderer;
 use Drupal\adv_audit\AuditReason;
 
 /**
- * Interface AdvAuditReasonRenderableInterface.
+ * Interface AuditReasonRenderableInterface.
  *
  * Defines an object which can be rendered by the Render API.
  *
  * @package Drupla\adv_audit\Renderer
  */
-interface AdvAuditReasonRenderableInterface {
+interface AuditReasonRenderableInterface {
 
   /**
    * Build personalized theming from audit response object.

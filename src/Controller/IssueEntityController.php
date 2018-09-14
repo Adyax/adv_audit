@@ -75,7 +75,7 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
     $latest_revision = TRUE;
 
     foreach (array_reverse($vids) as $vid) {
-      /** @var \Drupal\adv_audit\IssueEntityInterface $revision */
+      /** @var \Drupal\adv_audit\Entity\IssueEntityInterface $revision */
       $revision = $adv_audit_issue_storage->loadRevision($vid);
       // Only show revisions that are affected by the language that is being
       // displayed.

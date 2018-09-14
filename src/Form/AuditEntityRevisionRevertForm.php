@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityRevisionRevertForm extends ConfirmFormBase {
+class AuditEntityRevisionRevertForm extends ConfirmFormBase {
 
 
   /**
@@ -40,7 +40,7 @@ class AdvAuditEntityRevisionRevertForm extends ConfirmFormBase {
   protected $dateFormatter;
 
   /**
-   * Constructs a new AdvAuditEntityRevisionRevertForm.
+   * Constructs a new AuditEntityRevisionRevertForm.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $entity_storage
    *   The Audit Result entity storage.

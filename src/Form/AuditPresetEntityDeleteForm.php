@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 /**
  * Builds the form to delete Adv audit preset entity entities.
  */
-class AdvAuditPresetEntityDeleteForm extends EntityConfirmFormBase {
+class AuditPresetEntityDeleteForm extends EntityConfirmFormBase {
 
   /**
    * {@inheritdoc}

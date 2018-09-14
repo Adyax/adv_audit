@@ -10,7 +10,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\views\Entity\View;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 
 /**
  * Checks views are access controlled.
@@ -24,7 +24,7 @@ use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
  *   severity = "critical"
  * )
  */
-class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements AuditReasonRenderableInterface, ContainerFactoryPluginInterface {
 
   /**
    * Drupal\Core\Extension\ModuleHandlerInterface definition.

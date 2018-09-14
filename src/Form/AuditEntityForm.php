@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityForm extends ContentEntityForm {
+class AuditEntityForm extends ContentEntityForm {
 
   /**
    * The current user service.
@@ -28,7 +28,7 @@ class AdvAuditEntityForm extends ContentEntityForm {
   protected $currentUser;
 
   /**
-   * Constructs an AdvAuditEntityForm object for use DI.
+   * Constructs an AuditEntityForm object for use DI.
    */
   public function __construct(AccountProxy $current_user, EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);

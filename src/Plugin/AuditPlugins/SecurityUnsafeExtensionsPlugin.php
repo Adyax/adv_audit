@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\Core\Plugin\PluginFormInterface;
@@ -24,7 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   severity = "high"
  * )
  */
-class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, PluginFormInterface {
+class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements AuditReasonRenderableInterface, PluginFormInterface {
 
   use AuditPluginSubform;
   /**

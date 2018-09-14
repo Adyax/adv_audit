@@ -12,14 +12,14 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("Adv audit preset entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\adv_audit\AuditPresetEntityListBuilder",
+ *     "list_builder" = "Drupal\adv_audit\Entity\AuditPresetEntityListBuilder",
  *     "form" = {
- *       "add" = "Drupal\adv_audit\Form\AdvAuditPresetEntityForm",
- *       "edit" = "Drupal\adv_audit\Form\AdvAuditPresetEntityForm",
- *       "delete" = "Drupal\adv_audit\Form\AdvAuditPresetEntityDeleteForm"
+ *       "add" = "Drupal\adv_audit\Form\AuditPresetEntityForm",
+ *       "edit" = "Drupal\adv_audit\Form\AuditPresetEntityForm",
+ *       "delete" = "Drupal\adv_audit\Form\AuditPresetEntityDeleteForm"
  *     },
  *     "route_provider" = {
- *       "html" = "Drupal\adv_audit\AuditPresetEntityHtmlRouteProvider",
+ *       "html" = "Drupal\adv_audit\Controller\AuditPresetEntityHtmlRouteProvider",
  *     },
  *   },
  *   config_prefix = "preset",

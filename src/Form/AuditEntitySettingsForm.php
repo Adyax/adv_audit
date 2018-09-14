@@ -6,11 +6,11 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class AdvAuditEntitySettingsForm.
+ * Class AuditEntitySettingsForm.
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntitySettingsForm extends FormBase {
+class AuditEntitySettingsForm extends FormBase {
 
   /**
    * Returns a unique string identifying the form.

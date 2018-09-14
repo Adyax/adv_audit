@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -29,7 +29,7 @@ use Drupal\search_api\Entity\Index;
  *   severity = "high"
  * )
  */
-class PerformanceSolrUsagePlugin extends AuditBasePlugin implements AdvAuditReasonRenderableInterface, ContainerFactoryPluginInterface {
+class PerformanceSolrUsagePlugin extends AuditBasePlugin implements AuditReasonRenderableInterface, ContainerFactoryPluginInterface {
 
   /**
    * The search server storage.

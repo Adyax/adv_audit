@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\adv_audit\Entity;
+namespace Drupal\adv_audit\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;

@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityRevisionDeleteForm extends ConfirmFormBase {
+class AuditEntityRevisionDeleteForm extends ConfirmFormBase {
 
 
   /**
@@ -39,7 +39,7 @@ class AdvAuditEntityRevisionDeleteForm extends ConfirmFormBase {
   protected $connection;
 
   /**
-   * Constructs a new AdvAuditEntityRevisionDeleteForm.
+   * Constructs a new AuditEntityRevisionDeleteForm.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $entity_storage
    *   The entity storage.

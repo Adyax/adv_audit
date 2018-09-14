@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\adv_audit\AuditCategoryManagerService;
+use Drupal\adv_audit\Service\AuditCategoryManagerService;
 use Drupal\adv_audit\Batch\AuditRunBatch;
 use Drupal\adv_audit\Entity\AuditEntity;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
@@ -12,9 +12,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class AdvAuditPresetEntityForm.
+ * Class AuditPresetEntityForm.
  */
-class AdvAuditPresetEntityForm extends EntityForm {
+class AuditPresetEntityForm extends EntityForm {
 
   protected $advAuditCheckPluginManager;
 

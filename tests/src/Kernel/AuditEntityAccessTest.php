@@ -11,7 +11,7 @@ use Drupal\user\Entity\User;
  *
  * @group adv_audit
  */
-class AdvAuditEntityAccessTest extends KernelTestBase {
+class AuditEntityAccessTest extends KernelTestBase {
 
   /**
    * Modules to enable.

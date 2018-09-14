@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup adv_audit
  */
-class AdvAuditEntityRevisionRevertTranslationForm extends AdvAuditEntityRevisionRevertForm {
+class AuditEntityRevisionRevertTranslationForm extends AuditEntityRevisionRevertForm {
 
 
   /**
@@ -32,7 +32,7 @@ class AdvAuditEntityRevisionRevertTranslationForm extends AdvAuditEntityRevision
   protected $languageManager;
 
   /**
-   * Constructs a new AdvAuditEntityRevisionRevertTranslationForm.
+   * Constructs a new AuditEntityRevisionRevertTranslationForm.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $entity_storage
    *   The Audit Result entity storage.

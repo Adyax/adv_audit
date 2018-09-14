@@ -10,7 +10,7 @@ use Drupal\adv_audit\Plugin\AuditPluginInterface;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -263,7 +263,7 @@ class AuditPluginSettings extends FormBase {
     }
 
     // Try to build output from plugin instance.
-    if ($this->pluginInstance instanceof AdvAuditReasonRenderableInterface) {
+    if ($this->pluginInstance instanceof AuditReasonRenderableInterface) {
       // If needed you can add call to ::auditReportRender for test.
     }
 
