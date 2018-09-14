@@ -9,3 +9,4 @@ messages:
   impacts: "<p>This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.</p>\r\n"
   fail: "<p>Views caching is configured wrongly.</p>\r\n"
   success: "<p>All cache configurations for views setted up correctly.</p>\r\n"
+help: "Check views cache configuration."

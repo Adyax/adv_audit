@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: low
+help: 'Check if module %link is enabled and configured.'

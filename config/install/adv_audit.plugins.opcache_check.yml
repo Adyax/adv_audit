@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: high
+help: 'Checks if PHP Opcache extension is enabled.'

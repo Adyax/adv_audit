@@ -7,3 +7,4 @@ messages:
   impacts: "<p>Ultimate cron module can improve site's cron system as it runs cron jobs individually in parallel using configurable rules, pool management and load balancing.</p>\r\n"
   fail: "<p>Ultimate cron modules is disabled.</p>\r\n"
   success: "<p>Ultimate cron module is enabled.</p>\r\n"
+help: 'Checks if Ultimate cron module is enabled.'

@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "features_status_check",
  *   label = @Translation("Features status"),
  *   category = "core_and_modules",
- *   severity = "low",
  *   requirements = {
  *     "module": {
  *       "features",

@@ -13,7 +13,7 @@ services:
     arguments: ['@config.factory', '@plugin.manager.adv_audit_check']
   adv_audit.manager.help:
     class: Drupal\adv_audit\Service\AuditPluginHelpService
-    arguments: ['@config.factory', '@plugin.manager.adv_audit_check']
+    arguments: ['@config.factory', '@plugin.manager.adv_audit_check', '@adv_audit.manager.category', '@renderer']
   adv_audit.plugin.config:
     class: Drupal\adv_audit\Service\AuditPluginConfigStorageService
     arguments: ['@config.factory']

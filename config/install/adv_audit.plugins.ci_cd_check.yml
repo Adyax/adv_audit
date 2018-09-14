@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: normal
+help: 'Check if GITlab CI/CD exists.'

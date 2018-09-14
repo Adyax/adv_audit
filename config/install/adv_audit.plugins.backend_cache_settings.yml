@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: critical
+help: "Check usage of memcache/redis."

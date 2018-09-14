@@ -4,11 +4,15 @@ namespace Drupal\adv_audit\Service;
 
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Render\Renderer;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Provide auditor help information.
  */
 class AuditPluginHelpService {
+
+  use StringTranslationTrait;
 
   /**
    * The config factory.
@@ -32,10 +36,16 @@ class AuditPluginHelpService {
    *   Service instance.
    * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $plugin_manager
    *   Provide access to auditor plugins.
+   * @param \Drupal\adv_audit\Service\AuditCategoryManagerService $category_manager
+   *   Access to category manager.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   Access to render service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager, AuditCategoryManagerService $category_manager, Renderer $renderer) {
     $this->configFactory = $config_factory;
-    $this->pluginManager = $config_factory;
+    $this->pluginManager = $plugin_manager;
+    $this->categoryManager = $category_manager;
+    //    $this->render = $renderer;
   }
 
   /**
@@ -57,13 +67,32 @@ class AuditPluginHelpService {
    * @return array
    *   Return plugins grouped by category.
    */
-  public function getPlugins() {
-    $plugins = [];
-    return $plugins;
+  public function getHelp() {
+    $categories = $this->pluginManager->getPluginsByCategory();
+    ksort($categories);
+    $render_array = [];
+    foreach ($categories as $key => $category) {
+      $category_definition = $this->categoryManager->getCategoryDefinition($key);
+      $render_array[$key]['title'] = $category_definition['label'];
+      $render_array[$key]['plugins'] = $this->render($category);
+    }
+    return $render_array;
   }
 
-  protected function getHelp($plugin_id){
+  protected function render($category) {
+    foreach ($category as &$plugin) {
+      $plugin = [
+        'label' => $this->t($plugin['label']->__toString()),
+        'help' => $this->t($this->getPluginHelp($plugin['id'])),
+      ];
+    }
+    return $category;
+  }
 
+  protected function getPluginHelp($plugin_id) {
+    $configs = $this->configFactory->get($this->getConfigKey($plugin_id))
+      ->getRawData();
+    return isset($configs['help']) ? $configs['help'] : 'Plugin has\'not help information.';
   }
 
 }

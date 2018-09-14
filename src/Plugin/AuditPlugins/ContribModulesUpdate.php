@@ -17,7 +17,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  *   label = @Translation("Modules non-security updates"),
  *   category = "core_and_modules",
  *   requirements = {},
- *   severity = "high"
  * )
  */
 class ContribModulesUpdate extends AuditModulesBasePlugin implements ContainerFactoryPluginInterface {
