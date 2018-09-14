@@ -22,19 +22,26 @@ class AuditEntityAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
         if (!$entity->isPublished()) {
-          return AccessResult::allowedIfHasPermission($account, 'view unpublished audit result entity entities');
+          $access_result = AccessResult::allowedIfHasPermission($account, 'view unpublished audit result entity entities');
         }
-        return AccessResult::allowedIfHasPermission($account, 'view published audit result entity entities');
+        else {
+          $access_result = AccessResult::allowedIfHasPermission($account, 'view published audit result entity entities');
+        }
+        break;
 
       case 'update':
-        return AccessResult::allowedIfHasPermission($account, 'edit audit result entity entities');
+        $access_result = AccessResult::allowedIfHasPermission($account, 'edit audit result entity entities');
+        break;
 
       case 'delete':
-        return AccessResult::allowedIfHasPermission($account, 'delete audit result entity entities');
+        $access_result = AccessResult::allowedIfHasPermission($account, 'delete audit result entity entities');
+        break;
 
       default:
-        return AccessResult::neutral();
+        $access_result = AccessResult::neutral();
     }
+
+    return $access_result;
   }
 
   /**

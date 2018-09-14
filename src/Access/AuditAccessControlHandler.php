@@ -23,17 +23,22 @@ class AuditAccessControlHandler extends EntityAccessControlHandler {
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     switch ($operation) {
       case 'view':
-        return AccessResult::allowedIfHasPermission($account, 'view adv_audit entity');
+        $access_result = AccessResult::allowedIfHasPermission($account, 'view adv_audit entity');
+        break;
 
       case 'edit':
-        return AccessResult::allowedIfHasPermission($account, 'edit adv_audit entity');
+        $access_result = AccessResult::allowedIfHasPermission($account, 'edit adv_audit entity');
+        break;
 
       case 'delete':
-        return AccessResult::allowedIfHasPermission($account, 'delete adv_audit entity');
+        $access_result = AccessResult::allowedIfHasPermission($account, 'delete adv_audit entity');
+        break;
 
       default:
-        return AccessResult::forbidden();
+        $access_result = AccessResult::forbidden();
     }
+
+    return $access_result;
   }
 
   /**
