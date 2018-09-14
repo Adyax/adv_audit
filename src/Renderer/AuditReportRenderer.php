@@ -215,10 +215,24 @@ class AuditReportRenderer implements RenderableInterface {
       $plugin_insatnce = $this->pluginManagerAdvAuditCheck->createInstance($audit_reason->getPluginId());
       if ($plugin_insatnce->getCategoryName() == $category_id) {
         // Increase a total checks counter.
+        if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
+          // Skip.
+          continue;
+        }
+
         $total_count++;
         if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
           $passed++;
         }
+
+        if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_FAIL) {
+          // Check active issues.
+          $open_issues = $audit_reason->getOpenIssues();
+          if (empty($open_issues)) {
+            $passed++;
+          }
+        }
+
         $plugins_list[] = $plugin_insatnce->id();
       }
     }
@@ -366,9 +380,12 @@ class AuditReportRenderer implements RenderableInterface {
       }
     }
 
-    return [
+    $output = [
       '#markup' => $message,
-      'active_issues' => [
+    ];
+
+    if (!empty($active_rows)) {
+      $output['active_issues'] = [
         '#theme' => 'table',
         '#caption' => $this->t('Active issues'),
         '#header' => [
@@ -376,8 +393,10 @@ class AuditReportRenderer implements RenderableInterface {
           ['data' => $this->t('Edit'), 'width' => '10%'],
         ],
         '#rows' => $active_rows,
-      ],
-      'ignored_issues' => [
+      ];
+    }
+    if (!empty($ignored_rows)) {
+      $output['ignored_issues'] = [
         '#theme' => 'table',
         '#caption' => $this->t('Ignored issues'),
         '#header' => [
@@ -385,8 +404,10 @@ class AuditReportRenderer implements RenderableInterface {
           ['data' => $this->t('Edit'), 'width' => '10%'],
         ],
         '#rows' => $ignored_rows,
-      ],
-    ];
+      ];
+    }
+
+    return $output;
   }
 
 }

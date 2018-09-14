@@ -107,7 +107,6 @@
             {% if category.reports_failed|length %}
             <div class="report-items failed">
               <h4>{{ 'Failed issues'|t }}</h4>
-              {#{{ devel_breakpoint() }}#}
               {% for report in category.reports_failed %}
                 <div {{ report.result_attributes }}>
                   <div class="report-title">
@@ -285,8 +284,8 @@
                     {# Should be moved to preprocess function #}
                     {% if report.reason is not empty %}
                       <div class="content-panel">
-                        <h5>{{ 'Why this check is failed: '|t }}</h5>
-                        {{ report.reason }}
+                          <strong>{{ 'Why this audit is skipped: '|t }}</strong>
+                          {{ report.reason }}
                       </div>
                     {% endif %}
                   </div>
