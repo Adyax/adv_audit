@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: critical
+  severity: normal
   status: 1
   minimum_cache_lifetime: '60'
 messages:

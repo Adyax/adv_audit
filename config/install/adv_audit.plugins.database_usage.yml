@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: critical
+  severity: high
   status: 1
   max_table_size: '100'
   excluded_tables: test

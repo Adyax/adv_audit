@@ -1,6 +1,6 @@
 settings:
   status: 1
-  severity: high
+  severity: normal
   path: modules
   exts: "php\r\nmodule\r\ninc\r\ninstall\r\ntest\r\nprofile\r\ntheme\r\njs\r\ncss\r\ninfo\r\ntxt\r\nmd\r\nyml"
   ignores: '*/vendor/*'

@@ -107,7 +107,7 @@
             {% if category.reports_failed|length %}
             <div class="report-items failed">
               <h4>{{ 'Failed issues'|t }}</h4>
-              {{ devel_breakpoint() }}
+              {#{{ devel_breakpoint() }}#}
               {% for report in category.reports_failed %}
                 <div {{ report.result_attributes }}>
                   <div class="report-title">

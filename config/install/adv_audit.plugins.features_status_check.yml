@@ -6,4 +6,4 @@ messages:
   success: "<p>All Features are actual.</p>\r\n"
 settings:
   enabled: 1
-  severity: low
+  severity: normal

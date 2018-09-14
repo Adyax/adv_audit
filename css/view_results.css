@@ -246,11 +246,11 @@
   display: block;
 }
 
-.report-content h5.critical {
+.report-content h5.high {
   color: #e62600;
 }
 
-.report-content h5.high {
+.report-content h5.normal {
   color: #ff9900;
 }
 

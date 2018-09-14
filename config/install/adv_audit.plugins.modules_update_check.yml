@@ -6,4 +6,4 @@ messages:
   success: "<p>All modules are up-to-date.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal

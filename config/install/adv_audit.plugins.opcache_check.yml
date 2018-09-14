@@ -6,4 +6,4 @@ messages:
   success: "<p>Opcache extension enabled.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal

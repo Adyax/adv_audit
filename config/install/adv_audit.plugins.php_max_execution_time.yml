@@ -7,4 +7,4 @@ messages:
   help: "<p>Checks if the max_execution_time setting in php.ini file is set to a value of 300 or less.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal

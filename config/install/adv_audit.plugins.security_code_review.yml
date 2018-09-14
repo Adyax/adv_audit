@@ -6,4 +6,4 @@ messages:
   success: "<p>Every dependencies are secure.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: normal

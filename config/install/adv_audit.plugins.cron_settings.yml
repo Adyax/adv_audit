@@ -6,4 +6,4 @@ messages:
   success: "<p>No problems detected with cron launch.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: high

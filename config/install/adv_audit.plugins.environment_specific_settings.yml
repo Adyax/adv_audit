@@ -6,4 +6,4 @@ messages:
   success: "<p>Environment specific settings are correct.</p>\r\n"
 settings:
   enabled: 1
-  severity: normal
+  severity: high

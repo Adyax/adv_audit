@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: critical
+  severity: low
   status: 1
   files: "core/CHANGELOG.txt\r\ncore/COPYRIGHT.txt\r\ncore/INSTALL.mysql.txt\r\ncore/INSTALL.pgsql.txt\r\ncore/INSTALL.sqlite.txt\r\ncore/INSTALL.txt\r\ncore/LICENSE.txt\r\ncore/MAINTAINERS.txt\r\nREADME.txt\r\ncore/UPGRADE.txt\r\nthemes/README.txt\r\nmodules/README.txt"
 messages:
