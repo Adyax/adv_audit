@@ -29,7 +29,6 @@ class PatchedCore extends PatchedModulesCheck {
     $hacked = new HackedController();
     $hacked = $hacked->hackedStatus();
 
-    $issues = [];
     foreach ($hacked['#data'] as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'core') {
         $issues['hacked_core'] = [
@@ -37,12 +36,8 @@ class PatchedCore extends PatchedModulesCheck {
           '@title' => $project['title'],
           '@count' => $project['counts']['different'],
         ];
-        break;
+        return $this->fail('', ['issues' => $issues]);
       }
-    }
-
-    if (!empty($issues)) {
-      return $this->fail('', ['issues' => $issues]);
     }
 
     return $this->success();
