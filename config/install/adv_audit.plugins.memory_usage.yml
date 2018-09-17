@@ -1,6 +1,6 @@
 settings:
   status: 1
-  severity: high
+  severity: normal
   urls: /
   mem: '15'
   enabled: 1

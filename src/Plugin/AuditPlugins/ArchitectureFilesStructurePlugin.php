@@ -6,6 +6,8 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Check files structure on project.
@@ -71,7 +73,12 @@ class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements Contai
     }
 
     if (!empty($this->issues)) {
-      return $this->fail(NULL, ['issues' => $this->issues]);
+      return $this->fail(NULL, [
+        'issues' => $this->issues,
+        '%link' => Link::fromTextAndUrl($this->t('Directory Structure'),
+          Url::fromUri('https://www.drupal.org/docs/8/understanding-drupal/directory-structure'))
+          ->toString(),
+      ]);
     }
     return $this->success();
   }

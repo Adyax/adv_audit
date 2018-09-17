@@ -6,4 +6,4 @@ messages:
   success: "<p>Backend cache configured properly on the site.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: high

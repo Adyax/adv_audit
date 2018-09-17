@@ -142,7 +142,29 @@ class AuditReportRenderer implements RenderableInterface {
       }
       foreach ($this->metaInformation['category'][$category_id]['plugin_list'] as $plugin_id) {
         $reason = $this->getReasonByPluginId($plugin_id);
-        $build[$category_id]['reports'][$plugin_id] = $this->doBuildAuditReason($reason);
+        switch ($reason->getStatus()) {
+          case AuditResultResponseInterface::RESULT_PASS:
+            $build[$category_id]['reports_passed'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          case AuditResultResponseInterface::RESULT_FAIL:
+            // Check reported issues.
+            $reported_issues = $reason->getOpenIssues();
+            if (empty($reported_issues)) {
+              // All the ignored reports are initially failed.
+              $build[$category_id]['reports_ignored'][$plugin_id] = $this->doBuildAuditReason($reason);
+              break;
+            }
+            $build[$category_id]['reports_failed'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          case AuditResultResponseInterface::RESULT_SKIP:
+            $build[$category_id]['reports_skipped'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          default:
+            break;
+        }
       }
     }
 

@@ -6,4 +6,4 @@ messages:
   success: "<p>All views are limited by permissions/roles.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: normal

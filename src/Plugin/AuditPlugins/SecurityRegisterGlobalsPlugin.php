@@ -3,6 +3,8 @@
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Check Register Globals is enabled.
@@ -29,6 +31,8 @@ class SecurityRegisterGlobalsPlugin extends AuditBasePlugin {
             '@issue_title' => 'register_globals is enabled.',
           ],
         ],
+        '%link' => Link::fromTextAndUrl($this->t('PHP documentation'),
+          Url::fromUri('http://php.net/manual/en/security.globals.php'))->toString(),
       ]);
     }
 
