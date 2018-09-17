@@ -2,8 +2,12 @@ settings:
   enabled: 1
   severity: high
 messages:
-  description: '<p>Check if core was hacked.</p>\r\n'
-  actions: '<p>Review patched modules and make sure, that every change could be restored from patch has been stored in file.</p>\r\n'
-  impacts: '<p>Without storing patches in files, web-site could be broken during updates.</p>\r\n'
-  fail: '<p>Drupal core was changed.</p>\r\n'
-  success: '<p>Drupal core is original.</p>\r\n'
+  description: "<p>Check if core was hacked.</p>\r\n"
+  actions: "<p>Review patched files immidiatelly and be sure that Core was not hacked by attackers.</p>\r\n"
+  impacts: "<p><ul>
+              <li>You will make it complicated, difficult, or nearly impossible to apply site updates such as Security and bug fixes</li>
+              <li>You will make it difficult for those that come after to maintain the site.</li>
+              <li>You could possibly leave your site vulnerable to exploits.</li>
+            </ul></p>\r\n"
+  fail: "<p>Drupal core was changed.</p>\r\n"
+  success: "<p>Drupal core is original.</p>\r\n"

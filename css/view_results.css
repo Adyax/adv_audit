@@ -259,8 +259,6 @@
 }
 
 .audit-reason code {
-  #font-family: Consolas,monaco,monospace;
-  #font-size: .875rem;
   white-space: nowrap;
   padding-bottom: 0.3125rem;
   padding-top: 0.3125rem;
