@@ -99,10 +99,8 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
 
       foreach ($issue_details['hacked_modules'] as $hacked_module) {
         $issues[] = [
-          'patched_modules_check_' . $hacked_module['project_name'] => [
             '@issue_title' => 'Changed module: @changed_module',
             '@changed_module' => $hacked_module['title'],
-          ],
         ];
       }
 
