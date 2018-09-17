@@ -85,7 +85,7 @@ class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements Con
           ];
         }
       }
-      return $this->fail($this->t(''), ['issues' => $issues]);
+      return $this->fail(NULL, ['issues' => $issues]);
     }
 
     return $this->success();
