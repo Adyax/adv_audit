@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
-use Drupal\hacked\Controller\HackedController;
-
 /**
  * Check Drupal Core for patches.
  *

@@ -112,23 +112,4 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
     return $this->success();
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function checkRequirements() {
-    parent::checkRequirements();
-
-    $hacked = new HackedController();
-    $hacked = $hacked->hackedStatus();
-    $is_validated = is_array($hacked) && isset($hacked['#data']);
-
-    if (!$is_validated) {
-      $link = Link::createFromRoute('here', 'hacked.report')->toString();
-      throw new RequirementsException(
-        $this->t('Hacked report is not generated. You can generate it %link', ['%link' => $link]),
-        $this->pluginDefinition['requirements']['module']
-      );
-    }
-  }
-
 }
