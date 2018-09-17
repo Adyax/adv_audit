@@ -9,3 +9,4 @@ messages:
   impacts: "<p>SSL settings issues could have impact to security and search engine ranking.</p>\r\n"
   fail: "<p>SSL settings have security issues. For more info please visit %link.</p>\r\n"
   success: "<p>Grade is A or A+ which is OK. For more info please visit %link.</p>\r\n"
+help: 'Please check server SSL settings.'

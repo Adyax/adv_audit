@@ -18,8 +18,7 @@ use Drupal\hacked\Controller\HackedController;
  *     "module": {
  *      "hacked:2.0-beta",
  *     },
- *   },
- *   severity = "high"
+ *   }
  * )
  */
 class ContribPatchedModulesPlugin extends AuditBasePlugin {

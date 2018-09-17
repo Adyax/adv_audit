@@ -1,3 +1,10 @@
 settings:
   enabled: 1
   severity: normal
+messages:
+  description: "<p>Check if core and contribution modules were hacked.</p>\r\n"
+  actions: "<p>Review patched modules and make sure, that every change could be restored from patch has been stored in file.</p>\r\n"
+  impacts: "<p>Without storing patches in files, web-site could be broken during updates.</p>\r\n"
+  fail: "<p>There are hacked modules.</p>\r\n"
+  success: "<p>All modules are original.</p>\r\n"
+help: "Check if core and contribution modules were hacked."

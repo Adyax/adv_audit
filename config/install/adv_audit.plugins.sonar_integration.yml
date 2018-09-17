@@ -14,3 +14,4 @@ settings:
   login:
   password:
   project:
+help: "Auditing code smells, code complexity. Code metrics and potential problems."
