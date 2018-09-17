@@ -31,6 +31,9 @@ class AuditPresetEntityForm extends EntityForm {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(AuditPluginsManager $adv_audit_check_manager, AuditCategoryManagerService $category_manager) {
     $this->advAuditCheckPluginManager = $adv_audit_check_manager;
     $this->categoryManagerService = $category_manager;
