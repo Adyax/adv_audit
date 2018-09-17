@@ -1,5 +1,5 @@
 settings:
-  enabled: 1
+  enabled: 0
   severity: normal
 messages:
   description: "<p>Check if core and contribution modules were hacked.</p>\r\n"

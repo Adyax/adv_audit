@@ -25,10 +25,10 @@ class ContribPatchedCorePlugin extends ContribPatchedModulesPlugin {
    * Process checkpoint review.
    */
   public function perform() {
-    $hacked = new HackedController();
-    $hacked = $hacked->hackedStatus();
 
-    foreach ($hacked['#data'] as $project) {
+    $hacked = $this->cache->get('hacked:full-report');
+    $hacked = $hacked->data;
+    foreach ($hacked as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'core') {
         $issues['hacked_core'] = [
           '@issue_title' => '@title was hacked (@count changes)',

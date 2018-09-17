@@ -4,8 +4,13 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Link;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Url;
 use Drupal\hacked\Controller\HackedController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Check Contrib module and Core for patches.
@@ -21,18 +26,69 @@ use Drupal\hacked\Controller\HackedController;
  *   }
  * )
  */
-class ContribPatchedModulesPlugin extends AuditBasePlugin {
+class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
+
+  /**
+   * @inheritdoc
+   */
+  public function __construct(array $configuration, string $plugin_id, array $plugin_definition, ModuleHandler $module_handler, CacheBackendInterface $hacked_cache) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->cache = $hacked_cache;
+    $this->moduleHandler = $module_handler;
+    $this->validate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('module_handler'),
+      $container->get('cache.hacked')
+    );
+  }
+
+  /**
+   * Check if plugin is available.
+   */
+  private function validate() {
+    if (!$this->getStatus()) {
+      return;
+    }
+
+    // Disable plugin if hacked isn't installed.
+    if (!$this->moduleHandler->moduleExists('hacked')) {
+      $this->setPluginStatus(FALSE);
+      drupal_set_message($this->t('Install @module', [
+        '@module' => Link::fromTextAndUrl('Hacked', Url::fromUri('https://www.drupal.org/project/hacked'))
+          ->toString(),
+      ]));
+    }
+
+    // Disable plugin if report wasn't generated.
+    $data = $this->cache->get('hacked:full-report');
+    if (!$data || !$data->data) {
+      $this->setPluginStatus(FALSE);
+      drupal_set_message($this->t('@link report to include Hacked results into audit.', [
+        '@link' => Link::fromTextAndUrl('Generate', Url::fromRoute('hacked.manual_status'))
+          ->toString(),
+      ]));
+    }
+
+  }
 
   /**
    * Process checkpoint review.
    */
   public function perform() {
     $issue_details = [];
-    $hacked = new HackedController();
-    $hacked = $hacked->hackedStatus();
-
+    $hacked = $this->cache->get('hacked:full-report');
+    $hacked = $hacked->data;
     $issue_details['hacked_modules'] = [];
-    foreach ($hacked['#data'] as $project) {
+    foreach ($hacked as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'module') {
         $issue_details['hacked_modules'][] = $project;
       }
@@ -45,7 +101,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin {
         $issues = [
           'patched_modules_check_' . $hacked_module['project_name'] => [
             '@issue_title' => 'Changed module: @changed_module',
-            '@changed_module' => $hacked_module['title']
+            '@changed_module' => $hacked_module['title'],
           ],
         ];
       }
