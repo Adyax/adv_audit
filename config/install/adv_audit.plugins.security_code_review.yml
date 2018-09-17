@@ -1,10 +1,10 @@
 messages:
   description: "<p>Checks vendor vulnerabilities.</p>\r\n"
-  actions: "<p>Update dependencies.</p>\r\n"
+  actions: "<p>Update dependencies. Reed more about security issues in %link</p>\r\n"
   impacts: "<p>Without security updates your web-site isn't protected against attacts.</p>\r\n"
   fail: "<p>Some of dependencies have security updates.</p>\r\n"
   success: "<p>Every dependencies are secure.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: normal
 help: 'Check dependencies security vulnerabilities.'

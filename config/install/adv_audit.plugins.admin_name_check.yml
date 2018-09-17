@@ -1,7 +1,7 @@
 messages:
   description: "<p>Ideally the admin username should not contain the word admin or any part of the current domain. The current admin username is %name.</p>\r\n"
-  actions: "<p>Check admin username if it consists \"admin\" part or parts of host name and change one if it is necessary</p>\r\n"
-  impacts: ''
+  actions: "<p>To change the username of your admin, on your website, open the People page at <code>/admin/people</code>, and then click the <strong>edit</strong> link on the row of your User ID 1 account. Edit the <strong>Username</strong>, and then click <strong>Save</strong>.</p>\r\n"
+  impacts: "<p>Attackers can circumvent this best practice if you allow access to user profiles by anonymous or authenticated users, but it can still block automated attacks.</p>"
   fail: "<p>There are one or more reasons why admin's name is not secured. See bellow. The current admin username is %name.</p>\r\n"
   success: "<p>Admin username is secure</p>\r\n"
 settings:

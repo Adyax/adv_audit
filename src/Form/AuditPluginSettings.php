@@ -130,9 +130,9 @@ class AuditPluginSettings extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Severity'),
       '#options' => [
-        AuditPluginInterface::SEVERITY_CRITICAL => 'Critical',
-        AuditPluginInterface::SEVERITY_HIGH => 'High',
-        AuditPluginInterface::SEVERITY_LOW => 'Low',
+        'high' => 'High',
+        'normal' => 'Normal',
+        'low' => 'Low',
       ],
       '#default_value' => $this->pluginInstance->getSeverityLevel(),
     ];

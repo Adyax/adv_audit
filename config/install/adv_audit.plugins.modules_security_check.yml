@@ -6,5 +6,5 @@ messages:
   success: "<p>All modules are up-to-date.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: high
 help: "Check security updates for contrib modules."

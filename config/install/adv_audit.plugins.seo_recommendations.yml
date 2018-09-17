@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: high
+  severity: normal
   status: 1
   modules: "google_analytics\r\nmetatag\r\npathauto\r\nxmlsitemap"
 messages:

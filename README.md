@@ -1,4 +1,4 @@
-#Advanced Audit Tool
+# Advanced Audit Tool
 
 Drupal 8 auditor tool developed by Adyax.
 
@@ -14,10 +14,10 @@ To be able to setup this module on your project you will need following list of 
 
 * Update your project `composer.json` file and add following lines to the `repositories` block:
 ```
-        {
-            "type": "vcs",
-            "url": "git@code.adyax.com:Auditor/adv_audit.git"
-        }
+{
+     "type": "vcs",
+     "url": "git@code.adyax.com:Auditor/adv_audit.git"
+ }
 ```
 the resulting block should look like:
 

@@ -6,5 +6,5 @@ messages:
   success: "<p>The trusted_host_patterns setting is set to allow %trusted_host_patterns.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal
 help: "Check Trusted Host Settings."

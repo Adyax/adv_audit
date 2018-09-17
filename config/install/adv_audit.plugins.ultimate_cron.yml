@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: high
+  severity: low
 messages:
   description: "<p>Checks if Ultimate cron module is enabled.</p>\r\n"
   actions: "<p>Install Ultimate cron module.</p>\r\n"

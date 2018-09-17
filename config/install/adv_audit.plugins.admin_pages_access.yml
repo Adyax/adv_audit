@@ -1,6 +1,6 @@
 settings:
   status: 1
-  severity: high
+  severity: normal
   urls: "/node\r\n/node/add\r\n/taxonomy/term/{entity:taxonomy_term}\r\n/admin/structure/taxonomy/add\r\n/admin/structure/taxonomy/manage/{entity:taxonomy_vocabulary}/add\r\n/admin/people/create"
   enabled: 1
 messages:

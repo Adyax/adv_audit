@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: high
+  severity: normal
 messages:
   description: "<p>Check if core and contribution modules were hacked.</p>\r\n"
   actions: "<p>Review patched modules and make sure, that every change could be restored from patch has been stored in file.</p>\r\n"
