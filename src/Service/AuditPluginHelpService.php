@@ -97,7 +97,7 @@ class AuditPluginHelpService {
   protected function getPluginHelp($plugin_id) {
     $configs = $this->configFactory->get($this->getConfigKey($plugin_id))
       ->getRawData();
-    return isset($configs['help']) ? $configs['help'] : $this->t('Plugin has\'not help information.')->__toString();
+    return isset($configs['help']) ? $configs['help'] : 'Plugin has\'not help information.';
   }
 
 }
