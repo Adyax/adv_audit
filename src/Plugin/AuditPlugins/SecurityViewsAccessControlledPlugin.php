@@ -79,7 +79,7 @@ class SecurityViewsAccessControlledPlugin extends AuditBasePlugin implements Con
       foreach ($findings as $view => $displays) {
         foreach ($displays as $display) {
           $issues[] = [
-            '@issue_title' => 'View with unlimited access. @view : @display',
+            '@issue_title' => 'The @view:@display has no access restrictions.',
             '@view' => $view,
             '@display' => $display,
           ];
