@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: high
+help: "Checks if the register_globals is disabled."

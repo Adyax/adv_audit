@@ -9,3 +9,4 @@ messages:
   impacts: "<p>File and image fields allow for uploaded files. Some extensions are considered dangerous because the files can be evaluated and then executed in the browser. A malicious user could use this opening to gain control of your site.</p>\r\n"
   fail: "<p>Unsafe file extensions are allowed in uploads.</p>\r\n"
   success: "<p>Only safe extensions are allowed for uploaded files and images.</p>\r\n"
+help: 'Only safe extensions are allowed for uploaded files and images.'

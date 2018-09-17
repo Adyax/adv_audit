@@ -13,3 +13,4 @@ messages:
   impacts: "<p>The Filtered HTML input format uses the HTML Filter when outputting content. The Full HTML input format does not use this filter, allowing all HTML tags to be output. For this reason a misconfigured Filtered HTML input format is as bad as allowing untrusted users on your site to use Full HTML. Certain HTML tags can allow an attacker to take control of your site.</p>\r\n"
   fail: "<p>Untrusted users are allowed to input dangerous HTML tags.</p>\r\n"
   success: "<p>Untrusted users are not allowed to input dangerous HTML tags.</p>\r\n"
+help: 'Certain HTML tags can allow an attacker to take control of your site. Drupal''s input format system makes use of a set filters to run on incoming text. The ''HTML Filter'' strips out harmful tags and Javascript events and should be used on all formats accessible by untrusted users.'

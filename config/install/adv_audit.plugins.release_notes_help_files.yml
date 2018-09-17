@@ -9,3 +9,4 @@ messages:
   impacts: "<p>Leaving these files on the webserver is a minor security risk. These files are useless on production anyway and they simply should not be there.</p>\r\n"
   fail: "<p>Release note and help files still present on your server.</p>\r\n"
   success: "<p>Release note and help files have been removed.</p>\r\n"
+help: 'Checks presense of release notes & help files on the server.'

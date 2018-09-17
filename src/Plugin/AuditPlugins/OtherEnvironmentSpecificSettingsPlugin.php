@@ -11,7 +11,6 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
  *   id = "environment_specific_settings",
  *   label = @Translation("Check environment settings."),
  *   category = "other",
- *   severity = "normal",
  *   requirements = {},
  * )
  */

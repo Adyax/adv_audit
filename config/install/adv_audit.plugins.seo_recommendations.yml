@@ -9,3 +9,4 @@ messages:
   impacts: "<p>These issues can decrease search engine rates of the site.</p>\r\n"
   fail: "<p>There are number of issues.</p>\r\n"
   success: "<p>SEO recommedations fullfilled.</p>\r\n"
+help: 'Check SEO recommendations.'

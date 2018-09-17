@@ -21,7 +21,6 @@ use Drupal\Core\Form\FormStateInterface;
  *  id = "page_speed_insights",
  *  label = @Translation("Page speed insights"),
  *  category = "performance",
- *  severity = "low",
  *  requirements = {},
  * )
  */
