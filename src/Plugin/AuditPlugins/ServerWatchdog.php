@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
+namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
-use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Plugin\AuditBasePlugin;
 
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -13,16 +13,14 @@ use Drupal\Core\Database\Connection;
 /**
  * Provide watchdog analyze.
  *
- * @AdvAuditCheck(
- *  id = "watchog",
+ * @AuditPlugin(
+ *  id = "watchdog",
  *  label = @Translation("Analyze Watchdog Logs."),
  *  category = "server_configuration",
- *  severity = "normal",
- *  enabled = true,
  *  requirements = {},
  * )
  */
-class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterface {
+class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginInterface {
   /**
    * Interface for working with drupal module system.
    *
@@ -228,12 +226,11 @@ class Watchdog extends AdvAuditCheckBase implements ContainerFactoryPluginInterf
       foreach ($php_messages as $key => $count) {
         $issue[] = $severity_types[$key] . ':' . $count;
       }
-      $text = 'PHP messages: ';
-      $text .= implode(', ', $issue);
-      $text .= ' - total ' . $php_percent . '%';
+
       return [
-        '@issue_title' => '@message',
-        '@message' => $text,
+        '@issue_title' => 'PHP messages: @messages - total @percent %',
+        '@messages' => implode(', ', $issue),
+        '@percent' => $php_percent,
       ];
 
     }
