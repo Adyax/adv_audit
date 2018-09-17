@@ -65,7 +65,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
       drupal_set_message($this->t('Install @module', [
         '@module' => Link::fromTextAndUrl('Hacked', Url::fromUri('https://www.drupal.org/project/hacked'))
           ->toString(),
-      ]));
+      ]), 'error');
     }
 
     // Disable plugin if report wasn't generated.
@@ -75,7 +75,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
       drupal_set_message($this->t('@link report to include Hacked results into audit.', [
         '@link' => Link::fromTextAndUrl('Generate', Url::fromRoute('hacked.manual_status'))
           ->toString(),
-      ]));
+      ]), 'error');
     }
 
   }
