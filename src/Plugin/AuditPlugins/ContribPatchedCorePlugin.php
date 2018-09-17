@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\adv_audit\Plugin\AdvAuditCheck;
+namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\hacked\Controller\HackedController;
 
 /**
  * Check Drupal Core for patches.
  *
- * @AdvAuditCheck(
+ * @AuditPlugin(
  *   id = "patched_core",
  *   label = @Translation("Patched Drupal core."),
  *   category = "core_and_modules",
@@ -16,11 +16,10 @@ use Drupal\hacked\Controller\HackedController;
  *      "hacked:2.0-beta",
  *     },
  *   },
- *   enabled = true,
  *   severity = "high"
  * )
  */
-class PatchedCore extends PatchedModulesCheck {
+class ContribPatchedCorePlugin extends ContribPatchedModulesPlugin {
 
   /**
    * Process checkpoint review.
