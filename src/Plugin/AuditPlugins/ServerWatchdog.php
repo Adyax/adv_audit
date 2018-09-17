@@ -118,7 +118,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     if ($count) {
       $percent = round($count / $count_rows * 100);
     }
-    if ($percent >= 10) {
+    if ($percent != 0) {
       return [
         '@issue_title' => "@count_404 pages not found (@percent_404%).",
         '@count_404' => $count,
@@ -216,25 +216,17 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
         ->execute()
         ->fetchField();
       if ($count_messages) {
-        $php_messages[$key] = $count_messages;
+        $php_messages[] = $severity_types[$key] . ':' . $count_messages;
       }
     }
 
     $php_percent = round(($php_total_count / $count_rows) * 100, 2);
-    if ($php_percent >= 10) {
-      $issue = [];
-      foreach ($php_messages as $key => $count) {
-        $issue[] = $severity_types[$key] . ':' . $count;
-      }
 
-      return [
-        '@issue_title' => 'PHP messages: @messages - total @percent %',
-        '@messages' => implode(', ', $issue),
-        '@percent' => $php_percent,
-      ];
-
-    }
-    return FALSE;
+    return [
+      '@issue_title' => 'PHP messages: @messages - total @percent %',
+      '@messages' => implode(', ', $php_messages),
+      '@percent' => $php_percent,
+    ];
   }
 
 }
