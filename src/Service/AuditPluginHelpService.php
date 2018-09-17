@@ -30,6 +30,14 @@ class AuditPluginHelpService {
   protected $pluginManager;
 
   /**
+   * Audit categories service.
+   *
+   * @var \Drupal\adv_audit\Service\AuditCategoryManagerService
+   *   Provide access to audit categories.
+   */
+  protected $categoryManager;
+
+  /**
    * AuditPluginHelpService constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -38,14 +46,11 @@ class AuditPluginHelpService {
    *   Provide access to auditor plugins.
    * @param \Drupal\adv_audit\Service\AuditCategoryManagerService $category_manager
    *   Access to category manager.
-   * @param \Drupal\Core\Render\Renderer $renderer
-   *   Access to render service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager, AuditCategoryManagerService $category_manager, Renderer $renderer) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager, AuditCategoryManagerService $category_manager) {
     $this->configFactory = $config_factory;
     $this->pluginManager = $plugin_manager;
     $this->categoryManager = $category_manager;
-    //    $this->render = $renderer;
   }
 
   /**
@@ -92,7 +97,7 @@ class AuditPluginHelpService {
   protected function getPluginHelp($plugin_id) {
     $configs = $this->configFactory->get($this->getConfigKey($plugin_id))
       ->getRawData();
-    return isset($configs['help']) ? $configs['help'] : 'Plugin has\'not help information.';
+    return isset($configs['help']) ? $configs['help'] : $this->t('Plugin has\'not help information.')->__toString();
   }
 
 }
