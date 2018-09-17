@@ -6,4 +6,4 @@ messages:
   success: "<p>Up to date.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: high

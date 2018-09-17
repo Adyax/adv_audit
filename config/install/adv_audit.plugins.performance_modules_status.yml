@@ -6,4 +6,4 @@ messages:
   success: ''
 settings:
   enabled: 1
-  severity: high
+  severity: normal

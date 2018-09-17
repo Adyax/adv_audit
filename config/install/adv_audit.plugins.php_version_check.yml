@@ -6,4 +6,4 @@ messages:
   success: "<p>PHP version correct.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal
