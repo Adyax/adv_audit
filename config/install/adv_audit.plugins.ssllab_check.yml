@@ -1,11 +1,12 @@
 settings:
   enabled: 1
-  severity: high
+  severity: normal
   status: 1
   domain: ''
 messages:
-  description: "<p>Checks SSL.</p>\r\n"
+  description: "<p>Checks the configuration of SSL web server.</p>\r\n"
   actions: "<p>Performs a deep analysis of the configuration of SSL.</p>\r\n"
   impacts: "<p>SSL settings issues could have impact to security and search engine ranking.</p>\r\n"
   fail: "<p>SSL settings have security issues. For more info please visit %link.</p>\r\n"
   success: "<p>Grade is A or A+ which is OK. For more info please visit %link.</p>\r\n"
+help: 'Please check server SSL settings.'

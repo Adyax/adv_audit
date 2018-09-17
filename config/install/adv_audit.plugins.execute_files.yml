@@ -7,3 +7,4 @@ messages:
 settings:
   enabled: 1
   severity: high
+help: 'Check if files can be executed in drupal files directory.'

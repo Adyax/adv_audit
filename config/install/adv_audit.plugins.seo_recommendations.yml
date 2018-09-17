@@ -1,6 +1,6 @@
 settings:
   enabled: 1
-  severity: high
+  severity: normal
   status: 1
   modules: "google_analytics\r\nmetatag\r\npathauto\r\nxmlsitemap"
 messages:
@@ -9,3 +9,4 @@ messages:
   impacts: "<p>These issues can decrease search engine rates of the site.</p>\r\n"
   fail: "<p>There are number of issues.</p>\r\n"
   success: "<p>SEO recommedations fullfilled.</p>\r\n"
+help: 'Check SEO recommendations.'

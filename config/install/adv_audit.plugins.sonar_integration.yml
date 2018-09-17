@@ -1,7 +1,10 @@
 messages:
   description: "<p>Auditing code smells, code complexity. Code metrics and potential problems.</p>\r\n"
   actions: "<p>Blocker and critical issues must be fixed ASAP. Other issues need to review and also provide fixes.</p>\r\n"
-  impacts: "<ul>\r\n\t<li><em>Code smell: </em>A maintainability-related issue in the code. Leaving it as-is means that at best maintainers will have a harder time than they should making changes to the code. At worst, they'll be so confused by the state of the code that they'll introduce additional errors as they make changes.</li>\r\n\t<li><em>Metric: </em>A type of measurement. Metrics can have varying values, or measures, over time. Examples: number of lines of code, complexity, etc. A metric may be either: - qualitative: gives a quality indication on the component (ex: density of duplicated lines, line coverage by tests, etc.) - or quantitative: does not give a quality indication on the component (ex: number of lines of code, complexity, etc.). Ignoring these problems leads to unreadable code that will be difficult to maintain</li>\r\n</ul>\r\n"
+  impacts: "<ul>
+  <li><em>Code smell: </em>A maintainability-related issue in the code. Leaving it as-is means that at best maintainers will have a harder time than they should making changes to the code. At worst, they'll be so confused by the state of the code that they'll introduce additional errors as they make changes.</li>
+  <li><em>Metric: </em>A type of measurement. Metrics can have varying values, or measures, over time. Examples: number of lines of code, complexity, etc. A metric may be either: - qualitative: gives a quality indication on the component (ex: density of duplicated lines, line coverage by tests, etc.) - or quantitative: does not give a quality indication on the component (ex: number of lines of code, complexity, etc.). Ignoring these problems leads to unreadable code that will be difficult to maintain</li>
+  </ul>\r\n"
   fail: "<p>There are sonar issues.</p>\r\n"
   success: "<p>There are not sonar issues.</p>\r\n"
 settings:
@@ -11,3 +14,4 @@ settings:
   login:
   password:
   project:
+help: "Auditing code smells, code complexity. Code metrics and potential problems."

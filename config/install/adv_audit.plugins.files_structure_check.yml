@@ -1,9 +1,10 @@
 messages:
   description: "<p>Drupal files structure has well-defined requirements.</p>\r\n"
-  actions: "<p>Need to organize files as recommended by Drupal documentation.</p>\r\n"
+  actions: "<p>Need to organize files as recommended by Drupal documentation - %link.</p>\r\n"
   impacts: "<p>Ignoring of files structure requirements complicates site support.</p>\r\n"
   fail: "<p>There are some issues in files structure.</p>\r\n"
   success: "<p>The filesytem is well-organized.</p>\r\n"
 settings:
   enabled: 1
   severity: normal
+help: 'Check filesystem structure.'

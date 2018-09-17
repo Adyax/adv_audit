@@ -1,6 +1,6 @@
 settings:
   status: 1
-  severity: high
+  severity: normal
   path: modules
   exts: "php\r\nmodule\r\ninc\r\ninstall\r\ntest\r\nprofile\r\ntheme\r\njs\r\ncss\r\ninfo\r\ntxt\r\nmd\r\nyml"
   ignores: '*/vendor/*'
@@ -10,5 +10,6 @@ messages:
   description: "<p>Checking Drupal code quality by CodeSniffer.</p>\r\n"
   actions: "<p>Fix all issues from generated files to improve code quality.</p>\r\n"
   impacts: "<p>Code with issues can be harder to support.</p>\r\n"
-  fail: "<p>There are issues in code. Results can be downloaded using links: @drupal @drupal_practice</p>\r\n"
-  success: "<p>No code issues.</p>\r\n"
+  fail: "<p>There are issues in code.</p>\r\n"
+  success: "<p>No issues found in code.</p>\r\n"
+help: 'Checking Drupal code quality by CodeSniffer.'

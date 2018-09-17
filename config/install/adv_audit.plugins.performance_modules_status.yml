@@ -6,4 +6,5 @@ messages:
   success: ''
 settings:
   enabled: 1
-  severity: high
+  severity: normal
+help: "Check statuses of development and UI modules."

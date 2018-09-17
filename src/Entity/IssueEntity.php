@@ -21,9 +21,9 @@ use Drupal\user\UserInterface;
  *   id = "adv_audit_issue",
  *   label = @Translation("Audit Issue"),
  *   handlers = {
- *     "storage" = "Drupal\adv_audit\IssueEntityStorage",
+ *     "storage" = "Drupal\adv_audit\Entity\IssueEntityStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\adv_audit\IssueEntityListBuilder",
+ *     "list_builder" = "Drupal\adv_audit\Entity\IssueEntityListBuilder",
  *     "views_data" = "Drupal\adv_audit\Entity\IssueEntityViewsData",
  *
  *     "form" = {
@@ -32,9 +32,9 @@ use Drupal\user\UserInterface;
  *       "edit" = "Drupal\adv_audit\Form\IssueEntityForm",
  *       "delete" = "Drupal\adv_audit\Form\IssueEntityDeleteForm",
  *     },
- *     "access" = "Drupal\adv_audit\IssueEntityAccessControlHandler",
+ *     "access" = "Drupal\adv_audit\Entity\IssueEntityAccessControlHandler",
  *     "route_provider" = {
- *       "html" = "Drupal\adv_audit\IssueEntityHtmlRouteProvider",
+ *       "html" = "Drupal\adv_audit\Entity\IssueEntityHtmlRouteProvider",
  *     },
  *   },
  *   base_table = "adv_audit_issue",

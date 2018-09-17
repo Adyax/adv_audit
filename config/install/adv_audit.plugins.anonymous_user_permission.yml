@@ -1,9 +1,10 @@
 messages:
-  description: "<p>Check if anonymous users can create, delete or update some entity.</p>\r\n"
-  actions: "<p>Check permissions for anonymous.</p>\r\n"
-  impacts: "<p>all the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code</p>\r\n"
-  fail: "<p>Anonymous user have some unsecure permissions: %list .</p>\r\n"
+  description: "<p>Your website provides anonymous users with administrator-level privileges. Anonymous user accounts may be able to modify or delete your website's configuration or content.</p>\r\n"
+  actions: "<p>Ensure that the Anonymous User role does not have any permissions with the following description: <i>Warning: Give to trusted roles only; this permission has security implications</i><br>To edit account permissions, on your website, open the Permissions page at <code>/admin/people/permissions.</code></p>\r\n"
+  impacts: "<p>All the permissions (contrib/custom) must meet the requirements for anonymous users. Otherwise it’s a big security problem since any user can use open access and execute malicious code</p>\r\n"
+  fail: "<p>Anonymous User have some unsecure permissions: %list .</p>\r\n"
   success: "<p>Permissions for anonymous users are correct.</p>\r\n"
 settings:
   enabled: 1
   severity: high
+help: 'Check anonymous permissions.'

@@ -1,9 +1,10 @@
 messages:
   description: "<p>The contributed modules should be last stable version as there might a new feature upgrade, some new functionality and bug fixes. Its important to keep modules up-to-date and prevent any problems with compatibility of code (php version, and with other modules) and bugs. Also it's important to update modules to stable releases (if exists).</p>\r\n"
   actions: "<p>Apply all updates (we recommend apply only stable releases).</p>\r\n"
-  impacts: "<p>Ignoring non-security (normal) updates may lead to compatibility issues between modules in a project. Lets imagine you had to update a single module because of the critical security flaw in it. However, as you haven't updated it for a while, as well as other modules in a project, a maintainer introduced a few API changes since then. So now, when you apply the security update, you will immediately face the compatibility problem.</p>\r\n"
+  impacts: "<p>Ignoring updates may lead to compatibility issues between modules in a project. Even if there are no security updates or bug fixes in the newer versions, keeping your site's modules up to date will make it easier to update if a security release or bug fix does come out.</p>\r\n"
   fail: "<p>There are outdated modules with non-security updates.</p>\r\n"
   success: "<p>All modules are up-to-date.</p>\r\n"
 settings:
   enabled: 1
-  severity: high
+  severity: normal
+help: "Check non-security updates for modules."

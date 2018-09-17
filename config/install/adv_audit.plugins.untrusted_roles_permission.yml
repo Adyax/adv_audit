@@ -7,8 +7,9 @@ settings:
     authenticated: authenticated
     administrator: 0
 messages:
-  description: "<p>You should never give administrators permission to non-administrators or people you do not trust.</p>\r\n"
-  actions: "<p>Review permissions.</p>\r\n"
+  description: "<p>You should never give administrators permission to non-administrators or people you do not trust. These users may be able to modify or delete your website's configuration or content.</p>\r\n"
+  actions: "<p>Ensure that the <strong>Authenticated User</strong> role does not have any permissions with the following description: <i>Warning: Give to trusted roles only; this permission has security implications.</i><br>To edit account permissions, on your website, open the Permissions page at <code>/admin/people/permissions.</code></p>\r\n"
   impacts: "<p>Drupal provides flexible permissions system per role and any wrong configuration can open exceeding the authority for untrusted roles that leads to security problems.</p>\r\n"
   fail: "<p>Untrusted roles have permissions:</p>\r\n"
   success: "<p>All permissions are correct.</p>\r\n"
+help: 'Check permissions for untrusted roles. '

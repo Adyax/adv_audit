@@ -6,11 +6,11 @@ use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginInterface;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\adv_audit\Renderer\AdvAuditReasonRenderableInterface;
+use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,7 +26,7 @@ class AuditPluginSettings extends FormBase {
   /**
    * Advanced plugin manager.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckManager
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
   protected $advAuditPluginManager;
 
@@ -54,14 +54,14 @@ class AuditPluginSettings extends FormBase {
   /**
    * The plugin instance.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase
+   * @var \Drupal\adv_audit\Plugin\AuditBasePlugin
    */
   protected $pluginInstance;
 
   /**
-   * AdvAuditPluginSettings constructor.
+   * AuditPluginSettings constructor.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $manager
+   * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $manager
    *   Manager plugins for advanced auditor.
    * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $storage_message
    *   Custom storage for messages.
@@ -70,7 +70,7 @@ class AuditPluginSettings extends FormBase {
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function __construct(AdvAuditCheckManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack) {
+  public function __construct(AuditPluginsManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack) {
     $this->advAuditPluginManager = $manager;
     $this->messageStorage = $storage_message;
     $this->currentRequest = $request_stack->getCurrentRequest();
@@ -106,6 +106,9 @@ class AuditPluginSettings extends FormBase {
     return $this->t('Configure plugin @label form', ['@label' => $this->pluginInstance->label()]);
   }
 
+  /**
+   * Helper function to Build config form.
+   */
   protected function prepareForm(&$form) {
 
     $form['settings_group'] = ['#type' => 'vertical_tabs'];
@@ -127,9 +130,9 @@ class AuditPluginSettings extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Severity'),
       '#options' => [
-        AdvAuditCheckInterface::SEVERITY_CRITICAL => 'Critical',
-        AdvAuditCheckInterface::SEVERITY_HIGH => 'High',
-        AdvAuditCheckInterface::SEVERITY_LOW => 'Low',
+        'high' => 'High',
+        'normal' => 'Normal',
+        'low' => 'Low',
       ],
       '#default_value' => $this->pluginInstance->getSeverityLevel(),
     ];
@@ -263,7 +266,7 @@ class AuditPluginSettings extends FormBase {
     }
 
     // Try to build output from plugin instance.
-    if ($this->pluginInstance instanceof AdvAuditReasonRenderableInterface) {
+    if ($this->pluginInstance instanceof AuditReasonRenderableInterface) {
       // If needed you can add call to ::auditReportRender for test.
     }
 

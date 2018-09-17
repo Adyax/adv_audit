@@ -1,9 +1,10 @@
 messages:
-  description: "<p>Allows you to improve the frontend performanceof your site.</p>\r\n"
-  actions: "<p>Enable core aggregation or use %link (that includes all latest security updates).</p>\r\n"
+  description: "<p>Allows you to improve the frontend performance of your site.</p>\r\n"
+  actions: "<p>To enable JavaScript optimization, on your website, open the Performance page at <code>/admin/config/development/performance</code>, and then select <strong>Aggregate CSS files</strong> and <strong>Aggregate JavaScript files</strong>.</p>\r\n"
   impacts: "<p>Without aggregation pages are loaded slowly as it's a lot of css/js files are requires more time for loading..</p>\r\n"
   fail: "<p>Core aggregation disabled.</p>\r\n"
   success: "<p>Core aggregation enabled.</p>\r\n"
 settings:
   enabled: 1
   severity: high
+help: "Check if agregation for js and css is enabled."

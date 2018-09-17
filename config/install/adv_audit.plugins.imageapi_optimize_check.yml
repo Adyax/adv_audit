@@ -3,7 +3,8 @@ messages:
   actions: "<p>Install and configure %link module.</p>\r\n"
   impacts: "<p>With lots of not optimized images pages will load more slowly.</p>\r\n"
   fail: "<p>The module %link isn't installed and configured correctly</p>\r\n"
-  success: "<p>Module %link is installed.</p>\r\n"
+  success: "<p>Module %link is installed and configured.</p>\r\n"
 settings:
   enabled: 1
   severity: low
+help: 'Check if module %link is enabled and configured.'

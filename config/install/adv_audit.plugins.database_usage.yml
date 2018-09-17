@@ -1,12 +1,13 @@
 settings:
   enabled: 1
-  severity: critical
+  severity: high
   status: 1
   max_table_size: '100'
   excluded_tables: test
 messages:
   description: "<p>Check Database usage.</p>\r\n"
-  actions: "<p>Optimize DB, install optimize_db or run optimize command directly from command line. Investigate root cause of this problem.</p>\r\n"
-  impacts: "<p>There is known issue in Drupal with cache_form table, so any abnormal sizes of the tables in database could be considered as a problem - the size of the tables will increase.</p>\r\n"
+  actions: "<p>Optimize DB, install <code>optimize_db</code> or run optimize command directly from command line. Investigate root cause of this problem.</p>\r\n"
+  impacts: "<p>There is known issue in Drupal with <code>cache_form</code> table, so any abnormal sizes of the tables in database could be considered as a problem - the size of the tables will increase.</p>\r\n"
   fail: "<p>There are abnormal size of tables in database:</p>\r\n"
   success: "<p>There are no abnormal size of tables in database.</p>\r\n"
+help: "Check if there are no abnormal size of tables in database."

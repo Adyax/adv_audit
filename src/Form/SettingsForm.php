@@ -2,7 +2,7 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -28,14 +28,14 @@ class SettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with config.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $advAuditCheckListManager
+   * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $advAuditCheckListManager
    *   Use DI to work with services.
    * @param \Drupal\Core\State\StateInterface $state
    *   Use DI to work with state.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Use DI to work with redirect destination.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $advAuditCheckListManager, StateInterface $state, RedirectDestinationInterface $redirect_destination) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $advAuditCheckListManager, StateInterface $state, RedirectDestinationInterface $redirect_destination) {
     $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
@@ -97,7 +97,7 @@ class SettingsForm extends ConfigFormBase {
       }
 
       foreach ($plugin_list[$category_id] as $plugin) {
-        /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
+        /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance */
         $plugin_id = $plugin['id'];
         $plugin_instance = $this->auditPluginManager->createInstance($plugin_id);
 

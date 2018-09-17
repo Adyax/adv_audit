@@ -3,7 +3,8 @@ messages:
   actions: "<p>Review and update configurations</p>\r\n"
   impacts: "<p>There are should not be any changes in config files because next deployment may revert all that changes. All the configuration changes on the site should be immediately imported into the configuration files through the config manager and must be updated in the project code.</p>\r\n"
   fail: "<p>There are differences between configurations stored in database and files. Please check your %link</p>\r\n"
-  success: "<p>All config files are actual.</p>\r\n"
+  success: "<p>There are no configuration changes to import.</p>\r\n"
 settings:
   enabled: 1
   severity: high
+help: "Check non-security updates for modules."

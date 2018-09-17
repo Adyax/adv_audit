@@ -95,7 +95,7 @@
     </div>
     {% endif %}
     <div class="category-list">
-      <h4>{{ 'Alert categories'|t }}</h4>
+      <h3>{{ 'Alert categories'|t }}</h3>
       {% for category in categories %}
         <div class="adv-category-item row layout-row">
           <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>
@@ -104,44 +104,187 @@
           <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed"
                                                             data-category-id="{{ category.id }}" href="#">View</a></div>
           <div class="detailed-view" category-id="{{ category.id }}" style="display: none">
-            <div class="report-items">
-              {% for report in category.reports %}
+            {% if category.reports_failed|length %}
+            <div class="report-items failed">
+              <h4>{{ 'Failed issues'|t }}</h4>
+              {% for report in category.reports_failed %}
                 <div {{ report.result_attributes }}>
                   <div class="report-title">
-                    <h3>{{ report.name }}</h3>
+                    <strong>{{ report.name }}</strong>
                   </div>
                   <div class="report-content">
+                    {% if report.severity is not empty %}
+                      <div class="content-panel">
+                        <h5 class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</h5>
+                      </div>
+                    {% endif %}
                     <div class="content-panel">
                       {{ report.description }}
                     </div>
                     {% if report.result is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Results: '|t }}</strong>
+                      <div class="content-panel">
+                        <h5>{{ 'Results: '|t }}</h5>
                         {{ report.result }}
-                    </div>
+                      </div>
                     {% endif %}
-                      {% if report.severity is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Importance: '|t }}</strong>
-                        {{ report.severity }}
-                    </div>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                    <div class="content-panel">
-                        <strong>{{ 'Actions to be done: '|t }}</strong>
+                    {% if report.actions is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Actions to be done: '|t }}</h5>
                         {{ report.actions }}
-                    </div>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                    <div class="content-panel">
-                      <strong>{{ 'Impacts: '|t }}</strong>
-                      {{ report.impacts }}
-                    </div>
-                      {% endif %}
+                      </div>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Impacts: '|t }}</h5>
+                        {{ report.impacts }}
+                      </div>
+                    {% endif %}
                     {# Should be moved to preprocess function #}
                     {% if report.reason is not empty %}
                       <div class="content-panel">
-                          <strong>{{ 'Why this check is failed: '|t }}</strong>
+                        <h5>{{ 'Why this check is failed: '|t }}</h5>
+                        {{ report.reason }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if category.reports_passed|length %}
+            <div class="report-items passed">
+              <h4>{{ 'Resolved issues'|t }}</h4>
+              {% for report in category.reports_passed %}
+                <div {{ report.result_attributes }}>
+                  <div class="report-title">
+                    <strong>{{ report.name }}</strong>
+                  </div>
+                  <div class="report-content">
+                    {% if report.severity is not empty %}
+                      <div class="content-panel">
+                        <h5 class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</h5>
+                      </div>
+                    {% endif %}
+                    <div class="content-panel">
+                      {{ report.description }}
+                    </div>
+                    {% if report.result is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Results: '|t }}</h5>
+                        {{ report.result }}
+                      </div>
+                    {% endif %}
+                    {% if report.actions is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Actions to be done: '|t }}</h5>
+                        {{ report.actions }}
+                      </div>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Impacts: '|t }}</h5>
+                        {{ report.impacts }}
+                      </div>
+                    {% endif %}
+                    {# Should be moved to preprocess function #}
+                    {% if report.reason is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Why this check is failed: '|t }}</h5>
+                        {{ report.reason }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if category.reports_skipped|length %}
+            <div class="report-items skipped">
+              <h4>{{ 'Skipped issues'|t }}</h4>
+              {% for report in category.reports_skipped %}
+                <div {{ report.result_attributes }}>
+                  <div class="report-title">
+                    <strong>{{ report.name }}</strong>
+                  </div>
+                  <div class="report-content">
+                    {% if report.severity is not empty %}
+                      <div class="content-panel">
+                        <h5 class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</h5>
+                      </div>
+                    {% endif %}
+                    <div class="content-panel">
+                      {{ report.description }}
+                    </div>
+                    {% if report.result is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Results: '|t }}</h5>
+                        {{ report.result }}
+                      </div>
+                    {% endif %}
+                    {% if report.actions is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Actions to be done: '|t }}</h5>
+                        {{ report.actions }}
+                      </div>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Impacts: '|t }}</h5>
+                        {{ report.impacts }}
+                      </div>
+                    {% endif %}
+                    {# Should be moved to preprocess function #}
+                    {% if report.reason is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Why this check is failed: '|t }}</h5>
+                        {{ report.reason }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if category.reports_ignored|length %}
+            <div class="report-items ignored">
+
+              <h4>{{ 'Ignored issues'|t }}</h4>
+              {% for report in category.reports_ignored %}
+                <div {{ report.result_attributes }}>
+                  <div class="report-title">
+                    <strong>{{ report.name }}</strong>
+                  </div>
+                  <div class="report-content">
+                    {% if report.severity is not empty %}
+                      <div class="content-panel">
+                        <h5 class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</h5>
+                      </div>
+                    {% endif %}
+                    <div class="content-panel">
+                      {{ report.description }}
+                    </div>
+                    {% if report.result is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Results: '|t }}</h5>
+                        {{ report.result }}
+                      </div>
+                    {% endif %}
+                    {% if report.actions is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Actions to be done: '|t }}</h5>
+                        {{ report.actions }}
+                      </div>
+                    {% endif %}
+                    {% if report.impacts is not empty %}
+                      <div class="content-panel">
+                        <h5>{{ 'Impacts: '|t }}</h5>
+                        {{ report.impacts }}
+                      </div>
+                    {% endif %}
+                    {# Should be moved to preprocess function #}
+                    {% if report.reason is not empty %}
+                      <div class="content-panel">
+                          <strong>{{ 'Why this audit is skipped: '|t }}</strong>
                           {{ report.reason }}
                       </div>
                     {% endif %}
@@ -149,6 +292,7 @@
                 </div>
               {% endfor %}
             </div>
+            {% endif %}
           </div>
         </div>
       {% endfor %}

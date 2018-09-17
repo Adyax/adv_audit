@@ -3,12 +3,12 @@
 namespace Drupal\Tests\adv_audit\Kernel;
 
 use Drupal\adv_audit\Batch\AuditRunBatch;
-use Drupal\adv_audit\Entity\AdvAuditEntity;
+use Drupal\adv_audit\Entity\AuditEntity;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Tests for the AdvAuditEntity access control.
+ * Tests for the AuditEntity access control.
  *
  * @group adv_audit
  */
@@ -44,17 +44,17 @@ class AuditRunBatchTest extends KernelTestBase {
   }
 
   /**
-   * Tests that on finished batch AdvAuditEntity will be created.
+   * Tests that on finished batch AuditEntity will be created.
    */
   public function testFinishedBatch() {
-    $entities = AdvAuditEntity::loadMultiple();
+    $entities = AuditEntity::loadMultiple();
     // No entities for test yet.
     $this->assertEmpty($entities);
     $context = [];
     AuditRunBatch::run(['php_max_execution_time'], [], $context);
     AuditRunBatch::finished(TRUE, $context['results'], [], '');
-    $entities = AdvAuditEntity::loadMultiple();
-    // Must be one AdvAuditEntity created.
+    $entities = AuditEntity::loadMultiple();
+    // Must be one AuditEntity created.
     $this->assertCount(1, $entities);
   }
 
