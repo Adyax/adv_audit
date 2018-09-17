@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\Batch\AuditRunBatch;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -31,10 +31,10 @@ class RunForm extends FormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckManager $manager
+   * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $manager
    *   Use DI to work with services.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AdvAuditCheckManager $manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $manager) {
     $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditTestManager = $manager;
   }

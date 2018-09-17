@@ -2,13 +2,13 @@
 
 namespace Drupal\adv_audit\Renderer;
 
-use Drupal\adv_audit\AuditCategoryManagerService;
+use Drupal\adv_audit\Service\AuditCategoryManagerService;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckBase;
+use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\Core\Render\RenderableInterface;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\adv_audit\Plugin\AdvAuditCheckManager;
+use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -30,9 +30,9 @@ class AuditReportRenderer implements RenderableInterface {
   protected $renderer;
 
   /**
-   * Drupal\adv_audit\Plugin\AdvAuditCheckManager definition.
+   * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
    *
-   * @var \Drupal\adv_audit\Plugin\AdvAuditCheckManager
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
   protected $pluginManagerAdvAuditCheck;
 
@@ -67,14 +67,14 @@ class AuditReportRenderer implements RenderableInterface {
   /**
    * The category manager service.
    *
-   * @var \Drupal\adv_audit\AuditCategoryManagerService
+   * @var \Drupal\adv_audit\Service\AuditCategoryManagerService
    */
   protected $categoryManager;
 
   /**
    * Constructs a new Renderer object.
    */
-  public function __construct(RendererInterface $renderer, AdvAuditCheckManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
+  public function __construct(RendererInterface $renderer, AuditPluginsManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
     $this->renderer = $renderer;
     $this->pluginManagerAdvAuditCheck = $plugin_manager_adv_audit_check;
     $this->advAuditMessages = $adv_audit_messages;
@@ -142,7 +142,29 @@ class AuditReportRenderer implements RenderableInterface {
       }
       foreach ($this->metaInformation['category'][$category_id]['plugin_list'] as $plugin_id) {
         $reason = $this->getReasonByPluginId($plugin_id);
-        $build[$category_id]['reports'][$plugin_id] = $this->doBuildAuditReason($reason);
+        switch ($reason->getStatus()) {
+          case AuditResultResponseInterface::RESULT_PASS:
+            $build[$category_id]['reports_passed'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          case AuditResultResponseInterface::RESULT_FAIL:
+            // Check reported issues.
+            $reported_issues = $reason->getOpenIssues();
+            if (empty($reported_issues)) {
+              // All the ignored reports are initially failed.
+              $build[$category_id]['reports_ignored'][$plugin_id] = $this->doBuildAuditReason($reason);
+              break;
+            }
+            $build[$category_id]['reports_failed'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          case AuditResultResponseInterface::RESULT_SKIP:
+            $build[$category_id]['reports_skipped'][$plugin_id] = $this->doBuildAuditReason($reason);
+            break;
+
+          default:
+            break;
+        }
       }
     }
 
@@ -189,14 +211,28 @@ class AuditReportRenderer implements RenderableInterface {
     /** @var \Drupal\adv_audit\AuditReason $audit_reason */
     foreach ($this->auditResultResponse->getAuditResults() as $audit_reason) {
       // Init plugin instance.
-      /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_insatnce */
+      /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_insatnce */
       $plugin_insatnce = $this->pluginManagerAdvAuditCheck->createInstance($audit_reason->getPluginId());
       if ($plugin_insatnce->getCategoryName() == $category_id) {
         // Increase a total checks counter.
+        if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
+          // Skip.
+          continue;
+        }
+
         $total_count++;
         if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
           $passed++;
         }
+
+        if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_FAIL) {
+          // Check active issues.
+          $open_issues = $audit_reason->getOpenIssues();
+          if (empty($open_issues)) {
+            $passed++;
+          }
+        }
+
         $plugins_list[] = $plugin_insatnce->id();
       }
     }
@@ -226,7 +262,7 @@ class AuditReportRenderer implements RenderableInterface {
     $build = [];
     // Init plugin instance.
     $audit_plugin_id = $audit_reason->getPluginId();
-    /** @var \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance */
+    /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance */
     $plugin_instance = $this->pluginManagerAdvAuditCheck->createInstance($audit_plugin_id);
     // Build default messages type.
     $build[AuditMessagesStorageInterface::MSG_TYPE_DESCRIPTION] = $this->doRenderMessages($plugin_instance, $audit_reason, AuditMessagesStorageInterface::MSG_TYPE_DESCRIPTION);
@@ -271,7 +307,7 @@ class AuditReportRenderer implements RenderableInterface {
   /**
    * Render output messages.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance
+   * @param \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance
    *   The audit plugin instance.
    * @param \Drupal\adv_audit\AuditReason $audit_reason
    *   The Audit reason object.
@@ -283,9 +319,9 @@ class AuditReportRenderer implements RenderableInterface {
    *
    * @throws \Exception
    */
-  protected function doRenderMessages(AdvAuditCheckBase $plugin_instance, AuditReason $audit_reason, $msg_type) {
+  protected function doRenderMessages(AuditBasePlugin $plugin_instance, AuditReason $audit_reason, $msg_type) {
     // Check what we can delivery build message to plugin instance.
-    if ($plugin_instance instanceof AdvAuditReasonRenderableInterface) {
+    if ($plugin_instance instanceof AuditReasonRenderableInterface) {
       $render = $plugin_instance->auditReportRender($audit_reason, $msg_type);
       if (!empty($render)) {
         $this->renderer->render($render);
@@ -304,7 +340,7 @@ class AuditReportRenderer implements RenderableInterface {
   /**
    * Render output messages.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckBase $plugin_instance
+   * @param \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance
    *   The audit plugin instance.
    * @param \Drupal\adv_audit\AuditReason $audit_reason
    *   The Audit reason object.
@@ -316,7 +352,7 @@ class AuditReportRenderer implements RenderableInterface {
    *
    * @throws \Exception
    */
-  protected function doRenderIssues(AdvAuditCheckBase $plugin_instance, AuditReason $audit_reason, $msg_type) {
+  protected function doRenderIssues(AuditBasePlugin $plugin_instance, AuditReason $audit_reason, $msg_type) {
     // Get needed message from yml config file.
     // And Replace dynamic variables.
     $details = is_array($audit_reason->getArguments()) ? $audit_reason->getArguments() : [];
@@ -344,9 +380,12 @@ class AuditReportRenderer implements RenderableInterface {
       }
     }
 
-    return [
+    $output = [
       '#markup' => $message,
-      'active_issues' => [
+    ];
+
+    if (!empty($active_rows)) {
+      $output['active_issues'] = [
         '#theme' => 'table',
         '#caption' => $this->t('Active issues'),
         '#header' => [
@@ -354,8 +393,10 @@ class AuditReportRenderer implements RenderableInterface {
           ['data' => $this->t('Edit'), 'width' => '10%'],
         ],
         '#rows' => $active_rows,
-      ],
-      'ignored_issues' => [
+      ];
+    }
+    if (!empty($ignored_rows)) {
+      $output['ignored_issues'] = [
         '#theme' => 'table',
         '#caption' => $this->t('Ignored issues'),
         '#header' => [
@@ -363,8 +404,10 @@ class AuditReportRenderer implements RenderableInterface {
           ['data' => $this->t('Edit'), 'width' => '10%'],
         ],
         '#rows' => $ignored_rows,
-      ],
-    ];
+      ];
+    }
+
+    return $output;
   }
 
 }

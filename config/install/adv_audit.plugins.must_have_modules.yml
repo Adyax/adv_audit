@@ -5,7 +5,7 @@ settings:
   enabled: 1
 messages:
   description: ''
-  actions: "<p>Inpspect disabled modules list and install them if needed: @disabled_modules</p>\r\n"
+  actions: "<p>Inpspect disabled modules list and install them if needed</p>\r\n"
   impacts: "<p>If one or more modules are not installed site's security can be in danger.</p>\r\n"
   fail: "<p>There is one or more recommeded modules disabled.</p>\r\n"
   success: "<p>All recommeded modules are enabled.</p>\r\n"

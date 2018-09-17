@@ -9,7 +9,7 @@ adv_audit:
 adv_audit.help:
   path: 'admin/reports/adv-audit/help/{namespace}/{title}'
   defaults:
-    _controller: '\Drupal\adv_audit\Controller\AdvAuditHelpController::index'
+    _controller: '\Drupal\adv_audit\Controller\AuditHelpController::index'
     namespace: ~
     title: ~
   requirements:
@@ -42,7 +42,7 @@ adv_audit.plugin.settings:
 adv_audit.category.settings_form:
   path: 'admin/reports/adv-audit/category/{category_id}/edit'
   defaults:
-    _form: '\Drupal\adv_audit\Form\AdvAuditCategorySettingsForm'
+    _form: '\Drupal\adv_audit\Form\AuditCategorySettingsForm'
     _title: 'Category settings'
   requirements:
     _permission: 'edit auditor categories'

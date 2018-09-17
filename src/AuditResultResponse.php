@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Drupal\adv_audit\Plugin\AdvAuditCheckInterface;
+use Drupal\adv_audit\Plugin\AuditPluginInterface;
 use JsonSerializable;
 use Serializable;
 
@@ -42,11 +42,26 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   public function calculateScore() {
     $passed = 0;
     $total_count = $this->results->count();
-    foreach ($this->results->getIterator() as $check_result) {
-      if ($check_result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
+    foreach ($this->results->getIterator() as $audit_result) {
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
+        // Skip.
+        $total_count--;
+        continue;
+      }
+
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
         $passed++;
       }
+
+      if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_FAIL) {
+        // Check active issues.
+        $open_issues = $audit_result->getOpenIssues();
+        if (empty($open_issues)) {
+          $passed++;
+        }
+      }
     }
+
     $score = ($passed * 100) / $total_count;
     return intval($score);
   }
@@ -54,7 +69,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   /**
    * Add result of the running test.
    *
-   * @param \Drupal\adv_audit\Plugin\AdvAuditCheckInterface $test
+   * @param \Drupal\adv_audit\Plugin\AuditPluginInterface $test
    *   Test plugin instance.
    * @param $status
    *   Execution status.
@@ -63,7 +78,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @return void
    */
-  public function addResultReport(AdvAuditCheckInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
+  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
     $this->results->add(new AuditReason($test->id(), $status));
   }
 

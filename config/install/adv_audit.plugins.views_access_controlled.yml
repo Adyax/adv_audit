@@ -2,8 +2,8 @@ messages:
   description: "<p>Views can check if the user is allowed access to the content. It is recommended that all Views implement some amount of access control, at a minimum checking for the permission \"access content\".</p>\r\n"
   actions: "<p>Limit access to the listed views/displays by permissions.</p>\r\n"
   impacts: "<p>Unlimited access to these views can impact site security.</p>\r\n"
-  fail: "<p>There are views that should not be aceesed unlimited.</p>\r\n"
+  fail: "<p>There are views that should not be accessed unlimited.</p>\r\n"
   success: "<p>All views are limited by permissions/roles.</p>\r\n"
 settings:
   enabled: 1
-  severity: critical
+  severity: normal
