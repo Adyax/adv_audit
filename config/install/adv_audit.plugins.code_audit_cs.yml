@@ -12,3 +12,4 @@ messages:
   impacts: "<p>Code with issues can be harder to support.</p>\r\n"
   fail: "<p>There are issues in code.</p>\r\n"
   success: "<p>No issues found in code.</p>\r\n"
+help: 'Checking Drupal code quality by CodeSniffer.'

@@ -9,3 +9,4 @@ messages:
   impacts: "<p>Access to this pages for anonymous user can impact site security.</p>\r\n"
   fail: "<p>There are pages that should not be aceesed by anonimous user.</p>\r\n"
   success: "<p>All pages are secured.</p>\r\n"
+help: 'Checks if any admin pages and other unused default Drupal pages are available for anonymous users.'
