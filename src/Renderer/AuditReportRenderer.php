@@ -192,7 +192,6 @@ class AuditReportRenderer implements RenderableInterface {
   /**
    * Calculate score value for selected category.
    *
-   *
    * @param string $category_id
    *   The category id.
    *
