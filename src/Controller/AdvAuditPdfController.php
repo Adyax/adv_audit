@@ -24,12 +24,9 @@ class AdvAuditPdfController {
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
     $build = $view_builder->view($entity_report, $view_mode);
     $renderer = render($build);
-//    $renderer_plain = \Drupal::service('renderer')->renderPlain($build);
-//    dump($renderer);
-//    die();
 
+    // Get the name of current report.
     $report_name = $adv_audit->name->value;
-    $html = $renderer;
 
     $headers = [
       'Content-Type: application/pdf',
@@ -41,7 +38,7 @@ class AdvAuditPdfController {
     ];
 
     $mpdf = new Mpdf($config);
-    $mpdf->SetBasePath(\Drupal::request()->getSchemeAndHttpHost());
+    $mpdf->SetBasePath(drupal_get_path('module', 'adv_audit'));
     /**
      * Start a pdf-header and pdf-footer
      */
@@ -63,12 +60,12 @@ class AdvAuditPdfController {
     /**
      * End a pdf-header and pdf-footer
      */
-    $stylesheet = file_get_contents(drupal_get_path('module', 'adv_audit') . '/css/view_results.css');
+    $stylesheet = file_get_contents(drupal_get_path('module', 'adv_audit') . '/css/view_pdf_results.css');
     $mpdf->WriteHTML($stylesheet, 1);
-    $mpdf->WriteHTML($html, 2);
+    $mpdf->WriteHTML($renderer, 2);
+    $mpdf->Output('adv-audit-report-' . $adv_audit->id->value . '.pdf', Destination::INLINE);
 
-    $content = $mpdf->Output('adv-audit-report-' . $adv_audit->id->value . '.pdf', Destination::INLINE);
-    return new Response($content, 200, $headers);
+    return new Response($renderer, 200, $headers);
   }
 
 }

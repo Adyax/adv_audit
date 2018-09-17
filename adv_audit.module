@@ -29,7 +29,7 @@ function adv_audit_theme() {
     'adv_audit_report' => [
       'variables' => [
         'report' => NULL,
-        'adv_audit_view_mode' => NULL,
+        'view_mode' => NULL,
       ],
       'template' => 'adv-audit-report',
       'pattern' => 'adv_audit_report__',
@@ -45,7 +45,6 @@ function adv_audit_theme() {
         'categories' => NULL,
         'global_info' => NULL,
         'report_id' => NULL,
-        'adv_audit_view_mode' => NULL,
       ],
       'template' => 'adv-audit-report-object',
       'pattern' => 'adv_audit_report_object__',
@@ -64,20 +63,9 @@ function adv_audit_theme() {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, array &$variables) {
-  $adv_audit_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
-  //$variables['adv_audit_mode'] = $adv_audit_view_mode;
-  $suggestions[] = 'adv_audit__' . $adv_audit_view_mode;
-}
-/**
- * Implements hook_theme_suggestions_HOOK().
- */
-function adv_audit_theme_suggestions_adv_audit_report_alter(array &$suggestions, array &$variables) {
-//  dump(\Drupal::routeMatch()->getParameter('adv_audit'));
-//  die();
-  $adv_audit_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
-  //$variables['adv_audit_mode'] = $adv_audit_view_mode;
-  $suggestions[] = 'adv_audit_report__' . $adv_audit_view_mode;
+function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, $variables) {
+  $view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  $suggestions[] = 'adv_audit__' . $view_mode;
 }
 
 /**
@@ -97,6 +85,8 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
+  //$view_mode = $variables['elements']['#view_mode'];
+
   // Build score history table.
   $entity = $variables['elements']['#adv_audit'];
   $variables['content']['score_history'] = [
@@ -110,7 +100,8 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
       'operations' => t('Operations'),
     ],
   ];
-  $adv_storage = \Drupal::service('entity_type.manager')->getStorage('adv_audit');
+  $adv_storage = \Drupal::service('entity_type.manager')
+    ->getStorage('adv_audit');
   $vids = $adv_storage->revisionIds($entity);
   foreach ($vids as $rev_id) {
     if ($rev_id == $entity->id()) {
@@ -122,7 +113,10 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
     $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
     $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
-    $variables['content']['score_history'][$rev_id]['operations'] = \Drupal\Core\Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
+    $variables['content']['score_history'][$rev_id]['operations'] = \Drupal\Core\Link::createFromRoute('View', 'entity.adv_audit.revision', [
+      'adv_audit' => $entity->id(),
+      'adv_audit_revision' => $rev_id,
+    ])->toRenderable();
   }
 }
 
@@ -132,8 +126,9 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
 function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
   $render = \Drupal::service('adv_audit.renderer');
+  $view_mode = $variables['view_mode'];
   // Wrap to renderer object.
-  $variables['report'] = $render->setAuditResult($variables['report']);
+  $variables['report'] = $render->setAuditResult($variables['report'], $view_mode);
 }
 
 /**
@@ -161,7 +156,8 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
  */
 function adv_audit_adv_audit_check_info_alter(&$definitions) {
   foreach ($definitions as $plugin_id => &$definition) {
-    $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
+    $overridden_config = \Drupal::state()
+      ->get('adv_audit.overridden.definition.' . $plugin_id);
     if ($overridden_config) {
       $definition = \Drupal\Component\Utility\NestedArray::mergeDeep($definition, $overridden_config);
     }
