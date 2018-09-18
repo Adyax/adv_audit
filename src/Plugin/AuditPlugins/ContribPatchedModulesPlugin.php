@@ -62,7 +62,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
     // Disable plugin if hacked isn't installed.
     if (!$this->moduleHandler->moduleExists('hacked')) {
       $this->setPluginStatus(FALSE);
-      drupal_set_message($this->t('Install @module', [
+      drupal_set_message($this->t('Install @module to use plugins "Patched modules" and "Patched Drupal core".', [
         '@module' => Link::fromTextAndUrl('Hacked', Url::fromUri('https://www.drupal.org/project/hacked'))
           ->toString(),
       ]), 'error');
@@ -72,7 +72,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
     $data = $this->cache->get('hacked:full-report');
     if (!$data || !$data->data) {
       $this->setPluginStatus(FALSE);
-      drupal_set_message($this->t('@link report to include Hacked results into audit.', [
+      drupal_set_message($this->t('@link report to include plugins "Patched modules" and "Patched Drupal core" into audit.', [
         '@link' => Link::fromTextAndUrl('Generate', Url::fromRoute('hacked.manual_status'))
           ->toString(),
       ]), 'error');
