@@ -4,6 +4,7 @@ namespace Drupal\adv_audit\Sonar;
 
 use SonarQube\HttpClient\HttpClient;
 use SonarQube\HttpClient\Message\Request;
+use SonarQube\HttpClient\Message\Response;
 
 /**
  * SonarHttpClient Class.
@@ -48,7 +49,7 @@ class SonarHttpClient extends HttpClient {
    * @param string $url
    *   Request url.
    *
-   * @return SonarQube\HttpClient\Message\Request
+   * @return \SonarQube\HttpClient\Message\Request
    *   Request object.
    */
   private function createRequest($httpMethod, $url) {

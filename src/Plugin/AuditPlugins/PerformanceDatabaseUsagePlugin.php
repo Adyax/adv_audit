@@ -104,7 +104,7 @@ class PerformanceDatabaseUsagePlugin extends AuditBasePlugin implements Containe
 
       return $this->fail(NULL, $arguments);
     }
-    catch (Exception $e) {
+    catch (\Exception $e) {
       return $this->skip($e->getMessage());
     }
   }
