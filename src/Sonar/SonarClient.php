@@ -41,8 +41,8 @@ class SonarClient extends Client {
    * @inheritdoc
    */
   protected function extend_api($method, $parameters) {
-    $response = $this->call($method, $parameters);
-    return $response;
+    return $this->call($method, $parameters);
+
   }
 
   /**
@@ -65,12 +65,11 @@ class SonarClient extends Client {
           'metricKeys' => implode(',', $this->dashboard->metrics),
         ];
         break;
+
       case 'authentication':
         return new Api\Authentication($this);
-        break;
       default:
         return parent::api($api_name);
-        break;
     }
     return $this->extend_api($method, $options);
   }
