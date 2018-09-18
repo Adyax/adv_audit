@@ -79,7 +79,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @deprecated Use ::addReason method.
    */
-  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
+  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_PASS) {
     $this->results->add(new AuditReason($test->id(), $status));
   }
 
