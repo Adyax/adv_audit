@@ -114,7 +114,7 @@ class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements Cont
         $response = json_decode($response);
       }
       catch (RequestException $e) {
-        watchdog_exception('adv_auditor', $e);
+//        watchdog_exception('adv_auditor', $e);
         return $this->fail(NULL, [
           'issues' => [
             'page_speed_insights_no_response' => [
@@ -208,7 +208,7 @@ class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements Cont
       '#attributes' => [
         'min' => '1',
         'max' => '100',
-      ]
+      ],
     ];
 
     return $form;

@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\Core\Database\Connection;
 
@@ -149,7 +148,7 @@ class PerformanceDatabaseUsagePlugin extends AuditBasePlugin implements Containe
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 

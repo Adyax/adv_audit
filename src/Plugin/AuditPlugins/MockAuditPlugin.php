@@ -5,9 +5,10 @@ namespace Drupal\adv_audit\Plugin\AuditPlugins;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 
 /**
- * Class MockPlugin
+ * Class MockPlugin.
  *
- * Used to override the original plug-in class when there is a problem with nonexistent services.
+ * Used to override the original plug-in class when there is a problem
+ * with nonexistent services.
  *
  * @see \Drupal\adv_audit\Plugin\AuditPluginsManager::createInstance().
  *
@@ -16,24 +17,9 @@ use Drupal\adv_audit\Plugin\AuditBasePlugin;
 class MockAuditPlugin extends AuditBasePlugin {
 
   /**
-   * Constructs a new MockPlugin object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param string $plugin_definition
-   *   The plugin implementation definition.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function perform() {
   }
-
 
 }

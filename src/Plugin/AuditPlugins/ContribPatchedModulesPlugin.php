@@ -2,14 +2,12 @@
 
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
-use Drupal\adv_audit\Exception\RequirementsException;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
-use Drupal\hacked\Controller\HackedController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, string $plugin_id, array $plugin_definition, ModuleHandler $module_handler, CacheBackendInterface $hacked_cache) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -99,8 +97,8 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFa
 
       foreach ($issue_details['hacked_modules'] as $hacked_module) {
         $issues[] = [
-            '@issue_title' => 'Changed module: @changed_module',
-            '@changed_module' => $hacked_module['title'],
+          '@issue_title' => 'Changed module: @changed_module',
+          '@changed_module' => $hacked_module['title'],
         ];
       }
 

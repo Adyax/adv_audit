@@ -50,7 +50,7 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
    * @var \Drupal\Core\Routing\RouteProvider
    *   RouteProvider instance.
    */
-  protected $router_provider;
+  protected $routerProvider;
 
   /**
    * Request object.
@@ -62,12 +62,12 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $etm, Client $client, Request $request, RouteProvider $router_provider) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $etm, Client $client, Request $request, RouteProvider $routerProvider) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $etm;
     $this->httpClient = $client;
     $this->request = $request;
-    $this->router_provider = $router_provider;
+    $this->routerProvider = $routerProvider;
   }
 
   /**
@@ -88,7 +88,7 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
     $form['urls'] = [
       '#type' => 'textarea',
@@ -111,7 +111,7 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
     $values = $form_state->getValues();
     $urls = $this->parseLines($values['urls']);
     foreach ($urls as $url) {
-      if ((!UrlHelper::isValid($url) && !$this->router_provider->getRoutesByPattern($url)) || substr($url, 0, 1) !== '/') {
+      if ((!UrlHelper::isValid($url) && !$this->routerProvider->getRoutesByPattern($url)) || substr($url, 0, 1) !== '/') {
         $form_state->setErrorByName('urls', $this->t('Urls should be given as relative with preceding slash.'));
         break;
       }
@@ -185,7 +185,8 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
         return $url;
       }
       return preg_replace('/{entity:.*?}/', $entity_id, $url);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return $url;
     }
 

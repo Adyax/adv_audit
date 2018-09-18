@@ -6,13 +6,15 @@ Drupal 8 auditor tool developed by Adyax.
 ## Installation
 
 ### 1. Prerequisites
-To be able to setup this module on your project you will need following list of tools:
+To be able to setup this module on your project you will need following 
+list of tools:
 * composer
 * Drupal installation via composer
 
 ### Installation process
 
-* Update your project `composer.json` file and add following lines to the `repositories` block:
+* Update your project `composer.json` file and add following lines 
+to the `repositories` block:
 ```
 {
      "type": "vcs",
@@ -35,5 +37,5 @@ the resulting block should look like:
 ```
 * Run `composer require drupal/adv_audit` command.
 * Specify your gitlab credentials (project hase private status for now)
-* Module will be installed to module/contrib directory with all the dependencies in project `vendor` folder
-
+* Module will be installed to module/contrib directory with all the 
+dependencies in project `vendor` folder

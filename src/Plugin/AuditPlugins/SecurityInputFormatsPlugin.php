@@ -61,7 +61,7 @@ class SecurityInputFormatsPlugin extends AuditBasePlugin implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
     $settings = $this->getSettings();
 

@@ -3,9 +3,6 @@
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
-use Drupal\adv_audit\AuditReason;
-use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 
 use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Plugin\PluginFormInterface;
@@ -27,7 +24,6 @@ use Drupal\Component\Utility\Bytes;
  *   requirements = {},
  * )
  */
-
 class PerformanceMemoryUsagePlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
@@ -71,7 +67,7 @@ class PerformanceMemoryUsagePlugin extends AuditBasePlugin implements ContainerF
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
     $type_key = '#type';
     $form['urls'] = [

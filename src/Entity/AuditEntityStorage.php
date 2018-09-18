@@ -5,7 +5,6 @@ namespace Drupal\adv_audit\Entity;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\adv_audit\Entity\AuditEntityInterface;
 
 /**
  * Defines the storage handler class for Audit Result entity entities.

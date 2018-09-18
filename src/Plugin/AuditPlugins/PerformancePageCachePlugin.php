@@ -102,7 +102,7 @@ class PerformancePageCachePlugin extends AuditBasePlugin implements ContainerFac
     return $this->fail(NULL, [
       'issues' => [
         'page_caching_performance' => [
-          '@issue_title' => 'Need to check and fix cache settings.'
+          '@issue_title' => 'Need to check and fix cache settings.',
         ],
       ],
     ]);

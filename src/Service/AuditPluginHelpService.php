@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Service;
 
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -56,7 +55,7 @@ class AuditPluginHelpService {
   /**
    * Return plugins config key.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *   Id from plugin definition.
    *
    * @return string
@@ -84,16 +83,38 @@ class AuditPluginHelpService {
     return $render_array;
   }
 
-  protected function render($category) {
+  /**
+   * Return render category.
+   *
+   * @param array $category
+   *   Id from plugin definition.
+   *
+   * @return array
+   *   Plugin's category.
+   */
+  protected function render(array $category) {
     foreach ($category as &$plugin) {
       $plugin = [
-        'label' => $this->t($plugin['label']->__toString()),
-        'help' => $this->t($this->getPluginHelp($plugin['id'])),
+        'label' => $this->t('@plugin_label', [
+          '@plugin_label' => $plugin['label']->__toString(),
+        ]),
+        'help' => $this->t('@plugin_id', [
+          '@plugin_id' => $this->getPluginHelp($plugin['id']),
+        ]),
       ];
     }
     return $category;
   }
 
+  /**
+   * Return plugins help information.
+   *
+   * @param string $plugin_id
+   *   Id from plugin definition.
+   *
+   * @return string
+   *   Plugin's help information.
+   */
   protected function getPluginHelp($plugin_id) {
     $configs = $this->configFactory->get($this->getConfigKey($plugin_id))
       ->getRawData();

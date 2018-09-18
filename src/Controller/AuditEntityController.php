@@ -123,7 +123,7 @@ class AuditEntityController extends ControllerBase implements ContainerInjection
     $latest_revision = TRUE;
 
     foreach (array_reverse($vids) as $vid) {
-      /** @var \Drupal\adv_audit\AdvAuditEntityInterface $revision */
+      /** @var \Drupal\adv_audit\AuditEntityInterface $revision */
       $revision = $adv_audit_storage->loadRevision($vid);
       // Only show revisions that are affected by the language that is being
       // displayed.

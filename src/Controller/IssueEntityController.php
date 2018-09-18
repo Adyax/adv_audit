@@ -6,7 +6,10 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Datetime\DateFormatter;
 use Drupal\adv_audit\Entity\IssueEntityInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Renderer;
 
 /**
  * Class IssueEntityController.
@@ -14,6 +17,38 @@ use Drupal\adv_audit\Entity\IssueEntityInterface;
  *  Returns responses for Audit Issue routes.
  */
 class IssueEntityController extends ControllerBase implements ContainerInjectionInterface {
+
+  /**
+   * The date formatter.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatter
+   */
+  protected $formatDate;
+
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(DateFormatter $formatDate, Renderer $renderer) {
+    $this->formatDate = $formatDate;
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('date.formatter'),
+      $container->get('renderer')
+    );
+  }
 
   /**
    * Displays a Audit Issue  revision.
@@ -42,7 +77,7 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
    */
   public function revisionPageTitle($adv_audit_issue_revision) {
     $adv_audit_issue = $this->entityManager()->getStorage('adv_audit_issue')->loadRevision($adv_audit_issue_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $adv_audit_issue->label(), '%date' => format_date($adv_audit_issue->getRevisionCreationTime())]);
+    return $this->t('Revision of %title from %date', ['%title' => $adv_audit_issue->label(), '%date' => $this->formatDate->format($adv_audit_issue->getRevisionCreationTime())]);
   }
 
   /**
@@ -90,7 +125,7 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
       ];
 
       // Use revision link to link to revisions that are not active.
-      $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+      $date = $this->formatDate->format($revision->getRevisionCreationTime(), 'short');
       if ($vid != $adv_audit_issue->getRevisionId()) {
         $link = $this->l($date, new Url('entity.adv_audit_issue.revision', ['adv_audit_issue' => $adv_audit_issue->id(), 'adv_audit_issue_revision' => $vid]));
       }
@@ -105,7 +140,7 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
           '#template' => '{% trans %}{{ date }} by {{ username }}{% endtrans %}{% if message %}<p class="revision-log">{{ message }}</p>{% endif %}',
           '#context' => [
             'date' => $link,
-            'username' => \Drupal::service('renderer')->renderPlain($username),
+            'username' => $this->renderer->renderPlain($username),
             'message' => ['#markup' => $revision->getRevisionLogMessage(), '#allowed_tags' => Xss::getHtmlTagList()],
           ],
         ],
