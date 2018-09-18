@@ -65,8 +65,8 @@ class IssueEntityController extends ControllerBase implements ContainerInjection
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $adv_audit_issue->label()]) : $this->t('Revisions for %title', ['%title' => $adv_audit_issue->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
 
-    $revert_permission = (($account->hasPermission("revert all audit issue revisions") || $account->hasPermission('administer audit issue entities')));
-    $delete_permission = (($account->hasPermission("delete all audit issue revisions") || $account->hasPermission('administer audit issue entities')));
+    $revert_permission = ($account->hasPermission("revert all audit issue revisions") || $account->hasPermission('administer audit issue entities'));
+    $delete_permission = ($account->hasPermission("delete all audit issue revisions") || $account->hasPermission('administer audit issue entities'));
 
     $rows = [];
 
