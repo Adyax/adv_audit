@@ -94,10 +94,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       return $uri_route_parameters;
     }
 
-    if ($rel === 'revision_revert') {
-      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
-    }
-    elseif ($rel === 'revision_delete') {
+    if ($rel === 'revision_revert' || $rel === 'revision_delete') {
       $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
     }
 
@@ -239,7 +236,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * {@inheritdoc}
    */
   public function setOwner(UserInterface $account) {
-    return $this;
+    // Do nothing.
   }
 
   /**
@@ -253,7 +250,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * {@inheritdoc}
    */
   public function setPublished($published) {
-    return $this;
+    // Do nothing.
   }
 
   /**
@@ -425,8 +422,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * Get printable Issue for report as FormattableMarkup.
    */
   public function getMarkup() {
-    $markup = new FormattableMarkup($this->getTitle(), $this->getDetails());
-    return $markup;
+    return new FormattableMarkup($this->getTitle(), $this->getDetails());
   }
 
 }

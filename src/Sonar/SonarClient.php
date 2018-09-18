@@ -44,8 +44,7 @@ class SonarClient extends Client {
    * {@inheritdoc}
    */
   protected function extendApi($method, $parameters) {
-    $response = $this->call($method, $parameters);
-    return $response;
+    return $this->call($method, $parameters);
   }
 
   /**

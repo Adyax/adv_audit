@@ -6,7 +6,7 @@ use Drupal\adv_audit\Sonar\SonarClient;
 use SonarQube\Api\AbstractApi;
 
 /**
- * Dashboard Class.
+ * Class Dashboard.
  */
 class Dashboard extends AbstractApi {
 
@@ -19,7 +19,9 @@ class Dashboard extends AbstractApi {
   ];
 
   /**
-   * {@inheritdoc}
+   * Define sonar client.
+   *
+   * @var $sonar
    */
   public function __construct(SonarClient $sonar) {
     $this->client = $sonar;
