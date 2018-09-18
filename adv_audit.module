@@ -140,11 +140,10 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.adv_audit':
       $renderer = \Drupal::service('renderer');
       $render_array = ['#theme' => 'adv_audit_help'];
-      $manager_list = \Drupal::service('plugin.manager.adv_audit_checklist');
-      $render_array['#data'] = $manager_list->getHelpPlugins();
+      $help_manager = \Drupal::service('adv_audit.manager.help');
+      $render_array['#data'] = $help_manager->getHelp();
       $output = $renderer->render($render_array);
       return $output;
-
     default:
       return $output;
   }

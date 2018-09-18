@@ -1,0 +1,10 @@
+messages:
+  description: "<p>Once the new security update for the module is released it would be the responsibility of each Drupal site owner to keep their site updated.</p>\r\n"
+  actions: "<p>List of modules must be updated as soon as possible.</p>\r\n"
+  impacts: "<p>If you don't monitor for new versions and ignore contrib updates, your application is in danger as hackers follow security-related incidents (which have to be published as soon as they're discovered) and try to exploit the known vulnerabilities. So it's very important to keep application fully updated especially when exists security updates and stable versions of contrib modules.</p>\r\n"
+  fail: "<p>There are outdated modules with security updates.</p>\r\n"
+  success: "<p>All modules are up-to-date.</p>\r\n"
+settings:
+  enabled: 1
+  severity: high
+help: "Check security updates for contrib modules."

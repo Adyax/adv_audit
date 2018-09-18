@@ -1,0 +1,16 @@
+settings:
+  status: 1
+  severity: high
+  untrusted_roles:
+    anonymous: anonymous
+    authenticated: authenticated
+    administrator: 0
+  unsafe_tags: 'applet,area,audio,base,basefont,body,button,comment,embed,eval,form,frame,frameset,head,html,iframe,image,img,input,isindex,label,link,map,math,meta,noframes,noscript,object,optgroup,option,param,script,select,style,svg,table,td,textarea,title,video,vmlframe'
+  enabled: 1
+messages:
+  description: "<p>Certain HTML tags can allow an attacker to take control of your site. Drupal's input format system makes use of a set filters to run on incoming text. The 'HTML Filter' strips out harmful tags and JavaScript events. It should be used on all formats accessible by untrusted users.</p>\r\n"
+  actions: "<p>Audit your input formats and check which formats are allowed to be used by untrusted users (anonymous or authenticated users on your site). For formats using the HTML Filter, remove any of the following tags: SCRIPT, IMG, IFRAME, EMBED, OBJECT, INPUT, LINK, STYLE, META, FRAMESET, DIV, SPAN, BASE, TABLE, TR, or TD.<br><strong>Do not give untrusted users access to a format that does not contain the HTML Filter, such as Full HTML.</strong></p>\r\n"
+  impacts: "<p>The Filtered HTML input format uses the HTML Filter when outputting content. The Full HTML input format does not use this filter, allowing all HTML tags to be output. For this reason a misconfigured Filtered HTML input format is as bad as allowing untrusted users on your site to use Full HTML. Certain HTML tags can allow an attacker to take control of your site.</p>\r\n"
+  fail: "<p>Untrusted users are allowed to input dangerous HTML tags.</p>\r\n"
+  success: "<p>Untrusted users are not allowed to input dangerous HTML tags.</p>\r\n"
+help: 'Certain HTML tags can allow an attacker to take control of your site. Drupal''s input format system makes use of a set filters to run on incoming text. The ''HTML Filter'' strips out harmful tags and Javascript events and should be used on all formats accessible by untrusted users.'

@@ -1,0 +1,10 @@
+messages:
+  description: "<p>Features provides a centralized place to manage, configure and export components and write them to code. This convenience makes Features an excellent tool for managing changes (for Drupal7) between development environments and version control in conjunction with Git, SVN, or other version control systems.</p>\r\n"
+  actions: "<p>It is recommended to update features with the latest structure and settings done in the BO.</p>\r\n"
+  impacts: "<p>statuses <strong>overridden</strong>, needs review and rebuilding must be avoided because it means that configurations that are defined in the feature module's code have been overridden in the Drupal backend by a user and during next execution of features revert execution (that is a part of any normal Continuous Deployment process) these changes will be lost.</p>\r\n"
+  fail: "<p>There are non-actual features on web-site.</p>\r\n"
+  success: "<p>All Features are up-to-date.</p>\r\n"
+settings:
+  enabled: 1
+  severity: normal
+help: "Check if all Features are actual."

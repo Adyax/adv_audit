@@ -1,0 +1,10 @@
+messages:
+  description: "<p>Checks if the register_globals is disabled.</p>\r\n"
+  actions: "<p>In your website's <code>php.ini</code> file, ensure that the <code>register_globals</code> setting is not set to a value of 1 or On.</p>\r\n"
+  impacts: "<p>register_globals is enabled. Drupal requires this configuration directive to be disabled. Your site may not be secure when register_globals is enabled.<br>Read more in the %link.</p>\r\n"
+  fail: "<p><code>register_globals</code> is enabled.</p>\r\n"
+  success: "<p><code>register_globals</code> is disabled.</p>\r\n"
+settings:
+  enabled: 1
+  severity: high
+help: "Checks if the register_globals is disabled."

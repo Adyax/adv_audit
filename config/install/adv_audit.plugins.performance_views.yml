@@ -1,0 +1,20 @@
+settings:
+  enabled: 1
+  severity: normal
+  status: 1
+  minimum_cache_lifetime: '60'
+messages:
+  description: "<p>Query results and  should be cached for at least 1 minute or use tag caching.</p>\r\n"
+  actions: "<p>Query results should be cached for at least 1 minute or use tag caching. Rendered output should be cached for as long as possible (if the query changes, the output will be refreshed).</p>
+        <ul>
+          <li>Go to /admin/structure/views/</li>
+          <li>Edit the View in question</li>
+          <li>Select the Display</li>
+          <li>Click Advanced</li>
+          <li>Next to Caching, click to edit</li>
+          <li>Caching: (something other than None)</li>
+        </ul>"
+  impacts: "<p>This point affects the performance of the site if listed views are used as a constructor of queries to database or rendered in front-office.</p>\r\n"
+  fail: "<p>Views caching is configured wrongly.</p>\r\n"
+  success: "<p>All cache configurations for views setted up correctly.</p>\r\n"
+help: "Check views cache configuration."

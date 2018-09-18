@@ -1,0 +1,10 @@
+messages:
+  description: "<p>OPcache improves PHP performance by storing precompiled script bytecode in shared memory, thereby removing the need for PHP to load and parse scripts on each request.</p>\r\n"
+  actions: "<p>Enable PHP Opcache extension.</p>\r\n"
+  impacts: "<p>PHP OPcode caching can improve your site's performance considerably.</p>\r\n"
+  fail: "<p>Opcache extension disabled.</p>\r\n"
+  success: "<p>Opcache extension enabled.</p>\r\n"
+settings:
+  enabled: 1
+  severity: normal
+help: 'Checks if PHP Opcache extension is enabled.'

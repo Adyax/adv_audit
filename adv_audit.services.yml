@@ -1,27 +1,27 @@
 services:
   plugin.manager.adv_audit_check:
-    class: Drupal\adv_audit\Plugin\AdvAuditCheckManager
+    class: Drupal\adv_audit\Plugin\AuditPluginsManager
     parent: default_plugin_manager
-  adv_audit.message.storage:
-    class: Drupal\Core\Config\FileStorage
-    factory: Drupal\adv_audit\Message\MessageStorageFactory::getMsgDir
   adv_audit.messages:
     class: Drupal\adv_audit\Message\AuditMessagesStorage
-    arguments: ['@adv_audit.message.storage', '@state']
+    arguments: ['@config.factory']
   adv_audit.renderer:
     class: Drupal\adv_audit\Renderer\AuditReportRenderer
     arguments: ['@renderer', '@plugin.manager.adv_audit_check', '@adv_audit.messages', '@config.factory', '@adv_audit.manager.category']
   adv_audit.manager.category:
-    class: Drupal\adv_audit\AuditCategoryManagerService
+    class: Drupal\adv_audit\Service\AuditCategoryManagerService
     arguments: ['@config.factory', '@plugin.manager.adv_audit_check']
-  adv_adit.plugin.config:
-    class: Drupal\adv_audit\AdvAuditPluginConfigStorageService
-    arguments: ['@state']
+  adv_audit.manager.help:
+    class: Drupal\adv_audit\Service\AuditPluginHelpService
+    arguments: ['@config.factory', '@plugin.manager.adv_audit_check', '@adv_audit.manager.category']
+  adv_audit.plugin.config:
+    class: Drupal\adv_audit\Service\AuditPluginConfigStorageService
+    arguments: ['@config.factory']
     scope: prototype
   adv_audit.route_subscriber:
     class: Drupal\adv_audit\Routing\RouteSubscriber
     tags:
       - { name: event_subscriber }
   adv_audit.global_info:
-    class: Drupal\adv_audit\AdvAuditEntityGlobalInfo
+    class: Drupal\adv_audit\Service\AuditEntityGlobalInfo
     arguments: ['@entity_type.manager', '@database', '@kernel', '@app.root', '@module_handler']

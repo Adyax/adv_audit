@@ -1,0 +1,10 @@
+messages:
+  description: "<p>Regularly running cron tasks helps ensure the health of your website.</p>\r\n"
+  actions: "<p>To ensure that cron is running on your website, and with the correct frequency visit %link. https://drupal.org/node/23714 describes how to set up crontab and add tasks to it.</p>\r\n"
+  impacts: "<p>If system cron doesn''t work or/and Drupal cron was setted up incorrectly it can lead to a lot of problems.</p>\r\n"
+  fail: "<p>There are problems with cron launch. Last run @time ago</p>\r\n"
+  success: "<p>No problems detected with cron launch.</p>\r\n"
+settings:
+  enabled: 1
+  severity: high
+help: "Check cron settings."

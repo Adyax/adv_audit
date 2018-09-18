@@ -1,0 +1,10 @@
+messages:
+  description: "<p>Checks Search API solr indexes and servers status.</p>\r\n"
+  actions: "<p>There are number of issues.</p>\r\n"
+  impacts: "<p>Disabled servers and indexes and not fully indexed content may cause problems with site search.</p>\r\n"
+  fail: "<p>There are one or more unused Search API entities: %list</p>\r\n"
+  success: "<p>All Search API entities are used.</p>\r\n"
+settings:
+  enabled: 1
+  severity: high
+help: 'Checks if all of indexes are active and all contents are indexed.'
