@@ -76,25 +76,28 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
    */
   public function perform() {
     $issues = [];
-
+    $message = [];
     if (!$this->moduleHandler->moduleExists('dblog')) {
       return $this->skip($this->t('Module DBLog is not enabled.'));
     }
 
     $total = $this->getRowCount();
+    $message[] = $total->render();
     if ($total) {
-      $issues['total'] = $total;
       if ($not_found = $this->getNotFoundCount()) {
         $issues['page_not_found'] = $not_found;
       }
-      $issues['age'] = $this->getAge();
+      $message[] = $this->getAge()->render();
       if ($php = $this->getCountPhpErrors()) {
         $issues['php'] = $php;
       }
     }
 
     if (!empty($issues)) {
-      return $this->fail(NULL, ['issues' => $issues]);
+      return $this->fail(NULL, [
+        'issues' => $issues,
+        '@message' => implode('/n', $message),
+      ]);
     }
     return $this->success();
   }
@@ -139,10 +142,9 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
       ->execute()
       ->fetchField();
     if ($count_rows) {
-      return [
-        '@issue_title' => "There are @count_entries log entries.",
+      return $this->t("There are @count_entries log entries.", [
         '@count_entries' => $count_rows,
-      ];
+      ]);
     }
     return FALSE;
   }
@@ -169,19 +171,17 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
 
     // If two different days...
     if (date('Y-m-d', $old) != date('Y-m-d', $new)) {
-      return [
-        '@issue_title' => "Age of messages: From @from to @to (@days days)",
+      return $this->t("Age of messages: From @from to @to (@days days)", [
         '@from' => date('Y-m-d', $old),
         '@to' => date('Y-m-d', $new),
         '@days' => round(($new - $old) / 86400, 2),
-      ];
+      ]);
     }
     // Same day; don't calculate number of days.
-    return [
-      '@issue_title' => "Age of messages: From @from to @to",
+    return $this->t("Age of messages: From @from to @to", [
       '@from' => date('Y-m-d', $old),
       '@to' => date('Y-m-d', $new),
-    ];
+    ]);
   }
 
   /**
