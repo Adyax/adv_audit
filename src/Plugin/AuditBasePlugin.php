@@ -132,8 +132,6 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
    *   Return category label value.
    */
   public function getCategoryLabel() {
-    // TODO: Not best implementation of getting config value.
-    // We should re-write this.
     return $this->config('adv_audit.settings')->get('categories' . $this->getCategoryName() . '.label');
   }
 
@@ -209,7 +207,13 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
     $module_handler = $this->container()->get('module_handler');
 
     foreach ($module_list as $module) {
-      list($module_name, $module_version) = explode(':', $module);
+      if (!strpos($module, ':')) {
+        $module_name = $module;
+        $module_version = NULL;
+      }
+      else {
+        list($module_name, $module_version) = explode(':', $module);
+      }
 
       if (!$module_handler->moduleExists($module_name)) {
         throw new RequirementsException(

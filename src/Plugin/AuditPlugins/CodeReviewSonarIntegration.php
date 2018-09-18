@@ -13,14 +13,13 @@ use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Blocktrail\CryptoJSAES\CryptoJSAES;
 
-
 /**
  * Code review. Integration with sonar..
  *
  * @AuditPlugin(
  *  id = "sonar_integration",
  *  label = @Translation("Auditing code smells, code complexity. Code metrics
-and potential problems"),
+ *  and potential problems"),
  *  category = "code_review",
  *  requirements = {},
  * )
@@ -32,6 +31,13 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
   public $sonar;
 
   /**
+   * The State API service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * Constructs a new PerformanceViewsCheck object.
    *
    * @param array $configuration
@@ -40,7 +46,7 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param mixed $state
+   * @param Drupal\Core\State\StateInterface $state
    *   The plugin implementation definition.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
@@ -113,7 +119,7 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
@@ -170,7 +176,7 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     $settings = $this->getSettings();

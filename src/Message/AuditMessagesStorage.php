@@ -31,12 +31,7 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
   }
 
   /**
-   * Save value of message type.
-   *
-   * @param string $plugin_id
-   *   The plugin id.
-   * @param mixed $value
-   *   New value for message type.
+   * {@inheritdoc}
    */
   public function set($plugin_id, $value) {
     $configs = $this->configFactory->getEditable($this->getConfigKey($plugin_id));
@@ -46,15 +41,7 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
   }
 
   /**
-   * Get value for plugin by message type.
-   *
-   * @param string $plugin_id
-   *   The plugin id.
-   * @param string $type
-   *   The message type.
-   *
-   * @return null|string
-   *   Return message string.
+   * {@inheritdoc}
    */
   public function get($plugin_id, $type) {
     $values = $this->configFactory->get($this->getConfigKey($plugin_id))->get('messages');
@@ -67,7 +54,7 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
   /**
    * Return plugins config key.
    *
-   * @param $pluginId
+   * @param string $pluginId
    *   String audit plugin id.
    *
    * @return string

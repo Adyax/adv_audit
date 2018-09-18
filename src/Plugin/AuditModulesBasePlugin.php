@@ -69,11 +69,18 @@ abstract class AuditModulesBasePlugin extends AuditBasePlugin {
         continue;
       }
 
-      $this->updates[] = [
-        'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
-        'current_v' => $project['existing_version'],
-        'recommended_v' => $project['recommended'],
-      ];
+      // Replace title with name property if title doesn't exist.
+      $project['title'] = isset($project['title']) ? $project['title'] : $project['info']['name'];
+
+      // Exclude module from list if recommended version not exist's.
+      if (isset($project['recommended'])) {
+        $this->updates[] = [
+          'label' => !empty($project['link']) ? Link::fromTextAndUrl($project['title'], Url::fromUri($project['link'])) : $project['title'],
+          'current_v' => $project['existing_version'],
+          'recommended_v' => $project['recommended'],
+        ];
+      }
+
     }
 
     if (!empty($this->updates)) {
@@ -81,7 +88,7 @@ abstract class AuditModulesBasePlugin extends AuditBasePlugin {
       foreach ($this->updates as $item) {
         $issues[] = [
           '@issue_title' => "Module's \"@label\" current version is @current_v. Recommended: @recommended_v",
-          '@label' => $item['label']->getText(),
+          '@label' => is_string($item['label']) ? $item['label'] : $item['label']->getText(),
           '@current_v' => $item['current_v'],
           '@recommended_v' => $item['recommended_v'],
         ];

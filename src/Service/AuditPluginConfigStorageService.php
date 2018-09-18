@@ -5,7 +5,7 @@ namespace Drupal\adv_audit\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
- * Class AdvAuditPluginConfigStorageService.
+ * Class AuditPluginConfigStorageService.
  */
 class AuditPluginConfigStorageService implements AuditPluginConfigStorageServiceInterface {
 
@@ -24,7 +24,7 @@ class AuditPluginConfigStorageService implements AuditPluginConfigStorageService
   protected $configFactory;
 
   /**
-   * Constructs a new AdvAuditPluginConfigStorageService object.
+   * Constructs a new AuditPluginConfigStorageService object.
    */
   public function __construct(ConfigFactoryInterface $config_factory) {
     $this->configFactory = $config_factory;

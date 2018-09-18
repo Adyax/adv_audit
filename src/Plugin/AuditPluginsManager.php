@@ -74,7 +74,7 @@ class AuditPluginsManager extends DefaultPluginManager {
     try {
       return parent::createInstance($plugin_id, $configuration);
     }
-    catch (PluginNotFoundException| ServiceNotFoundException $e) {
+    catch (PluginNotFoundException | ServiceNotFoundException $e) {
       // If current action context is run test scenarios we should
       // throw the error.
       if (isset($configuration[AuditExecutable::AUDIT_EXECUTE_RUN])) {

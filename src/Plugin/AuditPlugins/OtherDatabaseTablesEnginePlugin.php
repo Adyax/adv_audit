@@ -68,7 +68,7 @@ class OtherDatabaseTablesEnginePlugin extends AuditBasePlugin implements Contain
         ];
       }
 
-      return $this->fail($this->t(''), [
+      return $this->fail(NULL, [
         'issues' => $issues,
         '%count' => $params['info']['count'],
       ]);
