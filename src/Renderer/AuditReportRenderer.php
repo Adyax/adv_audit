@@ -117,7 +117,6 @@ class AuditReportRenderer implements RenderableInterface {
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
       '#categories' => $this->doBuildCategory(),
-      '#pre_render' => [[$this, 'testrenderer']],
       '#global_info' => $this->auditResultResponse->getOverviewInfo(),
       '#report_id' => $report_id,
       '#attached' => [
@@ -128,10 +127,6 @@ class AuditReportRenderer implements RenderableInterface {
     ];
 
   }
-
-  public function testrenderer($element) {
-    return $element;
-}
 
   /**
    * Build categories list.
