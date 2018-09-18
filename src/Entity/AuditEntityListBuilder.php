@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;

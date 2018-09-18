@@ -17,9 +17,8 @@ class RunForm extends FormBase {
   /**
    * The adv_audit.checklist service.
    *
-   * @var \Drupal\adv_audit\Checklist
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
-
   protected $auditTestManager = [];
 
   protected $configCategories;

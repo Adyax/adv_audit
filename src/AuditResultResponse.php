@@ -78,7 +78,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @return void
    */
-  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
+  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_SKIP) {
     $this->results->add(new AuditReason($test->id(), $status));
   }
 

@@ -67,7 +67,7 @@ class AuditDownloadController extends ControllerBase {
     $file_uri = $file->getFileUri();
 
     if (empty($file_uri) || !file_exists($this->fileSystem->realpath($file_uri))) {
-      $this->logger->notice('There are some troubles with audit file uri.');
+      \Drupal::logger('adv_audit')->notice('There are some troubles with audit file uri.');
       throw new NotFoundHttpException();
     }
     // Set headers for download.
