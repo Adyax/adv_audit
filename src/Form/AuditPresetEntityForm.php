@@ -16,8 +16,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AuditPresetEntityForm extends EntityForm {
 
+  /**
+   * Container for AuditPluginsManager.
+   *
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
+   */
   protected $advAuditCheckPluginManager;
 
+  /**
+   * Container for CategoryManagerService.
+   *
+   * @var \Drupal\adv_audit\Service\AuditCategoryManagerService
+   */
   protected $categoryManagerService;
 
 
