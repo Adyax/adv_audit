@@ -7,6 +7,9 @@
 
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Link;
+use Drupal\Component\Utility\NestedArray;
 
 /**
  * Implements hook_theme().
@@ -82,8 +85,8 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $result = $rev_entity->get('audit_results')->first()->getValue();
     $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
     $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
-    $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
-    $variables['content']['score_history'][$rev_id]['operations'] = \Drupal\Core\Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
+    $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
+    $variables['content']['score_history'][$rev_id]['operations'] = Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
   }
 }
 
@@ -110,20 +113,23 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
       $render_array['#data'] = $help_manager->getHelp();
       $output = $renderer->render($render_array);
       return $output;
+
     default:
       return $output;
   }
 }
 
 /**
+ * Alter plugin definitions.
  *
- * @param $definition
+ * @param array $definitions
+ *   Plugin definitions.
  */
-function adv_audit_adv_audit_check_info_alter(&$definitions) {
+function adv_audit_adv_audit_check_info_alter(array &$definitions) {
   foreach ($definitions as $plugin_id => &$definition) {
     $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
     if ($overridden_config) {
-      $definition = \Drupal\Component\Utility\NestedArray::mergeDeep($definition, $overridden_config);
+      $definition = NestedArray::mergeDeep($definition, $overridden_config);
     }
   }
 }

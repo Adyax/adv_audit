@@ -28,7 +28,7 @@ class SecurityTrustedHostsPlugin extends AuditBasePlugin {
       return $this->fail(NULL, [
         'issues' => [
           'trusted_host_check' => [
-            '@issue_title' => 'Trusted hosts param is empty.'
+            '@issue_title' => 'Trusted hosts param is empty.',
           ],
         ],
       ]);

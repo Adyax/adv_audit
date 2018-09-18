@@ -2,14 +2,11 @@
 
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
-use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\Exception\RequirementsException;
-use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
 use Drupal\adv_audit\Traits\AuditPluginSubform;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -101,7 +98,7 @@ class OtherExampleAuditPlugin extends AuditBasePlugin implements ContainerFactor
    *
    * Method is required in case if your class implements PluginFormInterface.
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
     $form['check_should_passed'] = [
       '#type' => 'checkbox',

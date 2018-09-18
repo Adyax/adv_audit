@@ -18,4 +18,3 @@ adv_audit.preset.*:
           type: string
         status:
           type: integer
-

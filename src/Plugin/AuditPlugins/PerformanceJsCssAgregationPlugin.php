@@ -26,12 +26,12 @@ class PerformanceJsCssAgregationPlugin extends AuditBasePlugin {
     $issues = [];
     if (!$css_preprocess) {
       $issues['css_aggregation_disabled'] = [
-        '@issue_title' => 'CSS aggregation disabled.'
+        '@issue_title' => 'CSS aggregation disabled.',
       ];
     }
     if (!$js_preprocess) {
       $issues['js_aggregation_disabled'] = [
-        '@issue_title' => 'Javascript aggregation disabled.'
+        '@issue_title' => 'Javascript aggregation disabled.',
       ];
     }
 

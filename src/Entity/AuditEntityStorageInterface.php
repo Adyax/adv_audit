@@ -5,7 +5,6 @@ namespace Drupal\adv_audit\Entity;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\adv_audit\Entity\AuditEntityInterface;
 
 /**
  * Defines the storage handler class for Audit Result entity entities.
@@ -18,7 +17,7 @@ use Drupal\adv_audit\Entity\AuditEntityInterface;
 interface AuditEntityStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Gets a list of Audit Result entity revision IDs for a specific Audit Result entity.
+   * Gets a list of revision IDs for a specific Audit Result entity.
    *
    * @param \Drupal\adv_audit\Entity\AuditEntityInterface $entity
    *   The Audit Result entity entity.
@@ -29,7 +28,7 @@ interface AuditEntityStorageInterface extends ContentEntityStorageInterface {
   public function revisionIds(AuditEntityInterface $entity);
 
   /**
-   * Gets a list of revision IDs having a given user as Audit Result entity author.
+   * Gets a list of revision IDs for a given user as Audit Result entity author.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user entity.
