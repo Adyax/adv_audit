@@ -12,7 +12,6 @@ interface AuditPluginConfigStorageServiceInterface {
    *
    * @param string $key
    *   The config name.
-   *
    * @param mixed $default
    *   The default value to return.
    *
@@ -24,9 +23,9 @@ interface AuditPluginConfigStorageServiceInterface {
   /**
    * Set settings value ro storage.
    *
-   * @param $key
+   * @param string $key
    *   The settings key.
-   * @param $value
+   * @param mixed $value
    *   The value for save.
    */
   public function set($key, $value);
@@ -34,7 +33,7 @@ interface AuditPluginConfigStorageServiceInterface {
   /**
    * Set the current plugin id.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *   The plugin ID.
    */
   public function setPluginId($plugin_id);

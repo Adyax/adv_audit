@@ -67,7 +67,7 @@ class AuditMessagesStorage implements AuditMessagesStorageInterface {
   /**
    * Return plugins config key.
    *
-   * @param $pluginId
+   * @param string $pluginId
    *   String audit plugin id.
    *
    * @return string

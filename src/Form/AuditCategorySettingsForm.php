@@ -2,8 +2,6 @@
 
 namespace Drupal\adv_audit\Form;
 
-use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -59,6 +57,9 @@ class AuditCategorySettingsForm extends FormBase {
     $this->request = $request_stack->getCurrentRequest();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.adv_audit_check'),
@@ -67,7 +68,6 @@ class AuditCategorySettingsForm extends FormBase {
       $container->get('request_stack')
     );
   }
-
 
   /**
    * {@inheritdoc}
@@ -119,7 +119,7 @@ class AuditCategorySettingsForm extends FormBase {
           'group' => 'table-sort-weight',
         ],
       ],
-      '#empty' => t('There are currently no plugins in this category.'),
+      '#empty' => $this->t('There are currently no plugins in this category.'),
     ];
 
     foreach ($this->pluginManagerAdvAuditCheck->getPluginsByCategoryFilter($category_id) as $plugin_id => $plugin_definition) {
@@ -129,7 +129,7 @@ class AuditCategorySettingsForm extends FormBase {
       $form['plugins'][$plugin_id]['#attributes']['class'][] = 'draggable';
       $form['plugins'][$plugin_id]['#weight'] = $plugin_instance->getWeight();
       $form['plugins'][$plugin_id]['label'] = [
-        '#markup' => $plugin_instance->label()
+        '#markup' => $plugin_instance->label(),
       ];
 
       $form['plugins'][$plugin_id]['operations'] = [
@@ -139,7 +139,7 @@ class AuditCategorySettingsForm extends FormBase {
             'title' => $this->t('Edit'),
             'url' => Url::fromRoute('adv_audit.plugin.settings', ['plugin_id' => $plugin_id]),
           ],
-        ]
+        ],
       ];
 
       $form['plugins'][$plugin_id]['weight'] = [
@@ -159,7 +159,7 @@ class AuditCategorySettingsForm extends FormBase {
       ];
     }
 
-    // Sort
+    // Sort.
     uasort($form['plugins'], ['Drupal\Component\Utility\SortArray', 'sortByWeightProperty']);
 
     // Form action buttons.
@@ -181,15 +181,7 @@ class AuditCategorySettingsForm extends FormBase {
       '#limit_validation_errors' => [],
     ];
 
-
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
   }
 
   /**

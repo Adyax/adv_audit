@@ -45,7 +45,7 @@ class ContribPatchedModulesPlugin extends AuditBasePlugin {
         $issues = [
           'patched_modules_check_' . $hacked_module['project_name'] => [
             '@issue_title' => 'Changed module: @changed_module',
-            '@changed_module' => $hacked_module['title']
+            '@changed_module' => $hacked_module['title'],
           ],
         ];
       }

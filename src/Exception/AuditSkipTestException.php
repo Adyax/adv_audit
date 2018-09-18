@@ -7,14 +7,4 @@ namespace Drupal\adv_audit\Exception;
  */
 class AuditSkipTestException extends \Exception {
 
-  /**
-   * Constructs a SkipTestException object.
-   *
-   * @param string $message
-   *   The message for the exception.
-   */
-  public function __construct($message = NULL) {
-    parent::__construct($message);
-  }
-
 }

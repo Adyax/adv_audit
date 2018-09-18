@@ -1,29 +1,32 @@
 <?php
-/**
- *
- */
 
 namespace Drupal\adv_audit\Sonar;
 
 use Buzz\Exception\RequestException;
 use Buzz\Message\Request;
 use Buzz\Message\Response;
-use \SonarQube\Client;
-use  Drupal\adv_audit\Sonar\Api;
+use SonarQube\Client;
+use Drupal\adv_audit\Sonar\Api\Dashboard;
+use Drupal\adv_audit\Sonar\Api\Authentication;
 
-
+/**
+ * SonarClient Class.
+ */
 class SonarClient extends Client {
 
   public $dashboard;
 
   private $project;
 
+  /**
+   * Set Project.
+   */
   public function setProject($key) {
     $this->project = $key;
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected function methodUrl($method) {
     // Prevent concat issues.
@@ -31,52 +34,52 @@ class SonarClient extends Client {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getProject() {
     return $this->project;
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
-  protected function extend_api($method, $parameters) {
+  protected function extendApi($method, $parameters) {
     $response = $this->call($method, $parameters);
     return $response;
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected function call($path, array $parameters = [], array $headers = []) {
     return $this->getHttpClient()->get($path, $parameters, $headers);
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function api($api_name) {
     switch ($api_name) {
       case 'dashboard':
-        $this->dashboard = new Api\Dashboard($this);
+        $this->dashboard = new Dashboard($this);
         $method = 'measures/component';
         $options = [
           'component' => $this->project ? $this->project : '',
           'metricKeys' => implode(',', $this->dashboard->metrics),
         ];
         break;
+
       case 'authentication':
-        return new Api\Authentication($this);
-        break;
+        return new Authentication($this);
+
       default:
         return parent::api($api_name);
-        break;
     }
-    return $this->extend_api($method, $options);
+    return $this->extendApi($method, $options);
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function validateRequest($path, $data) {
     $request = new Request('GET');
@@ -87,7 +90,8 @@ class SonarClient extends Client {
     $response = new Response();
     try {
       $this->getHttpClient()->client->send($request, $response);
-    } catch (RequestException $e) {
+    }
+    catch (RequestException $e) {
       $response->setContent($e->getMessage());
     }
     return $response;

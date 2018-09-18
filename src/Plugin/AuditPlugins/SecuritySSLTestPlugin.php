@@ -135,7 +135,8 @@ class SecuritySSLTestPlugin extends AuditBasePlugin implements ContainerFactoryP
     try {
       $response = $this->httpClient->request('GET', $ssllab_analyze_url);
       $result = json_decode($response->getBody());
-    } catch (RequestException $e) {
+    }
+    catch (RequestException $e) {
       throw new RequirementsException($e->getMessage(), ['ssllab_check']);
     }
     // Wait until report will be ready.
@@ -164,7 +165,7 @@ class SecuritySSLTestPlugin extends AuditBasePlugin implements ContainerFactoryP
               '@issue_title' => 'SSL check is failed.',
             ],
           ],
-          '%link' => $report_link
+          '%link' => $report_link,
         ]);
       }
     }

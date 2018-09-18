@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Message;
 
 /**
- *
+ * AuditMessagesStorageInterface Interface.
  */
 interface AuditMessagesStorageInterface {
   const MSG_TYPE_DESCRIPTION = 'description';
@@ -17,12 +17,12 @@ interface AuditMessagesStorageInterface {
   const COLLECTION_NAME = 'messages';
 
   /**
-   *
+   * Set Method.
    */
   public function set($plugin_id, $value);
 
   /**
-   *
+   * Get Method.
    */
   public function get($plugin_id, $type);
 

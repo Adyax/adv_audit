@@ -4,7 +4,6 @@ namespace Drupal\adv_audit\Form;
 
 use Drupal\adv_audit\Service\AuditCategoryManagerService;
 use Drupal\adv_audit\Batch\AuditRunBatch;
-use Drupal\adv_audit\Entity\AuditEntity;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityForm;
@@ -20,7 +19,6 @@ class AuditPresetEntityForm extends EntityForm {
 
   protected $categoryManagerService;
 
-
   /**
    * {@inheritdoc}
    */
@@ -31,6 +29,9 @@ class AuditPresetEntityForm extends EntityForm {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(AuditPluginsManager $adv_audit_check_manager, AuditCategoryManagerService $category_manager) {
     $this->advAuditCheckPluginManager = $adv_audit_check_manager;
     $this->categoryManagerService = $category_manager;
@@ -62,42 +63,42 @@ class AuditPresetEntityForm extends EntityForm {
       '#disabled' => !$adv_audit_preset_entity->isNew(),
     ];
 
-   $form['plugins'] = [
-     '#type' => 'fieldset',
-     '#title' => $this->t('Available checkpoint plugins'),
-     '#description' => $this->t('Select needed checkpoint plugins for run.')
-   ];
+    $form['plugins'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Available checkpoint plugins'),
+      '#description' => $this->t('Select needed checkpoint plugins for run.'),
+    ];
 
-   foreach ($this->categoryManagerService->getListOfCategories() as $category_id => $category_label) {
-     $form['plugins'][$category_id] = [
-       '#type' => 'fieldset',
-       '#title' => $category_label,
-       '#attributes' => [
-         'class' => ['category-wrapper'],
-       ],
-     ];
-     foreach ($this->advAuditCheckPluginManager->getPluginsByCategoryFilter($category_id) as $plugin) {
-       $pid = $plugin['id'];
-       $plugin_insatnce = $this->advAuditCheckPluginManager->createInstance($pid);
-       $is_enabled = $plugin_insatnce->isEnabled();
-       $form['plugins'][$category_id][$pid] = [
-         '#type' => 'checkbox',
-         '#title' => $plugin['label'],
-         '#attributes' => [],
-         '#default_value' => isset($plugin_list[$pid]) ? $plugin_list[$pid] : 0,
-         '#weight' => $plugin_insatnce->getWeight(),
-       ];
-       if (!$is_enabled) {
-         $form['plugins'][$category_id][$pid]['#attributes']['disabled'] = 'disabled';
-         $form['plugins'][$category_id][$pid]['#attributes']['title'] = $this->t('This plugin are disabled.');
-       }
-     }
-     uasort($form['plugins'][$category_id], [SortArray::class, 'sortByWeightProperty']);
+    foreach ($this->categoryManagerService->getListOfCategories() as $category_id => $category_label) {
+      $form['plugins'][$category_id] = [
+        '#type' => 'fieldset',
+        '#title' => $category_label,
+        '#attributes' => [
+          'class' => ['category-wrapper'],
+        ],
+      ];
+      foreach ($this->advAuditCheckPluginManager->getPluginsByCategoryFilter($category_id) as $plugin) {
+        $pid = $plugin['id'];
+        $plugin_insatnce = $this->advAuditCheckPluginManager->createInstance($pid);
+        $is_enabled = $plugin_insatnce->isEnabled();
+        $form['plugins'][$category_id][$pid] = [
+          '#type' => 'checkbox',
+          '#title' => $plugin['label'],
+          '#attributes' => [],
+          '#default_value' => isset($plugin_list[$pid]) ? $plugin_list[$pid] : 0,
+          '#weight' => $plugin_insatnce->getWeight(),
+        ];
+        if (!$is_enabled) {
+          $form['plugins'][$category_id][$pid]['#attributes']['disabled'] = 'disabled';
+          $form['plugins'][$category_id][$pid]['#attributes']['title'] = $this->t('This plugin are disabled.');
+        }
+      }
+      uasort($form['plugins'][$category_id], [SortArray::class, 'sortByWeightProperty']);
 
-     if (empty($form['plugins'][$category_id][$pid])) {
-       $form['plugins'][$category_id][$pid]['#markup'] = $this->t('There are no audit plugins available for this category.');
-     }
-   }
+      if (empty($form['plugins'][$category_id][$pid])) {
+        $form['plugins'][$category_id][$pid]['#markup'] = $this->t('There are no audit plugins available for this category.');
+      }
+    }
 
     return $form;
   }
@@ -138,7 +139,7 @@ class AuditPresetEntityForm extends EntityForm {
       $elements['execute'] = [
         '#type' => 'submit',
         '#value' => $this->t('Execute preset'),
-        '#submit' => ['::submitForm', '::save', '::presetRunBatch']
+        '#submit' => ['::submitForm', '::save', '::presetRunBatch'],
       ];
     }
     return $elements;
@@ -157,7 +158,7 @@ class AuditPresetEntityForm extends EntityForm {
     // Unset not plugin value.
     unset($values['label']);
     unset($values['id']);
-    // Configure batch
+    // Configure batch.
     $batch = [
       'title' => $this->t('Running process audit'),
       'init_message' => $this->t('Prepare to process.'),

@@ -10,12 +10,11 @@ use Drupal\adv_audit\Entity\IssueEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form for reverting a Audit Issue revision for a single translation.
+ * Provides a form for reverting a Audit Issue revision for a translation.
  *
  * @ingroup adv_audit
  */
 class IssueEntityRevisionRevertTranslationForm extends IssueEntityRevisionRevertForm {
-
 
   /**
    * The language to be reverted.

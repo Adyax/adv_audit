@@ -107,7 +107,7 @@ class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFacto
     $this->checkComposerDependencies();
     if (count($this->issues)) {
       return $this->fail(NULL, [
-        $this->getIssues(),
+        'issues' => $this->getIssues(),
         '%link' => Link::fromTextAndUrl($this->t('Check your PHP project for known security issues!'),
           Url::fromUri('https://security.sensiolabs.org'))
           ->toString(),
@@ -127,7 +127,7 @@ class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFacto
     foreach ($this->issues as $name => $value) {
       if (isset($value['advisories'])) {
         foreach ($value['advisories'] as $key => $item) {
-          $result['issues'][$name . ' : ' . $key] = [
+          $result[$name . ' : ' . $key] = [
             '@issue_title' => 'Title @title;  description @url',
             '@version' => $item['cve'],
             '@url' => $item['link'],

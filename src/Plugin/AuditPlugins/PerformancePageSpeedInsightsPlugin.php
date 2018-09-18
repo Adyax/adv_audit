@@ -208,7 +208,7 @@ class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements Cont
       '#attributes' => [
         'min' => '1',
         'max' => '100',
-      ]
+      ],
     ];
 
     return $form;
