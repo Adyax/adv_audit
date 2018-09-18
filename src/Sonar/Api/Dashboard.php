@@ -15,7 +15,7 @@ class Dashboard extends AbstractApi {
     'vulnerabilities',
     'code_smells',
     'coverage',
-    'duplicated_blocks'
+    'duplicated_blocks',
   ];
 
   /**

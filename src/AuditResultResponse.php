@@ -8,7 +8,7 @@ use JsonSerializable;
 use Serializable;
 
 /**
- *
+ * Audit Result Response Class.
  */
 class AuditResultResponse implements AuditResultResponseInterface, JsonSerializable, Serializable {
 
@@ -41,7 +41,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   public function calculateScore() {
     $passed = 0;
-    $total_count = $this->results->count();
+
+    // Prevent division by zero.
+    $total_count = $this->results->count() ? $this->results->count() : 1;
+
     foreach ($this->results->getIterator() as $audit_result) {
       if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
         // Skip.
@@ -71,12 +74,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @param \Drupal\adv_audit\Plugin\AuditPluginInterface $test
    *   Test plugin instance.
-   * @param $status
+   * @param string $status
    *   Execution status.
    *
    * @deprecated Use ::addReason method.
-   *
-   * @return void
    */
   public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
     $this->results->add(new AuditReason($test->id(), $status));
@@ -107,7 +108,8 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
    *
-   * @return mixed data which can be serialized by <b>json_encode</b>,
+   * @return mixed
+   *   Data which can be serialized by <b>json_encode</b>,
    *   which is a value of any type other than a resource.
    *
    * @since 5.4.0
@@ -121,7 +123,8 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @link http://php.net/manual/en/serializable.serialize.php
    *
-   * @return string the string representation of the object or null
+   * @return string
+   *   The string representation of the object or null.
    *
    * @since 5.1.0
    */
@@ -138,11 +141,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @link http://php.net/manual/en/serializable.unserialize.php
    *
    * @param string $serialized
-   *   <p>
    *   The string representation of the object.
-   *   </p>.
-   *
-   * @return void
    *
    * @since 5.1.0
    */

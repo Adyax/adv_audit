@@ -55,7 +55,7 @@ class OtherUltimateCronPlugin extends AuditBasePlugin implements ContainerFactor
       return $this->fail(NULL, [
         'issues' => [
           'ultimate_cron' => [
-            '@issue_title' => 'Module Ultimate cron is not installed.'
+            '@issue_title' => 'Module Ultimate cron is not installed.',
           ],
         ],
       ]);

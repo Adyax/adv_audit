@@ -10,7 +10,7 @@ use Drupal\adv_audit\Entity\AuditEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form for reverting a Audit Result entity revision for a single translation.
+ * Provides a form for an Audit Result entity revision translation revert.
  *
  * @ingroup adv_audit
  */

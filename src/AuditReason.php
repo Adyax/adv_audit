@@ -3,7 +3,6 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Entity\IssueEntity;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Class AuditReason.
@@ -73,7 +72,7 @@ class AuditReason {
   /**
    * Magic methods on serialize.
    */
-  public function __sleep () {
+  public function __sleep() {
     // Cleanup, `issues` are removed.
     return [
       'status',
@@ -83,11 +82,10 @@ class AuditReason {
     ];
   }
 
-
   /**
    * Magic methods on unserialize.
    */
-  public function __wakeup () {
+  public function __wakeup() {
     // Cleanup, the issues should be loaded from DB.
     $this->issues = [];
   }
@@ -180,7 +178,7 @@ class AuditReason {
 
     // Create/Load issues.
     $this->issues = [];
-    foreach($details['issues'] as $issue_name => $details) {
+    foreach ($details['issues'] as $issue_name => $details) {
       $this->issues[] = IssueEntity::loadByName($this->getPluginId() . '.' . $issue_name);
     }
 
@@ -217,7 +215,7 @@ class AuditReason {
 
     // Create/Load issues.
     $this->issues = [];
-    foreach($details['issues'] as $issue_name => $details) {
+    foreach ($details['issues'] as $issue_name => $details) {
       $issue_title = empty($details['@issue_title']) ? $issue_name : $details['@issue_title'];
       $issue = IssueEntity::create([
         'name' => $this->getPluginId() . '.' . $issue_name,

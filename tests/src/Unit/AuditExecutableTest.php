@@ -5,7 +5,6 @@ namespace Drupal\Tests\adv_audit\Unit;
 use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponseInterface;
-use Drupal\adv_audit\Plugin\AuditPluginsBase;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Tests\UnitTestCase;

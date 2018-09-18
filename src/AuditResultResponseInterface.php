@@ -29,7 +29,6 @@ interface AuditResultResponseInterface {
    */
   const RESULT_IGNORE = 'IGNORED';
 
-
   /**
    * Add result of the running test.
    *
