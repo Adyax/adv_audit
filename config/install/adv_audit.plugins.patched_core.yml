@@ -1,5 +1,5 @@
 settings:
-  enabled: 1
+  enabled: 0
   severity: high
 messages:
   description: "<p>Check if core was hacked.</p>\r\n"
