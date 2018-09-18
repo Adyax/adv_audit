@@ -40,7 +40,7 @@ class AuditResultFieldType extends MapItem {
     if (isset($this->properties[$name])) {
       return $this->properties[$name]->getValue() !== NULL;
     }
-    return $this->values->$name;
+    return is_object($this->values) ? $this->values->$name : NULL;
   }
 
 }

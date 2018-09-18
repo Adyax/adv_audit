@@ -100,7 +100,14 @@ class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements Contai
       '@path' => $path,
     ];
 
-    $modules_dir_list = scandir($path);
+    $modules_dir_list = is_dir($path) ? scandir($path) : FALSE;
+
+    // Skip if path not exists.
+    if (!$modules_dir_list) {
+      unset($this->issues[$path . 'no_custom']);
+      unset($this->issues[$path . 'no_contrib']);
+      return;
+    }
 
     foreach ($modules_dir_list as $dir) {
       if (($dir !== '.' && $dir !== '..') && is_dir(DRUPAL_ROOT . '/' . $path . '/' . $dir)) {

@@ -74,18 +74,15 @@ class AuditRunBatch {
       switch ($audit_result_status) {
         case AuditResultResponseInterface::RESULT_PASS:
           // Store the number processed in the sandbox.
-          \Drupal::logger('adv_audit_batch')->info($message);
           $context['results']['@success_count']++;
           break;
 
         case AuditResultResponseInterface::RESULT_FAIL:
           $context['results']['@fail_count']++;
-          \Drupal::logger('adv_audit_batch')->error($message);
           break;
 
         case AuditResultResponseInterface::RESULT_SKIP:
           $context['results']['@skip_count']++;
-          \Drupal::logger('adv_audit_batch')->warning($message);
           break;
 
         default:
@@ -95,7 +92,6 @@ class AuditRunBatch {
       // Add and log any captured messages.
       foreach ($audit_messages as $message) {
         $context['results']['messages'][] = (string) $message;
-        \Drupal::logger('adv_audit_batch')->error($message);
       }
     }
 
