@@ -18,14 +18,28 @@ function adv_audit_theme() {
   return [
     'adv_audit' => [
       'render element' => 'elements',
+      'template' => 'adv-audit',
+      'pattern' => 'adv_audit__',
+    ],
+    'adv_audit__pdf' => [
+      'base hook' => 'adv_audit',
+      'template' => 'adv-audit--pdf',
     ],
     'adv_audit_run_process' => [
       'variables' => ['categories' => NULL],
       'template' => 'adv-audit-process-item',
     ],
     'adv_audit_report' => [
-      'variables' => ['report' => NULL],
+      'variables' => [
+        'report' => NULL,
+        'view_mode' => NULL,
+      ],
       'template' => 'adv-audit-report',
+      'pattern' => 'adv_audit_report__',
+    ],
+    'adv_audit_report__pdf' => [
+      'base hook' => 'adv_audit_report',
+      'template' => 'adv-audit-report--pdf',
     ],
     'adv_audit_report_object' => [
       'variables' => [
@@ -33,15 +47,28 @@ function adv_audit_theme() {
         'score_point' => NULL,
         'categories' => NULL,
         'global_info' => NULL,
+        'report_id' => NULL,
       ],
       'template' => 'adv-audit-report-object',
+      'pattern' => 'adv_audit_report_object__',
     ],
-
+    'adv_audit_report_object__pdf' => [
+      'base hook' => 'adv_audit_report_object',
+      'template' => 'adv-audit-report-object--pdf',
+    ],
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',
     ],
   ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, $variables) {
+  $view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  $suggestions[] = 'adv_audit__' . $view_mode;
 }
 
 /**
@@ -61,6 +88,8 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
+  //$view_mode = $variables['elements']['#view_mode'];
+
   // Build score history table.
   $entity = $variables['elements']['#adv_audit'];
   $variables['content']['score_history'] = [
@@ -74,7 +103,8 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
       'operations' => t('Operations'),
     ],
   ];
-  $adv_storage = \Drupal::service('entity_type.manager')->getStorage('adv_audit');
+  $adv_storage = \Drupal::service('entity_type.manager')
+    ->getStorage('adv_audit');
   $vids = $adv_storage->revisionIds($entity);
   foreach ($vids as $rev_id) {
     if ($rev_id == $entity->id()) {
@@ -96,8 +126,9 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
 function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
   $render = \Drupal::service('adv_audit.renderer');
+  $view_mode = $variables['view_mode'];
   // Wrap to renderer object.
-  $variables['report'] = $render->setAuditResult($variables['report']);
+  $variables['report'] = $render->setAuditResult($variables['report'], $view_mode);
 }
 
 /**
@@ -127,7 +158,8 @@ function adv_audit_help($route_name, RouteMatchInterface $route_match) {
  */
 function adv_audit_adv_audit_check_info_alter(array &$definitions) {
   foreach ($definitions as $plugin_id => &$definition) {
-    $overridden_config = \Drupal::state()->get('adv_audit.overridden.definition.' . $plugin_id);
+    $overridden_config = \Drupal::state()
+      ->get('adv_audit.overridden.definition.' . $plugin_id);
     if ($overridden_config) {
       $definition = NestedArray::mergeDeep($definition, $overridden_config);
     }
@@ -140,3 +172,4 @@ function adv_audit_adv_audit_check_info_alter(array &$definitions) {
 function adv_audit_config_ignore_settings_alter(array &$settings) {
   $settings[] = 'adv_audit.*';
 }
+

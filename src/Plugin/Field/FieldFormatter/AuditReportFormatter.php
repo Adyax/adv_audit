@@ -54,7 +54,9 @@ class AuditReportFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
-      $elements[$delta]['#theme'] = 'adv_audit_report';
+      $view_mode = $this->viewMode;
+      $elements[$delta]['#theme'] = ['adv_audit_report__' . $view_mode];
+      $elements[$delta]['#view_mode'] = $view_mode;
       $elements[$delta]['#report'] = $this->getResultObject($item);
     }
 

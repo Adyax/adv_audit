@@ -125,6 +125,10 @@
   width: 30%;
 }
 
+.category-list .flex-40 {
+  width: 40%;
+}
+
 .category-list .flex-50 {
   width: 50%;
 }
@@ -274,4 +278,23 @@
   line-height: 1;
   padding-left: 0.375rem;
   padding-right: 0.375rem;
+}
+
+/* link to pdf file on report page */
+.pdf-report {
+  overflow: hidden;
+  padding: 0.75rem;
+}
+.report-pdf-view {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #0074bd;
+  border: 1px solid #0074bd;
+  font-size: 1.15em;
+}
+.report-pdf-view:hover,
+.report-pdf-view:active{
+  text-decoration: none;
+  color: #fff;
+  background: #0074bd;
 }
