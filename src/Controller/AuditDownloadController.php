@@ -31,9 +31,9 @@ class AuditDownloadController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
-   * The logger channel factory service.
+   * The logger service.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
   protected $logger;
 
