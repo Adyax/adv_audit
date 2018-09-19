@@ -71,8 +71,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
   use EntityChangedTrait;
 
   const STATUS_OPEN = 'open';
-  const STATUS_FIXED = 'fixed';
-  const STATUS_REJECTED = 'rejected';
+  const STATUS_IGNORED = 'ignored';
 
   /**
    * {@inheritdoc}
@@ -205,9 +204,8 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    */
   public static function getStatuses() {
     return [
-      static::STATUS_OPEN     => static::STATUS_OPEN,
-      static::STATUS_FIXED    => static::STATUS_FIXED,
-      static::STATUS_REJECTED => static::STATUS_REJECTED,
+      static::STATUS_OPEN => static::STATUS_OPEN,
+      static::STATUS_IGNORED => static::STATUS_IGNORED,
     ];
   }
 
@@ -335,6 +333,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
       ->setDescription(t('Issue status'))
       ->setSetting('allowed_values', static::getStatuses())
       ->setDefaultValue(static::STATUS_OPEN)
+      ->setRequired(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => -4,
