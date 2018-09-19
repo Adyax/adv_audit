@@ -18,7 +18,7 @@ class AdvAuditPdfController {
     /**
      * Get rendered report
      */
-    $date_report = date(DATE_RFC3339, time());
+    $date_report = date('Y-m-d\TH-i-sO', time());
     $entity_type = 'adv_audit';
     $view_mode = 'pdf';
     $entity_report = \Drupal::entityTypeManager()->getStorage($entity_type)->load($adv_audit->id->value);
@@ -37,12 +37,12 @@ class AdvAuditPdfController {
       'setAutoBottomMargin' => 'stretch',
       'autoMarginPadding' => 10,
     ];
-    //$save_path = 'private://adv-audit/' . $adv_audit->id->value . '/';
     $file_name  = 'adv-audit-report-' . $date_report . '.pdf';
 
     $mpdf = new Mpdf($config);
     $mpdf->SetBasePath(drupal_get_path('module', 'adv_audit'));
-    $mpdf->shrink_tables_to_fit=1;
+    $mpdf->SetAuthor(t('Adyax Advanced Audit module'));
+
     /**
      * Start a pdf-header and pdf-footer
      */
