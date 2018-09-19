@@ -1,26 +1,30 @@
 {
-  "name": "drupal/adv_audit",
-  "type": "drupal-module",
-  "license": "GPL-2.0+",
-  "keywords": ["Drupal", "audit"],
-  "prefer-stable": true,
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packages.drupal.org/8"
+    "name": "drupal/adv_audit",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+    "keywords": [
+        "Drupal",
+        "audit"
+    ],
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "drupal/coder": "8.2.12",
+        "mikehaertl/phpwkhtmltopdf": "2.3.1",
+        "roave/security-advisories": "dev-master",
+        "sensiolabs/security-checker": "4.0.*",
+        "mpdf/mpdf": "7.1.4",
+        "php-http/curl-client": "^1.7",
+        "blocktrail/cryptojs-aes-php": "^0.1.0",
+        "kriswallsmith/buzz": "^0.16",
+        "spirit-dev/php-sonarqube-api": "^0.0.4"
+    },
+    "config": {
+        "bin-dir": "bin/"
     }
-  ],
-  "require": {
-    "drupal/coder": "8.2.12",
-    "mikehaertl/phpwkhtmltopdf": "2.3.1",
-    "roave/security-advisories": "dev-master",
-    "sensiolabs/security-checker": "4.0.*",
-    "php-http/curl-client": "^1.7",
-    "blocktrail/cryptojs-aes-php": "^0.1.0",
-    "kriswallsmith/buzz": "^0.16",
-    "spirit-dev/php-sonarqube-api": "^0.0.4"
-  },
-  "config": {
-    "bin-dir": "bin/"
-  }
 }

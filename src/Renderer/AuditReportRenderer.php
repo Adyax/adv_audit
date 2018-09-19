@@ -72,6 +72,13 @@ class AuditReportRenderer implements RenderableInterface {
   protected $categoryManager;
 
   /**
+   * Current entity view mode.
+   *
+   * @var string
+   */
+  protected $auditResultViewMode;
+
+  /**
    * Constructs a new Renderer object.
    */
   public function __construct(RendererInterface $renderer, AuditPluginsManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
@@ -91,8 +98,9 @@ class AuditReportRenderer implements RenderableInterface {
    * @return $this
    *   Return itself for chaining.
    */
-  public function setAuditResult(AuditResultResponseInterface $audit_result) {
+  public function setAuditResult(AuditResultResponseInterface $audit_result, $view_mode) {
     $this->auditResultResponse = $audit_result;
+    $this->auditResultViewMode = $view_mode;
     return $this;
   }
 
@@ -100,12 +108,17 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
+    // Get current report Id.
+    $report_id = \Drupal::routeMatch()->getParameter('adv_audit')->id();
+    $view_mode = $this->auditResultViewMode;
+
     return [
-      '#theme' => 'adv_audit_report_object',
+      '#theme' => 'adv_audit_report_object__' . $view_mode,
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
       '#categories' => $this->doBuildCategory(),
       '#global_info' => $this->auditResultResponse->getOverviewInfo(),
+      '#report_id' => $report_id,
       '#attached' => [
         'library' => [
           'adv_audit/adv_audit.report',
@@ -388,7 +401,7 @@ class AuditReportRenderer implements RenderableInterface {
         '#caption' => $this->t('Active issues'),
         '#header' => [
           ['data' => $this->t('Issue')],
-          ['data' => $this->t('Edit'), 'width' => '10%'],
+          ['data' => $this->t('Edit'), 'width' => '15%'],
         ],
         '#rows' => $active_rows,
       ];
@@ -399,7 +412,7 @@ class AuditReportRenderer implements RenderableInterface {
         '#caption' => $this->t('Ignored issues'),
         '#header' => [
           ['data' => $this->t('Issue')],
-          ['data' => $this->t('Edit'), 'width' => '10%'],
+          ['data' => $this->t('Edit'), 'width' => '15%'],
         ],
         '#rows' => $ignored_rows,
       ];
