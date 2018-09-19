@@ -96,7 +96,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     if (!empty($issues)) {
       return $this->fail(NULL, [
         'issues' => $issues,
-        '@message' => implode('/n', $message),
+        '@message' => implode(' ', $message),
       ]);
     }
     return $this->success();
