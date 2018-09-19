@@ -1,3 +1,10 @@
+{% if score_point >= 80 %}
+  {% set score_point_class = 'aq-circle--success' %}
+{% elseif score_point < 80 and score_point >= 40 %}
+  {% set score_point_class = 'aq-circle--warning' %}
+{% else %}
+  {% set score_point_class = 'aq-circle--danger' %}
+{% endif %}
 <div class="audit-report-container">
   <header>
     <h3 class="title">{{ title }}</h3>
@@ -6,7 +13,7 @@
     <div class="score-container">
       <div class="score-point">
         <div class="flex-none">
-          <div class="aq-circle aq-circle--large render-score-status"
+          <div class="aq-circle aq-circle--large render-score-status {{ score_point_class }}"
                data-score-point="{{ score_point }}">{{ score_point }}</div>
         </div>
       </div>
@@ -15,84 +22,89 @@
           Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.
         {% endtrans %}
       </div>
+      <div class="pdf-report">
+        <a class="report-pdf-view" target="_blank" href="{{ path('adv_audit.pdf', {'adv_audit': report_id}) }}">
+          {{ 'View PDF'|t }}
+        </a>
+      </div>
     </div>
     {% if global_info is not empty %}
-    <div class="global-info-container">
-      <div class="adv-category-item row layout-row">
-        <div class="cat-view aq-dataset__data">
-          <a class="report-view-detailed" data-category-id="global-info" href="#">
-            <h3>{{ 'Global Info'|t }}</h3>
-          </a>
-        </div>
-        <div class="detailed-view" category-id="global-info" style="display: none">
-          <div class="global-info">
-            <h2>{{ 'Users'|t }}</h2>
-            <div class="total-users">
-              <p>
-                {% trans %}
-                  Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
-                {% endtrans %}
-              </p>
-            </div>
-            <div class="blocked-users">
-              <p>
-                {% trans %}
-                  Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
-                {% endtrans %}
-              </p>
-            </div>
-            <div class="roles-list">
-              <p>
-                {% trans %}
-                  List Roles - Show all available roles and user counts.
-                {% endtrans %}
-                {% for role, count in global_info.roles_list %}
-                  {% if loop.last %}
-                    {{ role }}: {{ count }}.
-                  {% else %}
-                    {{ role }}: {{ count }},
-                  {% endif %}
-                {% endfor %}
-              </p>
-            </div>
-            <div class="admin-info">
-              <p>
-                {% trans %}
-                  Identify UID #1 - Show username and email of UID #1. UID #1:
-                {% endtrans %}
-                {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
-              </p>
-              <p>
-                {% trans %}
-                  UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
-                {% endtrans %}
-              </p>
-            </div>
-            <h2>{{ 'Codebase'|t }}</h2>
-            <div class="codebase">
-              {% if global_info.filesystem_info.s3fs == true %}
+      <div class="global-info-container">
+        <div class="adv-category-item row layout-row">
+          <div class="cat-view aq-dataset__data">
+            <a class="report-view-detailed" data-category-id="global-info" href="#">
+              <h3>{{ 'Global Info'|t }}</h3>
+            </a>
+          </div>
+          <div class="detailed-view" category-id="global-info" style="display: none">
+            <div class="global-info">
+              <h2>{{ 'Users'|t }}</h2>
+              <div class="total-users">
                 <p>
                   {% trans %}
-                    There is s3fs module installed.
+                    Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
                   {% endtrans %}
                 </p>
-              {% else %}
-              <p>
-                {% trans %}
-                  Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
-                {% endtrans %}
-              </p>
-              <p>
-                {% trans %}
-                  Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
-                {% endtrans %}
-              </p>
-              {% endif %}
+              </div>
+              <div class="blocked-users">
+                <p>
+                  {% trans %}
+                    Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
+                  {% endtrans %}
+                </p>
+              </div>
+              <div class="roles-list">
+                <p>
+                  {% trans %}
+                    List Roles - Show all available roles and user counts.
+                  {% endtrans %}
+                  {% for role, count in global_info.roles_list %}
+                    {% if loop.last %}
+                      {{ role }}: {{ count }}.
+                    {% else %}
+                      {{ role }}: {{ count }},
+                    {% endif %}
+                  {% endfor %}
+                </p>
+              </div>
+              <div class="admin-info">
+                <p>
+                  {% trans %}
+                    Identify UID #1 - Show username and email of UID #1. UID #1:
+                  {% endtrans %}
+                  {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
+                </p>
+                <p>
+                  {% trans %}
+                    UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
+                  {% endtrans %}
+                </p>
+              </div>
+              <h2>{{ 'Codebase'|t }}</h2>
+              <div class="codebase">
+                {% if global_info.filesystem_info.s3fs == true %}
+                  <p>
+                    {% trans %}
+                      There is s3fs module installed.
+                    {% endtrans %}
+                  </p>
+                {% else %}
+                  <p>
+                    {% trans %}
+                      Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
+                    {% endtrans %}
+                  </p>
+                  <p>
+                    {% trans %}
+                      Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
+                    {% endtrans %}
+                  </p>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     {% endif %}
     <div class="category-list">
       <h3>{{ 'Alert categories'|t }}</h3>
@@ -100,9 +112,8 @@
         <div class="adv-category-item row layout-row">
           <div class="cat-score aq-dataset__data flex-10">{{ category.score }}</div>
           <div class="cat-title aq-dataset__data flex-50">{{ category.label }}</div>
-          <div class="cat-summary  aq-dataset__data flex-30">{% trans %}{{ category.passed }} of {{ category.total }} issues resolved{% endtrans %}</div>
-          <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed"
-                                                            data-category-id="{{ category.id }}" href="#">View</a></div>
+          <div class="cat-summary aq-dataset__data flex-30">{% trans %}{{ category.passed }} of {{ category.total }} issues resolved{% endtrans %}</div>
+          <div class="cat-view aq-dataset__data flex-10"><a class="report-view-detailed" data-category-id="{{ category.id }}" href="#">View</a></div>
           <div class="detailed-view" category-id="{{ category.id }}" style="display: none">
             {% if category.reports_failed|length %}
             <div class="report-items failed">

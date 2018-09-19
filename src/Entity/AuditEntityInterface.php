@@ -14,8 +14,6 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface AuditEntityInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
-
   /**
    * Gets the Audit Result entity name.
    *
@@ -68,7 +66,8 @@ interface AuditEntityInterface extends ContentEntityInterface, RevisionLogInterf
    * Sets the published status of a Audit Result entity.
    *
    * @param bool $published
-   *   TRUE to set this Audit Result entity to published, FALSE to set it to unpublished.
+   *   TRUE to set this Audit Result entity to published,
+   *   FALSE to set it to unpublished.
    *
    * @return \Drupal\adv_audit\Entity\AuditEntityInterface
    *   The called Audit Result entity entity.

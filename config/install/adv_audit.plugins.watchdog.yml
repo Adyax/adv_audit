@@ -1,0 +1,13 @@
+messages:
+  description: "<p>Analyze data in watchdog table.</p>\r\n"
+  actions: "<p><ul>
+   <li>Review the full report at admin/reports/page-not-found. If self-inflicted, fix the source. If a redirect is appropriate, visit admin/config/search/path and add URL aliases.</li>
+   <li>Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.</li>
+   </ul></p>\r\n"
+  impacts: "<p>Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.</p>\r\n"
+  fail: "<p>There are some issues which should be checked.</p>\n@message\r\n"
+  success: "<p>There are no issues.</p>\r\n"
+settings:
+  enabled: 1
+  severity: normal
+help: 'Analyze data in watchdog table.'

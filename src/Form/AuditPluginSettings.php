@@ -6,7 +6,6 @@ use Drupal\adv_audit\AuditExecutable;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
-use Drupal\adv_audit\Plugin\AuditPluginInterface;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;

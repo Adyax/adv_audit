@@ -4,6 +4,11 @@ namespace Drupal\adv_audit\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountProxy;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form controller for Audit Issue edit forms.
@@ -11,6 +16,42 @@ use Drupal\Core\Form\FormStateInterface;
  * @ingroup adv_audit
  */
 class IssueEntityForm extends ContentEntityForm {
+
+  /**
+   * The current user service.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
+   * Constructs a an IssueEntityForm object.
+   *
+   * @param \Drupal\Core\Session\AccountProxy $current_user
+   *   Current user object.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository service.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   */
+  public function __construct(AccountProxy $current_user, EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
+    $this->currentUser = $current_user;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('current_user'),
+      $container->get('entity.manager'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -43,7 +84,7 @@ class IssueEntityForm extends ContentEntityForm {
 
       // If a new revision is created, save the current user as revision author.
       $entity->setRevisionCreationTime(REQUEST_TIME);
-      $entity->setRevisionUserId(\Drupal::currentUser()->id());
+      $entity->setRevisionUserId($this->currentUser->id());
     }
     else {
       $entity->setNewRevision(FALSE);

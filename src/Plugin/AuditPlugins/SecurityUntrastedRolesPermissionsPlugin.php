@@ -22,7 +22,7 @@ use Drupal\user\PermissionHandler;
  *  requirements = {},
  * )
  */
-class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface , PluginFormInterface {
+class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use AuditPluginSubform;
   /**
@@ -165,7 +165,7 @@ class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
 
     // Get the user roles.

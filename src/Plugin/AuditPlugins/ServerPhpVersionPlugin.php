@@ -31,7 +31,7 @@ class ServerPhpVersionPlugin extends AuditBasePlugin {
             '@recommended_v' => DRUPAL_RECOMMENDED_PHP,
           ],
         ],
-        '%recommended' => DRUPAL_RECOMMENDED_PHP
+        '%recommended' => DRUPAL_RECOMMENDED_PHP,
       ]);
     }
 

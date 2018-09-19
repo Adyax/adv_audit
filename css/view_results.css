@@ -30,11 +30,11 @@
   padding: 0.75rem 0;
 }
 
-.score-container .score-point{
+.score-container .score-point {
   float: left;
 }
 
-.score-container .aq-circle{
+.score-container .aq-circle {
   width: 7.5rem;
   height: 7.5rem;
   font-size: 54px;
@@ -66,11 +66,12 @@
   background: #b0e164 url('../css/check.svg') no-repeat 20px 50%;
 }
 
-.status-skipped .report-title, .status-ignored .report-title {
+.status-skipped .report-title,
+.status-ignored .report-title {
   background: #ccc url('../css/questionmark-disc.svg') no-repeat 20px 50%;
 }
 
-.score-container .description{
+.score-container .description {
   overflow: hidden;
   padding: 0.75rem;
   margin: 0;
@@ -124,6 +125,10 @@
   width: 30%;
 }
 
+.category-list .flex-40 {
+  width: 40%;
+}
+
 .category-list .flex-50 {
   width: 50%;
 }
@@ -133,7 +138,7 @@
   overflow: hidden;
 }
 
-.category-list .detailed-view .report-items{
+.category-list .detailed-view .report-items {
   margin-bottom: 20px;
 }
 
@@ -195,7 +200,7 @@
 }
 
 .audit-reason h3,
-.audit-reason p{
+.audit-reason p {
   margin: 0 0 16px;
 }
 
@@ -273,4 +278,23 @@
   line-height: 1;
   padding-left: 0.375rem;
   padding-right: 0.375rem;
+}
+
+/* link to pdf file on report page */
+.pdf-report {
+  overflow: hidden;
+  padding: 0.75rem;
+}
+.report-pdf-view {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #0074bd;
+  border: 1px solid #0074bd;
+  font-size: 1.15em;
+}
+.report-pdf-view:hover,
+.report-pdf-view:active{
+  text-decoration: none;
+  color: #fff;
+  background: #0074bd;
 }

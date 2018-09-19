@@ -78,7 +78,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state)  {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
 
     $form['path'] = [
@@ -120,15 +120,15 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
     }
 
     $scheme = $this->configFactory()
-        ->get('system.file')
-        ->get('default_scheme') . '://';
+      ->get('system.file')
+      ->get('default_scheme') . '://';
     $drupal_failed = FALSE;
     $drupal_practice_failed = FALSE;
     $result = [];
 
     $settings = $this->getSettings();
 
-    $exts = implode(',',$this->parseLines($settings['exts']));
+    $exts = implode(',', $this->parseLines($settings['exts']));
     $path = $settings['path'];
     $ignores = implode(',', $this->parseLines($settings['ignores']));
     $output = $settings['output'];

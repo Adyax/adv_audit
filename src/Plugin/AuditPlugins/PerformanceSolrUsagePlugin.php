@@ -132,7 +132,6 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     }
 
     if (!empty($this->noActiveIndexesServers)) {
-      $params['no_active_indexes_servers'] = $this->noActiveIndexesServers;
       foreach ($this->noActiveIndexesServers as $no_active_indexes_server) {
         $issues[] = [
           '@issue_title' => 'No active indexes server: @no_active_indexes_server',
@@ -205,4 +204,4 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     }
   }
 
- }
+}
