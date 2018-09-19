@@ -31,6 +31,13 @@ class AuditDownloadController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
+   * The logger channel factory service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $logger;
+
+  /**
    * AuditDownloadController constructor.
    *
    * @param \Drupal\Core\File\FileSystemInterface $file_system
@@ -41,6 +48,7 @@ class AuditDownloadController extends ControllerBase {
   public function __construct(FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager) {
     $this->fileSystem = $file_system;
     $this->entityTypeManager = $entity_type_manager;
+    $this->logger = $this->loggerFactory->get('adv_audit');
   }
 
   /**
@@ -67,7 +75,7 @@ class AuditDownloadController extends ControllerBase {
     $file_uri = $file->getFileUri();
 
     if (empty($file_uri) || !file_exists($this->fileSystem->realpath($file_uri))) {
-      \Drupal::logger('adv_audit')->notice('There are some troubles with audit file uri.');
+      $this->logger->notice('There are some troubles with audit file uri.');
       throw new NotFoundHttpException();
     }
     // Set headers for download.
