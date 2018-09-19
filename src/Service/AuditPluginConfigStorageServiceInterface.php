@@ -3,7 +3,7 @@
 namespace Drupal\adv_audit\Service;
 
 /**
- * Interface AdvAuditPluginConfigStorageServiceInterface.
+ * Interface AuditPluginConfigStorageServiceInterface.
  */
 interface AuditPluginConfigStorageServiceInterface {
 

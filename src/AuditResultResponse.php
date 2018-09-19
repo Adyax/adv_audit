@@ -41,7 +41,10 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   public function calculateScore() {
     $passed = 0;
-    $total_count = $this->results->count();
+
+    // Prevent division by zero.
+    $total_count = $this->results->count() ? $this->results->count() : 1;
+
     foreach ($this->results->getIterator() as $audit_result) {
       if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
         // Skip.
@@ -76,7 +79,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @deprecated Use ::addReason method.
    */
-  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_INFO) {
+  public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_PASS) {
     $this->results->add(new AuditReason($test->id(), $status));
   }
 

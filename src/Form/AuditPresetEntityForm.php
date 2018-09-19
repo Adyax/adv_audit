@@ -68,7 +68,7 @@ class AuditPresetEntityForm extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $adv_audit_preset_entity->id(),
       '#machine_name' => [
-        'exists' => '\Drupal\adv_audit\Entity\AdvAuditPresetEntity::load',
+        'exists' => '\Drupal\adv_audit\Entity\AuditPresetEntity::load',
       ],
       '#disabled' => !$adv_audit_preset_entity->isNew(),
     ];

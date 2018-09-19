@@ -116,14 +116,18 @@ class AuditExecutable {
       $this->configuration[self::AUDIT_EXECUTE_RUN] = TRUE;
 
       // Init the audit plugin instance.
-      $this->test = \Drupal::service('plugin.manager.adv_audit_check')->createInstance($this->testId, $this->configuration);
+      $this->test = \Drupal::service('plugin.manager.adv_audit_check')
+        ->createInstance($this->testId, $this->configuration);
       // Knock off test if the requirements haven't been met.
       $this->test->checkRequirements();
       // Run audit checkpoint perform.
       $result = $this->test->perform();
       // Check what plugin return correct response.
       if (!($result instanceof AuditReason)) {
-        $result_type = get_class($result);
+        $result_type = '';
+        if ($result) {
+          $result_type = get_class($result);
+        }
         if (empty($result_type)) {
           $result_type = gettype($result);
         }
@@ -136,7 +140,6 @@ class AuditExecutable {
 
         return new AuditReason($this->testId, AuditResultResponseInterface::RESULT_SKIP, $msg);
       }
-
       return $result;
     }
     catch (RequirementsException $e) {
@@ -185,8 +188,6 @@ class AuditExecutable {
       '@file' => $result['%file'],
       '@line' => $result['%line'],
     ]);
-
-    \Drupal::logger('adv_audit_batch')->error($handle_message);
 
     if (empty($msg)) {
       $msg = $handle_message;
