@@ -59,6 +59,7 @@ class OtherDatabaseTablesEnginePlugin extends AuditBasePlugin implements Contain
     }
 
     if (!empty($result['count'])) {
+      $issues = [];
       $params['info'] = $result;
 
       foreach ($params['info']['tables'] as $table) {

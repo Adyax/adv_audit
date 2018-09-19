@@ -105,7 +105,7 @@ class AuditPresetEntityForm extends EntityForm {
       }
       uasort($form['plugins'][$category_id], [SortArray::class, 'sortByWeightProperty']);
 
-      if (empty($form['plugins'][$category_id][$pid])) {
+      if (isset($pid) && empty($form['plugins'][$category_id][$pid])) {
         $form['plugins'][$category_id][$pid]['#markup'] = $this->t('There are no audit plugins available for this category.');
       }
     }
