@@ -122,15 +122,14 @@ Some plugins required appropriate modules. If these modules are not installed on
 * **id** - The plugin ID.
 * **label** - The human readable name. 
 * **category** - The plugin's category id. All available category described in `/config/install/adv_audit.settings.yml `
-* **requirements** - The array of requirements that are need for plugin. Like list of modules, user, configs. If requirements are
-not met, the plugin will be marked as __SKIPPED__
+* **requirements** - The array of requirements that are need for plugin. Like list of modules, user, configs. If requirements are not met, the plugin will be marked as __SKIPPED__.
 
 Each plugin has own configuration file in `/config/install/adv_audit.plugins.plugin_id.yml` file. This configuration files contain values:
 
 ```yaml
 messages:
-  description: ""
-  actions: ""
+  description: " This is description of plugin jobs"
+  actions: "Each key supports %placeholders"
   impacts: ""
   fail: ""
   success: ""
@@ -157,4 +156,13 @@ The main plugin's method `perform()` should return status `success()`, `fail()` 
         '%link' => Link::createFromRoute($this->t('pass placeholders to messages in config file'), 'needed.route')
           ->toString(),
       ]);
+```
+The key `@issue_title` is required. Issues support placeholders. Also placeholders can be passed to **messages** as additional elements of the second argument:
+```php
+[
+  'issues' => [$list_of_issues],
+  '%placeholder_for_messages',
+  '%second_placeholder_for_messages',
+  ...,
+]
 ```
