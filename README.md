@@ -110,6 +110,7 @@ Some plugins required appropriate modules. If these modules are not installed on
  *        ...
 ```
 ### Instruction for writing a new plugin
+Plugins are placed in `/src/Plugin/AuditPlugins/` folder.
 ####Description for plugin annotation
 ```
   @AuditPlugin(
@@ -119,7 +120,7 @@ Some plugins required appropriate modules. If these modules are not installed on
    requirements = {},
   )
 ```
-* **id** - The plugin ID.
+* **id** - The plugin ID (an unique machine name).
 * **label** - The human readable name. 
 * **category** - The plugin's category id. All available category described in `/config/install/adv_audit.settings.yml `
 * **requirements** - The array of requirements that are need for plugin. Like list of modules, user, configs. If requirements are not met, the plugin will be marked as __SKIPPED__.
