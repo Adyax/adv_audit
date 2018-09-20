@@ -30,6 +30,8 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
 
   public $sonar;
 
+  public $logged;
+
   /**
    * The State API service.
    *

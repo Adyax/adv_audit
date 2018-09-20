@@ -114,7 +114,6 @@ class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements Cont
         $response = json_decode($response);
       }
       catch (RequestException $e) {
-//        watchdog_exception('adv_auditor', $e);
         return $this->fail(NULL, [
           'issues' => [
             'page_speed_insights_no_response' => [
@@ -143,6 +142,10 @@ class PerformancePageSpeedInsightsPlugin extends AuditBasePlugin implements Cont
       '%items' => $optimization_suggestions,
       '%score' => $score,
     ];
+
+    if (!isset($response) && empty($response->ruleGroups)) {
+      return $this->skip('Wrong response');
+    }
 
     if ($response->ruleGroups->SPEED->score < $target_score) {
       $issues = $this->getIssues($arguments);

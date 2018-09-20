@@ -6,15 +6,6 @@ adv_audit:
   requirements:
     _permission: 'access auditor list'
 
-adv_audit.help:
-  path: 'admin/reports/adv-audit/help/{namespace}/{title}'
-  defaults:
-    _controller: '\Drupal\adv_audit\Controller\AuditHelpController::index'
-    namespace: ~
-    title: ~
-  requirements:
-    _permission: 'access auditor list'
-
 adv_audit.list:
   path: 'admin/reports/adv-audit/list'
   defaults:

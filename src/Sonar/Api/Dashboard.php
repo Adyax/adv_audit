@@ -24,6 +24,7 @@ class Dashboard extends AbstractApi {
    * @var $sonar
    */
   public function __construct(SonarClient $sonar) {
+    parent::__construct($sonar);
     $this->client = $sonar;
   }
 

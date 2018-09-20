@@ -81,6 +81,7 @@ class SecurityAdminUserNamePlugin extends AuditBasePlugin implements ContainerFa
     }
 
     if (!empty($issue_details)) {
+      $issues = [];
 
       if (!empty($issue_details['has_host_parts'])) {
         foreach ($issue_details['has_host_parts'] as $host_part) {

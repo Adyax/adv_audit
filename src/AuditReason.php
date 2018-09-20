@@ -53,9 +53,9 @@ class AuditReason {
    *
    * @param string $plugin_id
    *   The plugin id.
-   * @param int $status
+   * @param string $status
    *   The status of the perform test.
-   * @param string $reason
+   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string $reason
    *   Reason why test is failed. (optional)
    * @param array|mixed $arguments
    *   (optional) An associative array of replacements to make after

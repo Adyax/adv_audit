@@ -17,6 +17,7 @@ class AuditCommands extends DrushCommands {
    * Initialize AuditPluginsManager.
    */
   public function __construct(AuditPluginsManager $plugin_manager_adv_audit_check) {
+    parent::__construct();
     $this->advAuditCheck = $plugin_manager_adv_audit_check;
   }
 
