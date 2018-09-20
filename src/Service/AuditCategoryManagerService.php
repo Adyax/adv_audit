@@ -143,7 +143,7 @@ class AuditCategoryManagerService {
       }
       uasort($build[$category_id], [SortArray::class, 'sortByWeightProperty']);
 
-      if (empty($build[$category_id][$pid])) {
+      if (isset($pid) && empty($build[$category_id][$pid])) {
         $build[$category_id][$pid]['#markup'] = $this->t('There are no audit plugins available for this category.');
       }
     }

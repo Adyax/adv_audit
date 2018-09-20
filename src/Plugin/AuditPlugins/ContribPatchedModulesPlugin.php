@@ -27,6 +27,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ContribPatchedModulesPlugin extends AuditBasePlugin implements ContainerFactoryPluginInterface {
 
   /**
+   * Cache service.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  protected $cache;
+
+  /**
+   * ModuleHandler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, string $plugin_id, array $plugin_definition, ModuleHandler $module_handler, CacheBackendInterface $hacked_cache) {

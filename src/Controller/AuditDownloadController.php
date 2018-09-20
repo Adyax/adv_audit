@@ -31,6 +31,13 @@ class AuditDownloadController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
+   * The logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  protected $logger;
+
+  /**
    * AuditDownloadController constructor.
    *
    * @param \Drupal\Core\File\FileSystemInterface $file_system
@@ -41,6 +48,7 @@ class AuditDownloadController extends ControllerBase {
   public function __construct(FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager) {
     $this->fileSystem = $file_system;
     $this->entityTypeManager = $entity_type_manager;
+    $this->logger = $this->loggerFactory->get('adv_audit');
   }
 
   /**
