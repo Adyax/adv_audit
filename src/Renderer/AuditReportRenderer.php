@@ -380,7 +380,7 @@ class AuditReportRenderer implements RenderableInterface {
 
     foreach ($all_issues as $issue) {
       // Set an ajax url for link
-      $url = Url::fromRoute('adv_audit.issue_change_status', ['adv_audit_issue' => $issue->id->value]);
+      $url = Url::fromRoute('adv_audit.issue_change_status', ['issue' => $issue->id->value]);
       $link_options = array(
         'attributes' => array(
           'class' => array(
@@ -394,14 +394,14 @@ class AuditReportRenderer implements RenderableInterface {
         $active_rows[] = [
           $issue->getMarkup(),
           //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
-          Link::fromTextAndUrl('ajax Ignore', $url),
+          Link::fromTextAndUrl('Ignore', $url),
         ];
       }
       else {
         $ignored_rows[] = [
           $issue->getMarkup(),
           //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
-          Link::fromTextAndUrl('ajax Ignore', $url),
+          Link::fromTextAndUrl('Ignore', $url),
         ];
       }
     }

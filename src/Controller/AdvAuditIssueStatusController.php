@@ -33,10 +33,9 @@ class AdvAuditIssueStatusController {
   /**
    * Public function view.
    */
-  public function ajaxLinkCallback($adv_audit_issue) {
+  public function ajaxLinkCallback($issue) {
 
     $user_id = \Drupal::currentUser()->id();
-    $issue = \Drupal::entityTypeManager()->getStorage('adv_audit_issue')->load($adv_audit_issue);
     $statuses =  IssueEntity::getStatuses();
     $current_status = $issue->status->value;
     $available_status = array_diff($statuses, [$current_status => $current_status]);
