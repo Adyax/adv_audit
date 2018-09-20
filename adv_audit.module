@@ -88,8 +88,6 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
-  //$view_mode = $variables['elements']['#view_mode'];
-
   // Build score history table.
   $entity = $variables['elements']['#adv_audit'];
   $variables['content']['score_history'] = [

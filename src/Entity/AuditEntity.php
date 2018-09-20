@@ -41,13 +41,16 @@ use Drupal\user\UserInterface;
  *     },
  *   },
  *   base_table = "adv_audit",
+ *   data_table = "adv_audit_field",
  *   revision_table = "adv_audit_revision",
  *   revision_data_table = "adv_audit_field_revision",
+ *   translatable = TRUE,
  *   admin_permission = "administer audit result entity entities",
  *   entity_keys = {
  *     "id" = "id",
  *     "revision" = "vid",
  *     "label" = "name",
+ *     "langcode" = "langcode",
  *     "uuid" = "uuid",
  *   },
  *   links = {

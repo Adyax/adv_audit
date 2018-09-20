@@ -14,6 +14,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Class Renderer to build audit response object.
@@ -376,17 +377,31 @@ class AuditReportRenderer implements RenderableInterface {
 
     $active_rows = [];
     $ignored_rows = [];
+
     foreach ($all_issues as $issue) {
+      // Set an ajax url for link
+      $url = Url::fromRoute('adv_audit.issue_change_status', ['adv_audit_issue' => $issue->id->value]);
+      $link_options = array(
+        'attributes' => array(
+          'class' => array(
+            'use-ajax',
+          ),
+        ),
+      );
+      $url->setOptions($link_options);
+
       if ($issue->isOpen()) {
         $active_rows[] = [
           $issue->getMarkup(),
-          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          Link::fromTextAndUrl('ajax Ignore', $url),
         ];
       }
       else {
         $ignored_rows[] = [
           $issue->getMarkup(),
-          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          Link::fromTextAndUrl('ajax Ignore', $url),
         ];
       }
     }

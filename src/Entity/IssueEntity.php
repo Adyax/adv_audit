@@ -38,8 +38,10 @@ use Drupal\user\UserInterface;
  *     },
  *   },
  *   base_table = "adv_audit_issue",
+ *   data_table = "adv_audit_issue_field_data",
  *   revision_table = "adv_audit_issue_revision",
  *   revision_data_table = "adv_audit_issue_field_revision",
+ *   translatable = TRUE,
  *   admin_permission = "administer audit issue entities",
  *   entity_keys = {
  *     "id" = "id",
@@ -47,6 +49,7 @@ use Drupal\user\UserInterface;
  *     "plugin" = "plugin",
  *     "name" = "name",
  *     "label" = "title",
+ *     "langcode" = "langcode",
  *     "details" = "details",
  *     "uuid" = "uuid",
  *     "langcode" = "langcode",
@@ -331,6 +334,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Status'))
       ->setDescription(t('Issue status'))
+      ->setRevisionable(TRUE)
       ->setSetting('allowed_values', static::getStatuses())
       ->setDefaultValue(static::STATUS_OPEN)
       ->setRequired(TRUE)

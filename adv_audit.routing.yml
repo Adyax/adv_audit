@@ -58,3 +58,11 @@ adv_audit.pdf:
     parameters:
       adv_audit:
         type: entity:adv_audit
+
+adv_audit.issue_change_status:
+  path: 'admin/reports/adv-audit/issues/adv_audit_issue_ajax/{adv_audit_issue}/edit'
+  defaults:
+    _title: 'Change issue status'
+    _controller: '\Drupal\adv_audit\Controller\AdvAuditIssueStatusController::ajaxLinkCallback'
+  requirements:
+    _permission: 'access auditor list'
