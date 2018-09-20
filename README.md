@@ -2,9 +2,11 @@
 
 Drupal 8 auditor tool developed by Adyax.
 
+The module allows to check important information about project.
+
 ## Available checkpoints:
 ### 1. Performance
-* Checking php max_execution_time setting
+* Check php max_execution_time setting
 * Cron settings
 * ImageAPI Optimize
 * Javascript & CSS aggregation
@@ -22,7 +24,7 @@ Drupal 8 auditor tool developed by Adyax.
 * Analyze Watchdog Logs.
 * Check Opcache
 ### 3. Security
-* Error are written to the screen.
+* Errors are written to the screen.
 * PHP register globals
 * Trusted Host Settings
 * Check if users table contains anonymous user
@@ -33,7 +35,7 @@ Drupal 8 auditor tool developed by Adyax.
 * Security Code Review
 * SSL test
 * Dangerous Tags
-* Checks views are access controlled.
+* Check views are access controlled.
 * Check Account settings
 * PHP files in public directory cannot be executed.
 * Anonymous user rights
@@ -50,16 +52,16 @@ Drupal 8 auditor tool developed by Adyax.
 * Patched modules.
 * Features status
 ### 5. Architecture analysis
-* Check if CI/CD exists on the project
-* Check files structure on project.
-* Check if composer is used on the project.
+* Check if CI/CD exists on a project
+* Check files structure on a project.
+* Check if composer is used on a project.
 ### 6. Code review (custom modules and themes)
 * Code audit by CodeSniffer
-* Auditing code smells, code complexity. Code metrics * and potential problems
+* Auditing code smells, code complexity. Code metrics and potential problems
 ### 7. Other recommendations
 * Database tables engine check.
 * Check environment settings.
-* Checks Seo recommedations: contrib modules and robots.txt.
+* Check Seo recommendations: contrib modules and robots.txt.
 * Check Ultimate cron module
 
 ## Installation
@@ -96,9 +98,10 @@ the resulting block should looks like:
 ```
 * Run `composer require drupal/adv_audit` command.
 * Specify your gitlab credentials (project hase private status for now)
-* Module will be installed to module/contrib directory with all the 
-dependencies in project `vendor` folder
+* Module will be installed to module/contrib directory with all the dependencies in project's `vendor` folder
 
+## Instruction for writing a new plugin
+Plugins are placed in `/src/Plugin/AuditPlugins/` folder.
 ### Modules Requirements
 
 Some plugins required appropriate modules. If these modules are not installed on a project, plugins will be skipped. The requirements are set in annotation of each plugin that need it:
@@ -109,9 +112,7 @@ Some plugins required appropriate modules. If these modules are not installed on
  *       "features",
  *        ...
 ```
-### Instruction for writing a new plugin
-Plugins are placed in `/src/Plugin/AuditPlugins/` folder.
-####Description for plugin annotation
+### Description for plugin annotation
 ```
   @AuditPlugin(
    id = "cron_settings",
@@ -123,14 +124,14 @@ Plugins are placed in `/src/Plugin/AuditPlugins/` folder.
 * **id** - The plugin ID (an unique machine name).
 * **label** - The human readable name. 
 * **category** - The plugin's category id. All available category described in `/config/install/adv_audit.settings.yml `
-* **requirements** - The array of requirements that are need for plugin. Like list of modules, user, configs. If requirements are not met, the plugin will be marked as __SKIPPED__.
+* **requirements** - The array of requirements that are need for plugin. If requirements are not met, the plugin will be marked as __SKIPPED__.
 
-Each plugin has own configuration file in `/config/install/adv_audit.plugins.plugin_id.yml` file. This configuration files contain values:
+Each plugin has own configuration file `/config/install/adv_audit.plugins.{plugin_id}.yml`. This configuration files contain values:
 
 ```yaml
 messages:
-  description: " This is description of plugin jobs"
-  actions: "Each key supports %placeholders"
+  description: "<p>This is description of plugin jobs</p>"
+  actions: "<p>Each key supports %placeholders</p>"
   impacts: ""
   fail: ""
   success: ""
@@ -144,7 +145,7 @@ help: ''
   * **enabled** - Status of the plugin. Can be overridden in plugin's settings form. 
   * **severity** - The default level of severity. Can be overridden in plugin's settings form. 
 
-The main plugin's method `perform()` should return status `success()`, `fail()` or `skipped()`. If the plugin returns failed status the issues should be passed in second argument:
+The main plugin's method `perform()` should return status `success()`, `fail()` or `skipped()`. If the plugin returns failed status the issues should be passed in the second argument:
 ```php
 ...
       return $this->fail('Reason why plugin has been failed', [
