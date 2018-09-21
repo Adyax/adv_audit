@@ -30,22 +30,8 @@ adv_audit.admin.structure.settings:
 
 # Adv audit preset entity menu items definition
 entity.adv_audit_preset_entity.collection:
-  title: 'Adv audit preset entity'
+  title: 'Audit preset entity'
   route_name: entity.adv_audit_preset_entity.collection
   description: 'List Adv audit preset entity (bundles)'
   parent: adv_audit
   weight: 99
-
-# Audit Issue menu items definition
-entity.adv_audit_issue.collection:
-  title: 'Audit Issue list'
-  route_name: entity.adv_audit_issue.collection
-  description: 'List Audit Issue entities'
-  parent: system.admin_structure
-  weight: 100
-
-adv_audit_issue.admin.structure.settings:
-  title: 'Audit Issue settings'
-  description: 'Configure Audit Issue entities'
-  route_name: adv_audit_issue.settings
-  parent: system.admin_structure

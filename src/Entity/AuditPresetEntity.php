@@ -5,11 +5,11 @@ namespace Drupal\adv_audit\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 
 /**
- * Defines the Adv audit preset entity entity.
+ * Defines the audit preset entity entity.
  *
  * @ConfigEntityType(
  *   id = "adv_audit_preset_entity",
- *   label = @Translation("Adv audit preset entity"),
+ *   label = @Translation("Audit preset entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\adv_audit\Entity\AuditPresetEntityListBuilder",
