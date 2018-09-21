@@ -104,7 +104,7 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 [
   'issues' => [$list_of_issues],
   '%placeholder_for_messages' => 'Placeholder text',
-  '%second_placeholder_for_messages' => 'Or link,
+  '%second_placeholder_for_messages' => 'Or link',
   ...,
 ]
 ```
