@@ -114,9 +114,8 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 * adv_audit_preset_entity
 * adv_audit_issue
 
-
-
 ## Available checkpoints:
+
 ### 1. Performance
 * Check php max_execution_time setting
 * Cron settings
@@ -130,11 +129,13 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 * Solr usage
 * Memory usage check
 * Page speed insights
+
 ### 2. Server Configuration
 * Release notes & help files
 * PHP Version
 * Analyze Watchdog Logs.
 * Check Opcache
+
 ### 3. Security
 * Errors are written to the screen.
 * PHP register globals
@@ -154,6 +155,7 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 * Allowed HTML tags in text formats
 * Check must-have modules for security reasons
 * Administrator's name check
+
 ### 4. Drupal core and contributed modules
 * No database updates required
 * Modules security updates
@@ -163,13 +165,16 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 * Modules non-security updates
 * Patched modules.
 * Features status
+
 ### 5. Architecture analysis
 * Check if CI/CD exists on a project
 * Check files structure on a project.
 * Check if composer is used on a project.
+
 ### 6. Code review (custom modules and themes)
 * Code audit by CodeSniffer
 * Auditing code smells, code complexity. Code metrics and potential problems
+
 ### 7. Other recommendations
 * Database tables engine check.
 * Check environment settings.
