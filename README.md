@@ -4,66 +4,6 @@ Drupal 8 auditor tool developed by Adyax.
 
 The module allows to check important information about project.
 
-## Available checkpoints:
-### 1. Performance
-* Check php max_execution_time setting
-* Cron settings
-* ImageAPI Optimize
-* Javascript & CSS aggregation
-* Memcache/Redis settings
-* Performance modules status
-* Views performance settings
-* Page caching performance
-* Database usage
-* Solr usage
-* Memory usage check
-* Page speed insights
-### 2. Server Configuration
-* Release notes & help files
-* PHP Version
-* Analyze Watchdog Logs.
-* Check Opcache
-### 3. Security
-* Errors are written to the screen.
-* PHP register globals
-* Trusted Host Settings
-* Check if users table contains anonymous user
-* Unsafe extensions
-* Admin pages access check
-* No sensitive temporary files were found.
-* Untrusted role's permission
-* Security Code Review
-* SSL test
-* Dangerous Tags
-* Check views are access controlled.
-* Check Account settings
-* PHP files in public directory cannot be executed.
-* Anonymous user rights
-* Allowed HTML tags in text formats
-* Check must-have modules for security reasons
-* Administrator's name check
-### 4. Drupal core and contributed modules
-* No database updates required
-* Modules security updates
-* Configuration Manager
-* Patched Drupal core.
-* Drupal core
-* Modules non-security updates
-* Patched modules.
-* Features status
-### 5. Architecture analysis
-* Check if CI/CD exists on a project
-* Check files structure on a project.
-* Check if composer is used on a project.
-### 6. Code review (custom modules and themes)
-* Code audit by CodeSniffer
-* Auditing code smells, code complexity. Code metrics and potential problems
-### 7. Other recommendations
-* Database tables engine check.
-* Check environment settings.
-* Check Seo recommendations: contrib modules and robots.txt.
-* Check Ultimate cron module
-
 ## Installation
 
 ### 1. Prerequisites
@@ -168,3 +108,70 @@ The key `@issue_title` is required. Issues support placeholders. Also placeholde
   ...,
 ]
 ```
+## Architecture
+### Entities
+* adv_audit
+* adv_audit_preset_entity
+* adv_audit_issue
+
+
+
+## Available checkpoints:
+### 1. Performance
+* Check php max_execution_time setting
+* Cron settings
+* ImageAPI Optimize
+* Javascript & CSS aggregation
+* Memcache/Redis settings
+* Performance modules status
+* Views performance settings
+* Page caching performance
+* Database usage
+* Solr usage
+* Memory usage check
+* Page speed insights
+### 2. Server Configuration
+* Release notes & help files
+* PHP Version
+* Analyze Watchdog Logs.
+* Check Opcache
+### 3. Security
+* Errors are written to the screen.
+* PHP register globals
+* Trusted Host Settings
+* Check if users table contains anonymous user
+* Unsafe extensions
+* Admin pages access check
+* No sensitive temporary files were found.
+* Untrusted role's permission
+* Security Code Review
+* SSL test
+* Dangerous Tags
+* Check views are access controlled.
+* Check Account settings
+* PHP files in public directory cannot be executed.
+* Anonymous user rights
+* Allowed HTML tags in text formats
+* Check must-have modules for security reasons
+* Administrator's name check
+### 4. Drupal core and contributed modules
+* No database updates required
+* Modules security updates
+* Configuration Manager
+* Patched Drupal core.
+* Drupal core
+* Modules non-security updates
+* Patched modules.
+* Features status
+### 5. Architecture analysis
+* Check if CI/CD exists on a project
+* Check files structure on a project.
+* Check if composer is used on a project.
+### 6. Code review (custom modules and themes)
+* Code audit by CodeSniffer
+* Auditing code smells, code complexity. Code metrics and potential problems
+### 7. Other recommendations
+* Database tables engine check.
+* Check environment settings.
+* Check Seo recommendations: contrib modules and robots.txt.
+* Check Ultimate cron module
