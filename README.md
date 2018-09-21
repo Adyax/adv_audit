@@ -99,7 +99,7 @@ The main plugin's method `perform()` should return status `success()`, `fail()` 
           ->toString(),
       ]);
 ```
-The key `@issue_title` is required. Issues support placeholders. Also placeholders can be passed to **messages** as additional elements of the second argument:
+The keys `issue` and `@issue_title` are required. Issues support placeholders. Also placeholders can be passed to **messages** as additional elements of the second argument:
 ```php
 [
   'issues' => [$list_of_issues],
