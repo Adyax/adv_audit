@@ -109,6 +109,13 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 ]
 ```
 ## Architecture
+
+### Base structure
+![root of module](./img/adv_audit_folders.png)
+
+### `src` Folder
+![root of module](./img/adv_audit_src.png)
+
 ### Entities
 * adv_audit
 * adv_audit_preset_entity
