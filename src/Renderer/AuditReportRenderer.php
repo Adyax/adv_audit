@@ -117,10 +117,8 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
-
     $adv_audit_id = $this->auditReportId;
     $view_mode = $this->auditResultViewMode;
-
     return [
       '#theme' => 'adv_audit_report_object__' . $view_mode,
       '#score_point' => $this->auditResultResponse->calculateScore(),
@@ -387,27 +385,16 @@ class AuditReportRenderer implements RenderableInterface {
     $ignored_rows = [];
 
     foreach ($all_issues as $issue) {
-      // Set an ajax url for link
       $url = Url::fromRoute('adv_audit.issue_change_status', ['adv_audit_id' => $this->auditReportId, 'issue' => $issue->id->value]);
-      $link_options = array(
-        'attributes' => array(
-          'class' => array(
-            'use-ajax',
-          ),
-        ),
-      );
-      $url->setOptions($link_options);
       if ($issue->isOpen()) {
         $active_rows[] = [
           $issue->getMarkup(),
-          //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
           Link::fromTextAndUrl('Ignore', $url),
         ];
       }
       else {
         $ignored_rows[] = [
           $issue->getMarkup(),
-          //Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
           Link::fromTextAndUrl('Ignore', $url),
         ];
       }
