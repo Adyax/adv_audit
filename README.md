@@ -109,17 +109,28 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 ]
 ```
 ## Architecture
-
-### Base structure
-![root of module](./img/adv_audit_folders.png)
-
-### `src` Folder
-![root of module](./img/adv_audit_src.png)
-
 ### Entities
 * adv_audit
 * adv_audit_preset_entity
 * adv_audit_issue
+
+Audit reports are stored in `adv_entity`, `adv_audit_issue` and `adv_audit_preset_entity` entities.
+`adv_entity` and `adv_audit_issue` are revisionable.
+
+* `adv_audit` entity stores data about audit's results.
+* `adv_audit_issue` stores issues data that are was created by plugins if some checkpoints returned `failed` status.
+* `adv_audit_preset_entity` stores settings for various sets of checkpoints.
+
+Report is run by batch. Also particular checkpoint can be run from it's own settings form.
+
+Issues can be ignored if plugin's failed status is false-positive in a project's context.
+
+Reports can be exported to pdf or Google docs.
+
+
+### Render reports
+Each report is an particular `adv_audit` entity.
+`\Drupal\adv_audit\Renderer\AuditReportRenderer` loads data from entity storage and renders them to template.
 
 ## Available checkpoints:
 
