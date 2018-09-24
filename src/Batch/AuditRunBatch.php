@@ -158,7 +158,7 @@ class AuditRunBatch {
 
     }
     catch (EntityStorageException $e) {
-      drupal_set_message(t("Can't save audit result to the entity due to exception with msg: @message", ['@msg' => $e->getMessage()]), 'error');
+      drupal_set_message(t("Can't save audit result to the entity due to exception with msg: @message", ['@message' => $e->getMessage()]), 'error');
     }
     catch (InvalidArgumentException $e) {
       drupal_set_message($e->getMessage(), 'error');

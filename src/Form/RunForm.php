@@ -61,7 +61,7 @@ class RunForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['process_list'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Available Audits:'),
+      '#title' => $this->t('Enabled plugins:'),
       'list' => ['#markup' => $this->buildProcessItems()],
     ];
 
