@@ -21,8 +21,12 @@ class AdvAuditPdfController {
     $date_report = date('Y-m-d\TH-i-sO', time());
     $entity_type = 'adv_audit';
     $view_mode = 'pdf';
+
     $entity_report = \Drupal::entityTypeManager()->getStorage($entity_type)->load($adv_audit->id->value);
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+    // Reset renderer cache
+    $view_builder->resetCache([$entity_report]);
+
     $build = $view_builder->view($entity_report, $view_mode);
     $renderer = render($build);
 
@@ -65,11 +69,9 @@ class AdvAuditPdfController {
      * End a pdf-header and pdf-footer
      */
 
-    $stylesheet = file_get_contents(drupal_get_path('module', 'adv_audit') . '/css/view_results.css');
-    $mpdf->WriteHTML($stylesheet, 1);
     $stylesheet = file_get_contents(drupal_get_path('module', 'adv_audit') . '/css/view_pdf_results.css');
     $mpdf->WriteHTML($stylesheet, 1);
-    $mpdf->WriteHTML($renderer, 2);
+    $mpdf->WriteHTML($renderer);
     $mpdf->Output($file_name, Destination::INLINE);
 
     return new Response($renderer, 200, $headers);
