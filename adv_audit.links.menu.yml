@@ -9,11 +9,6 @@ adv_audit.run:
   description: 'Perform a full audit of your site.'
   parent: adv_audit
   weight: 96
-#adv_audit.list:
-#  route_name: adv_audit.list
-#  title: 'Overview'
-#  description: 'View available plugins for audit.'
-#  parent: adv_audit
 
 # Audit Result entity menu items definition
 entity.adv_audit.collection:
