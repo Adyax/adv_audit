@@ -41,7 +41,10 @@ the resulting block should looks like:
 * Module will be installed to module/contrib directory with all the dependencies in project's `vendor` folder
 
 ## Instruction for writing a new plugin
+**Advanced Audit** module uses plugin system where one plugin realizes one point for check.
+The module uses own plugin type and it's plugin manager is `src/Plugin/AuditPluginsManager.php`.
 Plugins are placed in `/src/Plugin/AuditPlugins/` folder.
+
 ### Modules Requirements
 
 Some plugins required appropriate modules. If these modules are not installed on a project, plugins will be skipped. The requirements are set in annotation of each plugin that need it:
