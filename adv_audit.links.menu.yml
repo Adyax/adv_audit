@@ -5,33 +5,35 @@ adv_audit:
   parent: system.admin_reports
 adv_audit.run:
   route_name: adv_audit.run
-  title: Run audit
+  title: 'Run audit'
   description: 'Perform a full audit of your site.'
-  parent: adv_audit.list
-adv_audit.list:
-  route_name: adv_audit.list
-  title: 'Advanced Audit'
-  description: 'View available plugins for audit.'
   parent: adv_audit
+  weight: 96
+#adv_audit.list:
+#  route_name: adv_audit.list
+#  title: 'Overview'
+#  description: 'View available plugins for audit.'
+#  parent: adv_audit
 
 # Audit Result entity menu items definition
 entity.adv_audit.collection:
-  title: 'Audit Result entity list'
+  title: 'Result reports'
   route_name: entity.adv_audit.collection
   description: 'List Audit Result entity entities'
   parent: adv_audit
-  weight: 100
+  weight: 95
 
 adv_audit.admin.structure.settings:
-  title: 'Audit Result entity settings'
+  title: 'Audit settings'
   description: 'Configure Audit Result entity entities'
   route_name: adv_audit.list
   parent: adv_audit
+  weight: 97
 
 # Adv audit preset entity menu items definition
 entity.adv_audit_preset_entity.collection:
-  title: 'Audit preset entity'
+  title: 'Audit presets'
   route_name: entity.adv_audit_preset_entity.collection
   description: 'List Adv audit preset entity (bundles)'
   parent: adv_audit
-  weight: 99
+  weight: 98

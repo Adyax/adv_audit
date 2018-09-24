@@ -22,7 +22,7 @@ use Drupal\user\UserInterface;
  *
  * @ContentEntityType(
  *   id = "adv_audit",
- *   label = @Translation("Audit Result entity"),
+ *   label = @Translation("Audit Result"),
  *   handlers = {
  *     "storage" = "Drupal\adv_audit\Entity\AuditEntityStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
