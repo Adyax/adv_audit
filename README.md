@@ -121,7 +121,7 @@ Audit reports are stored in `adv_entity`, `adv_audit_issue` and `adv_audit_prese
 `adv_entity` and `adv_audit_issue` are revisionable.
 
 * `adv_audit` entity stores data about audit's results.
-* `adv_audit_issue` stores issues data that are was created by plugins if some checkpoints returned `failed` status.
+* `adv_audit_issue` stores issues data which were created by plugins if some checkpoints returned `failed` status.
 * `adv_audit_preset_entity` stores settings for various sets of checkpoints.
 
 Report is run by batch. Also particular checkpoint can be run from it's own settings form.
