@@ -224,6 +224,7 @@ class CodeReviewSonarIntegration extends AuditBasePlugin implements ContainerFac
         return $this->fail(NULL, ['issues' => $issues]);
       }
     }
+    return $this->skip('Can\'t connect to sonar server or find project.');
 
   }
 
