@@ -228,11 +228,6 @@ class AuditReason {
         // Update all details.
         $issue->setTitle($issue_title);
         $issue->setDetails(serialize($details));
-
-        // Reopen the issue if it is fixed.
-        if ($issue->isStatus(IssueEntity::STATUS_FIXED)) {
-          $issue->setStatus(IssueEntity::STATUS_OPEN);
-        }
       }
       $issue->save();
 

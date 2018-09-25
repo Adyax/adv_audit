@@ -33,6 +33,7 @@ function adv_audit_theme() {
       'variables' => [
         'report' => NULL,
         'view_mode' => NULL,
+        'adv_audit_id' => NULL,
       ],
       'template' => 'adv-audit-report',
       'pattern' => 'adv_audit_report__',
@@ -47,7 +48,7 @@ function adv_audit_theme() {
         'score_point' => NULL,
         'categories' => NULL,
         'global_info' => NULL,
-        'report_id' => NULL,
+        'adv_audit_id' => NULL,
       ],
       'template' => 'adv-audit-report-object',
       'pattern' => 'adv_audit_report_object__',
@@ -88,8 +89,6 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
-  //$view_mode = $variables['elements']['#view_mode'];
-
   // Build score history table.
   $entity = $variables['elements']['#adv_audit'];
   $variables['content']['score_history'] = [
@@ -127,8 +126,9 @@ function adv_audit_preprocess_adv_audit_report(&$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
   $render = \Drupal::service('adv_audit.renderer');
   $view_mode = $variables['view_mode'];
+  $adv_audit_id = $variables['adv_audit_id'];
   // Wrap to renderer object.
-  $variables['report'] = $render->setAuditResult($variables['report'], $view_mode);
+  $variables['report'] = $render->setAuditResult($variables['report'], $view_mode, $adv_audit_id);
 }
 
 /**

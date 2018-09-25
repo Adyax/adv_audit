@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * The class of the Pdf generation' controller.
  */
-class AdvAuditPdfController {
+class AuditPdfController {
 
   /**
    * Public function view.
