@@ -3,7 +3,7 @@ status: true
 dependencies:
   module:
     - adv_audit
-id: adv_audit.doc
+id: adv_audit.html
 label: html
 targetEntityType: adv_audit
 cache: true
