@@ -73,3 +73,23 @@ adv_audit.html:
     parameters:
       adv_audit:
         type: entity:adv_audit
+
+adv_audit.google:
+  path: 'admin/reports/adv-audit/google'
+  defaults:
+    _form: '\Drupal\adv_audit\Form\GoogleDriveSettingsForm'
+    _title: 'Google Drive Settings'
+  requirements:
+    _permission: 'access auditor list'
+
+adv_audit.google_report:
+  path: 'admin/reports/adv-audit/{adv_audit}/google'
+  defaults:
+    _controller: '\Drupal\adv_audit\Controller\AuditGoogleDriveController::printToGoogle'
+    _title: 'Google report'
+  requirements:
+    _permission: 'access auditor list'
+  options:
+    parameters:
+      adv_audit:
+        type: entity:adv_audit
