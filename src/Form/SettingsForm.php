@@ -36,10 +36,10 @@ class SettingsForm extends ConfigFormBase {
    *   Use DI to work with redirect destination.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $advAuditCheckListManager, StateInterface $state, RedirectDestinationInterface $redirect_destination) {
+    parent::__construct($config_factory);
     $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditPluginManager = $advAuditCheckListManager;
     $this->state = $state;
-    $this->config = $config_factory;
     $this->redirectDestination = $redirect_destination;
   }
 
@@ -178,7 +178,7 @@ class SettingsForm extends ConfigFormBase {
     }
 
     // Save categories status.
-    $config = $this->config->getEditable('adv_audit.settings');
+    $config = $this->configFactory->getEditable('adv_audit.settings');
     $config_categories = $config->get('categories');
     foreach ($config_categories as $key => &$category) {
       $category['status'] = $values['categories'][$key][$key . '_status'];

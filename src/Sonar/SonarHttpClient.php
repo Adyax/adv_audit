@@ -2,13 +2,25 @@
 
 namespace Drupal\adv_audit\Sonar;
 
+use Buzz\Client\ClientInterface;
 use SonarQube\HttpClient\HttpClient;
 use SonarQube\HttpClient\Message\Request;
+use SonarQube\HttpClient\Message\Response;
 
 /**
  * SonarHttpClient Class.
  */
 class SonarHttpClient extends HttpClient {
+
+  protected $client;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($baseUrl, array $options, ClientInterface $client) {
+    parent::__construct($baseUrl, $options, $client);
+    $this->client = $client;
+  }
 
   /**
    * Request Method.
@@ -48,7 +60,7 @@ class SonarHttpClient extends HttpClient {
    * @param string $url
    *   Request url.
    *
-   * @return SonarQube\HttpClient\Message\Request
+   * @return \SonarQube\HttpClient\Message\Request
    *   Request object.
    */
   private function createRequest($httpMethod, $url) {

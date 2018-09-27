@@ -17,9 +17,8 @@ class RunForm extends FormBase {
   /**
    * The adv_audit.checklist service.
    *
-   * @var \Drupal\adv_audit\Checklist
+   * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
-
   protected $auditTestManager = [];
 
   protected $configCategories;
@@ -62,7 +61,7 @@ class RunForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['process_list'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Available Audits:'),
+      '#title' => $this->t('Enabled plugins:'),
       'list' => ['#markup' => $this->buildProcessItems()],
     ];
 

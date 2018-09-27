@@ -61,6 +61,13 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
   protected $noActiveIndexesServers = [];
 
   /**
+   * Server Storage service.
+   *
+   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
+   */
+  protected $serverStorage;
+
+  /**
    * Constructs a new PerformanceSolrUsage object.
    *
    * @param array $configuration

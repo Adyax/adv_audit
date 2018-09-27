@@ -172,6 +172,7 @@ class AuditEntityGlobalInfo implements ContainerInjectionInterface {
     $query->groupBy('ur.roles_target_id');
     $query->orderBy('ur.roles_target_id', 'ASC');
     $result = $query->execute()->fetchAll();
+    $renderData = [];
     foreach ($result as $row) {
       $renderData[$row->roles_target_id] = $row->user_count;
     }

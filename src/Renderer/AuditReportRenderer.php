@@ -14,6 +14,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * Class Renderer to build audit response object.
@@ -79,6 +80,13 @@ class AuditReportRenderer implements RenderableInterface {
   protected $auditResultViewMode;
 
   /**
+   * Current entity id.
+   *
+   * @var string
+   */
+  protected $auditReportId;
+
+  /**
    * Constructs a new Renderer object.
    */
   public function __construct(RendererInterface $renderer, AuditPluginsManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
@@ -98,9 +106,10 @@ class AuditReportRenderer implements RenderableInterface {
    * @return $this
    *   Return itself for chaining.
    */
-  public function setAuditResult(AuditResultResponseInterface $audit_result, $view_mode) {
+  public function setAuditResult(AuditResultResponseInterface $audit_result, $view_mode, $adv_audit_id) {
     $this->auditResultResponse = $audit_result;
     $this->auditResultViewMode = $view_mode;
+    $this->auditReportId = $adv_audit_id;
     return $this;
   }
 
@@ -108,17 +117,15 @@ class AuditReportRenderer implements RenderableInterface {
    * {@inheritdoc}
    */
   public function toRenderable() {
-    // Get current report Id.
-    $report_id = \Drupal::routeMatch()->getParameter('adv_audit')->id();
+    $adv_audit_id = $this->auditReportId;
     $view_mode = $this->auditResultViewMode;
-
     return [
       '#theme' => 'adv_audit_report_object__' . $view_mode,
       '#score_point' => $this->auditResultResponse->calculateScore(),
       '#title' => $this->t('Audit Report result'),
       '#categories' => $this->doBuildCategory(),
       '#global_info' => $this->auditResultResponse->getOverviewInfo(),
-      '#report_id' => $report_id,
+      '#adv_audit_id' => $adv_audit_id,
       '#attached' => [
         'library' => [
           'adv_audit/adv_audit.report',
@@ -376,17 +383,19 @@ class AuditReportRenderer implements RenderableInterface {
 
     $active_rows = [];
     $ignored_rows = [];
+
     foreach ($all_issues as $issue) {
+      $url = Url::fromRoute('adv_audit.issue_change_status', ['adv_audit_id' => $this->auditReportId, 'issue' => $issue->id->value]);
       if ($issue->isOpen()) {
         $active_rows[] = [
           $issue->getMarkup(),
-          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          Link::fromTextAndUrl('Ignore', $url),
         ];
       }
       else {
         $ignored_rows[] = [
           $issue->getMarkup(),
-          Link::fromTextAndUrl('Ignore', $issue->toUrl('edit-form')),
+          Link::fromTextAndUrl('Ignore', $url),
         ];
       }
     }

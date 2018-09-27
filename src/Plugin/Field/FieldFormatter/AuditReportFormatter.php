@@ -53,11 +53,18 @@ class AuditReportFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
-    foreach ($items as $delta => $item) {
-      $view_mode = $this->viewMode;
-      $elements[$delta]['#theme'] = ['adv_audit_report__' . $view_mode];
-      $elements[$delta]['#view_mode'] = $view_mode;
-      $elements[$delta]['#report'] = $this->getResultObject($item);
+    $entity = $items->getEntity();
+    $entity_type = $entity->getEntityTypeId();
+
+    if ($entity_type !== 'adv_audit_issue') {
+      foreach ($items as $delta => $item) {
+        $view_mode = $this->viewMode;
+        $adv_audit_id = $entity->id->value;
+        $elements[$delta]['#theme'] = ['adv_audit_report__' . $view_mode];
+        $elements[$delta]['#view_mode'] = $view_mode;
+        $elements[$delta]['#adv_audit_id'] = $adv_audit_id;
+        $elements[$delta]['#report'] = $this->getResultObject($item);
+      }
     }
 
     return $elements;

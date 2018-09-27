@@ -53,9 +53,9 @@ class AuditReason {
    *
    * @param string $plugin_id
    *   The plugin id.
-   * @param int $status
+   * @param string $status
    *   The status of the perform test.
-   * @param string $reason
+   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string $reason
    *   Reason why test is failed. (optional)
    * @param array|mixed $arguments
    *   (optional) An associative array of replacements to make after
@@ -228,11 +228,6 @@ class AuditReason {
         // Update all details.
         $issue->setTitle($issue_title);
         $issue->setDetails(serialize($details));
-
-        // Reopen the issue if it is fixed.
-        if ($issue->isStatus(IssueEntity::STATUS_FIXED)) {
-          $issue->setStatus(IssueEntity::STATUS_OPEN);
-        }
       }
       $issue->save();
 

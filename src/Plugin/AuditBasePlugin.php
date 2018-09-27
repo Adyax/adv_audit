@@ -38,7 +38,7 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
   /**
    * The plugin config storage service.
    *
-   * @var \Drupal\adv_audit\CheckPluginConfigStorageServiceInterface
+   * @var \Drupal\adv_audit\Service\AuditPluginConfigStorageService
    */
   protected $pluginSettingsStorage;
 
