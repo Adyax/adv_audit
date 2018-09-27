@@ -144,7 +144,7 @@
                       {% if report.reason is not empty %}
                         <span class="content-panel">
                           <span>{{ 'Why this check is failed: '|t }}</span>
-                          {{ report.reason }}
+                          <p>{{ report.reason }}</p>
                         </span>
                       {% endif %}
                     </span>

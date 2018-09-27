@@ -284,6 +284,7 @@
 .pdf-report {
   overflow: hidden;
   padding: 0.75rem;
+  float: left;
 }
 .report-pdf-view {
   display: inline-block;
@@ -294,6 +295,26 @@
 }
 .report-pdf-view:hover,
 .report-pdf-view:active{
+  text-decoration: none;
+  color: #fff;
+  background: #0074bd;
+}
+
+/* Google Drive button */
+.gd-report {
+  overflow: hidden;
+  padding: 0.75rem;
+  float: right;
+}
+.report-gd-view {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #0074bd;
+  border: 1px solid #0074bd;
+  font-size: 1.15em;
+}
+.report-gd-view:hover,
+.report-gd-view:active{
   text-decoration: none;
   color: #fff;
   background: #0074bd;

@@ -50,7 +50,7 @@ adv_audit.pdf:
       adv_audit:
         type: entity:adv_audit
 
-adv_audit.doc:
+adv_audit.html:
   path: 'admin/reports/adv-audit/{adv_audit}/html'
   defaults:
     _controller: '\Drupal\adv_audit\Controller\AuditDocController::getReportHtml'
