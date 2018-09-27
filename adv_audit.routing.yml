@@ -49,3 +49,15 @@ adv_audit.pdf:
     parameters:
       adv_audit:
         type: entity:adv_audit
+
+adv_audit.doc:
+  path: 'admin/reports/adv-audit/{adv_audit}/html'
+  defaults:
+    _controller: '\Drupal\adv_audit\Controller\AuditDocController::getReportHtml'
+    _title: 'Sandwich Converter'
+  requirements:
+    _permission: 'access auditor list'
+  options:
+    parameters:
+      adv_audit:
+        type: entity:adv_audit
