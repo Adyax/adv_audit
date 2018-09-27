@@ -20,3 +20,9 @@ adv_audit.help:
   css:
     theme:
       css/help.css: {}
+
+adv_audit.report_html:
+  version: VERSION
+  css:
+    theme:
+      css/view_html_results.css: {}

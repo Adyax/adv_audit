@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - adv_audit
+id: adv_audit.doc
+label: html
+targetEntityType: adv_audit
+cache: true

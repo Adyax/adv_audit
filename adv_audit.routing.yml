@@ -61,3 +61,15 @@ adv_audit.issue_change_status:
     parameters:
       issue:
         type: entity:adv_audit_issue
+
+adv_audit.html:
+  path: 'admin/reports/adv-audit/{adv_audit}/html'
+  defaults:
+    _controller: '\Drupal\adv_audit\Controller\AuditHtmlReportController::getReportHtml'
+    _title: 'Save html to Google Drive'
+  requirements:
+    _permission: 'access auditor list'
+  options:
+    parameters:
+      adv_audit:
+        type: entity:adv_audit

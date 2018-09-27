@@ -6,15 +6,13 @@
   border: 0.0625rem solid #ccc;
   border-radius: 0.25rem;
   background: #fff;
-  padding: 1.5rem 3rem;
-  margin-bottom: 3rem;
   font-family: "Proxima Nova", "Open Sans", "Helvetica Neue", sans-serif;
   font-weight: normal;
   color: rgba(0,0,0,0.87);
 }
 
 .adv-audit-results header {
-  padding-bottom: 0.75rem;
+
   border-bottom: 0.0625rem solid #ccc;
 }
 .adv-audit-results header h3 {
@@ -22,12 +20,12 @@
   line-height: 1.333;
   font-weight: 600;
   margin: 0;
-  padding: 0;
+
 }
 
 .score-container {
   overflow: hidden;
-  padding: 0.75rem 0;
+
 }
 
 .score-container .score-point {
@@ -59,21 +57,21 @@
 }
 
 .status-failed .report-title {
-  background: #ffa3ae url('../css/error.svg') no-repeat 20px 50%;
+  background: #ffa3ae;
 }
 
 .status-passed .report-title {
-  background: #b0e164 url('../css/check.svg') no-repeat 20px 50%;
+  background: #b0e164;
 }
 
 .status-skipped .report-title,
 .status-ignored .report-title {
-  background: #ccc url('../css/questionmark-disc.svg') no-repeat 20px 50%;
+  background-color: #ccc;
 }
 
 .score-container .description {
   overflow: hidden;
-  padding: 0.75rem;
+
   margin: 0;
   font-size: 16px;
   line-height: 1.5;
@@ -86,7 +84,7 @@
   font-weight: 400;
   line-height: 1.33333;
   margin: 0;
-  padding: 0.75rem;
+
 }
 
 .adv-category-item {
@@ -110,7 +108,7 @@
 }
 
 .category-list .adv-category-item .aq-dataset__data {
-  padding: 0.75rem;
+
 }
 
 .category-list .flex-10 {
@@ -144,7 +142,7 @@
 
 .global-info-container .report-view-detailed {
   float: right;
-  padding: 0.5rem 1rem;
+
   border: 0.0625rem solid #ccc;
   background: #fff;
   color: rgba(0,0,0,0.87);
@@ -159,7 +157,7 @@
 
 .global-info-container .report-view-detailed h3 {
   margin: 0;
-  padding: 0;
+
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
@@ -179,7 +177,7 @@
 
 .global-info {
   border: 1px solid #ccc;
-  padding: 0.75rem;
+
 }
 
 .global-info h2 {
@@ -206,13 +204,12 @@
 
 .audit-reason ul,
 .audit-reason ol {
-  padding: 0;
+
 }
 
 .report-title {
   overflow: hidden;
-  padding: 0.75rem;
-  padding-left: 3rem;
+
   position: relative;
   cursor: pointer;
 }
@@ -230,7 +227,7 @@
   border: solid #000;
   border-width: 0 2px 2px 0;
   display: inline-block;
-  padding: 6px;
+
   transform: rotate(45deg);
 }
 
@@ -243,7 +240,7 @@
   border: solid #ccc;
   border-width: 0 1px 1px;
   overflow: hidden;
-  padding: 0.75rem;
+
   display: none;
 }
 
@@ -251,22 +248,22 @@
   display: block;
 }
 
-.report-content h5.high {
+.high {
   color: #e62600;
 }
 
-.report-content h5.normal {
+.normal {
   color: #ff9900;
 }
 
-.report-content h5.low {
+.low {
   color: #23ad0e;
 }
 
 .audit-reason code {
   white-space: nowrap;
-  padding-bottom: 0.3125rem;
-  padding-top: 0.3125rem;
+
+
   background-color: #333333;
   border-color: #000000;
   border-radius: 0.25rem;
@@ -276,15 +273,13 @@
   display: inline-block;
   font-size: 0.75rem;
   line-height: 1;
-  padding-left: 0.375rem;
-  padding-right: 0.375rem;
+
 }
 
 /* link to pdf file on report page */
 .pdf-report {
   overflow: hidden;
   padding: 0.75rem;
-  float: left;
 }
 .report-pdf-view {
   display: inline-block;
@@ -295,26 +290,6 @@
 }
 .report-pdf-view:hover,
 .report-pdf-view:active{
-  text-decoration: none;
-  color: #fff;
-  background: #0074bd;
-}
-
-/* Google Drive button */
-.gd-report {
-  overflow: hidden;
-  padding: 0.75rem;
-  float: right;
-}
-.report-gd-view {
-  display: inline-block;
-  padding: 10px 20px;
-  color: #0074bd;
-  border: 1px solid #0074bd;
-  font-size: 1.15em;
-}
-.report-gd-view:hover,
-.report-gd-view:active{
   text-decoration: none;
   color: #fff;
   background: #0074bd;
