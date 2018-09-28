@@ -61,6 +61,14 @@ class GoogleDriveSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('adv_audit.settings');
+    if(empty($config->get('google_id')) || empty($config->get('google_secret'))) {
+      $form['descriprion'] = [
+        '#markup' => '<p>To be allowed to save report you should type your Google Drive API ID and password</p>
+        <p>There is <a href="https://developers.google.com/drive/api/v3/quickstart/php" target="_blank">link</a> 
+        to get them. Press button "ENABLE THE DRIVE API"</p>',
+      ];
+    }
+
     $form['google_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client ID'),
