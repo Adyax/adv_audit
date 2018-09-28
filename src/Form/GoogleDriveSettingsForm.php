@@ -43,6 +43,7 @@ class GoogleDriveSettingsForm extends ConfigFormBase {
       // You can set multiple configurations at once by making
       // multiple calls to set()
       ->set('google_secret', $form_state->getValue('google_secret'))
+      ->set('google_folder', $form_state->getValue('google_folder'))
       ->save();
 
     parent::submitForm($form, $form_state);
@@ -82,6 +83,15 @@ class GoogleDriveSettingsForm extends ConfigFormBase {
       '#maxlength' => 255,
       '#default_value' => $config->get('google_secret'),
       '#required' => TRUE,
+    ];
+    $form['google_folder'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Folder on Google Drive to upload file'),
+      '#description' => $this->t('If empty or folder does not exists 
+        report will be uploaded into root of your Google Drive (case-sensitive)'),
+      '#maxlength' => 255,
+      '#default_value' => $config->get('google_folder'),
+      '#required' => FALSE,
     ];
 
     return parent::buildForm($form, $form_state);
