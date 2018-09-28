@@ -5,298 +5,287 @@
 {% else %}
   {% set score_point_class = 'aq-circle--danger' %}
 {% endif %}
-<span class="audit-report-container">
-    <h3>{{ title }}</h3>
-  <span class="content">
-    <span class="score-container">
-      <span class="score-point">
-        <span class="flex-none">
-          <span class="aq-circle aq-circle--large render-score-status {{ score_point_class }}"
-               data-score-point="{{ score_point }}">{{ score_point }}</span>
-        </span>
-      </span>
-      <p class="description">
+<p>
+  <h1>{{ title }}</h1>
+</p>
+<span class="score-container">
+    <span class="aq-circle aq-circle--large render-score-status {{ score_point_class }}">{{ score_point }}</span>
+</span>
+      <p>
         {% trans %}
           Insight score is a rating given to your site by Adyax Advanced Audit module. Insight assigns different weights to each alert, the reported percentage and the number of resolved issues do not directly relate to one another.
         {% endtrans %}
       </p>
-    </span>
-    {% if global_info is not empty %}
-      <span class="global-info-container">
-        <span class="adv-category-item row layout-row">
-          <span class="detailed-view" category-id="global-info">
-            <span class="global-info">
-              <strong>{{ 'Users'|t }}</strong>
-              <span class="total-users">
-                <p>
-                  {% trans %}
-                    Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
-                  {% endtrans %}
-                </p>
-              </span>
-              <span class="blocked-users">
-                <p>
-                  {% trans %}
-                    Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
-                  {% endtrans %}
-                </p>
-              </span>
-              <span class="roles-list">
-                <p>
-                  {% trans %}
-                    List Roles - Show all available roles and user counts.
-                  {% endtrans %}
-                  {% for role, count in global_info.roles_list %}
-                    {% if loop.last %}
-                      {{ role }}: {{ count }}.
-                    {% else %}
-                      {{ role }}: {{ count }},
-                    {% endif %}
-                  {% endfor %}
-                </p>
-              </span>
-              <span class="admin-info">
-                <p>
-                  {% trans %}
-                    Identify UID #1 - Show username and email of UID #1. UID #1:
-                  {% endtrans %}
-                  {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
-                </p>
-                <p>
-                  {% trans %}
-                    UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
-                  {% endtrans %}
-                </p>
-              </span>
-              <strong>{{ 'Codebase'|t }}</strong>
-              <span class="codebase">
-                {% if global_info.filesystem_info.s3fs == true %}
-                  <p>
-                    {% trans %}
-                      There is s3fs module installed.
-                    {% endtrans %}
-                  </p>
+
+{% if global_info is not empty %}
+  <span class="global-info-container">
+    <span class="adv-category-item row layout-row">
+      <span class="detailed-view" category-id="global-info">
+        <span class="global-info">
+          <strong>{{ 'Users'|t }}</strong>
+          <span class="total-users">
+            <p>
+              {% trans %}
+                Count All - Total number of Drupal users. There are {{ global_info.total_users }} users.
+              {% endtrans %}
+            </p>
+          </span>
+          <span class="blocked-users">
+            <p>
+              {% trans %}
+                Count Blocked - Total number of blocked Drupal users. There are {{ global_info.blocked_users }} blocked users.
+              {% endtrans %}
+            </p>
+          </span>
+          <span class="roles-list">
+            <p>
+              {% trans %}
+                List Roles - Show all available roles and user counts.
+              {% endtrans %}
+              {% for role, count in global_info.roles_list %}
+                {% if loop.last %}
+                  {{ role }}: {{ count }}.
                 {% else %}
-                  <p>
-                    {% trans %}
-                      Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
-                    {% endtrans %}
-                  </p>
-                  <p>
-                    {% trans %}
-                      Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
-                    {% endtrans %}
-                  </p>
+                  {{ role }}: {{ count }},
                 {% endif %}
-              </span>
-            </span>
+              {% endfor %}
+            </p>
+          </span>
+          <span class="admin-info">
+            <p>
+              {% trans %}
+                Identify UID #1 - Show username and email of UID #1. UID #1:
+              {% endtrans %}
+              {{ global_info.uid1.name }}, email: {{ global_info.uid1.email }}
+            </p>
+            <p>
+              {% trans %}
+                UID #1 access - Determine if UID #1 is blocked. UID #1 is {{ global_info.uid1.status }}.
+              {% endtrans %}
+            </p>
+          </span>
+          <strong>{{ 'Codebase'|t }}</strong>
+          <span class="codebase">
+            {% if global_info.filesystem_info.s3fs == true %}
+              <p>
+                {% trans %}
+                  There is s3fs module installed.
+                {% endtrans %}
+              </p>
+            {% else %}
+              <p>
+                {% trans %}
+                  Drupal managed file count - Determine the count of Drupal managed files. Managed file count: {{ global_info.filesystem_info.count_files }}
+                {% endtrans %}
+              </p>
+              <p>
+                {% trans %}
+                  Drupal managed file size -Determine the size of Drupal managed files. Managed file size: {{ global_info.filesystem_info.files_total_size }}
+                {% endtrans %}
+              </p>
+            {% endif %}
           </span>
         </span>
       </span>
-    {% endif %}
-    <span class="category-list">
-      {% for category in categories %}
-        <span class="adv-category-item row layout-row">
-          <span class="cat-dataset">
-            <h3>
-            <span class="cat-score">{{ category.score }}</span>
-            <span class="cat-title">{{ category.label }}</span>
-            <span class="cat-summary">{% trans %}{{ category.passed }} of {{ category.total }} issues resolved{% endtrans %}</span>
-            </h3>
-          </span>
-          <span class="detailed-view">
-            {% if category.reports_failed|length %}
-              <span class="report-items failed">
-                <h4>{{ 'Failed issues'|t }}</h4>
-                {% for report in category.reports_failed %}
-                  <span {{ report.result_attributes }}>
-                    <span class="report-title">
-                      <h5>{{ report.name }}</h5>
-                    </span>
-                    <span class="report-content">
-                      {% if report.severity is not empty %}
-                        <span class="content-panel">
-                          <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
-                        </span>
-                      {% endif %}
-                      <span class="content-panel">
-                        {{ report.description }}
-                      </span>
-                      {% if report.result is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Results: '|t }}</span>
-                          {{ report.result }}
-                        </span>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Actions to be done: '|t }}</span>
-                          {{ report.actions }}
-                        </span>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Impacts: '|t }}</span>
-                          {{ report.impacts }}
-                        </span>
-                      {% endif %}
-                      {# Should be moved to preprocess function #}
-                      {% if report.reason is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Why this check is failed: '|t }}</span>
-                          <p>{{ report.reason }}</p>
-                        </span>
-                      {% endif %}
-                    </span>
-                  </span>
-                {% endfor %}
-              </span>
-            {% endif %}
-            {% if category.reports_passed|length %}
-              <span class="report-items passed">
-                <h4>{{ 'Resolved issues'|t }}</h4>
-                {% for report in category.reports_passed %}
-                  <span {{ report.result_attributes }}>
-                    <span class="report-title">
-                      <h5>{{ report.name }}</h5>
-                    </span>
-                    <span class="report-content">
-                      {% if report.severity is not empty %}
-                        <span class="content-panel">
-                          <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
-                        </span>
-                      {% endif %}
-                      <span class="content-panel">
-                        {{ report.description }}
-                      </span>
-                      {% if report.result is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Results: '|t }}</span>
-                          {{ report.result }}
-                        </span>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Actions to be done: '|t }}</span>
-                          {{ report.actions }}
-                        </span>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Impacts: '|t }}</span>
-                          {{ report.impacts }}
-                        </span>
-                      {% endif %}
-                      {# Should be moved to preprocess function #}
-                      {% if report.reason is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Why this check is failed: '|t }}</span>
-                          {{ report.reason }}
-                        </span>
-                      {% endif %}
-                    </span>
-                  </span>
-                {% endfor %}
-              </span>
-            {% endif %}
-            {% if category.reports_skipped|length %}
-              <span class="report-items skipped">
-                <h4>{{ 'Skipped issues'|t }}</h4>
-                {% for report in category.reports_skipped %}
-                  <span {{ report.result_attributes }}>
-                    <span class="report-title">
-                      <h5>{{ report.name }}</h5>
-                    </span>
-                    <span class="report-content">
-                      {% if report.severity is not empty %}
-                        <span class="content-panel">
-                          <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
-                        </span>
-                      {% endif %}
-                      <span class="content-panel">
-                        {{ report.description }}
-                      </span>
-                      {% if report.result is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Results: '|t }}</span>
-                          {{ report.result }}
-                        </span>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Actions to be done: '|t }}</span>
-                          {{ report.actions }}
-                        </span>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Impacts: '|t }}</span>
-                          {{ report.impacts }}
-                        </span>
-                      {% endif %}
-                      {# Should be moved to preprocess function #}
-                      {% if report.reason is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Why this check is failed: '|t }}</span>
-                          {{ report.reason }}
-                        </span>
-                      {% endif %}
-                    </span>
-                  </span>
-                {% endfor %}
-              </span>
-            {% endif %}
-            {% if category.reports_ignored|length %}
-              <span class="report-items ignored">
-
-                <h4>{{ 'Ignored issues'|t }}</h4>
-                {% for report in category.reports_ignored %}
-                  <span {{ report.result_attributes }}>
-                    <span class="report-title">
-                      <h5>{{ report.name }}</h5>
-                    </span>
-                    <span class="report-content">
-                      {% if report.severity is not empty %}
-                        <span class="content-panel">
-                          <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
-                        </span>
-                      {% endif %}
-                      <span class="content-panel">
-                        {{ report.description }}
-                      </span>
-                      {% if report.result is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Results: '|t }}</span>
-                          {{ report.result }}
-                        </span>
-                      {% endif %}
-                      {% if report.actions is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Actions to be done: '|t }}</span>
-                          {{ report.actions }}
-                        </span>
-                      {% endif %}
-                      {% if report.impacts is not empty %}
-                        <span class="content-panel">
-                          <span>{{ 'Impacts: '|t }}</span>
-                          {{ report.impacts }}
-                        </span>
-                      {% endif %}
-                      {# Should be moved to preprocess function #}
-                      {% if report.reason is not empty %}
-                        <span class="content-panel">
-                          <strong>{{ 'Why this audit is skipped: '|t }}</strong>
-                          {{ report.reason }}
-                        </span>
-                      {% endif %}
-                    </span>
-                  </span>
-                {% endfor %}
-              </span>
-            {% endif %}
-          </span>
-        </span>
-      {% endfor %}
     </span>
   </span>
+{% endif %}
+<span class="category-list">
+  {% for category in categories %}
+    <span class="adv-category-item row layout-row">
+        <h3>{{ category.score }} {{ category.label }} {% trans %}{{ category.passed }} of {{ category.total }} issues resolved{% endtrans %}</h3>
+      <span class="detailed-view">
+        {% if category.reports_failed|length %}
+          <span class="report-items failed">
+            <h4>{{ 'Failed issues'|t }}</h4>
+            {% for report in category.reports_failed %}
+              <span {{ report.result_attributes }}>
+                <span class="report-title">
+                  <h5>{{ report.name }}</h5>
+                </span>
+                <span class="report-content">
+                  {% if report.severity is not empty %}
+                    <span class="content-panel">
+                      <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
+                    </span>
+                  {% endif %}
+                  <span class="content-panel">
+                    {{ report.description }}
+                  </span>
+                  {% if report.result is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Results: '|t }}</span>
+                      {{ report.result }}
+                    </span>
+                  {% endif %}
+                  {% if report.actions is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Actions to be done: '|t }}</span>
+                      {{ report.actions }}
+                    </span>
+                  {% endif %}
+                  {% if report.impacts is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Impacts: '|t }}</span>
+                      {{ report.impacts }}
+                    </span>
+                  {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Why this check is failed: '|t }}</span>
+                      <p>{{ report.reason }}</p>
+                    </span>
+                  {% endif %}
+                </span>
+              </span>
+            {% endfor %}
+          </span>
+        {% endif %}
+        {% if category.reports_passed|length %}
+          <span class="report-items passed">
+            <h4>{{ 'Resolved issues'|t }}</h4>
+            {% for report in category.reports_passed %}
+              <span {{ report.result_attributes }}>
+                <span class="report-title">
+                  <h5>{{ report.name }}</h5>
+                </span>
+                <span class="report-content">
+                  {% if report.severity is not empty %}
+                    <span class="content-panel">
+                      <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
+                    </span>
+                  {% endif %}
+                  <span class="content-panel">
+                    {{ report.description }}
+                  </span>
+                  {% if report.result is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Results: '|t }}</span>
+                      {{ report.result }}
+                    </span>
+                  {% endif %}
+                  {% if report.actions is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Actions to be done: '|t }}</span>
+                      {{ report.actions }}
+                    </span>
+                  {% endif %}
+                  {% if report.impacts is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Impacts: '|t }}</span>
+                      {{ report.impacts }}
+                    </span>
+                  {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Why this check is failed: '|t }}</span>
+                      <p>{{ report.reason }}</p>
+                    </span>
+                  {% endif %}
+                </span>
+              </span>
+            {% endfor %}
+          </span>
+        {% endif %}
+        {% if category.reports_skipped|length %}
+          <span class="report-items skipped">
+            <h4>{{ 'Skipped issues'|t }}</h4>
+            {% for report in category.reports_skipped %}
+              <span {{ report.result_attributes }}>
+                <span class="report-title">
+                  <h5>{{ report.name }}</h5>
+                </span>
+                <span class="report-content">
+                  {% if report.severity is not empty %}
+                    <span class="content-panel">
+                      <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
+                    </span>
+                  {% endif %}
+                  <span class="content-panel">
+                    {{ report.description }}
+                  </span>
+                  {% if report.result is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Results: '|t }}</span>
+                      {{ report.result }}
+                    </span>
+                  {% endif %}
+                  {% if report.actions is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Actions to be done: '|t }}</span>
+                      {{ report.actions }}
+                    </span>
+                  {% endif %}
+                  {% if report.impacts is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Impacts: '|t }}</span>
+                      {{ report.impacts }}
+                    </span>
+                  {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Why this check is failed: '|t }}</span>
+                      <p>{{ report.reason }}</p>
+                    </span>
+                  {% endif %}
+                </span>
+              </span>
+            {% endfor %}
+          </span>
+        {% endif %}
+        {% if category.reports_ignored|length %}
+          <span class="report-items ignored">
+
+            <h4>{{ 'Ignored issues'|t }}</h4>
+            {% for report in category.reports_ignored %}
+              <span {{ report.result_attributes }}>
+                <span class="report-title">
+                  <h5>{{ report.name }}</h5>
+                </span>
+                <span class="report-content">
+                  {% if report.severity is not empty %}
+                    <span class="content-panel">
+                      <span class="{{ report.severity }}">{{ 'Importance: '|t }} {{ report.severity|upper }}</span>
+                    </span>
+                  {% endif %}
+                  <span class="content-panel">
+                    {{ report.description }}
+                  </span>
+                  {% if report.result is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Results: '|t }}</span>
+                      {{ report.result }}
+                    </span>
+                  {% endif %}
+                  {% if report.actions is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Actions to be done: '|t }}</span>
+                      {{ report.actions }}
+                    </span>
+                  {% endif %}
+                  {% if report.impacts is not empty %}
+                    <span class="content-panel">
+                      <span>{{ 'Impacts: '|t }}</span>
+                      {{ report.impacts }}
+                    </span>
+                  {% endif %}
+                  {# Should be moved to preprocess function #}
+                  {% if report.reason is not empty %}
+                    <span class="content-panel">
+                      <strong>{{ 'Why this audit is skipped: '|t }}</strong>
+                      <p>{{ report.reason }}</p>
+                    </span>
+                  {% endif %}
+                </span>
+              </span>
+            {% endfor %}
+          </span>
+        {% endif %}
+      </span>
+    </span>
+  {% endfor %}
 </span>
+

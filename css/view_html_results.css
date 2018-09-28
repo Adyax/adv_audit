@@ -15,17 +15,8 @@
 
   border-bottom: 0.0625rem solid #ccc;
 }
-.adv-audit-results header h3 {
-  font-size: 1.35rem;
-  line-height: 1.333;
-  font-weight: 600;
-  margin: 0;
-
-}
-
 .score-container {
   overflow: hidden;
-
 }
 
 .score-container .score-point {
@@ -80,7 +71,6 @@
 
 .category-list h4 {
   color: inherit;
-  font-size: 1.125rem;
   font-weight: 400;
   line-height: 1.33333;
   margin: 0;
@@ -89,7 +79,6 @@
 
 .adv-category-item {
   overflow: hidden;
-  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -155,14 +144,6 @@
   background: #ccc;
 }
 
-.global-info-container .report-view-detailed h3 {
-  margin: 0;
-
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 400;
-}
-
 .global-info-container .cat-view {
   float: none;
   overflow: hidden;
@@ -182,10 +163,7 @@
 
 .global-info h2 {
   margin: 0 0 16px;
-}
 
-.audit-report-container .h2 {
-  font-size: 1.550rem;
 }
 
 .global-info p {
@@ -201,7 +179,6 @@
   margin: 0;
 }
 
-.audit-reason h3,
 .audit-reason p {
   margin: 0 0 16px;
 }
@@ -218,11 +195,6 @@
   cursor: pointer;
 }
 
-.report-title h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.33333;
-}
 .report-title:after {
   content: '';
   position: absolute;
@@ -263,38 +235,15 @@
 .low {
   color: #23ad0e;
 }
-
-.audit-reason code {
-  white-space: nowrap;
-
-
-  background-color: #333333;
-  border-color: #000000;
-  border-radius: 0.25rem;
-  border-style: solid;
-  border-width: 0.0625rem;
+h1 {
+  font-size: 55px;
+}
+h2 {
+  font-size: 45px;
+}
+h3 {
+  font-size: 35px;
+}
+h1, h2, h3 {
   color: #ffcc01;
-  display: inline-block;
-  font-size: 0.75rem;
-  line-height: 1;
-
-}
-
-/* link to pdf file on report page */
-.pdf-report {
-  overflow: hidden;
-  padding: 0.75rem;
-}
-.report-pdf-view {
-  display: inline-block;
-  padding: 10px 20px;
-  color: #0074bd;
-  border: 1px solid #0074bd;
-  font-size: 1.15em;
-}
-.report-pdf-view:hover,
-.report-pdf-view:active{
-  text-decoration: none;
-  color: #fff;
-  background: #0074bd;
 }
