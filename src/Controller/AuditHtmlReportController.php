@@ -12,7 +12,7 @@ use Google_Service_Drive_DriveFile;
 use Google_Service_Drive;
 
 /**
- * Get html report.
+ * Get html report and upload it to Google Drive.
  */
 class AuditHtmlReportController implements ContainerInjectionInterface {
 

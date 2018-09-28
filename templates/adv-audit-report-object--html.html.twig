@@ -6,7 +6,7 @@
   {% set score_point_class = 'aq-circle--danger' %}
 {% endif %}
 <span class="audit-report-container">
-    <h1 class="title">{{ title }}</h1>
+    <h3>{{ title }}</h3>
   <span class="content">
     <span class="score-container">
       <span class="score-point">
@@ -26,7 +26,7 @@
         <span class="adv-category-item row layout-row">
           <span class="detailed-view" category-id="global-info">
             <span class="global-info">
-              <h2>{{ 'Users'|t }}</h2>
+              <strong>{{ 'Users'|t }}</strong>
               <span class="total-users">
                 <p>
                   {% trans %}
@@ -68,7 +68,7 @@
                   {% endtrans %}
                 </p>
               </span>
-              <h2>{{ 'Codebase'|t }}</h2>
+              <strong>{{ 'Codebase'|t }}</strong>
               <span class="codebase">
                 {% if global_info.filesystem_info.s3fs == true %}
                   <p>

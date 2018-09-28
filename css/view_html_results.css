@@ -184,6 +184,10 @@
   margin: 0 0 16px;
 }
 
+.audit-report-container .h2 {
+  font-size: 1.550rem;
+}
+
 .global-info p {
   margin: 0 0 16px;
 }
