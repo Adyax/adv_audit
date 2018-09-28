@@ -63,7 +63,7 @@ class GoogleDriveSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('adv_audit.settings');
     if(empty($config->get('google_id')) || empty($config->get('google_secret'))) {
-      $form['descriprion'] = [
+      $form['description'] = [
         '#markup' => '<p>To be allowed to save report you should type your Google Drive API ID and password</p>
         <p>There is <a href="https://developers.google.com/drive/api/v3/quickstart/php" target="_blank">link</a> 
         to get them. Press button "ENABLE THE DRIVE API"</p>',
@@ -87,7 +87,7 @@ class GoogleDriveSettingsForm extends ConfigFormBase {
     $form['google_folder'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Folder on Google Drive to upload file'),
-      '#description' => $this->t('If empty or folder does not exists 
+      '#description' => $this->t('If empty or folder does not exists
         report will be uploaded into root of your Google Drive (case-sensitive)'),
       '#maxlength' => 255,
       '#default_value' => $config->get('google_folder'),
