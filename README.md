@@ -114,15 +114,12 @@ The keys `issues` and `@issue_title` are required. Issues support placeholders. 
 ## Architecture
 ### Entities
 * adv_audit
-* adv_audit_preset_entity
 * adv_audit_issue
 
-Audit reports are stored in `adv_entity`, `adv_audit_issue` and `adv_audit_preset_entity` entities.
-`adv_entity` and `adv_audit_issue` are revisionable.
+Audit reports are stored in `adv_entity` and `adv_audit_issue` entities (revisionable).
 
 * `adv_audit` entity stores data about audit's results.
 * `adv_audit_issue` stores issues data which were created by plugins if some checkpoints returned `failed` status.
-* `adv_audit_preset_entity` stores settings for various sets of checkpoints.
 
 Report is run by batch. Also particular checkpoint can be run from it's own settings form.
 
