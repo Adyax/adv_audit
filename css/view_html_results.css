@@ -12,7 +12,6 @@
 }
 
 .adv-audit-results header {
-
   border-bottom: 0.0625rem solid #ccc;
 }
 .score-container {
@@ -62,7 +61,6 @@
 
 .score-container .description {
   overflow: hidden;
-
   margin: 0;
   font-size: 16px;
   line-height: 1.5;
@@ -96,10 +94,6 @@
   text-align: right;
 }
 
-.category-list .adv-category-item .aq-dataset__data {
-
-}
-
 .category-list .flex-10 {
   width: 10%;
 }
@@ -131,7 +125,6 @@
 
 .global-info-container .report-view-detailed {
   float: right;
-
   border: 0.0625rem solid #ccc;
   background: #fff;
   color: rgba(0,0,0,0.87);
@@ -158,12 +151,10 @@
 
 .global-info {
   border: 1px solid #ccc;
-
 }
 
 .global-info h2 {
   margin: 0 0 16px;
-
 }
 
 .global-info p {
@@ -203,7 +194,6 @@
   border: solid #000;
   border-width: 0 2px 2px 0;
   display: inline-block;
-
   transform: rotate(45deg);
 }
 
@@ -216,7 +206,6 @@
   border: solid #ccc;
   border-width: 0 1px 1px;
   overflow: hidden;
-
   display: none;
 }
 
@@ -235,15 +224,19 @@
 .low {
   color: #23ad0e;
 }
+
 h1 {
   font-size: 55px;
 }
+
 h2 {
   font-size: 45px;
 }
+
 h3 {
   font-size: 35px;
 }
+
 h1, h2, h3 {
   color: #ffcc01;
 }
