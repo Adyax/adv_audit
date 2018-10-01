@@ -27,6 +27,11 @@
           {{ 'View PDF'|t }}
         </a>
       </div>
+      <div class="gd-report">
+        <a class="report-gd-view" target="_blank" href="{{ path('adv_audit.html', {'adv_audit': adv_audit_id}) }}">
+          {{ 'Save to Google Drive'|t }}
+        </a>
+      </div>
     </div>
     {% if global_info is not empty %}
       <div class="global-info-container">
