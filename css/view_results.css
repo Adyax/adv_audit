@@ -304,7 +304,7 @@
 .gd-report {
   overflow: hidden;
   padding: 0.75rem;
-  float: right;
+  float: left;
 }
 .report-gd-view {
   display: inline-block;
