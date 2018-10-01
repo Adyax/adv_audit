@@ -57,6 +57,10 @@ function adv_audit_theme() {
       'base hook' => 'adv_audit_report_object',
       'template' => 'adv-audit-report-object--pdf',
     ],
+    'adv_audit_report_object__html' => [
+      'base hook' => 'adv_audit_report_object',
+      'template' => 'adv-audit-report-object--html',
+    ],
     'adv_audit_help' => [
       'variables' => ['data' => [], 'categories' => []],
       'template' => 'adv-audit-help',

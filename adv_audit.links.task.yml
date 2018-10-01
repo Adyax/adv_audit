@@ -13,11 +13,6 @@ adv_audit.list_tab:
   title: 'Audit settings'
   base_route: adv_audit
 
-adv_audit.preset_collection:
-  route_name: entity.adv_audit_preset_entity.collection
-  title: 'Audit presets'
-  base_route: adv_audit
-
 entity.adv_audit.canonical:
   route_name: entity.adv_audit.canonical
   base_route: entity.adv_audit.canonical
@@ -59,3 +54,8 @@ entity.adv_audit_issue.delete_form:
   base_route:  entity.adv_audit_issue.canonical
   title: Delete
   weight: 10
+
+adv_audit.google:
+  route_name: adv_audit.google
+  title: 'Google Drive'
+  base_route: adv_audit
