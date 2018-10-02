@@ -7,7 +7,10 @@ use Drupal\adv_audit\Plugin\AuditPluginsManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Provides implementation for the Run form.
@@ -26,16 +29,24 @@ class RunForm extends FormBase {
   protected $renderer;
 
   /**
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * RunForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Use DI to work with congig.
    * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $manager
    *   Use DI to work with services.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Get messenger
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $manager, MessengerInterface $messenger) {
     $this->configCategories = $config_factory->get('adv_audit.settings');
     $this->auditTestManager = $manager;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -44,7 +55,8 @@ class RunForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.adv_audit_check')
+      $container->get('plugin.manager.adv_audit_check'),
+      $container->get('messenger')
     );
   }
 
@@ -59,11 +71,17 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['count_enabled_plugins'] = [
+      '#type' => 'hidden',
+      'value' => 0,
+    ];
+
     $form['process_list'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Enabled plugins:'),
       'list' => ['#markup' => $this->buildProcessItems()],
     ];
+
 
     $form['submit'] = [
       '#type' => 'submit',
@@ -104,10 +122,7 @@ class RunForm extends FormBase {
     return render($render_array);
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
     $categories = $this->configCategories->get('categories');
     // Run AuditChecks implemented via plugins.
     $all_audit_plugins = $this->auditTestManager->getDefinitions();
@@ -128,6 +143,21 @@ class RunForm extends FormBase {
       $audit_plugins_to_run[$plugin_id] = $plugin;
     }
 
+    if (!empty($audit_plugins_to_run)) {
+      $form_state->setValue('plugins_to_run', $audit_plugins_to_run);
+    }
+    else {
+      $this->messenger->addMessage(t("No one plugin is enabled to check!"), 'error');
+      $redirect = new RedirectResponse(Url::fromRoute('adv_audit.run')->setAbsolute()->toString());
+      $redirect->send();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+
     $batch = [
       'title' => $this->t('Running process audit'),
       'init_message' => $this->t('Prepare to process.'),
@@ -136,7 +166,7 @@ class RunForm extends FormBase {
       'operations' => [
         [
           [AuditRunBatch::class, 'run'],
-          [array_keys($audit_plugins_to_run), []],
+          [array_keys($form_state->getValue('plugins_to_run')), []],
         ],
       ],
       'finished' => [
