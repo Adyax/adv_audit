@@ -29,6 +29,8 @@ class RunForm extends FormBase {
   protected $renderer;
 
   /**
+   * Messenger service.
+   *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
@@ -41,7 +43,7 @@ class RunForm extends FormBase {
    * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $manager
    *   Use DI to work with services.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Get messenger
+   *   Get messenger.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $manager, MessengerInterface $messenger) {
     $this->configCategories = $config_factory->get('adv_audit.settings');
@@ -77,7 +79,6 @@ class RunForm extends FormBase {
       '#title' => $this->t('Enabled plugins:'),
       'list' => ['#markup' => $this->buildProcessItems()],
     ];
-
 
     $form['submit'] = [
       '#type' => 'submit',
@@ -118,6 +119,9 @@ class RunForm extends FormBase {
     return render($render_array);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $categories = $this->configCategories->get('categories');
     // Run AuditChecks implemented via plugins.
