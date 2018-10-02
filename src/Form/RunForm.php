@@ -71,10 +71,6 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['count_enabled_plugins'] = [
-      '#type' => 'hidden',
-      'value' => 0,
-    ];
 
     $form['process_list'] = [
       '#type' => 'fieldset',
