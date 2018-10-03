@@ -24,3 +24,10 @@ adv_audit.admin.structure.settings:
   route_name: adv_audit.list
   parent: adv_audit
   weight: 97
+
+adv_audit.admin.structure.google_drive:
+  title: 'Google Drive'
+  description: 'Save report to Google Drive'
+  route_name: adv_audit.google
+  parent: adv_audit
+  weight: 98
