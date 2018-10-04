@@ -82,6 +82,10 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     }
 
     $total = $this->getRowCount();
+    if (!$total) {
+      return $this->success();
+    }
+
     $message[] = $total->render();
     if ($total) {
       if ($not_found = $this->getNotFoundCount()) {
