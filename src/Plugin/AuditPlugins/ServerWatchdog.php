@@ -87,15 +87,14 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     }
 
     $message[] = $total->render();
-    if ($total) {
-      $message[] = $total->render();
-      if ($not_found = $this->getNotFoundCount()) {
-        $issues['page_not_found'] = $not_found;
-      }
-      $message[] = $this->getAge()->render();
-      if ($php = $this->getCountPhpErrors()) {
-        $issues['php'] = $php;
-      }
+    $message[] = $this->getAge()->render();
+
+    if ($not_found = $this->getNotFoundCount()) {
+      $issues['page_not_found'] = $not_found;
+    }
+
+    if ($php = $this->getCountPhpErrors()) {
+      $issues['php'] = $php;
     }
 
     if (!empty($issues)) {
