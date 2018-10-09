@@ -91,12 +91,12 @@ class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements Contai
   protected function scanFolder($path) {
 
     $this->issues[$path . 'no_contrib'] = [
-      '@issue_title' => 'Folder contrib does not exist in @path',
+      '@issue_title' => 'Folder contrib does not exist in @path.',
       '@path' => $path,
     ];
 
     $this->issues[$path . 'no_custom'] = [
-      '@issue_title' => 'Folder custom does not exist in @path',
+      '@issue_title' => 'Folder custom does not exist in @path.',
       '@path' => $path,
     ];
 
@@ -134,10 +134,9 @@ class ArchitectureFilesStructurePlugin extends AuditBasePlugin implements Contai
     $internal_dirs = scandir(DRUPAL_ROOT . '/' . $path . '/' . $dir);
     $needle = '.info.yml';
     foreach ($internal_dirs as $item) {
-
       if (strpos($item, $needle)) {
         $this->issues[$path . $dir] = [
-          '@issue_title' => 'Wrong structure in folder @path (@dir_name)',
+          '@issue_title' => 'Wrong structure in folder @path (@dir_name).',
           '@path' => $path,
           '@dir_name' => $dir,
         ];

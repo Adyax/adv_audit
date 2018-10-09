@@ -205,7 +205,7 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
     $issues = [];
     foreach ($params as $failed_url) {
       $issues[$failed_url] = [
-        '@issue_title' => 'Url "@url" should not be available for anonymous user',
+        '@issue_title' => 'Url "@url" should not be available for anonymous user.',
         '@url' => $failed_url,
       ];
     }

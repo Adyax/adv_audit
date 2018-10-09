@@ -55,7 +55,7 @@ class ServerHelpFilesPlugin extends AuditBasePlugin implements PluginFormInterfa
       $issues = [];
       foreach ($remaining_files as $remaining_file) {
         $issues[] = [
-          '@issue_title' => 'File on server: @file',
+          '@issue_title' => 'File on server: @file.',
           '@file' => $remaining_file,
         ];
       }

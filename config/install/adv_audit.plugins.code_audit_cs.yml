@@ -8,8 +8,8 @@ settings:
   enabled: 1
 messages:
   description: "<p>Checking Drupal code quality by CodeSniffer.</p>\r\n"
-  actions: "<p>Fix all issues from generated files to improve code quality.</p>\r\n"
-  impacts: "<p>Code with issues can be harder to support.</p>\r\n"
-  fail: "<p>There are issues in code.</p>\r\n"
-  success: "<p>No issues found in code.</p>\r\n"
+  actions: "<p>Fix all problems from generated files to improve code quality.</p>\r\n"
+  impacts: "<p>Code with problems can be harder to support.</p>\r\n"
+  fail: "<p>There are problems in code.</p>\r\n"
+  success: "<p>No problems found in code.</p>\r\n"
 help: 'Checking Drupal code quality by CodeSniffer.'

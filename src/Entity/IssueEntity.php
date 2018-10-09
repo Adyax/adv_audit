@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit\Entity;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
@@ -407,22 +408,26 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * Load Issue by it's unique name.
    *
    * @param string $name
-   *   Unique issue name.
+   *   The unique name of Audit Issue.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The entity object, or NULL if there is no entity with the given name.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function loadByName($name) {
     $entities = \Drupal::entityTypeManager()->getStorage('adv_audit_issue')->loadByProperties(['name' => $name]);
-    return empty($entities) ? NULL : reset($entities);
+    return ($entities) ? reset($entities) : NULL;
   }
 
   /**
-   * Get printable Issue for report.
+   * Get printable Audit Issue for report.
    */
   public function __toString() {
     return (string) $this->getMarkup();
   }
 
   /**
-   * Get printable Issue for report as FormattableMarkup.
+   * Get printable Audit Issue for report as FormattableMarkup.
    */
   public function getMarkup() {
     return new FormattableMarkup($this->getTitle(), $this->getDetails());

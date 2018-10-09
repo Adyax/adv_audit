@@ -29,12 +29,7 @@ class ContribDatabaseUpdateRequired extends AuditBasePlugin implements Container
   /**
    * Constructs Database Update Required Check.
    */
-  public function __construct(
-    $configuration,
-    $plugin_id,
-    $plugin_definition,
-    SystemManager $system_manager
-  ) {
+  public function __construct($configuration, $plugin_id, $plugin_definition, SystemManager $system_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->systemManager = $system_manager;
   }

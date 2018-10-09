@@ -91,7 +91,7 @@ class PerformanceDatabaseUsagePlugin extends AuditBasePlugin implements Containe
           if ($table->data_length > $max_length) {
             // Prepare argument to render.
             $arguments['issues'][$table->relname] = [
-              '@issue_title' => '@table_name (@table_size Mb)',
+              '@issue_title' => '@table_name (@table_size Mb).',
               '@table_name' => $table->relname,
               '@table_size' => round($table->data_length / 1024 / 1024, 2),
             ];

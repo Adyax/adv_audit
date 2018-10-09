@@ -5,8 +5,8 @@ settings:
   modules: "google_analytics\r\nmetatag\r\npathauto\r\nxmlsitemap"
 messages:
   description: "<p>Checks Seo recommedations: contrib modules and robots.txt.</p>\r\n"
-  actions: "<p>Fix listed issues.</p>\r\n"
-  impacts: "<p>These issues can decrease search engine rates of the site.</p>\r\n"
-  fail: "<p>There are number of issues.</p>\r\n"
+  actions: "<p>Fix listed problems.</p>\r\n"
+  impacts: "<p>These problems can decrease search engine rates of the site.</p>\r\n"
+  fail: "<p>There are number of problems.</p>\r\n"
   success: "<p>SEO recommedations fullfilled.</p>\r\n"
 help: 'Check SEO recommendations.'

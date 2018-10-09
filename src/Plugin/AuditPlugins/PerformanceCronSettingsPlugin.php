@@ -125,7 +125,7 @@ class PerformanceCronSettingsPlugin extends AuditBasePlugin implements AuditPlug
       return $this->fail(NULL, [
         'issues' => [
           'cron_settings' => [
-            '@issue_title' => 'There are problems with cron launch. Last run @time ago',
+            '@issue_title' => 'There are problems with cron launch. Last run @time ago.',
             '@time' => $last_cron_launch,
           ],
         ],

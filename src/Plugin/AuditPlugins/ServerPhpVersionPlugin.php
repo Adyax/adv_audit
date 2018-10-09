@@ -26,7 +26,7 @@ class ServerPhpVersionPlugin extends AuditBasePlugin {
       return $this->fail(NULL, [
         'issues' => [
           'php_version_check' => [
-            '@issue_title' => 'Current version is @current_v. Recommended version is @recommended_v',
+            '@issue_title' => 'Current version is @current_v. Recommended version is @recommended_v.',
             '@current_v' => $phpversion,
             '@recommended_v' => DRUPAL_RECOMMENDED_PHP,
           ],

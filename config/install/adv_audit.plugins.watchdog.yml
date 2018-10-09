@@ -5,8 +5,8 @@ messages:
    <li>Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.</li>
    </ul></p>\r\n"
   impacts: "<p>Every time Drupal logs a PHP notice, warning or error, PHP executes slower and the writing operation locks the database. By eliminating the problems, your site will be faster.</p>\r\n"
-  fail: "<p>There are some issues which should be checked.</p>\n@message\r\n"
-  success: "<p>There are no issues.</p>\r\n"
+  fail: "<p>There are some problems which should be checked.</p>\n@message\r\n"
+  success: "<p>There are no problems.</p>\r\n"
 settings:
   enabled: 1
   severity: normal

@@ -88,6 +88,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
 
     $message[] = $total->render();
     if ($total) {
+      $message[] = $total->render();
       if ($not_found = $this->getNotFoundCount()) {
         $issues['page_not_found'] = $not_found;
       }
@@ -227,7 +228,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     $php_percent = round(($php_total_count / $count_rows) * 100, 2);
 
     return [
-      '@issue_title' => 'PHP messages: @messages - total @percent %',
+      '@issue_title' => 'PHP messages: @messages - total @percent %.',
       '@messages' => implode(', ', $php_messages),
       '@percent' => $php_percent,
     ];
