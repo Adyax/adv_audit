@@ -217,6 +217,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
       $count_messages = $this->database->select('watchdog', 'w')
         ->fields('w')
         ->condition('w.severity', $key)
+        ->condition('w.type', 'php')
         ->countQuery()
         ->execute()
         ->fetchField();
