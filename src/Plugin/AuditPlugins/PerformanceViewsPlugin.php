@@ -172,7 +172,7 @@ class PerformanceViewsPlugin extends AuditBasePlugin implements ContainerFactory
       $settings_minimum = isset($settings_minimum['minimum_cache_lifetime']) ? $settings_minimum['minimum_cache_lifetime'] : static::ALLOWED_LIFETIME;
       if ($minimum < $settings_minimum) {
         $this->withoutCache[$view->id() . '.' . $display_name] = [
-          '@issue_title' => 'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed',
+          '@issue_title' => 'Display @display_name of view @view_id cache minimum lifetime is less then allowed @allowed.',
           '@view_id' => $view->id(),
           '@display_name' => $display_name,
         ];

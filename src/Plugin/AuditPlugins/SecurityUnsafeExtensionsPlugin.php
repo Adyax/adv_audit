@@ -47,7 +47,7 @@ class SecurityUnsafeExtensionsPlugin extends AuditBasePlugin implements PluginFo
         $entity = FieldConfig::load($field);
         foreach ($exts as $ext) {
           $issues[] = [
-            '@issue_title' => 'Unsafe file extension "@ext" is allowed in field @field on @bundle',
+            '@issue_title' => 'Unsafe file extension "@ext" is allowed in field @field on @bundle.',
             '@ext' => $ext,
             '@field' => $entity->label(),
             '@bundle' => $entity->getTargetBundle(),

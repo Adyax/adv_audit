@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit;
 
 use Drupal\adv_audit\Entity\IssueEntity;
+use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Class AuditReason.
@@ -216,7 +217,15 @@ class AuditReason {
     // Create/Load issues.
     $this->issues = [];
     foreach ($details['issues'] as $issue_name => $details) {
-      $issue_title = empty($details['@issue_title']) ? $issue_name : $details['@issue_title'];
+      if (!empty($details['@issue_title'])) {
+        $title = $details['@issue_title'];
+        unset($details['@issue_title']);
+        $issue_title = new FormattableMarkup($title, $details);
+      }
+      else {
+        $issue_title = $issue_name;
+      }
+
       $issue = IssueEntity::create([
         'name' => $this->getPluginId() . '.' . $issue_name,
         'title' => $issue_title,

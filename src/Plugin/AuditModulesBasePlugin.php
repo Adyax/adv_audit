@@ -87,7 +87,7 @@ abstract class AuditModulesBasePlugin extends AuditBasePlugin {
       $issues = [];
       foreach ($this->updates as $item) {
         $issues[] = [
-          '@issue_title' => "Module's \"@label\" current version is @current_v. Recommended: @recommended_v",
+          '@issue_title' => "Module's \"@label\" current version is @current_v. Recommended: @recommended_v.",
           '@label' => is_string($item['label']) ? $item['label'] : $item['label']->getText(),
           '@current_v' => $item['current_v'],
           '@recommended_v' => $item['recommended_v'],

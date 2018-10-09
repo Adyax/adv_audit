@@ -88,7 +88,7 @@ class ContribConfigurationManager extends AuditBasePlugin implements ContainerFa
     return $this->fail(NULL, [
       'issues' => [
         'configuration_manager_status' => [
-          '@issue_title' => 'Configuration is overridden',
+          '@issue_title' => 'Configuration is overridden.',
         ],
       ],
       '%link' => Link::createFromRoute($this->t('configuration synchronization'), 'config.sync')

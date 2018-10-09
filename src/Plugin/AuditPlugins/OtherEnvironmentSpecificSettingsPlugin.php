@@ -64,7 +64,7 @@ class OtherEnvironmentSpecificSettingsPlugin extends AuditBasePlugin {
       foreach ($this->envs as $env_dir) {
         if (!in_array($env_dir, $env_dirs)) {
           $this->issues[$env_dir . '_no_folder'] = [
-            '@issue_title' => 'Folder "@env_dir" does not exist',
+            '@issue_title' => 'Folder "@env_dir" does not exist.',
             '@env_dir' => $env_dir,
           ];
         }
@@ -75,7 +75,7 @@ class OtherEnvironmentSpecificSettingsPlugin extends AuditBasePlugin {
     }
     else {
       $this->issues['no_env_folder'] = [
-        '@issue_title' => 'Folder "environments" does not exist',
+        '@issue_title' => 'Folder "environments" does not exist.',
       ];
     }
 
@@ -89,7 +89,7 @@ class OtherEnvironmentSpecificSettingsPlugin extends AuditBasePlugin {
   public function scanEnvSettings($dir) {
     if (!is_file($this->envFolder . $dir . '/settings.php')) {
       $this->issues[$dir . '_no_settings'] = [
-        '@issue_title' => 'File "settings.php" does not exists in folder "@dir"',
+        '@issue_title' => 'File "settings.php" does not exists in folder "@dir".',
         '@dir' => $dir,
       ];
     }

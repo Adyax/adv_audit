@@ -89,7 +89,7 @@ class ContribDrupalCorePlugin extends AuditBasePlugin implements ContainerFactor
     // Set process status 'fail' if current version is not recommended.
     $projects_data = $this->updateManager->projectStorage('update_project_data');
     $current_version = $projects_data[static::PROJECT_NAME]['existing_version'];
-    $recommended_version = $projects_data[static::PROJECT_NAME]['recommended'];
+    $recommended_version = $projects_data[static::PROJECT_NAME]['info']['version'];
 
     $params = [
       '@version' => $current_version,
@@ -99,7 +99,7 @@ class ContribDrupalCorePlugin extends AuditBasePlugin implements ContainerFactor
 
     if ($current_version !== $recommended_version) {
       $issues['drupal_core'] = [
-        '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version',
+        '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version.',
         '@version' => $params['@version'],
         '@recommended_version' => $params['@recommended_version'],
       ];

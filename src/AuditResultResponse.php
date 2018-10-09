@@ -27,6 +27,14 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   protected $overviewInfo;
 
   /**
+   * Empty array needed for core theme preprocess.
+   * @TODO: find way to remove it.
+   *
+   * @var array
+   */
+  public $_attributes = [];
+
+  /**
    * AuditResultResponse constructor.
    */
   public function __construct() {
@@ -80,7 +88,6 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @deprecated Use ::addReason method.
    */
   public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_SKIP) {
-
     $this->results->add(new AuditReason($test->id(), $status));
   }
 

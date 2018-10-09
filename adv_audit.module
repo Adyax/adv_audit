@@ -77,7 +77,7 @@ function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, $varia
 }
 
 /**
- * Prepares variables for templates.
+ * Prepares variables for audit templates.
  *
  * Default template: adv_audit.html.twig.
  *
@@ -86,7 +86,7 @@ function adv_audit_theme_suggestions_adv_audit_alter(array &$suggestions, $varia
  *   - elements: An associative array containing the user information and any
  *   - attributes: HTML attributes for the containing element.
  */
-function adv_audit_preprocess_adv_audit(array &$variables) {
+function template_preprocess_adv_audit(array &$variables) {
   // Helpful $content variable for templates.
   $variables += ['content' => []];
   foreach (Element::children($variables['elements']) as $key) {
@@ -106,27 +106,66 @@ function adv_audit_preprocess_adv_audit(array &$variables) {
       'operations' => t('Operations'),
     ],
   ];
-  $adv_storage = \Drupal::service('entity_type.manager')
-    ->getStorage('adv_audit');
-  $vids = $adv_storage->revisionIds($entity);
-  foreach ($vids as $rev_id) {
-    if ($rev_id == $entity->id()) {
+  $storage = \Drupal::service('entity_type.manager')->getStorage('adv_audit');
+  $ids = $storage->revisionIds($entity);
+
+  // Prepare data for score history table.
+  foreach ($ids as $id) {
+    if ($id == $entity->id()) {
       continue;
     }
-    /** @var \Drupal\Core\Entity\EntityInterface $rev_entity */
-    $rev_entity = $adv_storage->loadRevision($rev_id);
-    $result = $rev_entity->get('audit_results')->first()->getValue();
-    $variables['content']['score_history'][$rev_id]['id'] = ['#markup' => $rev_id];
-    $variables['content']['score_history'][$rev_id]['score'] = ['#markup' => $result->calculateScore()];
-    $variables['content']['score_history'][$rev_id]['date'] = ['#markup' => DrupalDateTime::createFromTimestamp($rev_entity->getRevisionCreationTime())];
-    $variables['content']['score_history'][$rev_id]['operations'] = Link::createFromRoute('View', 'entity.adv_audit.revision', ['adv_audit' => $entity->id(), 'adv_audit_revision' => $rev_id])->toRenderable();
+    /** @var \Drupal\Core\Entity\EntityInterface $revision */
+    $revision = $storage->loadRevision($id);
+    $result = $revision->get('audit_results')->first()->getValue();
+    $variables['content']['score_history'][$id] = [
+      'id' => [
+        '#markup' => $id,
+      ],
+      'score' => [
+        '#markup' => $result->calculateScore(),
+      ],
+      'date' => [
+        '#markup' => DrupalDateTime::createFromTimestamp($revision->getRevisionCreationTime()),
+      ],
+      'operations' => [
+        Link::createFromRoute('View', 'entity.adv_audit.revision', [
+          'adv_audit' => $entity->id(),
+          'adv_audit_revision' => $id
+        ])->toRenderable(),
+      ],
+    ];
   }
 }
 
 /**
- * Prepares variables for templates.
+ * Prepares variables for audit issue templates.
+ *
+ * Default template: adv_audit_issue.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
  */
-function adv_audit_preprocess_adv_audit_report(&$variables) {
+function template_preprocess_adv_audit_issue(array &$variables) {
+  // Helpful $content variable for templates.
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Prepares variables for audit report templates.
+ *
+ * Default template: adv_audit_report.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
+ *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
+ */
+function template_preprocess_adv_audit_report(array &$variables) {
   /** @var \Drupal\adv_audit\Renderer\AuditReportRenderer $render */
   $render = \Drupal::service('adv_audit.renderer');
   $view_mode = $variables['view_mode'];
@@ -174,6 +213,7 @@ function adv_audit_adv_audit_check_info_alter(array &$definitions) {
  * Implements hook_config_ignore_settings_alter().
  */
 function adv_audit_config_ignore_settings_alter(array &$settings) {
+  // Add to config ignore all configs provided by module.
   $settings[] = 'adv_audit.*';
 }
 

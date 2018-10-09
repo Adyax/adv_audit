@@ -29,7 +29,7 @@ class ContribPatchedCorePlugin extends ContribPatchedModulesPlugin {
     foreach ($hacked as $project) {
       if ($project['counts']['different'] != 0 && $project['project_type'] == 'core') {
         $issues['hacked_core'] = [
-          '@issue_title' => '@title was hacked (@count changes)',
+          '@issue_title' => '@title was hacked (@count changes).',
           '@title' => $project['title'],
           '@count' => $project['counts']['different'],
         ];

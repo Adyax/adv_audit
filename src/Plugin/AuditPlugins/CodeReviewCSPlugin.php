@@ -153,7 +153,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $drupal_link = Link::fromTextAndUrl($this->t('Drupal'), URL::fromUri($url))
         ->toString();
       $result['issues']['drupal_standard'] = [
-        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link @link',
+        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link @link.',
         '@link' => $drupal_link,
       ];
     }
@@ -172,7 +172,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $drupal_practice_link = Link::fromTextAndUrl($this->t('DrupalPractice'), URL::fromUri($url))
         ->toString();
       $result['issues']['drupal_best_practice'] = [
-        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by @link',
+        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by @link.',
         '@link' => $drupal_practice_link,
       ];
     }
