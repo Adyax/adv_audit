@@ -7,6 +7,7 @@ use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\adv_audit\Message\AuditMessageCapture;
 use Drupal\adv_audit\Message\AuditMessagesStorageInterface;
 use Drupal\adv_audit\Plugin\AuditPluginsManager;
+use Drupal\adv_audit\Service\AuditPluginConfigStorageServiceInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\adv_audit\Renderer\AuditReasonRenderableInterface;
@@ -58,6 +59,11 @@ class AuditPluginSettings extends FormBase {
   protected $pluginInstance;
 
   /**
+   * @var \Drupal\adv_audit\Service\AuditPluginConfigStorageServiceInterface
+   */
+  protected $configStorage;
+
+  /**
    * AuditPluginSettings constructor.
    *
    * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $manager
@@ -66,12 +72,15 @@ class AuditPluginSettings extends FormBase {
    *   Custom storage for messages.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack that controls the lifecycle of requests.
+   * @param \Drupal\adv_audit\Service\AuditPluginConfigStorageServiceInterface $storage_config
+   *   Plugin Config Storage.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function __construct(AuditPluginsManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack) {
+  public function __construct(AuditPluginsManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack,  AuditPluginConfigStorageServiceInterface $storage_config) {
     $this->advAuditPluginManager = $manager;
     $this->messageStorage = $storage_message;
+    $this->configStorage = $storage_config;
     $this->currentRequest = $request_stack->getCurrentRequest();
     $this->pluginId = $request_stack->getCurrentRequest()->attributes->get('plugin_id');
     $this->pluginInstance = $this->advAuditPluginManager->createInstance($this->pluginId);
@@ -84,7 +93,8 @@ class AuditPluginSettings extends FormBase {
     return new static(
       $container->get('plugin.manager.adv_audit_check'),
       $container->get('adv_audit.messages'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('adv_audit.plugin.config')
     );
   }
 
@@ -220,6 +230,7 @@ class AuditPluginSettings extends FormBase {
       $message = $message['value'];
     }
     $this->messageStorage->set($this->pluginId, $values['messages']);
+    $this->configStorage->set(null, $values['settings']);
 
     // Call subforms actions..
     if ($this->pluginInstance instanceof PluginFormInterface) {

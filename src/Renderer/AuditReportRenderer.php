@@ -24,35 +24,35 @@ class AuditReportRenderer implements RenderableInterface {
   use StringTranslationTrait;
 
   /**
-   * Drupal\Core\Render\RendererInterface definition.
+   * The renderer service
    *
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
   /**
-   * Drupal\adv_audit\Plugin\AuditPluginsManager definition.
+   * The Audit Plugin manager service.
    *
    * @var \Drupal\adv_audit\Plugin\AuditPluginsManager
    */
   protected $pluginManagerAdvAuditCheck;
 
   /**
-   * Drupal\adv_audit\Message\AuditMessagesStorageInterface definition.
+   * The Audit Message Storage.
    *
    * @var \Drupal\adv_audit\Message\AuditMessagesStorageInterface
    */
   protected $advAuditMessages;
 
   /**
-   * Drupal\Core\Config\ConfigFactoryInterface definition.
+   * The config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
-   * Drupal\adv_audit\AuditResultResponse.
+   * The Audit Result Response storage
    *
    * @var \Drupal\adv_audit\AuditResultResponse
    */
@@ -88,6 +88,17 @@ class AuditReportRenderer implements RenderableInterface {
 
   /**
    * Constructs a new Renderer object.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   Drupal render service.
+   * @param \Drupal\adv_audit\Plugin\AuditPluginsManager $plugin_manager_adv_audit_check
+   *   Drupal render service.
+   * @param \Drupal\adv_audit\Message\AuditMessagesStorageInterface $adv_audit_messages
+   *   Drupal render service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Drupal render service.
+   * @param \Drupal\adv_audit\Service\AuditCategoryManagerService $category_manager
+   *   The Audit Category manager service.
    */
   public function __construct(RendererInterface $renderer, AuditPluginsManager $plugin_manager_adv_audit_check, AuditMessagesStorageInterface $adv_audit_messages, ConfigFactoryInterface $config_factory, AuditCategoryManagerService $category_manager) {
     $this->renderer = $renderer;
@@ -102,6 +113,10 @@ class AuditReportRenderer implements RenderableInterface {
    *
    * @param \Drupal\adv_audit\AuditResultResponseInterface $audit_result
    *   The result audit object.
+   * @param string $view_mode
+   *   The current entity view mode.
+   * @param string $adv_audit_id
+   *   The current entity id.
    *
    * @return $this
    *   Return itself for chaining.
@@ -140,6 +155,7 @@ class AuditReportRenderer implements RenderableInterface {
    *
    * @return array
    *   List of properties to render.
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function doBuildCategory() {
     $build = [];
@@ -217,6 +233,7 @@ class AuditReportRenderer implements RenderableInterface {
    *
    * @return int
    *   The score value.
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function calculateScoreByCategory($category_id) {
     // Init default value for passed audit checks.
@@ -229,20 +246,19 @@ class AuditReportRenderer implements RenderableInterface {
     /** @var \Drupal\adv_audit\AuditReason $audit_reason */
     foreach ($this->auditResultResponse->getAuditResults() as $audit_reason) {
       // Init plugin instance.
-      /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_insatnce */
-      $plugin_insatnce = $this->pluginManagerAdvAuditCheck->createInstance($audit_reason->getPluginId());
-      if ($plugin_insatnce->getCategoryName() == $category_id) {
+      /** @var \Drupal\adv_audit\Plugin\AuditBasePlugin $plugin_instance */
+      $plugin_instance = $this->pluginManagerAdvAuditCheck->createInstance($audit_reason->getPluginId());
+      if ($plugin_instance->getCategoryName() == $category_id) {
+        $plugins_list[] = $plugin_instance->id();
         // Increase a total checks counter.
         if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
           // Skip.
           continue;
         }
-
         $total_count++;
         if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_PASS) {
           $passed++;
         }
-
         if ($audit_reason->getStatus() == AuditResultResponseInterface::RESULT_FAIL) {
           // Check active issues.
           $open_issues = $audit_reason->getOpenIssues();
@@ -250,8 +266,6 @@ class AuditReportRenderer implements RenderableInterface {
             $passed++;
           }
         }
-
-        $plugins_list[] = $plugin_insatnce->id();
       }
     }
     // Store meta information in variable for use.
@@ -271,10 +285,11 @@ class AuditReportRenderer implements RenderableInterface {
    * Build audit reason.
    *
    * @param \Drupal\adv_audit\AuditReason $audit_reason
-   *   The adit reson object.
+   *   The Audit Reason object.
    *
    * @return array
    *   The list or rendereable properties.
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function doBuildAuditReason(AuditReason $audit_reason) {
     $build = [];
@@ -330,10 +345,10 @@ class AuditReportRenderer implements RenderableInterface {
    * @param \Drupal\adv_audit\AuditReason $audit_reason
    *   The Audit reason object.
    * @param string $msg_type
-   *   The type of builded message.
+   *   The type of built message.
    *
    * @return array
-   *   The builded message.
+   *   The built message.
    *
    * @throws \Exception
    */
@@ -363,10 +378,10 @@ class AuditReportRenderer implements RenderableInterface {
    * @param \Drupal\adv_audit\AuditReason $audit_reason
    *   The Audit reason object.
    * @param string $msg_type
-   *   The type of builded message.
+   *   The type of built message.
    *
    * @return array
-   *   The builded message.
+   *   The built message.
    *
    * @throws \Exception
    */
@@ -395,7 +410,7 @@ class AuditReportRenderer implements RenderableInterface {
       else {
         $ignored_rows[] = [
           $issue->getMarkup(),
-          Link::fromTextAndUrl('Ignore', $url),
+          Link::fromTextAndUrl('Reopen', $url),
         ];
       }
     }

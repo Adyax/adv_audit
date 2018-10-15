@@ -108,7 +108,7 @@ class PerformanceImageAPIPlugin extends AuditBasePlugin implements ContainerFact
       // Check if image_style's pipeline exist.
       if (!isset($pipelines[$pipeline])) {
         $arguments['issues'][$style->get('label')] = [
-          '@issue_title' => 'Image optimize isn\'t configured for @style_name image style',
+          '@issue_title' => 'Image optimize isn\'t configured for @style_name image style.',
           '@style_name' => $style->get('label'),
         ];
       }

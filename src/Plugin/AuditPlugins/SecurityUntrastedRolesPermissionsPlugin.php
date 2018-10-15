@@ -86,7 +86,7 @@ class SecurityUntrastedRolesPermissionsPlugin extends AuditBasePlugin implements
       foreach ($intersect as $permission) {
         if (isset($all_permissions[$permission]['restrict access'])) {
           $arguments['issues'][$rid . ' ' . $permissions] = [
-            '@issue_title' => '@role has permission "@permission"',
+            '@issue_title' => '@role has permission "@permission".',
             '@role' => $rid,
             '@permission' => $permission,
           ];

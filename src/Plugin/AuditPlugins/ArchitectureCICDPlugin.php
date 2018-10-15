@@ -29,7 +29,7 @@ class ArchitectureCICDPlugin extends AuditBasePlugin {
     return $this->fail(NULL, [
       'issues' => [
         'ci_cd_check' => [
-          '@issue_title' => 'There is no GITlab CI/CD on the project',
+          '@issue_title' => 'There is no GITlab CI/CD on the project.',
         ],
       ],
     ]);

@@ -34,7 +34,7 @@ class AuditCategoryManagerService {
   protected $categoryDefinitions;
 
   /**
-   * Constructs a new AduitCategoryManagerService object.
+   * Constructs a new AuditCategoryManagerService object.
    */
   public function __construct(ConfigFactoryInterface $config_factory, AuditPluginsManager $plugin_manager_adv_audit_check) {
     $this->configFactory = $config_factory;

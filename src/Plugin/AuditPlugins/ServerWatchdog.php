@@ -82,15 +82,19 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     }
 
     $total = $this->getRowCount();
+    if (!$total) {
+      return $this->success();
+    }
+
     $message[] = $total->render();
-    if ($total) {
-      if ($not_found = $this->getNotFoundCount()) {
-        $issues['page_not_found'] = $not_found;
-      }
-      $message[] = $this->getAge()->render();
-      if ($php = $this->getCountPhpErrors()) {
-        $issues['php'] = $php;
-      }
+    $message[] = $this->getAge()->render();
+
+    if ($not_found = $this->getNotFoundCount()) {
+      $issues['page_not_found'] = $not_found;
+    }
+
+    if ($php = $this->getCountPhpErrors()) {
+      $issues['php'] = $php;
     }
 
     if (!empty($issues)) {
@@ -212,6 +216,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
       $count_messages = $this->database->select('watchdog', 'w')
         ->fields('w')
         ->condition('w.severity', $key)
+        ->condition('w.type', 'php')
         ->countQuery()
         ->execute()
         ->fetchField();
@@ -223,7 +228,7 @@ class ServerWatchdog extends AuditBasePlugin implements ContainerFactoryPluginIn
     $php_percent = round(($php_total_count / $count_rows) * 100, 2);
 
     return [
-      '@issue_title' => 'PHP messages: @messages - total @percent %',
+      '@issue_title' => 'PHP messages: @messages - total @percent %.',
       '@messages' => implode(', ', $php_messages),
       '@percent' => $php_percent,
     ];

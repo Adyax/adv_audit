@@ -8,7 +8,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
 use Drupal\adv_audit\Entity\AuditEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Render\Renderer;
 
 /**
@@ -21,7 +21,7 @@ class AuditEntityController extends ControllerBase implements ContainerInjection
   /**
    * The date formatter.
    *
-   * @var \Drupal\Core\Datetime\DateFormatter
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $formatDate;
 
@@ -34,9 +34,14 @@ class AuditEntityController extends ControllerBase implements ContainerInjection
 
   /**
    * Constructs an AuditEntityController object for use DI.
+   *
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The date formatter service.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   Drupal render service.
    */
-  public function __construct(DateFormatter $formatDate, Renderer $renderer) {
-    $this->formatDate = $formatDate;
+  public function __construct(DateFormatterInterface $date_formatter, Renderer $renderer) {
+    $this->formatDate = $date_formatter;
     $this->renderer = $renderer;
   }
 

@@ -114,7 +114,7 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     if (!empty($this->notFullyIndexed)) {
       foreach ($this->notFullyIndexed as $not_fully_indexed) {
         $issues[] = [
-          '@issue_title' => 'Not fully indexed: @not_indexed',
+          '@issue_title' => 'Not fully indexed: @not_indexed.',
           '@not_indexed' => $not_fully_indexed,
         ];
       }
@@ -123,7 +123,7 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     if (!empty($this->unavailableServers)) {
       foreach ($this->unavailableServers as $unavailable_server) {
         $issues[] = [
-          '@issue_title' => 'Unavailable server: @unavailable_server',
+          '@issue_title' => 'Unavailable server: @unavailable_server.',
           '@unavailable_server' => $unavailable_server,
         ];
       }
@@ -132,7 +132,7 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     if (!empty($this->noIndexesServers)) {
       foreach ($this->noIndexesServers as $no_indexes_server) {
         $issues[] = [
-          '@issue_title' => 'No indexes server: @no_indexes_server',
+          '@issue_title' => 'No indexes server: @no_indexes_server.',
           '@no_indexes_server' => $no_indexes_server,
         ];
       }
@@ -141,7 +141,7 @@ class PerformanceSolrUsagePlugin extends AuditBasePlugin implements ContainerFac
     if (!empty($this->noActiveIndexesServers)) {
       foreach ($this->noActiveIndexesServers as $no_active_indexes_server) {
         $issues[] = [
-          '@issue_title' => 'No active indexes server: @no_active_indexes_server',
+          '@issue_title' => 'No active indexes server: @no_active_indexes_server.',
           '@no_active_indexes_server' => $no_active_indexes_server,
         ];
       }

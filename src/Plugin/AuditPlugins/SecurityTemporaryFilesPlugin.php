@@ -98,7 +98,7 @@ class SecurityTemporaryFilesPlugin extends AuditBasePlugin implements ContainerF
 
       foreach ($arguments['issues'] as $path) {
         $issues[] = [
-          '@issue_title' => 'Temporary file: @path',
+          '@issue_title' => 'Temporary file: @path.',
           '@path' => $path,
         ];
       }
