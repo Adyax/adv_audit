@@ -230,12 +230,13 @@ class AuditPluginSettings extends FormBase {
       $message = $message['value'];
     }
     $this->messageStorage->set($this->pluginId, $values['messages']);
-    $this->configStorage->set(null, $values['settings']);
 
     // Call subforms actions..
     if ($this->pluginInstance instanceof PluginFormInterface) {
       $subform_state = SubformState::createForSubform($form['settings'], $form, $form_state);
       $this->pluginInstance->submitConfigurationForm($form['settings'], $subform_state);
+    } else {
+      $this->configStorage->set(null, $values['settings']);
     }
 
   }
