@@ -59,6 +59,8 @@ class AuditPluginSettings extends FormBase {
   protected $pluginInstance;
 
   /**
+   * The config storage.
+   *
    * @var \Drupal\adv_audit\Service\AuditPluginConfigStorageServiceInterface
    */
   protected $configStorage;
@@ -77,7 +79,7 @@ class AuditPluginSettings extends FormBase {
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function __construct(AuditPluginsManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack,  AuditPluginConfigStorageServiceInterface $storage_config) {
+  public function __construct(AuditPluginsManager $manager, AuditMessagesStorageInterface $storage_message, RequestStack $request_stack, AuditPluginConfigStorageServiceInterface $storage_config) {
     $this->advAuditPluginManager = $manager;
     $this->messageStorage = $storage_message;
     $this->configStorage = $storage_config;
@@ -235,8 +237,9 @@ class AuditPluginSettings extends FormBase {
     if ($this->pluginInstance instanceof PluginFormInterface) {
       $subform_state = SubformState::createForSubform($form['settings'], $form, $form_state);
       $this->pluginInstance->submitConfigurationForm($form['settings'], $subform_state);
-    } else {
-      $this->configStorage->set(null, $values['settings']);
+    }
+    else {
+      $this->configStorage->set(NULL, $values['settings']);
     }
 
   }
