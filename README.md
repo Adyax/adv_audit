@@ -19,7 +19,7 @@ to the `repositories` block:
 ```
 {
      "type": "vcs",
-     "url": "git@code.adyax.com:Auditor/adv_audit.git"
+     "url": "git@github.com:Adyax/adv_audit.git"
  }
 ```
 the resulting block should looks like:
@@ -32,7 +32,7 @@ the resulting block should looks like:
         },
         {
             "type": "vcs",
-            "url": "git@code.adyax.com:Auditor/adv_audit.git"
+            "url": "git@github.com:Adyax/adv_audit.git"
         }
     ],
 ```
