@@ -88,27 +88,30 @@ class ContribDrupalCorePlugin extends AuditBasePlugin implements ContainerFactor
 
     // Set process status 'fail' if current version is not recommended.
     $projects_data = $this->updateManager->projectStorage('update_project_data');
-    $current_version = $projects_data[static::PROJECT_NAME]['existing_version'];
-    $recommended_version = $projects_data[static::PROJECT_NAME]['info']['version'];
 
-    $params = [
-      '@version' => $current_version,
-      '@recommended_version' => $recommended_version,
-      '%link' => Link::fromTextAndUrl($this->t('recommended releases'), Url::fromUri('https://www.drupal.org/project/drupal'))->toString(),
-    ];
+    if (isset($projects_data[static::PROJECT_NAME]['recommended'])) {
+      $current_version = $projects_data[static::PROJECT_NAME]['existing_version'];
+      $recommended_version = $projects_data[static::PROJECT_NAME]['recommended'];
 
-    if ($current_version !== $recommended_version) {
-      $issues['drupal_core'] = [
-        '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version.',
-        '@version' => $params['@version'],
-        '@recommended_version' => $params['@recommended_version'],
+      $params = [
+        '@version' => $current_version,
+        '@recommended_version' => $recommended_version,
+        '%link' => Link::fromTextAndUrl($this->t('recommended releases'), Url::fromUri('https://www.drupal.org/project/drupal'))->toString(),
       ];
-      return $this->fail(NULL, [
-        'issues' => $issues,
-        '@version' => $params['@version'],
-        '@recommended_version' => $params['@recommended_version'],
-        '%link' => $params['%link'],
-      ]);
+
+      if ($current_version !== $recommended_version) {
+        $issues['drupal_core'] = [
+          '@issue_title' => 'Core version is outdated. Current: @version. Recommended: @recommended_version.',
+          '@version' => $params['@version'],
+          '@recommended_version' => $params['@recommended_version'],
+        ];
+        return $this->fail(NULL, [
+          'issues' => $issues,
+          '@version' => $params['@version'],
+          '@recommended_version' => $params['@recommended_version'],
+          '%link' => $params['%link'],
+        ]);
+      }
     }
 
     return $this->success($params);
