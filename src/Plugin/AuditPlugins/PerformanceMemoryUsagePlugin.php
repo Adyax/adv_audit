@@ -126,7 +126,7 @@ class PerformanceMemoryUsagePlugin extends AuditBasePlugin implements ContainerF
     $urls = $this->parseLines($settings['urls']);
 
     $memory_treshold = $settings['mem'] / 100;
-    $total_memory = intval(ini_get('memory_limit'));
+    $total_memory = ini_get('memory_limit');
 
     if ($total_memory <= 0) {
       $reason = $this->t('Memory limit has value @value. Looks like server is not correctly configured.',
