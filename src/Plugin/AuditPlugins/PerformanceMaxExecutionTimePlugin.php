@@ -26,7 +26,7 @@ class PerformanceMaxExecutionTimePlugin extends AuditBasePlugin {
       return $this->fail(NULL, [
         'issues' => [
           'php_max_execution_time' => [
-            '@issue_title' => 'Max execution time is too high.',
+            '@issue_title' => 'Max execution time is too high (@time).',
             '@time' => $time,
           ],
         ],
