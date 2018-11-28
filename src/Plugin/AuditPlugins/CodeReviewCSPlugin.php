@@ -141,8 +141,9 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
     $filepath = $this->fileSystem->realpath($scheme) . '/' . $file_rel_path;
 
     $phpcs = $this->getCsDir();
+    $phpcs_standards = $this->getStandardsDir();
 
-    $phpcs_cmd = "php {$phpcs} --standard=Drupal --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
+    $phpcs_cmd = "php {$phpcs} --standard=Drupal --runtime-set installed_paths {$phpcs_standards} --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
     $this->fileSystem->chmod($filepath, 0744);
 
@@ -161,7 +162,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
     $file_rel_path = $output . '/' . md5('phpcs_DP_' . time()) . '.txt';
     $filepath = $this->fileSystem->realpath($scheme) . '/' . $file_rel_path;
 
-    $phpcs_cmd = "php {$phpcs} --standard=DrupalPractice --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
+    $phpcs_cmd = "php {$phpcs} --standard=DrupalPractice --runtime-set installed_paths {$phpcs_standards} --extensions={$exts} {$path} --ignore={$ignores} > {$filepath}";
     exec($phpcs_cmd);
     $this->fileSystem->chmod($filepath, 0744);
 
@@ -196,6 +197,12 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
         [$this->pluginDefinition['requirements']['module']]
       );
     }
+    if (!file_exists($this->getStandardsDir())) {
+      throw new RequirementsException(
+        $this->t('Coder drupal standards are not installed'),
+        [$this->pluginDefinition['requirements']['module']]
+      );
+    }
   }
 
   /**
@@ -209,6 +216,19 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
     $phpcs_path = $vendor_dir . '/squizlabs/php_codesniffer/scripts/phpcs';
 
     return $phpcs_path;
+  }
+
+  /**
+   * Returns path to coder drupal standards.
+   *
+   * @return string
+   *   Path to coder drupal standards.
+   */
+  private function getStandardsDir() {
+    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
+    $phpcs_standards_path = $vendor_dir . '/drupal/coder/coder_sniffer';
+
+    return $phpcs_standards_path;
   }
 
 }
