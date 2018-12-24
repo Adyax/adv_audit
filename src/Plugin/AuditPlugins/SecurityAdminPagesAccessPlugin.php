@@ -138,8 +138,7 @@ class SecurityAdminPagesAccessPlugin extends AuditBasePlugin implements Containe
       catch (\Exception $e) {
         $code = $e->getCode();
         if (!empty($code) && in_array($code, [401, 403, 404])) {
-          // It's good code.
-          $params['failed_urls'][] = $url;
+          // It's good code, no need to collect.
           continue;
         }
         if ($code > 500) {
