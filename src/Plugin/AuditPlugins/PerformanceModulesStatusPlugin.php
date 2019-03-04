@@ -28,6 +28,11 @@ class PerformanceModulesStatusPlugin extends AuditBasePlugin implements Containe
     'devel',
     'views_ui',
     'page_manager_ui',
+    'devel_generate',
+    'kint',
+    'rules_ui',
+    'panels_ui',
+    'coder',
   ];
 
   /**
