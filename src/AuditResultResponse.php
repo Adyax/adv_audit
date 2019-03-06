@@ -73,7 +73,12 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
       }
     }
 
-    $score = ($passed * 100) / $total_count;
+    if ($total_count > 0) {
+      $score = ($passed * 100) / $total_count;
+    }
+    else {
+      $score = 0;
+    }
     return intval($score);
   }
 
