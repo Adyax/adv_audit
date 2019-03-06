@@ -264,16 +264,17 @@ class AuditReason {
     return [
       'status' => $this->status,
       'testId' => $this->testId,
-      'reason' => $this->reason,
-      'arguments' => array_map(function ($value) {
-        try {
-          if (is_object($value)) {
-            $value = strval($value);
-          }
-          return $value;
-        } catch (RequestException $e) {
-
+      'reason' => array_map(function ($value) {
+        if (is_object($value)) {
+          $value = strval($value);
         }
+        return $value;
+      }, $this->reason),
+      'arguments' => array_map(function ($value) {
+        if (is_object($value)) {
+          $value = strval($value);
+        }
+        return $value;
       }, $this->arguments),
       'issues' => $this->issues,
     ];
