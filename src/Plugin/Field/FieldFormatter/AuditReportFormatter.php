@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Plugin\Field\FieldFormatter;
 
+use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponse;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -82,7 +83,24 @@ class AuditReportFormatter extends FormatterBase {
   protected function getResultObject(FieldItemInterface $item) {
     $value = $item->getValue();
     if (!($value instanceof AuditResultResponse)) {
-      return new AuditResultResponse();
+      /** @var AuditResultResponse $audit_result */
+      $audit_result = new AuditResultResponse();
+      if (!empty($value['results'])) {
+        foreach ($value['results'] as $result) {
+          $plugin_id = $result['testId'];
+          $status = $result['status'];
+          $reason = $result['reason'];
+          $arguments = $result['arguments'];
+          $issues = $result['issues'];
+          $reason = new AuditReason($plugin_id, $status, $reason, $arguments);
+          $reason->setIssues($issues);
+          $audit_result->addReason($reason, false);
+        }
+      }
+      if (!empty($value['overviewInfo'])) {
+        $audit_result->setOverviewInfo($value['overviewInfo']);
+      }
+      return $audit_result;
     }
 
     return $value;

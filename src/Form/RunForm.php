@@ -147,8 +147,10 @@ class RunForm extends FormBase {
       $form_state->setValue('plugins_to_run', $audit_plugins_to_run);
     }
     else {
-      $this->messenger->addMessage(t("No one plugin is enabled to check!"), 'error');
-      $redirect = new RedirectResponse(Url::fromRoute('adv_audit.run')->setAbsolute()->toString());
+      $this->messenger->addMessage($this->t("No one plugin is enabled to check!"), 'error');
+      $redirect = new RedirectResponse(Url::fromRoute('adv_audit.run')
+        ->setAbsolute()
+        ->toString());
       $redirect->send();
     }
   }
@@ -170,7 +172,8 @@ class RunForm extends FormBase {
         ],
       ],
       'finished' => [
-        AuditRunBatch::class, 'finished',
+        AuditRunBatch::class,
+        'finished',
       ],
     ];
     batch_set($batch);
@@ -192,8 +195,7 @@ class RunForm extends FormBase {
       if (!$plugin_instance->getStatus()) {
         return FALSE;
       }
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       // Nothing to do here.
       // Broken plugins are still considered to be enabled.
     }
