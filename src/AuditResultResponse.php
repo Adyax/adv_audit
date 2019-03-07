@@ -26,15 +26,6 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   protected $overviewInfo;
 
-  //  /**
-  //   * Empty array needed for core theme preprocess.
-  //   *
-  //   * @TODO: find way to remove it.
-  //   *
-  //   * @var array
-  //   */
-  //  public $_attributes = [];
-
   /**
    * AuditResultResponse constructor.
    */
