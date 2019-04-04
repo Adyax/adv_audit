@@ -147,7 +147,7 @@ class RunForm extends FormBase {
       $form_state->setValue('plugins_to_run', $audit_plugins_to_run);
     }
     else {
-      $this->messenger->addMessage($this->t("No one plugin is enabled to check!"), 'error');
+      $this->messenger->addMessage(t("No one plugin is enabled to check!"), 'error');
       $redirect = new RedirectResponse(Url::fromRoute('adv_audit.run')
         ->setAbsolute()
         ->toString());
@@ -159,6 +159,7 @@ class RunForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $plugins_to_run = (!empty($form_state->getValue('plugins_to_run'))) ? array_keys($form_state->getValue('plugins_to_run')) : [];
 
     $batch = [
       'title' => $this->t('Running process audit'),
@@ -168,7 +169,7 @@ class RunForm extends FormBase {
       'operations' => [
         [
           [AuditRunBatch::class, 'run'],
-          [array_keys($form_state->getValue('plugins_to_run')), []],
+          [$plugins_to_run, []],
         ],
       ],
       'finished' => [
