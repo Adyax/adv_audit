@@ -32,7 +32,6 @@ class PerformanceModulesStatusPlugin extends AuditBasePlugin implements Containe
     'kint',
     'rules_ui',
     'panels_ui',
-    'coder',
   ];
 
   /**
