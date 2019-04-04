@@ -2,6 +2,7 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\adv_audit\AuditReason;
 use Drupal\adv_audit\AuditResultResponse;
 
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -189,22 +190,43 @@ class AuditEntity extends RevisionableContentEntityBase implements AuditEntityIn
 
   /**
    * Set Issues if any.
+   *
+   * @param \Drupal\adv_audit\AuditResultResponse $result
+   *
+   * @return $this
    */
   public function setIssues(AuditResultResponse $result) {
-    $audit_reasons = $result->getAuditResults();
-    $issues = [];
+    $audit_results = $result->getAuditResults();
+    $audit_issues = [];
 
-    foreach ($audit_reasons as $audit_reason) {
-      $plugin_issues = $audit_reason->reportIssues();
-      $issues += $plugin_issues;
+    foreach ($audit_results as $audit_result) {
+      $plugin_id = $audit_result['testId'];
+      $status = $audit_result['status'];
+      $reason = $audit_result['reason'];
+      $arguments = $audit_result['arguments'];
+      $issues = $audit_result['issues'];
+      $audit_reason = new AuditReason($plugin_id, $status, $reason, $arguments);
+      $audit_reason->setIssues($issues);
+      $audit_issue = $audit_reason->reportIssues();
+      $audit_issues += $audit_issue;
     }
 
-    if (!empty($issues)) {
-      $this->set('issues', $issues);
+    if (!empty($audit_issues)) {
+      $this->set('issues', $audit_issues);
     }
 
-    // And set Audit_results.
-    $this->set('audit_results', serialize($result));
+    return $this;
+  }
+
+  /**
+   * Set audit results.
+   *
+   * @param \Drupal\adv_audit\AuditResultResponse $result
+   *
+   * @return $this
+   */
+  public function setAuditResults(AuditResultResponse $result) {
+    $this->set('audit_results', $result->serialize());
     return $this;
   }
 

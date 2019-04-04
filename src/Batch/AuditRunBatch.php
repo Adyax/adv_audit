@@ -15,6 +15,7 @@ use InvalidArgumentException;
  * Runs a single test batch.
  */
 class AuditRunBatch {
+
   /**
    * Maximum number of previous messages to display.
    */
@@ -65,9 +66,11 @@ class AuditRunBatch {
 
       // Save audit checkpoint result.
       $result_response->addReason($audit_reason);
-
       $audit_result_status = $audit_reason->getStatus();
-      $message = new TranslatableMarkup('Audit `@test` is @status', ['@test' => $test_id, '@status' => $audit_result_status]);
+      $message = new TranslatableMarkup('Audit `@test` is @status', [
+        '@test' => $test_id,
+        '@status' => $audit_result_status,
+      ]);
       $context['results']['messages'][] = (string) $message;
       $context['sandbox']['num_processed']++;
 
@@ -113,7 +116,6 @@ class AuditRunBatch {
    */
   public static function finished($success, array $results, array $operations, $elapsed) {
     drupal_set_message(t('Audit process has finished: @success_count succeed, @fail_count failed, @skip_count skipped.', $results));
-
     // If all are OK then try to save audit report result to the entity.
     $audit_result_response = $results['result_response'];
     // Check what we have valid result object.
@@ -139,8 +141,8 @@ class AuditRunBatch {
         // Set global info.
         $audit_result_response->setOverviewInfo($resultsGlobal);
       }
-
       $entity->setIssues($audit_result_response);
+      $entity->setAuditResults($audit_result_response);
       $entity->save();
 
       if (PHP_SAPI === 'cli') {
@@ -156,11 +158,9 @@ class AuditRunBatch {
         }
       }
 
-    }
-    catch (EntityStorageException $e) {
+    } catch (EntityStorageException $e) {
       drupal_set_message(t("Can't save audit result to the entity due to exception with msg: @message", ['@message' => $e->getMessage()]), 'error');
-    }
-    catch (InvalidArgumentException $e) {
+    } catch (InvalidArgumentException $e) {
       drupal_set_message($e->getMessage(), 'error');
     }
   }
@@ -190,10 +190,10 @@ class AuditRunBatch {
       $test_id = reset($context['sandbox']['test_ids']);
 
       $context['message'] = (string) new TranslatableMarkup('Currently perform @test (@current of @max audits)', [
-        '@test' => $test_id,
-        '@current' => $context['sandbox']['current'],
-        '@max' => $context['sandbox']['max'],
-      ]) . "<br />\n" . $context['message'];
+          '@test' => $test_id,
+          '@current' => $context['sandbox']['current'],
+          '@max' => $context['sandbox']['max'],
+        ]) . "<br />\n" . $context['message'];
     }
   }
 
