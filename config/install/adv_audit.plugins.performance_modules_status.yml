@@ -2,8 +2,8 @@ messages:
   description: ''
   actions: "<p>Disable listed modules.</p>\r\n"
   impacts: "<p>Development and UI modules negatively affect the performance of the site (especially dblog and devel).</p>\r\n"
-  fail: ''
-  success: ''
+  fail: '<p>Some development modules are enabled.</p>\r\n'
+  success: '<p>All development modules are disabled.</p>\r\n'
 settings:
   enabled: 1
   severity: normal
