@@ -2,6 +2,8 @@
 
 namespace Drupal\adv_audit\Entity;
 
+use Drupal\adv_audit\AuditReason;
+use Drupal\adv_audit\AuditResultResponse;
 use Drupal\adv_audit\AuditResultResponseInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -36,9 +38,27 @@ class AuditEntityListBuilder extends EntityListBuilder {
       ['adv_audit' => $entity->id()]
     );
     $row['score'] = 0;
-    $result = $entity->get('audit_results')->first()->getValue();
-    if ($result instanceof AuditResultResponseInterface) {
-      $row['score'] = $result->calculateScore();
+    $audit_results = $entity->get('audit_results')->first()->getValue();
+
+    /** @var AuditResultResponse $audit_result */
+    $audit_result = new AuditResultResponse();
+    if (!empty($audit_results['results'])) {
+      foreach ($audit_results['results'] as $result) {
+        $plugin_id = $result['testId'];
+        $status = $result['status'];
+        $reason = $result['reason'];
+        $arguments = $result['arguments'];
+        $issues = $result['issues'];
+        $reason = new AuditReason($plugin_id, $status, $reason, $arguments);
+        $reason->setIssues($issues);
+        $audit_result->addReason($reason, false);
+      }
+    }
+    if (!empty($audit_results['overviewInfo'])) {
+      $audit_result->setOverviewInfo($audit_results['overviewInfo']);
+    }
+    if ($audit_result instanceof AuditResultResponseInterface) {
+      $row['score'] = $audit_result->calculateScore();
     }
     return $row + parent::buildRow($entity);
   }

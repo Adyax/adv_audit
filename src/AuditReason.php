@@ -187,6 +187,15 @@ class AuditReason {
   }
 
   /**
+   * Set list of Issue entities.
+   *
+   * @param array $issues
+   */
+  public function setIssues($issues = []) {
+    $this->issues = $issues;
+  }
+
+  /**
    * Get list of Issue entities with Open status.
    */
   public function getOpenIssues() {
@@ -244,6 +253,31 @@ class AuditReason {
     }
 
     return $this->issues;
+  }
+
+  /**
+   * Convert values to array.
+   *
+   * @return array
+   */
+  public function toArray(): array {
+    return [
+      'status' => $this->status,
+      'testId' => $this->testId,
+      'reason' => array_map(function ($value) {
+        if (is_object($value)) {
+          $value = strval($value);
+        }
+        return $value;
+      }, $this->reason),
+      'arguments' => array_map(function ($value) {
+        if (is_object($value)) {
+          $value = strval($value);
+        }
+        return $value;
+      }, $this->arguments),
+      'issues' => $this->issues,
+    ];
   }
 
 }
