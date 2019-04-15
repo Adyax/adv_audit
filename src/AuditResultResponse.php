@@ -27,14 +27,6 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
   protected $overviewInfo;
 
   /**
-   * Empty array needed for core theme preprocess.
-   * @TODO: find way to remove it.
-   *
-   * @var array
-   */
-  public $_attributes = [];
-
-  /**
    * AuditResultResponse constructor.
    */
   public function __construct() {
@@ -52,7 +44,6 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
 
     // Prevent division by zero.
     $total_count = $this->results->count() ? $this->results->count() : 1;
-
     foreach ($this->results->getIterator() as $audit_result) {
       if ($audit_result->getStatus() == AuditResultResponseInterface::RESULT_SKIP) {
         // Skip.
@@ -73,7 +64,12 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
       }
     }
 
-    $score = ($passed * 100) / $total_count;
+    if ($total_count > 0) {
+      $score = ($passed * 100) / $total_count;
+    }
+    else {
+      $score = 0;
+    }
     return intval($score);
   }
 
@@ -88,7 +84,8 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @deprecated Use ::addReason method.
    */
   public function addResultReport(AuditPluginInterface $test, $status = AuditResultResponseInterface::RESULT_SKIP) {
-    $this->results->add(new AuditReason($test->id(), $status));
+    $reason = new AuditReason($test->id(), $status);
+    $this->results->add($reason->toArray());
   }
 
   /**
@@ -96,9 +93,17 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    *
    * @param \Drupal\adv_audit\AuditReason $reason
    *   The reason object from test plugin.
+   *
+   * @param bool $to_array
+   *   The reason object from test plugin.
    */
-  public function addReason(AuditReason $reason) {
-    $this->results->add($reason);
+  public function addReason(AuditReason $reason, $to_array = true) {
+    if ($to_array) {
+      $this->results->add($reason->toArray());
+    }
+    else {
+      $this->results->add($reason);
+    }
   }
 
   /**
@@ -138,7 +143,7 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    */
   public function serialize() {
     return serialize([
-      'results' => $this->results,
+      'results' => $this->results->toArray(),
       'overviewInfo' => $this->overviewInfo,
     ]);
   }
@@ -154,10 +159,15 @@ class AuditResultResponse implements AuditResultResponseInterface, JsonSerializa
    * @since 5.1.0
    */
   public function unserialize($serialized) {
-    $data = unserialize($serialized);
-    foreach ($data as $key => $value) {
-      $this->{$key} = $value;
+    if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
+      $data = unserialize($serialized, ['allowed_classes' => FALSE]);
     }
+    else {
+      $data = unserialize($serialized);
+    }
+
+    $this->results =  new ArrayCollection($data['results']);
+    $this->overviewInfo = $data['overviewInfo'];
   }
 
   /**

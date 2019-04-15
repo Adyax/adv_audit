@@ -3,6 +3,7 @@
 namespace Drupal\adv_audit\Plugin\AuditPlugins;
 
 use Drupal\adv_audit\Plugin\AuditBasePlugin;
+use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\features\FeaturesAssigner;
 use Drupal\features\FeaturesManager;
@@ -31,10 +32,11 @@ class ContribFeaturesStatusPlugin extends AuditBasePlugin implements ContainerFa
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, FeaturesManager $features_manager, FeaturesAssigner $features_assigner) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FeaturesManager $features_manager, FeaturesAssigner $features_assigner, ModuleHandler $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->featuresManager = $features_manager;
     $this->featuresAssigner = $features_assigner;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -46,7 +48,8 @@ class ContribFeaturesStatusPlugin extends AuditBasePlugin implements ContainerFa
       $plugin_id,
       $plugin_definition,
       $container->get('features.manager'),
-      $container->get('features_assigner')
+      $container->get('features_assigner'),
+      $container->get('module_handler')
     );
   }
 
@@ -63,7 +66,7 @@ class ContribFeaturesStatusPlugin extends AuditBasePlugin implements ContainerFa
     $overridden_packages = [];
 
     foreach ($packages as $package) {
-      if (!empty($this->featuresManager->detectOverrides($package))) {
+      if ($this->moduleHandler->moduleExists($package->getMachineName()) && !empty($this->featuresManager->detectOverrides($package))) {
         $overridden_packages[] = $package->getName();
       }
     }

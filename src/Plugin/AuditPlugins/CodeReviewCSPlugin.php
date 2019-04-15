@@ -151,11 +151,10 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $drupal_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_link = Link::fromTextAndUrl($this->t('Drupal'), URL::fromUri($url))
-        ->toString();
+      $drupal_link = URL::fromUri($url)->toString();
       $result['issues']['drupal_standard'] = [
-        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link @link.',
-        '@link' => $drupal_link,
+        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link <a href=":uri">Drupal</a>.',
+        ':uri' => $drupal_link,
       ];
     }
 
@@ -170,11 +169,10 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $drupal_practice_failed = TRUE;
       $wrapper = $this->swm->getViaUri($scheme);
       $url = $wrapper->getExternalUrl() . $file_rel_path;
-      $drupal_practice_link = Link::fromTextAndUrl($this->t('DrupalPractice'), URL::fromUri($url))
-        ->toString();
+      $drupal_practice_link = URL::fromUri($url)->toString();
       $result['issues']['drupal_best_practice'] = [
-        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by @link.',
-        '@link' => $drupal_practice_link,
+        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by <a href=":uri">DrupalPractice</a>.',
+        ':uri' => $drupal_practice_link,
       ];
     }
 

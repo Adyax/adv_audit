@@ -1,9 +1,9 @@
 messages:
-  description: ''
+  description: "<p>Check if development modules were enabled.</p>\r\n"
   actions: "<p>Disable listed modules.</p>\r\n"
   impacts: "<p>Development and UI modules negatively affect the performance of the site (especially dblog and devel).</p>\r\n"
-  fail: ''
-  success: ''
+  fail: "<p>There are development modules.</p>\r\n"
+  success: "<p>All development UI modules are disabled.</p>\r\n"
 settings:
   enabled: 1
   severity: normal

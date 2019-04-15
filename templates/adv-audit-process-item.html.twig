@@ -1,11 +1,15 @@
 {% for category in categories %}
+  {% if category.items is not empty %}
     <div class="category-group">
-        <h3>{{ category.title }}</h3>
-        {% for item in category.items %}
-            <div class="process-item" data-key="{{ item.id }}">
-                <span class="item-title"> {{ item.label }} </span>
-                <div class="description"> {{ item.description }} </div>
-            </div>
-        {% endfor %}
+      <h3>{{ category.title }}</h3>
+      {% for item in category.items %}
+        <div class="process-item" data-key="{{ item.id }}">
+          <div class="item-title">{{ item.label }}</div>
+          {% if item.description is not empty %}
+            <div class="description">{{ item.description }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
     </div>
+  {% endif %}
 {% endfor %}

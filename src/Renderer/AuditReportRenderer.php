@@ -159,7 +159,6 @@ class AuditReportRenderer implements RenderableInterface {
    */
   protected function doBuildCategory() {
     $build = [];
-
     foreach ($this->categoryManager->getListOfCategories() as $category_id => $category_label) {
       $build[$category_id] = [
         'label' => $category_label,
