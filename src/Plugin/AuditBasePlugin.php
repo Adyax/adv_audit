@@ -52,7 +52,7 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
    * @param array $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, string $plugin_id, array $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginSettingsStorage = $this->container()
       ->get('adv_audit.plugin.config')
@@ -122,7 +122,7 @@ abstract class AuditBasePlugin extends PluginBase implements AuditPluginInterfac
    *   The Plugin category ID.
    */
   public function getCategoryName() {
-    return $this->pluginDefinition['category'];
+    return $this->pluginDefinition['category'] ?? '';
   }
 
   /**
