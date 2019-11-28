@@ -23,7 +23,8 @@
         "blocktrail/cryptojs-aes-php": "^0.1.0",
         "kriswallsmith/buzz": "^0.16",
         "spirit-dev/php-sonarqube-api": "^0.0.4",
-        "google/apiclient": "^2.0"
+        "google/apiclient": "^2.0",
+        "symfony/http-kernel": ">=3.4.35"
     },
     "config": {
         "bin-dir": "bin/"
