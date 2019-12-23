@@ -153,7 +153,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $url = $wrapper->getExternalUrl() . $file_rel_path;
       $drupal_link = URL::fromUri($url)->toString();
       $result['issues']['drupal_standard'] = [
-        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link <a href=":uri">Drupal</a>.',
+        '@issue_title' => 'Problems with Drupal coding standards has been found in your code. You can review them by link <a href=":uri" target="_blank">Drupal</a>.',
         ':uri' => $drupal_link,
       ];
     }
@@ -171,7 +171,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
       $url = $wrapper->getExternalUrl() . $file_rel_path;
       $drupal_practice_link = URL::fromUri($url)->toString();
       $result['issues']['drupal_best_practice'] = [
-        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by <a href=":uri">DrupalPractice</a>.',
+        '@issue_title' => 'Problems with Drupal best practices has been found in your code. You can review them by <a href=":uri" target="_blank">DrupalPractice</a>.',
         ':uri' => $drupal_practice_link,
       ];
     }
@@ -210,8 +210,7 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
    *   Path to phpcs script.
    */
   private function getCsDir() {
-    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
-    $phpcs_path = $vendor_dir . '/squizlabs/php_codesniffer/scripts/phpcs';
+    $phpcs_path = $this->getVendorDir() . '/squizlabs/php_codesniffer/bin/phpcs';
 
     return $phpcs_path;
   }
@@ -223,10 +222,21 @@ class CodeReviewCSPlugin extends AuditBasePlugin implements ContainerFactoryPlug
    *   Path to coder drupal standards.
    */
   private function getStandardsDir() {
-    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
-    $phpcs_standards_path = $vendor_dir . '/drupal/coder/coder_sniffer';
+    $phpcs_standards_path = $this->getVendorDir() . '/drupal/coder/coder_sniffer';
 
     return $phpcs_standards_path;
+  }
+
+  /**
+   * Return path to vendor.
+   *
+   * @return string
+   *   Path to vendor dir.
+   */
+  private function getVendorDir() {
+    $vendor_dir = is_dir(DRUPAL_ROOT . '/vendor') ? DRUPAL_ROOT . '/vendor' : DRUPAL_ROOT . '/../vendor';
+
+    return $vendor_dir;
   }
 
 }
