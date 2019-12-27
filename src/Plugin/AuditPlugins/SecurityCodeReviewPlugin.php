@@ -94,7 +94,12 @@ class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFacto
     $app_root = $this->kernel->getAppRoot();
     $composer_lock = is_file($app_root . '/composer.lock') ? $app_root . '/composer.lock' : $app_root . '/../composer.lock';
     if (is_file($composer_lock)) {
-      $this->issues = $this->composerCheck->check($composer_lock);
+      $check_result = $this->composerCheck->check($composer_lock);
+      $vulnerabilities = $check_result->__toString();
+      $format = $check_result->getFormat();
+      if ($format == 'json') {
+        $this->issues = json_decode($vulnerabilities);
+      }
       return;
     }
     $this->issues = [];
@@ -125,13 +130,13 @@ class SecurityCodeReviewPlugin extends AuditBasePlugin implements ContainerFacto
   protected function getIssues() {
     $result = [];
     foreach ($this->issues as $name => $value) {
-      if (isset($value['advisories'])) {
-        foreach ($value['advisories'] as $key => $item) {
+      if (isset($value->advisories)) {
+        foreach ($value->advisories as $key => $item) {
           $result[$name . ' : ' . $key] = [
-            '@issue_title' => 'Title @title;  description @url',
-            '@version' => $item['cve'],
-            '@url' => $item['link'],
-            '@title' => $item['title'],
+            '@issue_title' => 'Title @title; description @url',
+            '@version' => isset($item->cve) ? $item->cve : '',
+            '@url' => isset($item->link) ? $item->link : '',
+            '@title' => isset($item->title) ? $item->title : '',
           ];
         }
       }

@@ -259,7 +259,7 @@ class IssueEntity extends RevisionableContentEntityBase implements IssueEntityIn
    * {@inheritdoc}
    */
   public function getDetails() {
-    return $this->get('details')->getValue()[0];
+    return $this->get('details')->getValue()[0] ?? [];
   }
 
   /**

@@ -14,10 +14,9 @@
         }
     ],
     "require": {
-        "drupal/coder": "^8.2.12",
+        "drupal/coder": ">=8.2.12",
         "mikehaertl/phpwkhtmltopdf": "^2.3.1",
-        "roave/security-advisories": "dev-master",
-        "sensiolabs/security-checker": "4.0.*",
+        "sensiolabs/security-checker": "^5.0",
         "mpdf/mpdf": "7.1.4",
         "php-http/curl-client": "^1.7",
         "blocktrail/cryptojs-aes-php": "^0.1.0",
