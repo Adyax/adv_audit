@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "drupal/coder": ">=8.2.12",
+        "drupal/coder": "^8.2",
         "mikehaertl/phpwkhtmltopdf": "^2.3.1",
         "sensiolabs/security-checker": "^5.0",
         "mpdf/mpdf": "7.1.4",
