@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
-use Drupal\Core\Entity\Entity;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 
 /**
@@ -202,13 +202,13 @@ class SecurityDangerousTagsPlugin extends AuditBasePlugin implements ContainerFa
    * Falls back on a string with entity type id and id if the link can
    * be found.
    *
-   * @param \Drupal\Core\Entity\Entity $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity.
    *
    * @return string
    *   The Entity URL.
    */
-  protected function getEntityLink(Entity $entity) {
+  protected function getEntityLink(EntityInterface $entity) {
     try {
       $url = $entity->toUrl('edit-form');
     }
